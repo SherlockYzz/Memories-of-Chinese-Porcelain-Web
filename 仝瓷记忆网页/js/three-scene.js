@@ -507,6 +507,8 @@ function buildGeometry(typeIndex) {
             // 0. 宋官窑·八方贯耳弦纹瓶
             // ==========================================
             const points = [
+                new THREE.Vector2(0.0, -1.05),  // 圈足底心凹底（封闭）
+                new THREE.Vector2(0.20, -1.08),
                 new THREE.Vector2(0.24, -1.15), // 圈足底
                 new THREE.Vector2(0.32, -1.13), // 圈足外缘
                 new THREE.Vector2(0.35, -0.9),  // 圈足收口
@@ -519,7 +521,9 @@ function buildGeometry(typeIndex) {
                 new THREE.Vector2(0.34, 0.95),  // 侈口
                 new THREE.Vector2(0.32, 1.0),   // 口沿唇边
                 new THREE.Vector2(0.26, 1.0),   // 内口沿
-                new THREE.Vector2(0.24, 0.85)   // 颈内壁
+                new THREE.Vector2(0.24, 0.85),  // 颈内壁
+                new THREE.Vector2(0.18, 0.5),
+                new THREE.Vector2(0.0, 0.35)    // 瓶内颈深处封闭
             ];
             // 旋转体（32段，微带八方棱角折光感）
             const bodyGeo = new THREE.LatheGeometry(points, 32);
@@ -561,24 +565,31 @@ function buildGeometry(typeIndex) {
             // ==========================================
             // 1. 宋汝窑·天青椭圆四足水仙盆
             // ==========================================
-            // 盆体主体：深腹内凹椭圆盘
+            // 盆体主体：深腹内凹椭圆平底水仙盆（封闭实心底，彻底解决底心镂空空洞BUG）
             const points = [
-                new THREE.Vector2(0.1, -0.3),
-                new THREE.Vector2(0.7, -0.28), // 盆底
-                new THREE.Vector2(0.9, -0.1),  // 盆腹外鼓
-                new THREE.Vector2(0.98, 0.15), // 广口平唇
-                new THREE.Vector2(0.92, 0.15), // 内口沿
-                new THREE.Vector2(0.82, -0.05),
-                new THREE.Vector2(0.65, -0.2)
+                new THREE.Vector2(0.0, -0.27),   // 底部外平底中心
+                new THREE.Vector2(0.40, -0.272), // 底部外平底延伸
+                new THREE.Vector2(0.70, -0.28),  // 底部外边缘 (转折弧)
+                new THREE.Vector2(0.84, -0.16),  // 盆腹下弧
+                new THREE.Vector2(0.93, 0.02),   // 盆腹丰满外鼓
+                new THREE.Vector2(0.98, 0.15),   // 广口外缘
+                new THREE.Vector2(0.95, 0.18),   // 柔和微圆唇边口沿
+                new THREE.Vector2(0.90, 0.17),   // 内口沿
+                new THREE.Vector2(0.85, 0.02),   // 盆内壁上部
+                new THREE.Vector2(0.76, -0.14),  // 盆内壁下收
+                new THREE.Vector2(0.65, -0.20),  // 盆内底交界圆角
+                new THREE.Vector2(0.40, -0.205), // 盆内底平展面
+                new THREE.Vector2(0.0, -0.21)    // 盆内底中心！完整闭合实心盆底！
             ];
             const basinGeo = new THREE.LatheGeometry(points, 64);
             const basinMesh = new THREE.Mesh(basinGeo, glazeMat);
-            // 压扁成典雅的宋代椭圆型
-            basinMesh.scale.set(1.25, 1.0, 0.85);
+            // 压扁成典雅的宋代椭圆型 (长径:短径 比例约 1.25 : 0.88)
+            basinMesh.scale.set(1.25, 1.0, 0.88);
             basinMesh.castShadow = true;
+            basinMesh.receiveShadow = true;
             group.add(basinMesh);
 
-            // 四只如意云头短足
+            // 四只如意云头短足 (底部承托)
             const footPositions = [
                 { x: 0.65, z: 0.4 },
                 { x: -0.65, z: 0.4 },
@@ -587,15 +598,36 @@ function buildGeometry(typeIndex) {
             ];
             for (let pos of footPositions) {
                 const footGroup = new THREE.Group();
-                const footSphere = new THREE.SphereGeometry(0.09, 16, 16);
-                const footMesh = new THREE.Mesh(footSphere, glazeMat);
-                footMesh.scale.set(1.0, 1.4, 0.8);
-                footGroup.position.set(pos.x, -0.32, pos.z);
+                const footGeo = new THREE.CylinderGeometry(0.06, 0.045, 0.10, 16);
+                const footMesh = new THREE.Mesh(footGeo, glazeMat);
+                footMesh.position.y = -0.02;
+                footGroup.position.set(pos.x, -0.31, pos.z);
                 footGroup.add(footMesh);
                 group.add(footGroup);
             }
 
-            group.position.y = -0.2;
+            // 汝窑官窑“芝麻花细小支钉”痕迹 (底面考据级五枚支烧痕)
+            const spurPositions = [
+                { x: 0.0, z: 0.0 },
+                { x: 0.38, z: 0.16 },
+                { x: -0.38, z: 0.16 },
+                { x: 0.38, z: -0.16 },
+                { x: -0.38, z: -0.16 }
+            ];
+            const spurMat = new THREE.MeshStandardMaterial({
+                color: 0x9b958c, // 芝麻支钉露灰白胎骨
+                roughness: 0.9,
+                metalness: 0.05
+            });
+            for (let s of spurPositions) {
+                const spurGeo = new THREE.SphereGeometry(0.018, 8, 8);
+                const spurMesh = new THREE.Mesh(spurGeo, spurMat);
+                spurMesh.scale.set(1.4, 0.35, 0.8);
+                spurMesh.position.set(s.x, -0.276, s.z);
+                group.add(spurMesh);
+            }
+
+            group.position.y = -0.05;
             break;
         }
 
@@ -679,6 +711,8 @@ function buildGeometry(typeIndex) {
             // 4. 宋钧窑·玫瑰紫海棠出戟尊
             // ==========================================
             const points = [
+                new THREE.Vector2(0.0, -0.92),  // 高圈足内凹顶心（封闭）
+                new THREE.Vector2(0.35, -1.02),
                 new THREE.Vector2(0.42, -1.1),  // 外撇高圈足底
                 new THREE.Vector2(0.48, -1.08),
                 new THREE.Vector2(0.38, -0.75), // 圈足缩腹
@@ -688,7 +722,10 @@ function buildGeometry(typeIndex) {
                 new THREE.Vector2(0.68, 0.85),  // 大喇叭口外敞
                 new THREE.Vector2(0.75, 0.95),  // 花瓣唇沿
                 new THREE.Vector2(0.65, 0.95),
-                new THREE.Vector2(0.35, 0.35)
+                new THREE.Vector2(0.35, 0.35),  // 喇叭口内壁收束
+                new THREE.Vector2(0.48, -0.1),  // 腹内壁
+                new THREE.Vector2(0.28, -0.4),  // 尊内腹底
+                new THREE.Vector2(0.0, -0.45)   // 尊内底中心（完全封闭！）
             ];
             const zunGeo = new THREE.LatheGeometry(points, 48);
             const zunMesh = new THREE.Mesh(zunGeo, glazeMat);
@@ -728,6 +765,8 @@ function buildGeometry(typeIndex) {
             // 5. 宋建窑·兔毫曜变天目斗茶盏
             // ==========================================
             const points = [
+                new THREE.Vector2(0.0, -0.70),  // 盏底心外凹（封闭）
+                new THREE.Vector2(0.14, -0.72),
                 new THREE.Vector2(0.18, -0.75), // 极小矮圈足
                 new THREE.Vector2(0.28, -0.72),
                 new THREE.Vector2(0.32, -0.6),  // 铁胎露出部
@@ -738,7 +777,8 @@ function buildGeometry(typeIndex) {
                 new THREE.Vector2(0.88, 0.38),  // 盏口唇沿
                 new THREE.Vector2(0.82, 0.38),  // 盏内壁
                 new THREE.Vector2(0.45, -0.2),
-                new THREE.Vector2(0.12, -0.6)   // 盏底心
+                new THREE.Vector2(0.16, -0.55), // 盏内底心斜收
+                new THREE.Vector2(0.0, -0.58)   // 盏内底心（完全封闭！）
             ];
             const bowlGeo = new THREE.LatheGeometry(points, 64);
             const bowlMesh = new THREE.Mesh(bowlGeo, glazeMat);

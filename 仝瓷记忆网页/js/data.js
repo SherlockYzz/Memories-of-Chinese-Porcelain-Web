@@ -88,9 +88,9 @@ const historyPeriods = [
         id: 'modern',
         year: '当代 (1912–今)',
         label: { zh: '当代新篇', en: 'Contemporary' },
-        title: { zh: '文脉长青 · 个人数字化研鉴与传承', en: 'Digital Renaissance' },
+        title: { zh: '文脉长青 · 数字化研鉴与传承', en: 'Digital Renaissance' },
         desc: {
-            zh: '在数字时代，通过三维物理渲染（PBR）、WebGL 交互技术与图像特征研鉴，古老的华夏瓷道脱胎换骨。以独立研学之精神，打破展厅与时空阻隔，让传世器物生动重现。',
+            zh: '在数字时代，通过三维物理渲染（PBR）、WebGL 交互技术与图像特征研鉴，古老的华夏瓷道脱胎换骨。以格物致知之精神，打破展厅与时空阻隔，让传世器物生动重现。',
             en: 'Modern digital preservation and WebGL rendering re-illuminate timeless ceramic heritage for the world.'
         },
         img: './images/6.jpg'

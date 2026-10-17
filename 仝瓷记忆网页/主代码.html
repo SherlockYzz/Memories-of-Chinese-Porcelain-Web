@@ -31,7 +31,7 @@
                 </div>
                 <div class="flex flex-col leading-tight">
                     <span class="font-serif-cn font-medium text-text-title text-lg tracking-widest" data-i18n="brand">华夏器道</span>
-                    <span class="text-[10px] text-text-muted tracking-wider font-light">古陶瓷数字化研鉴空间 · 个人专栏</span>
+                    <span class="text-[10px] text-text-muted tracking-wider font-light">古陶瓷数字化研鉴空间 · 数字文博专栏</span>
                 </div>
             </a>
 
@@ -47,12 +47,12 @@
                 <a href="#four-arts" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.fourarts">文人四艺</a>
                 <a href="#archive" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.archive">传世典藏</a>
                 <a href="#notes" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.notes">研考手记</a>
-                <a href="#about" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.about">主理人致辞</a>
+                <a href="#about" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.about">研考缘起</a>
             </div>
 
             <!-- 右侧交互控件 -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <button onclick="openStudyNotebook()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing hover:text-tianqing-deep transition-all flex items-center gap-1.5 shadow-sm" title="查阅已收录名瓷与个人研考手记">
+                <button onclick="openStudyNotebook()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing hover:text-tianqing-deep transition-all flex items-center gap-1.5 shadow-sm" title="查阅已收录名瓷与研学手记">
                     <i class="fa-solid fa-bookmark text-tianqing-deep text-[11px]"></i>
                     <span class="hidden sm:inline">研学手记</span>
                     <span id="bookmark-count-badge" class="bg-tianqing-deep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-mono">0</span>
@@ -97,22 +97,22 @@
     <a href="#four-arts" data-i18n="nav.fourarts">文人四艺生活</a>
     <a href="#archive" data-i18n="nav.archive">传世珍品典藏</a>
     <a href="#notes" data-i18n="nav.notes">学者研考札记</a>
-    <a href="#about" data-i18n="nav.about">主理人研考宗旨</a>
+    <a href="#about" data-i18n="nav.about">研考缘起</a>
     <button onclick="openStudyNotebook(); if(document.getElementById('mobile-close')) document.getElementById('mobile-close').click();" class="mt-4 px-4 py-2.5 rounded-xl bg-yuebai border border-border-light text-text-title text-xs font-serif-cn flex items-center justify-between">
-        <span class="flex items-center gap-2"><i class="fa-solid fa-bookmark text-tianqing-deep"></i> 个人研学手记</span>
+        <span class="flex items-center gap-2"><i class="fa-solid fa-bookmark text-tianqing-deep"></i> 研学手记</span>
         <span id="mobile-bookmark-count-badge" class="bg-tianqing-deep text-white text-[10px] px-2 py-0.5 rounded-full font-mono">0</span>
     </button>
 </div>
 
-<!-- ==================== 个人主页封面 (Hero) ==================== -->
+<!-- ==================== 数字文博首页封面 (Hero) ==================== -->
 <section id="hero" class="hero-section">
     <div class="hero-bg" role="img" aria-label="宋代水墨与文人雅集背景"></div>
     <div class="hero-overlay"></div>
     <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-        <!-- 个人专栏学术标示 -->
+        <!-- 学术专栏标识 -->
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-tianqing/30 text-tianqing-deep text-xs font-serif-cn mb-6 shadow-sm fade-up">
             <i class="fa-solid fa-award text-[10px]"></i>
-            <span data-i18n="hero.badge">个人学术与数字文博专栏 · 独立研鉴</span>
+            <span data-i18n="hero.badge">数字文博与古陶瓷学术专栏 · 交互研鉴</span>
         </div>
 
         <!-- 传世名器主图 (高精度极速渲染器物) -->
@@ -122,7 +122,7 @@
 
         <h1 class="text-text-title text-3xl sm:text-4xl md:text-5xl font-serif-cn font-medium tracking-widest mb-4 fade-up" data-i18n="hero.title">器以载道 · 格物致知</h1>
         <p class="text-text-body text-base sm:text-lg mb-4 font-light tracking-widest font-serif-cn fade-up" data-i18n="hero.subtitle">中国古代传统文化与宋韵古陶瓷 3D 数字化交互研鉴空间</p>
-        <p class="text-text-muted text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light mb-8 fade-up" data-i18n="hero.desc">以现代三维渲染与图像智能算法，探寻宋代官瓷“紫口铁足、天青如玉”之千古幽绝。虽单骑独行，亦当以数字科技守护华夏造物文脉。</p>
+        <p class="text-text-muted text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-light mb-8 fade-up" data-i18n="hero.desc">以现代三维渲染与图像智能算法，探寻宋代官瓷“紫口铁足、天青如玉”之千古幽绝，以数字科技守护华夏造物文脉，共赏东方素雅之美。</p>
 
         <div class="section-divider mx-auto mb-8 fade-up"></div>
 
@@ -567,7 +567,7 @@
 <section class="py-20 sm:py-28 bg-bg-main" id="archive">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="section-title-group fade-up">
-            <span class="badge bg-tianqing-deep text-white text-xs mb-3 inline-block">个人数字化复原成果</span>
+            <span class="badge bg-tianqing-deep text-white text-xs mb-3 inline-block">数字化复原成果</span>
             <h2 data-i18n="archive.sectionTitle">名器考据 · 传世古陶瓷典藏库</h2>
             <p class="section-subtitle" data-i18n="archive.sectionSub">精选两宋五大名窑与明清御窑标准器研鉴档案</p>
             <div class="section-divider"></div>
@@ -579,12 +579,12 @@
     </div>
 </section>
 
-<!-- ==================== 板块八：研鉴札记 · 独立学术手记 ==================== -->
+<!-- ==================== 板块八：研鉴札记 · 典籍与学术手记 ==================== -->
 <section class="py-20 sm:py-28 bg-white" id="notes">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="section-title-group fade-up">
             <span class="badge bg-tianqing-deep text-white text-xs mb-3 inline-block">学术考据与物理分析</span>
-            <h2 data-i18n="notes.sectionTitle">研鉴札记 · 独立学术手记</h2>
+            <h2 data-i18n="notes.sectionTitle">研鉴札记 · 典籍与学术手记</h2>
             <p class="section-subtitle" data-i18n="notes.sectionSub">关于胎釉热膨胀应力、紫口铁足矿物成因的深度观察</p>
             <div class="section-divider"></div>
         </div>
@@ -595,24 +595,24 @@
     </div>
 </section>
 
-<!-- ==================== 板块九：主理人致辞与学术宣言 ==================== -->
+<!-- ==================== 板块九：研鉴缘起与致辞 ==================== -->
 <section class="py-20 sm:py-28 bg-bg-main border-t border-border-light" id="about">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center fade-up">
         <div class="w-16 h-16 rounded-full bg-yuebai flex items-center justify-center mx-auto mb-6 text-tianqing-deep text-2xl shadow-sm">
             <i class="fa-solid fa-pen-fancy"></i>
         </div>
-        <h2 class="font-serif-cn text-2xl sm:text-3xl text-text-title font-medium mb-4" data-i18n="about.title">独立研鉴人寄语</h2>
+        <h2 class="font-serif-cn text-2xl sm:text-3xl text-text-title font-medium mb-4" data-i18n="about.title">研鉴缘起与致辞</h2>
         <div class="section-divider mx-auto mb-8"></div>
         <div class="detail-block p-8 sm:p-10 text-left bg-white rounded-3xl shadow-sm border border-border-light space-y-4 font-light leading-relaxed text-sm text-text-body">
             <p class="font-serif-cn text-base text-text-title leading-relaxed">
                 “器以载道，道由心悟。中国陶瓷绝非冰冷的土与火之杂质熔融，而是数千年来东方文人安顿性命、追寻天人合一的精神舟楫。”
             </p>
             <p data-i18n="about.desc">
-                本数字空间由我个人独立设计、研发并长久维护。因对华夏传统造物智慧与宋代极简美学之无限痴迷，我不惜投入大量心血，纯前端构建了此套 3D 古瓷仿真与智能识图系统。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方素雅之美。
+                华夏造物，器以载道。本数字空间聚焦华夏传统造物智慧与宋代极简美学，纯前端构建了此套 3D 古瓷物理渲染与智能识图系统。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方素雅之美。
             </p>
             <div class="pt-4 border-t border-border-light flex flex-col sm:flex-row sm:items-center justify-between text-xs text-text-muted gap-2 font-serif-cn">
-                <span>华夏器道 · 独立古陶瓷研鉴数字空间</span>
-                <span class="text-tianqing-deep font-medium">恪守格物诚意 · 虽单骑独行亦心向光明</span>
+                <span>华夏器道 · 古陶瓷数字化研鉴空间</span>
+                <span class="text-tianqing-deep font-medium">恪守格物诚意 · 传承文明之光</span>
             </div>
         </div>
     </div>
@@ -630,7 +630,7 @@
                     <span class="font-serif-cn font-medium text-white text-lg tracking-widest" data-i18n="brand">华夏器道</span>
                 </div>
                 <p class="text-xs leading-relaxed font-light text-white/60 mb-3" data-i18n="footer.slogan">器以载道，以数字科技传承东方文明之光。</p>
-                <p class="text-xs leading-relaxed font-light text-white/50">个人独立古陶瓷数字化研鉴专栏，聚焦两宋五大名窑与华夏传统造物哲学体系。</p>
+                <p class="text-xs leading-relaxed font-light text-white/50">华夏古陶瓷数字化研鉴专栏，聚焦两宋五大名窑与华夏传统造物哲学体系。</p>
             </div>
             <div>
                 <h4 class="text-white font-serif-cn font-normal mb-4 text-sm tracking-wider">研鉴导航</h4>
@@ -651,14 +651,14 @@
                 </ul>
             </div>
             <div>
-                <h4 class="text-white font-serif-cn font-normal mb-4 text-sm tracking-wider">关于独立主理人</h4>
-                <p class="text-xs font-light leading-relaxed text-white/60">本工程从三维建模、色彩算法至知识体系全部由主理人自主独立研发。</p>
+                <h4 class="text-white font-serif-cn font-normal mb-4 text-sm tracking-wider">关于华夏器道</h4>
+                <p class="text-xs font-light leading-relaxed text-white/60">本工程涵盖三维高精度建模、物理材质渲染、图像识别与华夏古陶瓷学术脉络考证体系。</p>
                 <p class="text-xs font-light leading-relaxed text-white/50 mt-2">立足纯粹之传统文化学术探索，传承中华千年造物文明与宋韵极简风骨。</p>
             </div>
         </div>
 
         <div class="border-t border-white/10 pt-8 text-center text-xs text-white/40 font-light tracking-wider font-serif-cn">
-            <p data-i18n="footer.copyright">&copy; 2026 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间. 个人独立研制保留所有权利.</p>
+            <p data-i18n="footer.copyright">&copy; 2026 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间. 保留所有权利.</p>
         </div>
     </div>
 </footer>
@@ -737,13 +737,13 @@
     </div>
 </div>
 
-<!-- ==================== 个人古瓷研学手记与收藏夹模态框 ==================== -->
+<!-- ==================== 华夏古瓷研考手记与收藏夹模态框 ==================== -->
 <div id="study-notebook-modal" class="modal-backdrop" onclick="if(event.target===this)closeStudyNotebook()">
     <div class="modal-content-lg">
         <div class="flex items-center justify-between mb-4 pb-3 border-b border-border-light">
             <h3 class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
                 <i class="fa-solid fa-bookmark text-tianqing-deep"></i>
-                <span>个人古瓷研学手记 · 典藏集</span>
+                <span>华夏古瓷研考手记 · 典藏集</span>
             </h3>
             <button onclick="closeStudyNotebook()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
                 <i class="fa-solid fa-xmark text-text-body"></i>
@@ -762,7 +762,7 @@
             </div>
 
             <div class="pt-3 border-t border-border-light">
-                <h4 class="text-xs font-serif-cn font-medium text-text-title mb-2">【个人考据随笔与灵感手记】</h4>
+                <h4 class="text-xs font-serif-cn font-medium text-text-title mb-2">【研考随笔与心得笔记】</h4>
                 <textarea id="study-notebook-textarea" oninput="saveStudyNotes()" rows="4" placeholder="在此随时记录您的古瓷鉴赏心得、窑口考证灵感、胎釉比对备忘（浏览器本地自动保存）..." class="w-full bg-yuebai/50 border border-border-light rounded-xl p-3 text-xs text-text-title outline-none focus:border-tianqing font-light resize-none leading-relaxed"></textarea>
             </div>
         </div>
