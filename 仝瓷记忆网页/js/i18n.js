@@ -22,11 +22,11 @@ const translations = {
         'nav.colors': '东方色谱',
         'nav.archive': '传世典藏',
         'nav.notes': '研考手记',
-        'nav.about': '研考缘起',
-        'hero.badge': '数字文博与古陶瓷学术专栏 · 交互研鉴',
+        'nav.about': '主理人致辞',
+        'hero.badge': '个人学术与数字文博专栏 · 独立研鉴',
         'hero.title': '器以载道 · 格物致知',
         'hero.subtitle': '中国古代传统文化与宋韵古陶瓷 3D 数字化交互研鉴空间',
-        'hero.desc': '以现代三维渲染与图像智能算法，探寻宋代官瓷“紫口铁足、天青如玉”之千古幽绝，以数字科技守护华夏造物文脉，共赏东方素雅之美。',
+        'hero.desc': '以现代三维渲染与图像智能算法，探寻宋代官瓷“紫口铁足、天青如玉”之千古幽绝。虽单骑独行，亦当以数字科技守护华夏造物文脉。',
         'hero.cta1': '进入3D研鉴馆',
         'hero.cta2': 'AI智能识图鉴宝',
         'hero.scroll': '顺流而下 · 纵览文脉',
@@ -50,11 +50,11 @@ const translations = {
         'fourarts.sectionSub': '焚香、点茶、插花、挂画 · 器文互映的心灵净土',
         'archive.sectionTitle': '名器考据 · 传世古陶瓷典藏库',
         'archive.sectionSub': '精选两宋五大名窑与明清御窑标准器研鉴档案',
-        'notes.sectionTitle': '研鉴札记 · 典籍与学术手记',
+        'notes.sectionTitle': '研鉴札记 · 独立学术手记',
         'notes.sectionSub': '关于胎釉热膨胀应力、紫口铁足矿物成因的深度观察',
-        'about.title': '研鉴缘起与致辞',
-        'about.desc': '华夏造物，器以载道。本数字空间聚焦华夏传统造物智慧与宋代极简美学，纯前端构建了此套 3D 古瓷物理渲染与智能识图系统。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方素雅之美。',
-        'footer.copyright': '© 2026 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间. 保留所有权利.',
+        'about.title': '独立研鉴人寄语',
+        'about.desc': '本数字空间由我个人独立设计、研发并长久维护。因对华夏传统造物智慧与宋代极简美学之无限痴迷，我不惜投入大量心血，纯前端构建了此套 3D 古瓷仿真与智能识图系统。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方素雅之美。',
+        'footer.copyright': '华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间. 个人独立研制保留所有权利.',
         'footer.slogan': '器以载道，以数字科技传承东方文明之光。'
     },
     en: {
@@ -100,9 +100,9 @@ const translations = {
         'archive.sectionSub': 'Curated standard pieces from the Five Great Kilns of the Song Dynasty',
         'notes.sectionTitle': 'Scholar Notes · Research Monograph',
         'notes.sectionSub': 'Deep insights on thermal stress crackles and iron foot mineral genesis',
-        'about.title': 'Curatorial Foreword & Mission',
-        'about.desc': 'This digital research space focuses on classical Chinese ceramics and Song Dynasty aesthetic philosophy, combining 3D physical rendering with digital scholarship.',
-        'footer.copyright': '© 2026 Vessels of China · Chinese Ceramic Heritage Space. All rights reserved.',
+        'about.title': 'Independent Scholar\'s Statement',
+        'about.desc': 'This digital space is independently designed, developed, and maintained by myself. Dedicated to the eternal spirit of Chinese aesthetic heritage.',
+        'footer.copyright': 'Vessels of China · Independent Ceramic Heritage Project. All rights reserved.',
         'footer.slogan': 'Embodying the Way through vessels, illuminating ancient wisdom with digital technology.'
     }
 };

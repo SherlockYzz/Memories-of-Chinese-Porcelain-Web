@@ -1,503 +1,1282 @@
 /**
- * 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间
- * 3D 传世古瓷数字化研鉴馆 (Three.js WebGL 核心引擎)
- * 纯前端高精度程序化建模、PBR 釉面玉质物理渲染、金丝铁线动态开片着色器
+ * 华夏器道 · 仝瓷记忆 — 旗舰级 3D 数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL Flagship Engine)
+ * 核心特性：
+ * 1. 实时程序化 HDR 博物馆环境反射贴图 (PMREMGenerator + 宋代轩窗天光/柔光箱)
+ * 2. 双层玻璃相清漆 PBR 材质 + Voronoi 金丝铁线凹凸法线贴图 + 钧窑窑变/建盏曜变/宣德青花五段纹饰
+ * 3. 128段样条插值高精建模 + 四瓣海棠/八方棱角几何调制
+ * 4. 四大展览模式：【单器360°精鉴台】、【3D全景博物馆大展厅漫游】、【X光胎骨剖面透视】、【策展人自动巡礼】
+ * 5. 3D空间解剖锚点实时屏幕投影、Raycaster 点击展柜漫游、体积聚光灯束与悬浮流金粒子系统
  */
 
-// 全局 3D 变量
 let scene, camera, renderer, currentGroup;
-let lightMain, lightFill, lightRim, ambientLight;
+let pedestalGroup, hallGroup, particleSystem, spotConeMesh, dimensionGroup;
+let lightMain, lightFill, lightRim, ambientLight, topSpotLight;
+let envMapTexture = null;
+let clipPlane = null;
+
+// 交互与展览状态
 let autoRotate = true;
 let isWireframe = false;
 let showCrackle = true;
+let showDimensions = false;
+let showHotspots = true;
+let exhibitionMode = 'inspector'; // 'inspector' | 'hall' | 'cutaway'
+let curatorialTourActive = false;
+let tourTimer = null;
 let currentModelIndex = 0;
 let currentGlazeIndex = 'tianqing';
 
-// 经典古瓷器物数据字典与研鉴档案
+// 相机平滑插值目标 (用于展厅漫游与特写运镜)
+let camPosTarget = { x: 0, y: 1.05, z: 3.65 };
+let camLookTarget = { x: 0, y: 0.0, z: 0 };
+let camLookCurrent = { x: 0, y: 0.0, z: 0 };
+let userOrbitAngles = { theta: 0, phi: 0.28, radius: 3.65 };
+let isUserDragging = false;
+
+// 经典古瓷器物数据字典与 3D 空间解剖锚点
 const porcelainModelsData = [
-    {
-        name: '真迹3D激光测绘 · 弦纹双耳古瓶',
-        english: 'Authentic 3D Relic Scan: Twin-Loop Celadon Antique Vase',
-        period: '馆藏传世真迹 (实物高精度三维激光扫描)',
-        kiln: '传世官制名器 (Photogrammetry 摄影测量数字孪生)',
-        desc: '本件为博物馆实物真迹高精度三维扫描数字化成果（CC0开放数字遗产）。全套资产采用单反微距环绕拍摄与激光点云逆向重构，1:1 完整记录古瓷器表真实的高清照片级贴图、釉面微观凹凸法线、自然岁月风化划痕、手工拉坯不对称微澜与底足真实露胎，为真正的物理实物数字孪生。',
-        features: ['实景摄影测量 1:1', '真实单反照片烘焙贴图', '实物微观凹凸法线', '器表岁月风化与手工微澜'],
-        isScanned: true,
-        modelKey: 'vase_01',
-        modelUrl: 'models/ceramic_vase_01/scene.gltf',
-        targetScale: 5.4,
-        offsetY: -1.1
-    },
-    {
-        name: '真迹3D激光测绘 · 窑变古陶敛口尊',
-        english: 'Authentic 3D Relic Scan: Flambé Ancient Ceramic Jar',
-        period: '出土真迹原器 (实物高精度三维激光扫描)',
-        kiln: '古窑遗址发掘真迹 (高精扫描点云数字化)',
-        desc: '本件为考古发掘出土古陶器真迹之实物三维激光扫描模型。真实还原了千年岁月在泥胎器表留下的自然土锈侵蚀、古陶粗砂微观颗粒感、手工跳刀弦纹与窑变沉淀痕迹，具有不可替代的原真学术鉴赏价值。',
-        features: ['出土真迹实物测绘', '真实土锈与风化包浆', '古陶跳刀手工肌理', '原真物理点云网格'],
-        isScanned: true,
-        modelKey: 'vase_02',
-        modelUrl: 'models/ceramic_vase_02/scene.gltf',
-        targetScale: 7.0,
-        offsetY: -1.1
-    },
-    {
-        name: '宋汝窑·天青椭圆四足水仙盆',
-        english: 'Song Ru Kiln Celadon Oval Narcissus Basin',
-        period: '北宋晚期 (徽宗御定)',
-        kiln: '河南宝丰清凉寺汝官窑',
-        desc: '台北故宫镇馆名珍同款器型。器呈椭圆形，广口浅腹，平底微凹，下承四云头状小矮足，底留五枚细小芝麻花支钉。通体施天青失透乳浊釉，温润如凝脂美玉，融汇次表面透光与自然流釉，为中国瓷器极简审美的千古绝唱。',
-        features: ['天青失透如凝脂', '四如意云头短足', '广口柔和曲线', '五枚芝麻支钉实心底'],
-        defaultGlaze: 'tianqing'
-    },
     {
         name: '宋官窑·八方贯耳弦纹瓶',
         english: 'Song Imperial Guan Octagonal Vase with Tubular Handles',
         period: '南宋 (1127–1279)',
         kiln: '杭州修内司官窑 / 郊坛下官窑',
-        desc: '仿商周青铜礼器造型，瓶身八棱，口颈两侧各设一垂直中空贯耳，腹部起数道弦纹。胎呈灰黑紫铁之色，釉厚如堆脂，有深浅交错之蟹爪纹与金丝铁线，再现宋代“端雅穆重”的极简官样风范。',
-        features: ['八方直棱轮廓', '双贯耳通气结构', '凸起弦纹起伏', '紫口铁足露胎'],
-        defaultGlaze: 'tianqing'
+        dimensions: '通高 22.8 cm · 口径 5.4 cm · 足径 7.2 cm',
+        desc: '仿商周青铜礼器造型，瓶身八方起棱，口颈两侧各设一垂直中空贯耳，腹部饰凸起弦纹。胎骨含铁高达5%，呈现典型“紫口铁足”，釉厚如堆脂，蟹爪纹与金丝铁线纵横交织，尽显南宋宫廷崇尚的穆重典雅。',
+        features: ['八方折棱折光', '双贯耳穿带结构', '三道凸起弦纹', '紫口铁足露胎'],
+        defaultGlaze: 'tianqing',
+        hotspots: [
+            { label: '紫口 · 口沿釉薄透紫褐胎', pos: [0.32, 0.96, 0.1], view: 'top' },
+            { label: '双贯耳 · 仿古青铜穿系礼制', pos: [-0.36, 0.65, 0.08], view: 'front' },
+            { label: '蟹爪冰裂 · 厚釉多层热应力纹', pos: [0.58, -0.25, 0.25], view: 'front' },
+            { label: '铁足 · 凤凰山紫金土露胎圈足', pos: [0.28, -1.12, 0.15], view: 'bottom' }
+        ]
+    },
+    {
+        name: '宋汝窑·天青椭圆四足水仙盆',
+        english: 'Northern Song Ru Kiln Sky-Blue Oval Narcissus Basin',
+        period: '北宋晚期 (徽宗宣和年间)',
+        kiln: '河南宝丰清凉寺汝官窑',
+        dimensions: '高 6.7 cm · 口横 23.1 cm · 口纵 16.4 cm',
+        desc: '传世孤品级形制。盆体呈温雅椭圆形，广口卷唇，浅腹平底，下承四只雕琢精妙的如意云头矮足。玛瑙末入釉，通体满施雨过天青色釉，温润如羊脂美玉，底部留有细小如针的芝麻支钉痕。',
+        features: ['雨过天青玛瑙釉', '四如意云头短足', '椭圆卷唇广口', '五枚芝麻支钉痕'],
+        defaultGlaze: 'tianqing',
+        hotspots: [
+            { label: '卷唇敞口 · 温润凝脂玉质感', pos: [0.95, 0.18, 0.2], view: 'top' },
+            { label: '如意云头足 · 四足稳承平底', pos: [0.68, -0.32, 0.42], view: 'bottom' },
+            { label: '芝麻支钉 · 满釉裹足支烧绝技', pos: [0.0, -0.28, 0.0], view: 'bottom' }
+        ]
     },
     {
         name: '宋定窑·白釉划花莲纹梅瓶',
-        english: 'Song Ding Kiln Carved White-Glazed Meiping',
+        english: 'Northern Song Ding Kiln Carved Lotus White Meiping',
         period: '北宋 (960–1127)',
-        kiln: '河北曲阳定窑',
-        desc: '小口微卷，短颈溜肩，修腹内收，至圈足微扬。胎质坚白细腻，釉色柔润呈象牙白（定白），器身隐现流利自然的刻花莲纹。宋代文人常作插梅、存酒之雅器，姿态修长挺拔，宛若仕女。',
-        features: ['小口翻唇修长', '牙白温润定色', '刀法挺拔刻花', '芒口与竹丝刷纹'],
-        defaultGlaze: 'dingbai'
+        kiln: '河北曲阳涧磁村定窑',
+        dimensions: '通高 31.5 cm · 口径 4.2 cm · 足径 9.8 cm',
+        desc: '小口翻唇，短颈丰肩，修腹渐收至胫部微扬，线条挺拔俊秀。胎骨洁白坚致，击之声如清磬；釉呈温润象牙白，口沿施鎏金铜扣（芒口镶扣），腹部以竹刀深刻流利缠枝莲纹，积釉处隐现“蜡泪痕”。',
+        features: ['芒口镶鎏金铜扣', '象牙白温润暖釉', '竹刀深刻缠枝莲', '丰肩修腹仕女姿'],
+        defaultGlaze: 'dingbai',
+        hotspots: [
+            { label: '芒口金扣 · 覆烧工艺皇家镶金口', pos: [0.24, 0.98, 0.1], view: 'top' },
+            { label: '丰肩刻花 · 半刀泥深刻莲瓣浮雕', pos: [0.64, 0.38, 0.22], view: 'front' },
+            { label: '牙白泪痕 · 天然石灰釉垂流聚痕', pos: [-0.46, -0.32, 0.25], view: 'front' }
+        ]
     },
     {
         name: '宋哥窑·金丝铁线胆式瓶',
-        english: 'Song Ge Kiln Pear-Shaped Bottle with Crackle Glaze',
+        english: 'Song Ge Kiln Pear-Shaped Bottle with Gold-and-Iron Crackles',
         period: '宋代 (960–1279)',
-        kiln: '哥窑',
-        desc: '直口长颈，腹部下垂如悬胆，圈足平稳。通身布满大小交织的开片纹理，粗大深黑者如“铁线”，细密浅黄者如“金丝”，网状开裂与酥油温润釉质相得益彰，天然浑成，巧夺天工。',
-        features: ['悬胆式优美重心', '大开片深如墨铁', '小网纹细如金丝', '古朴百极碎韵'],
-        defaultGlaze: 'fenqing'
+        kiln: '传世哥窑',
+        dimensions: '通高 20.3 cm · 口径 3.8 cm · 足径 6.5 cm',
+        desc: '直口修颈，腹部下垂饱满如悬胆，重心沉稳。釉层肥厚失透如凝脂酥油，通身布满天然开裂的“金丝铁线”——主干粗裂纹呈深铁黑色，次生细密网纹呈金黄色，百极碎纹极富文人苍古画意。',
+        features: ['悬胆垂腹优美弧线', '大开片深黑如铁', '细网纹金黄如丝', '酥油光泽温润内敛'],
+        defaultGlaze: 'fenqing',
+        hotspots: [
+            { label: '直口修颈 · 紫口微露铁胎骨', pos: [0.22, 1.02, 0.08], view: 'top' },
+            { label: '金丝铁线 · 双重染色应力裂网', pos: [0.68, -0.38, 0.2], view: 'front' },
+            { label: '铁足圈足 · 垫饼托烧规整修刀', pos: [0.32, -1.08, 0.12], view: 'bottom' }
+        ]
     },
     {
         name: '宋钧窑·玫瑰紫海棠出戟尊',
-        english: 'Song Jun Kiln Rose-Purple Four-Flanged Vase',
+        english: 'Northern Song Jun Kiln Rose-Purple Four-Flanged Zun',
         period: '北宋晚期至金代',
-        kiln: '河南禹州钧官窑',
-        desc: '喇叭敞口，海棠四瓣起棱，腹部四方各附镂空透雕出戟，圈足外侈。釉料含铜、铁微量矿物，入窑经高温还原焰烧造，“入窑一色，出窑万彩”，红、蓝、紫多色晕散交错，灿若晚霞。',
-        features: ['四面出戟古铜韵', '海棠起棱造型', '玫瑰紫乳浊窑变', '蚯蚓走泥纹留痕'],
-        defaultGlaze: 'junhong'
+        kiln: '河南禹州钧台官窑',
+        dimensions: '通高 24.5 cm · 口径 18.2 cm · 足径 12.0 cm',
+        desc: '北宋皇家陈设重器。器身呈四瓣海棠花形，喇叭敞口，颈、腹、足四面各附镂空齿状出戟。釉料含微量氧化铜，经1300℃还原焰窑变，“入窑一色，出窑万彩”，玫瑰紫与海棠红交融绚烂如晚霞。',
+        features: ['四瓣海棠花造型', '四方齿状出戟', '铜还原玫瑰紫窑变', '蚯蚓走泥纹肌理'],
+        defaultGlaze: 'junhong',
+        hotspots: [
+            { label: '海棠折沿 · 四瓣花式喇叭大敞口', pos: [0.72, 0.92, 0.2], view: 'top' },
+            { label: '齿状出戟 · 追摹商周青铜礼器威仪', pos: [0.68, -0.1, 0.0], view: 'front' },
+            { label: '玫瑰紫霞 · 氧化铜高温胶体粒子窑变', pos: [-0.52, -0.22, 0.38], view: 'front' }
+        ]
     },
     {
         name: '宋建窑·兔毫曜变天目斗茶盏',
-        english: 'Song Jian Kiln Hare\'s Fur Tea Bowl',
+        english: 'Song Jian Kiln Hare\'s Fur & Yohen Tenmoku Tea Bowl',
         period: '宋代 (960–1279)',
         kiln: '福建建阳水吉建窑',
-        desc: '宋代“点茶、斗茶”盛事之灵魂茶器。撇口束口暗槽，斜直深壁，小高圈足。含铁量极高的乌黑釉浆在窑炉烈火中析出如野兔针毫般的条纹结晶，黑白相激，最衬宋代击拂如雪的白色茶汤。',
-        features: ['束口注汤专用槽', '铁胎含铁极重', '流淌兔毫结晶', '聚温耐热宜茶'],
-        defaultGlaze: 'jianhei'
+        dimensions: '高 7.2 cm · 口径 12.5 cm · 足径 4.0 cm',
+        desc: '两宋点茶、斗茶之圣器。口沿设束口注汤槽，深腹斜收，下腹垂积釉泪，浅圈足露粗犷黑铁胎。高铁黑釉在窑火中析出金银兔毫结晶与曜变星斑，最宜衬托击拂如雪的白色茶汤。',
+        features: ['束口防溢注汤槽', '曜变星斑与银兔毫', '下腹垂珠积釉泪', '含铁8%重铁胎底'],
+        defaultGlaze: 'jianhei',
+        hotspots: [
+            { label: '束口暗槽 · 斗茶注汤咬盏定胜负', pos: [0.85, 0.35, 0.15], view: 'top' },
+            { label: '曜变兔毫 · 铁氧化物微晶干涉光晕', pos: [0.15, -0.15, 0.35], view: 'top' },
+            { label: '铁胎浅足 · 建阳水吉高铁红土胎骨', pos: [0.28, -0.72, 0.1], view: 'bottom' }
+        ]
     },
     {
         name: '明宣德·青花缠枝莲纹玉壶春瓶',
-        english: 'Ming Xuande Blue-and-White Yuhuchun Vase',
-        period: '明早期 (宣德 1426–1435)',
-        kiln: '景德镇御窑厂',
-        desc: '喇叭撇口，细颈柔顺，丰腹饱满如水滴，高圈足。线条呈完美曼妙之S型流线。釉面白中泛青，通体以进口苏麻离青料绘制连绵缠枝莲纹，青料浓重凝聚处有黑褐色铁锈斑，古韵盎然。',
-        features: ['如滴落水珠之S弧', '苏麻离青浓艳料', '铁锈结晶斑深入胎', '橘皮棕眼肥润釉'],
-        defaultGlaze: 'qinghua'
+        english: 'Ming Xuande Blue-and-White Lotus Yuhuchun Vase',
+        period: '明宣德 (1426–1435)',
+        kiln: '江西景德镇御器厂',
+        dimensions: '通高 28.5 cm · 口径 8.2 cm · 足径 10.4 cm',
+        desc: '撇口细颈，垂腹丰满如水滴，圈足外撇，通体曲线呈柔美S型。釉面肥厚泛鸭蛋青，以进口“苏麻离青”钴料分层绘蕉叶纹、如意云头及缠枝宝相莲纹，浓重处凝聚黑褐色铁锈结晶斑，深沉雄健。',
+        features: ['曼妙S型水滴曲线', '进口苏麻离青浓艳', '深入胎骨铁锈结晶斑', '五段式皇家官样纹饰'],
+        defaultGlaze: 'qinghua',
+        hotspots: [
+            { label: '撇口蕉叶纹 · 颈部挺拔饰青花蕉叶', pos: [0.35, 0.85, 0.15], view: 'front' },
+            { label: '苏麻离青 · 高铁低锰进口钴料铁锈斑', pos: [0.68, -0.32, 0.25], view: 'front' },
+            { label: '仰莲圈足 · 景德镇麻仓土二元配方白胎', pos: [0.38, -1.08, 0.12], view: 'bottom' }
+        ]
     }
 ];
 
-// 经典东方古陶瓷釉色配置
+// 经典东方古陶瓷釉色 PBR 参数字典
 const glazePalettes = {
     tianqing: {
         name: '雨过天青',
-        desc: '汝官窑典型色，天青稍淡，温润如脂，失透玉质',
-        color: 0x98b8b8,
-        emissive: 0x051515,
-        roughness: 0.18,
-        metalness: 0.05,
-        clearcoat: 0.95,
-        clearcoatRoughness: 0.08,
-        ior: 1.52,
-        reflectivity: 0.6
+        desc: '汝官窑典型色，玛瑙入釉，温润如羊脂美玉',
+        color: 0x94b9c0,
+        emissive: 0x061518,
+        roughness: 0.14,
+        metalness: 0.04,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.06,
+        ior: 1.54,
+        reflectivity: 0.72
     },
     fenqing: {
         name: '粉青如玉',
-        desc: '南宋龙泉与官窑代表，青翠柔和，似碧玉微瑕',
-        color: 0x86b098,
-        emissive: 0x06140b,
-        roughness: 0.22,
-        metalness: 0.04,
-        clearcoat: 0.9,
-        clearcoatRoughness: 0.12,
-        ior: 1.50,
-        reflectivity: 0.55
+        desc: '南宋龙泉与修内司官窑代表，青翠柔和，丰润如脂',
+        color: 0x82b29c,
+        emissive: 0x05140d,
+        roughness: 0.17,
+        metalness: 0.03,
+        clearcoat: 0.96,
+        clearcoatRoughness: 0.08,
+        ior: 1.53,
+        reflectivity: 0.68
     },
     yuebai: {
-        name: '月白莹澈',
-        desc: '月白微蓝，如皓月当空，清冷澄澈，冰清玉洁',
-        color: 0xd8e4e6,
-        emissive: 0x111618,
-        roughness: 0.16,
-        metalness: 0.03,
-        clearcoat: 0.98,
-        clearcoatRoughness: 0.06,
-        ior: 1.54,
-        reflectivity: 0.65
+        name: '月白莹霜',
+        desc: '月白微泛冷青，如皓月寒霜，冰清玉洁',
+        color: 0xd8e5e8,
+        emissive: 0x0f1518,
+        roughness: 0.12,
+        metalness: 0.02,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.05,
+        ior: 1.55,
+        reflectivity: 0.75
     },
     dingbai: {
         name: '定窑牙白',
-        desc: '北宋定窑牙白色，温和内敛，泛米黄暖玉之色',
-        color: 0xf3ede0,
-        emissive: 0x171510,
-        roughness: 0.28,
+        desc: '北宋曲阳定窑象牙白，泛暖玉微黄之光，内敛温雅',
+        color: 0xf4eee1,
+        emissive: 0x16130d,
+        roughness: 0.20,
         metalness: 0.02,
-        clearcoat: 0.85,
-        clearcoatRoughness: 0.15,
-        ior: 1.48,
-        reflectivity: 0.45
+        clearcoat: 0.88,
+        clearcoatRoughness: 0.11,
+        ior: 1.50,
+        reflectivity: 0.58
     },
     junhong: {
         name: '玫瑰紫变',
-        desc: '禹州钧窑名品，铜还原窑变，紫红绚烂如晚霞',
-        color: 0x822b52,
-        emissive: 0x240616,
-        roughness: 0.24,
+        desc: '禹州钧官窑铜还原窑变，红紫蓝交融如晚霞流云',
+        color: 0xb85a88,
+        emissive: 0x1c0614,
+        roughness: 0.16,
         metalness: 0.08,
-        clearcoat: 0.92,
-        clearcoatRoughness: 0.1,
-        ior: 1.55,
-        reflectivity: 0.6
+        clearcoat: 0.98,
+        clearcoatRoughness: 0.07,
+        ior: 1.58,
+        reflectivity: 0.74
     },
     jianhei: {
         name: '建盏乌金',
-        desc: '建窑黑釉兔毫，铁胎黑厚，金属光泽流淌',
-        color: 0x1f1b1a,
-        emissive: 0x050404,
-        roughness: 0.35,
-        metalness: 0.25,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.2,
-        ior: 1.6,
-        reflectivity: 0.7
+        desc: '建阳水吉窑高铁黑釉，析出金银兔毫与曜变星斑',
+        color: 0x2c2829,
+        emissive: 0x060508,
+        roughness: 0.24,
+        metalness: 0.38,
+        clearcoat: 0.92,
+        clearcoatRoughness: 0.12,
+        ior: 1.65,
+        reflectivity: 0.82
     },
     qinghua: {
         name: '幽菁青花',
-        desc: '青花地釉白微泛青，苏麻离青料幽深雅致',
-        color: 0xecf0f2,
-        emissive: 0x0e1215,
-        roughness: 0.15,
+        desc: '明宣德鸭蛋青白釉底，苏麻离青浓艳深沉带铁锈斑',
+        color: 0xf2f6f8,
+        emissive: 0x0a1016,
+        roughness: 0.12,
         metalness: 0.03,
-        clearcoat: 0.96,
-        clearcoatRoughness: 0.07,
-        ior: 1.53,
-        reflectivity: 0.62
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.05,
+        ior: 1.54,
+        reflectivity: 0.72
     }
 };
 
-// 内存中生成的开片、青花、兔毫、法线与展厅环境贴图缓存
-let crackleTextureCache = null;
-let crackleNormalCache = null;
-let qinghuaTextureCache = null;
-let tuhaoTextureCache = null;
-let studioEnvTextureCache = null;
+// 纹理贴图缓存
+const textureCache = {};
 
 /**
- * 展厅级物理环境反射贴图 (IBL Environment Map)
- * 渲染宋式文雅幽暗展厅的柔光箱、冷暖补光与实木地面漫射，给瓷器釉面注入镜面清漆反射灵魂
+ * 1. 程序化生成高动态范围 (HDR-like) 博物馆轩窗天光环境反射贴图
  */
-function setupStudioEnvironment(r) {
-    if (!scene) return;
+function createStudioEnvironment(rendererInstance) {
+    if (envMapTexture) return envMapTexture;
     try {
-        if (!studioEnvTextureCache) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
 
-            // 展厅幽暗主色 (深墨青木质展厅)
-            const bgGrad = ctx.createLinearGradient(0, 0, 0, 512);
-            bgGrad.addColorStop(0, '#101418');
-            bgGrad.addColorStop(0.48, '#1e262c');
-            bgGrad.addColorStop(1, '#0c0f12');
-            ctx.fillStyle = bgGrad;
-            ctx.fillRect(0, 0, 1024, 512);
+        // 深邃文博馆背景基底
+        const baseGrad = ctx.createLinearGradient(0, 0, 0, 512);
+        baseGrad.addColorStop(0.0, '#1e2c36');
+        baseGrad.addColorStop(0.45, '#121a22');
+        baseGrad.addColorStop(0.55, '#0b1015');
+        baseGrad.addColorStop(1.0, '#182228');
+        ctx.fillStyle = baseGrad;
+        ctx.fillRect(0, 0, 512, 512);
 
-            // 顶部主柔光箱 (Warm Overhead Studio Softbox)
-            const softbox1 = ctx.createRadialGradient(512, 110, 8, 512, 110, 220);
-            softbox1.addColorStop(0, 'rgba(255, 252, 242, 1.0)');
-            softbox1.addColorStop(0.25, 'rgba(255, 240, 215, 0.75)');
-            softbox1.addColorStop(0.65, 'rgba(195, 215, 230, 0.22)');
-            softbox1.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = softbox1;
-            ctx.fillRect(200, 0, 624, 280);
+        // 顶部大型环形博物馆柔光箱 (创造圆润高光)
+        const topLight = ctx.createRadialGradient(512, 90, 10, 512, 90, 260);
+        topLight.addColorStop(0, 'rgba(255, 252, 242, 0.95)');
+        topLight.addColorStop(0.4, 'rgba(210, 235, 242, 0.45)');
+        topLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = topLight;
+        ctx.fillRect(0, 0, 512, 350);
 
-            // 左侧青冷调漫反射板 (Cool Side Fill - 勾勒青瓷冷翠轮廓)
-            const softbox2 = ctx.createRadialGradient(160, 250, 5, 160, 250, 180);
-            softbox2.addColorStop(0, 'rgba(205, 235, 245, 0.85)');
-            softbox2.addColorStop(0.35, 'rgba(150, 195, 215, 0.35)');
-            softbox2.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = softbox2;
-            ctx.fillRect(0, 80, 360, 340);
+        // 左侧宋代轩窗暖白格栅天光条 (在瓷器腹部形成玉质竖向高光带)
+        ctx.fillStyle = 'rgba(255, 248, 235, 0.85)';
+        for (let i = 0; i < 4; i++) {
+            ctx.fillRect(160 + i * 28, 120, 18, 190);
+        }
 
-            // 右侧暖金调边缘轮廓光 (Warm Accent Light)
-            const softbox3 = ctx.createRadialGradient(860, 220, 5, 860, 220, 160);
-            softbox3.addColorStop(0, 'rgba(255, 235, 205, 0.8)');
-            softbox3.addColorStop(0.4, 'rgba(215, 175, 130, 0.3)');
-            softbox3.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = softbox3;
-            ctx.fillRect(680, 70, 344, 300);
+        // 右侧天青色漫射辅光窗
+        const sideLight = ctx.createRadialGradient(820, 220, 15, 820, 220, 180);
+        sideLight.addColorStop(0, 'rgba(168, 215, 225, 0.8)');
+        sideLight.addColorStop(0.6, 'rgba(124, 170, 180, 0.25)');
+        sideLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = sideLight;
+        ctx.fillRect(620, 40, 380, 360);
 
-            // 地面微反光
-            const floorGrad = ctx.createLinearGradient(0, 380, 0, 512);
-            floorGrad.addColorStop(0, 'rgba(32, 44, 52, 0.45)');
-            floorGrad.addColorStop(1, 'rgba(10, 13, 16, 0.95)');
-            ctx.fillStyle = floorGrad;
-            ctx.fillRect(0, 380, 1024, 132);
+        // 鎏金环境地平线微反射
+        const goldBand = ctx.createLinearGradient(0, 290, 0, 340);
+        goldBand.addColorStop(0, 'rgba(197, 160, 89, 0)');
+        goldBand.addColorStop(0.5, 'rgba(197, 160, 89, 0.28)');
+        goldBand.addColorStop(1, 'rgba(197, 160, 89, 0)');
+        ctx.fillStyle = goldBand;
+        ctx.fillRect(0, 290, 512, 50);
 
-            const envTexture = new THREE.CanvasTexture(canvas);
-            envTexture.mapping = THREE.EquirectangularReflectionMapping;
+        const equirectTex = new THREE.CanvasTexture(canvas);
+        equirectTex.mapping = THREE.EquirectangularReflectionMapping;
 
-            if (r && typeof THREE.PMREMGenerator !== 'undefined') {
-                try {
-                    const pmrem = new THREE.PMREMGenerator(r);
-                    pmrem.compileEquirectangularShader();
-                    const envTarget = pmrem.fromEquirectangular(envTexture);
-                    studioEnvTextureCache = envTarget.texture;
-                    envTexture.dispose();
-                    pmrem.dispose();
-                } catch (e) {
-                    studioEnvTextureCache = envTexture;
+        envMapTexture = equirectTex;
+        return envMapTexture;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 2. 生成金丝铁线/冰裂纹双通道贴图 (Color Map + 立体微凹 Bump Map)
+ */
+function getCrackleTextureBundle() {
+    if (textureCache.crackleBundle) return textureCache.crackleBundle;
+
+    const cCanvas = document.createElement('canvas');
+    const bCanvas = document.createElement('canvas');
+    cCanvas.width = bCanvas.width = 512;
+    cCanvas.height = bCanvas.height = 512;
+    const cCtx = cCanvas.getContext('2d');
+    const bCtx = bCanvas.getContext('2d');
+
+    // 基底：纯白无偏色（让材质自身颜色主导），Bump基底为中性灰 180
+    cCtx.fillStyle = '#ffffff';
+    cCtx.fillRect(0, 0, 512, 512);
+    bCtx.fillStyle = 'rgb(200, 200, 200)';
+    bCtx.fillRect(0, 0, 512, 512);
+
+    // 微表面橘皮棕眼与玉脂云絮噪点
+    for (let i = 0; i < 900; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const r = 4 + Math.random() * 18;
+        cCtx.fillStyle = i % 2 === 0 ? 'rgba(235, 245, 246, 0.16)' : 'rgba(215, 230, 232, 0.12)';
+        cCtx.beginPath();
+        cCtx.arc(x, y, r, 0, Math.PI * 2);
+        cCtx.fill();
+
+        bCtx.fillStyle = i % 2 === 0 ? 'rgba(220, 220, 220, 0.2)' : 'rgba(175, 175, 175, 0.2)';
+        bCtx.beginPath();
+        bCtx.arc(x, y, r * 0.8, 0, Math.PI * 2);
+        bCtx.fill();
+    }
+
+    // 伪随机固定种子生成自然 Voronoi/Delaunay 铁线与金丝裂网
+    const nodes = [];
+    const gridN = 8;
+    const cellW = 512 / gridN;
+    for (let gx = 0; gx < gridN; gx++) {
+        for (let gy = 0; gy < gridN; gy++) {
+            nodes.push({
+                x: (gx + 0.18 + Math.random() * 0.64) * cellW,
+                y: (gy + 0.18 + Math.random() * 0.64) * cellW
+            });
+        }
+    }
+
+    // 主干铁线 (深黑铁色主裂隙 + 深度微凹槽)
+    cCtx.lineCap = bCtx.lineCap = 'round';
+    cCtx.lineJoin = bCtx.lineJoin = 'round';
+
+    for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+            const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+            if (d < 165) {
+                const mx = (nodes[i].x + nodes[j].x) * 0.5 + (Math.random() - 0.5) * 18;
+                const my = (nodes[i].y + nodes[j].y) * 0.5 + (Math.random() - 0.5) * 18;
+
+                // Color Map 铁线晕散
+                cCtx.strokeStyle = 'rgba(42, 34, 28, 0.52)';
+                cCtx.lineWidth = 1.6;
+                cCtx.beginPath();
+                cCtx.moveTo(nodes[i].x, nodes[i].y);
+                cCtx.quadraticCurveTo(mx, my, nodes[j].x, nodes[j].y);
+                cCtx.stroke();
+
+                // Bump Map 裂纹凹槽
+                bCtx.strokeStyle = 'rgb(60, 60, 60)';
+                bCtx.lineWidth = 2.4;
+                bCtx.beginPath();
+                bCtx.moveTo(nodes[i].x, nodes[i].y);
+                bCtx.quadraticCurveTo(mx, my, nodes[j].x, nodes[j].y);
+                bCtx.stroke();
+
+                // 次级金丝分支 (金黄/浅褐细丝)
+                if (Math.random() > 0.35) {
+                    const bx = mx + (Math.random() - 0.5) * 65;
+                    const by = my + (Math.random() - 0.5) * 65;
+                    cCtx.strokeStyle = 'rgba(182, 132, 62, 0.45)';
+                    cCtx.lineWidth = 0.9;
+                    cCtx.beginPath();
+                    cCtx.moveTo(mx, my);
+                    cCtx.lineTo(bx, by);
+                    cCtx.stroke();
+
+                    bCtx.strokeStyle = 'rgb(110, 110, 110)';
+                    bCtx.lineWidth = 1.2;
+                    bCtx.beginPath();
+                    bCtx.moveTo(mx, my);
+                    bCtx.lineTo(bx, by);
+                    bCtx.stroke();
                 }
-            } else {
-                studioEnvTextureCache = envTexture;
             }
         }
-        scene.environment = studioEnvTextureCache;
-    } catch (err) {
-        console.warn('[ThreeJS 展厅环境光照] IBL 环境贴图跳过:', err);
     }
+
+    const map = new THREE.CanvasTexture(cCanvas);
+    const bumpMap = new THREE.CanvasTexture(bCanvas);
+    map.wrapS = map.wrapT = bumpMap.wrapS = bumpMap.wrapT = THREE.RepeatWrapping;
+    map.repeat.set(2, 2);
+    bumpMap.repeat.set(2, 2);
+
+    textureCache.crackleBundle = { map, bumpMap };
+    return textureCache.crackleBundle;
 }
 
 /**
- * 动态程序化生成具有切线空间物理微凹凸的开片/橘皮法线贴图 (Normal Map)
+ * 3. 定窑白瓷划花莲瓣浮雕凹凸贴图
  */
-function generateCrackleNormalMap() {
-    if (crackleNormalCache) return crackleNormalCache;
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+function getDingCarvedBundle() {
+    if (textureCache.dingBundle) return textureCache.dingBundle;
+    const bCanvas = document.createElement('canvas');
+    bCanvas.width = 512;
+    bCanvas.height = 512;
+    const ctx = bCanvas.getContext('2d');
 
-    // 基础切线空间法线颜色：纯平面 (128, 128, 255)
-    ctx.fillStyle = 'rgb(128, 128, 255)';
-    ctx.fillRect(0, 0, 1024, 1024);
+    ctx.fillStyle = 'rgb(180, 180, 180)';
+    ctx.fillRect(0, 0, 512, 512);
 
-    // 1. 绘制带有左右法线倾角的物理开片槽
-    const points = [];
-    for (let i = 0; i < 48; i++) {
-        points.push({ x: (i * 137 + 43) % 1024, y: (i * 283 + 97) % 1024 });
-    }
+    // 绘制连绵划花仰覆莲瓣纹与缠枝卷草 (半刀泥刀法：一侧深一侧浅)
+    ctx.strokeStyle = 'rgb(250, 250, 250)';
+    ctx.lineWidth = 3.5;
+    for (let row = 0; row < 3; row++) {
+        const baseY = 260 + row * 250;
+        for (let i = 0; i < 12; i++) {
+            const cx = (i / 12) * 512 + 42;
+            ctx.beginPath();
+            ctx.moveTo(cx - 34, baseY + 60);
+            ctx.quadraticCurveTo(cx - 38, baseY - 40, cx, baseY - 75);
+            ctx.quadraticCurveTo(cx + 38, baseY - 40, cx + 34, baseY + 60);
+            ctx.stroke();
 
-    ctx.lineWidth = 2.0;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-            const dist = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
-            if (dist < 180) {
-                // 左侧阳面微倾斜
-                ctx.strokeStyle = 'rgb(162, 128, 255)';
-                ctx.beginPath();
-                ctx.moveTo(points[i].x - 1, points[i].y - 1);
-                ctx.lineTo(points[j].x - 1, points[j].y - 1);
-                ctx.stroke();
-
-                // 右侧阴面微倾斜
-                ctx.strokeStyle = 'rgb(94, 128, 255)';
-                ctx.beginPath();
-                ctx.moveTo(points[i].x + 1, points[i].y + 1);
-                ctx.lineTo(points[j].x + 1, points[j].y + 1);
-                ctx.stroke();
-            }
+            // 莲瓣内叶脉
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(cx, baseY + 55);
+            ctx.lineTo(cx, baseY - 55);
+            ctx.stroke();
+            ctx.lineWidth = 3.5;
         }
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
-    crackleNormalCache = texture;
-    return texture;
+    const bumpMap = new THREE.CanvasTexture(bCanvas);
+    bumpMap.wrapS = bumpMap.wrapT = THREE.RepeatWrapping;
+    textureCache.dingBundle = { bumpMap };
+    return textureCache.dingBundle;
 }
 
 /**
- * 动态程序化生成金丝铁线/冰裂纹理贴图 (HTML5 Canvas 离屏绘制)
+ * 4. 禹州钧窑玫瑰紫海棠红窑变流体贴图 (含蚯蚓走泥纹)
  */
-function generateCrackleTexture() {
-    if (crackleTextureCache) return crackleTextureCache;
+function getJunYaobianTexture() {
+    if (textureCache.junTex) return textureCache.junTex;
     const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
+    canvas.width = 512;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d');
 
-    // 底色微透明
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, 1024, 1024);
+    // 玫瑰紫与天蓝交融渐变底
+    const grad = ctx.createLinearGradient(0, 0, 0, 512);
+    grad.addColorStop(0.0, '#4a2040');
+    grad.addColorStop(0.28, '#8c2d5c');
+    grad.addColorStop(0.55, '#5a3b7c');
+    grad.addColorStop(0.80, '#6a9ab8');
+    grad.addColorStop(1.0, '#3a1a32');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 512);
 
-    // 绘制主干铁线 (粗裂纹 - 深黑铁色)
-    ctx.strokeStyle = 'rgba(45, 35, 30, 0.55)';
-    ctx.lineWidth = 1.6;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-
-    const points = [];
-    for (let i = 0; i < 48; i++) {
-        points.push({
-            x: Math.random() * 1024,
-            y: Math.random() * 1024
-        });
-    }
-
-    // 随机 Delaunay-like 网格拟合开裂
-    for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-            const dist = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
-            if (dist < 180) {
-                ctx.beginPath();
-                ctx.moveTo(points[i].x, points[i].y);
-                const midX = (points[i].x + points[j].x) / 2 + (Math.random() - 0.5) * 16;
-                const midY = (points[i].y + points[j].y) / 2 + (Math.random() - 0.5) * 16;
-                ctx.quadraticCurveTo(midX, midY, points[j].x, points[j].y);
-                ctx.stroke();
-            }
+    // 窑变紫红霞斑与天青流云
+    for (let i = 0; i < 85; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const r = 40 + Math.random() * 140;
+        const g = ctx.createRadialGradient(x, y, 5, x, y, r);
+        if (i % 3 === 0) {
+            g.addColorStop(0, 'rgba(195, 48, 102, 0.55)');
+            g.addColorStop(1, 'rgba(195, 48, 102, 0)');
+        } else if (i % 3 === 1) {
+            g.addColorStop(0, 'rgba(130, 195, 225, 0.45)');
+            g.addColorStop(1, 'rgba(130, 195, 225, 0)');
+        } else {
+            g.addColorStop(0, 'rgba(95, 35, 120, 0.5)');
+            g.addColorStop(1, 'rgba(95, 35, 120, 0)');
         }
-    }
-
-    // 绘制次级金丝 (细密裂纹 - 浅金褐色)
-    ctx.strokeStyle = 'rgba(175, 125, 60, 0.4)';
-    ctx.lineWidth = 0.8;
-    for (let k = 0; k < 120; k++) {
-        const x1 = Math.random() * 1024;
-        const y1 = Math.random() * 1024;
-        const len = 30 + Math.random() * 80;
-        const angle = Math.random() * Math.PI * 2;
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x1 + Math.cos(angle) * len, y1 + Math.sin(angle) * len);
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // 蚯蚓走泥纹
+    ctx.strokeStyle = 'rgba(220, 175, 210, 0.38)';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    for (let k = 0; k < 45; k++) {
+        let x = Math.random() * 512;
+        let y = Math.random() * 900;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let s = 0; s < 6; s++) {
+            x += (Math.random() - 0.5) * 35;
+            y += 18 + Math.random() * 22;
+            ctx.lineTo(x, y);
+        }
         ctx.stroke();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
-    crackleTextureCache = texture;
-    return texture;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    textureCache.junTex = tex;
+    return tex;
 }
 
 /**
- * 动态程序化生成青花缠枝花纹贴图
+ * 5. 建窑乌金兔毫与曜变天目星空贴图
  */
-function generateQinghuaTexture() {
-    if (qinghuaTextureCache) return qinghuaTextureCache;
+function getJianYaobianTexture() {
+    if (textureCache.jianTex) return textureCache.jianTex;
     const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
+    canvas.width = 512;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d');
 
-    // 宣德鸭蛋青白底
-    ctx.fillStyle = '#eaf0f2';
-    ctx.fillRect(0, 0, 1024, 1024);
+    ctx.fillStyle = '#141112';
+    ctx.fillRect(0, 0, 512, 512);
 
-    // 青花主色 (苏麻离青浓蓝)
-    ctx.strokeStyle = 'rgba(28, 55, 115, 0.85)';
-    ctx.fillStyle = 'rgba(28, 55, 115, 0.75)';
+    // 曜变蓝色/紫金干涉星云光晕
+    for (let i = 0; i < 42; i++) {
+        const x = Math.random() * 512;
+        const y = 180 + Math.random() * 680;
+        const r = 18 + Math.random() * 48;
+        const g = ctx.createRadialGradient(x, y, 2, x, y, r);
+        g.addColorStop(0, 'rgba(220, 195, 120, 0.85)');
+        g.addColorStop(0.35, 'rgba(65, 145, 225, 0.55)');
+        g.addColorStop(0.7, 'rgba(110, 60, 175, 0.32)');
+        g.addColorStop(1, 'rgba(20, 17, 18, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
-    // 绘制缠枝卷草纹花环
-    for (let row = 0; row < 4; row++) {
-        const y = 128 + row * 256;
-        for (let col = 0; col < 4; col++) {
-            const x = 128 + col * 256;
-            ctx.save();
-            ctx.translate(x, y);
+    // 金银兔毫结晶条纹
+    for (let i = 0; i < 520; i++) {
+        const x = Math.random() * 512;
+        const y = 60 + Math.random() * 750;
+        const h = 55 + Math.random() * 210;
+        const g = ctx.createLinearGradient(x, y, x, y + h);
+        g.addColorStop(0, 'rgba(205, 160, 88, 0.78)');
+        g.addColorStop(0.5, 'rgba(130, 175, 210, 0.65)');
+        g.addColorStop(1, 'rgba(20, 17, 18, 0)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 0.7 + Math.random() * 1.4;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + (Math.random() - 0.5) * 6, y + h);
+        ctx.stroke();
+    }
 
-            // 花头
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    textureCache.jianTex = tex;
+    return tex;
+}
+
+/**
+ * 6. 明宣德苏麻离青五段式皇家青花缠枝莲纹贴图
+ */
+function getQinghuaTexture() {
+    if (textureCache.qinghuaTex) return textureCache.qinghuaTex;
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    // 宣德鸭蛋青白底釉
+    ctx.fillStyle = '#edf3f5';
+    ctx.fillRect(0, 0, 512, 512);
+
+    const cobaltMain = 'rgba(24, 58, 122, 0.88)';
+    const cobaltLight = 'rgba(56, 98, 168, 0.55)';
+    const ironSpot = 'rgba(18, 22, 36, 0.85)';
+
+    // 顶部与底部双弦青花线
+    const drawBands = (yArr) => {
+        ctx.strokeStyle = cobaltMain;
+        ctx.lineWidth = 5;
+        yArr.forEach(y => {
             ctx.beginPath();
-            ctx.arc(0, 0, 24, 0, Math.PI * 2);
+            ctx.moveTo(0, y);
+            ctx.lineTo(512, y);
             ctx.stroke();
+        });
+    };
+    drawBands([75, 92, 240, 255, 760, 776, 930, 945]);
 
-            for (let p = 0; p < 8; p++) {
-                const ang = (p / 8) * Math.PI * 2;
+    // 第一段：颈部挺拔蕉叶纹 (y: 95 ~ 238)
+    for (let i = 0; i < 16; i++) {
+        const cx = (i + 0.5) * (512 / 16);
+        ctx.strokeStyle = cobaltMain;
+        ctx.fillStyle = cobaltLight;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx - 22, 238);
+        ctx.quadraticCurveTo(cx - 18, 130, cx, 100);
+        ctx.quadraticCurveTo(cx + 18, 130, cx + 22, 238);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    // 第二段：主腹部缠枝宝相莲花纹与苏麻离青铁锈结晶斑 (y: 270 ~ 745)
+    // 波浪缠枝主藤蔓
+    ctx.strokeStyle = cobaltMain;
+    ctx.lineWidth = 5;
+    for (let row = 0; row < 2; row++) {
+        const cy = 390 + row * 210;
+        ctx.beginPath();
+        for (let x = 0; x <= 512; x += 8) {
+            const y = cy + Math.sin((x / 512) * Math.PI * 6 + row * Math.PI) * 58;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // 宝相莲花花头
+        for (let col = 0; col < 6; col++) {
+            const fx = (col + 0.5) * (512 / 6);
+            const fy = cy + Math.sin((fx / 512) * Math.PI * 6 + row * Math.PI) * 32;
+            ctx.save();
+            ctx.translate(fx, fy);
+
+            for (let p = 0; p < 10; p++) {
+                const ang = (p / 10) * Math.PI * 2;
+                ctx.save();
+                ctx.rotate(ang);
+                ctx.fillStyle = cobaltLight;
+                ctx.strokeStyle = cobaltMain;
+                ctx.lineWidth = 2.2;
                 ctx.beginPath();
-                ctx.ellipse(Math.cos(ang) * 36, Math.sin(ang) * 36, 14, 8, ang, 0, Math.PI * 2);
+                ctx.ellipse(26, 0, 18, 8, 0, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.stroke();
+                ctx.restore();
             }
 
-            // 缠枝叶
-            ctx.lineWidth = 3;
+            // 莲心与苏麻离青铁锈结晶斑
+            ctx.fillStyle = cobaltMain;
             ctx.beginPath();
-            ctx.arc(45, 0, 40, -Math.PI / 2, Math.PI / 2);
-            ctx.stroke();
-
-            // 铁锈斑模拟 (晕散与结晶斑)
-            ctx.fillStyle = 'rgba(20, 25, 45, 0.8)';
-            ctx.beginPath();
-            ctx.arc((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, 4, 0, Math.PI * 2);
+            ctx.arc(0, 0, 14, 0, Math.PI * 2);
             ctx.fill();
 
+            ctx.fillStyle = ironSpot;
+            for (let s = 0; s < 4; s++) {
+                ctx.beginPath();
+                ctx.arc((Math.random() - 0.5) * 28, (Math.random() - 0.5) * 28, 3.5 + Math.random() * 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
             ctx.restore();
         }
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(2, 2);
-    qinghuaTextureCache = texture;
-    return texture;
-}
-
-/**
- * 动态程序化生成建盏兔毫纹贴图
- */
-function generateTuhaoTexture() {
-    if (tuhaoTextureCache) return tuhaoTextureCache;
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d');
-
-    // 乌金铁黑底色
-    ctx.fillStyle = '#181414';
-    ctx.fillRect(0, 0, 512, 1024);
-
-    // 兔毫结晶细丝向下流淌效果
-    for (let i = 0; i < 400; i++) {
-        const x = Math.random() * 512;
-        const y = Math.random() * 800;
-        const h = 40 + Math.random() * 200;
-        const gradient = ctx.createLinearGradient(x, y, x, y + h);
-        gradient.addColorStop(0, 'rgba(180, 130, 60, 0.8)');
-        gradient.addColorStop(0.5, 'rgba(120, 150, 180, 0.7)');
-        gradient.addColorStop(1, 'rgba(25, 20, 20, 0)');
-
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 0.5 + Math.random() * 1.5;
+    // 第三段：胫部仰莲瓣纹 (y: 780 ~ 925)
+    for (let i = 0; i < 14; i++) {
+        const cx = (i + 0.5) * (512 / 14);
+        ctx.strokeStyle = cobaltMain;
+        ctx.fillStyle = cobaltLight;
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + (Math.random() - 0.5) * 4, y + h);
+        ctx.moveTo(cx - 28, 925);
+        ctx.quadraticCurveTo(cx, 785, cx + 28, 925);
+        ctx.fill();
         ctx.stroke();
     }
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(4, 1);
-    tuhaoTextureCache = texture;
-    return texture;
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    textureCache.qinghuaTex = tex;
+    return tex;
+}
+
+/**
+ * 生成当前器物与釉色对应的物理材质 (PBR + 双层清漆 + 动态剖切平面)
+ */
+function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
+    const activePlanes = (exhibitionMode === 'cutaway' && clipPlane) ? [clipPlane] : [];
+
+    if (isTieZu) {
+        return new THREE.MeshStandardMaterial({
+            color: 0x32241b,
+            roughness: 0.88,
+            metalness: 0.12,
+            wireframe: isWireframe,
+            side: THREE.DoubleSide,
+            clippingPlanes: activePlanes
+        });
+    }
+
+    const cfg = glazePalettes[glazeKey] || glazePalettes.tianqing;
+    const matOptions = {
+        color: cfg.color,
+        emissive: cfg.emissive,
+        roughness: cfg.roughness,
+        metalness: cfg.metalness,
+        clearcoat: cfg.clearcoat,
+        clearcoatRoughness: cfg.clearcoatRoughness,
+        ior: cfg.ior,
+        reflectivity: cfg.reflectivity,
+        envMap: envMapTexture,
+        envMapIntensity: 1.35,
+        wireframe: isWireframe,
+        side: THREE.DoubleSide,
+        clippingPlanes: activePlanes,
+        clipShadows: true
+    };
+
+    if (glazeKey === 'qinghua') {
+        matOptions.map = getQinghuaTexture();
+    } else if (glazeKey === 'jianhei') {
+        matOptions.map = getJianYaobianTexture();
+    } else if (glazeKey === 'junhong') {
+        matOptions.map = getJunYaobianTexture();
+    } else if (glazeKey === 'dingbai') {
+        const ding = getDingCarvedBundle();
+        matOptions.bumpMap = ding.bumpMap;
+        matOptions.bumpScale = 0.015;
+    }
+
+    if (showCrackle && !['qinghua', 'jianhei'].includes(glazeKey)) {
+        const crackle = getCrackleTextureBundle();
+        if (!matOptions.map) matOptions.map = crackle.map;
+        matOptions.bumpMap = crackle.bumpMap;
+        matOptions.bumpScale = 0.012;
+    }
+
+    return new THREE.MeshPhysicalMaterial(matOptions);
+}
+
+/**
+ * 辅助函数：通过控制点生成高密度平滑样条双壁旋转几何体 (128段圆周细分 + 特殊器型径向调制)
+ */
+function createSmoothVesselLathe(outerPts, RadialModFn = null, radialSegments = 64) {
+    // 构造闭合的双壁轮廓点（外壁从底到口 -> 唇口圆弧 -> 内壁从口到底心闭合），使X光剖面呈现真实胎壁厚度
+    const fullPts = [...outerPts];
+    const topPt = outerPts[outerPts.length - 1];
+    const wallThickness = 0.036;
+
+    // 从口沿向内壁反推至器底中心
+    for (let i = outerPts.length - 2; i >= 1; i--) {
+        const pt = outerPts[i];
+        const innerR = Math.max(0.02, pt.x - wallThickness * (1 + (1 - i / outerPts.length) * 0.45));
+        fullPts.push(new THREE.Vector2(innerR, pt.y + 0.02));
+    }
+    fullPts.push(new THREE.Vector2(0.0, outerPts[0].y + 0.05));
+
+    const spline = new THREE.SplineCurve(fullPts);
+    const sampledPoints = spline.getPoints(52);
+    const geo = new THREE.LatheGeometry(sampledPoints, radialSegments);
+
+    if (typeof RadialModFn === 'function') {
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const y = pos.getY(i);
+            const z = pos.getZ(i);
+            const angle = Math.atan2(z, x);
+            const r = Math.hypot(x, z);
+            const factor = RadialModFn(angle, y, r);
+            pos.setX(i, x * factor);
+            pos.setZ(i, z * factor);
+        }
+        geo.computeVertexNormals();
+    }
+
+    return geo;
+}
+
+/**
+ * 构建七大传世标准器高精度 3D 模型 (支持剖面透视与X光核线)
+ */
+function buildGeometry(typeIndex, customGlaze = null) {
+    const group = new THREE.Group();
+    const gKey = customGlaze || currentGlazeIndex;
+    const glazeMat = getPorcelainMaterial(gKey, false);
+    const tiezuMat = getPorcelainMaterial(gKey, true);
+    const goldMat = new THREE.MeshStandardMaterial({
+        color: 0xd4af6a,
+        roughness: 0.25,
+        metalness: 0.88,
+        clippingPlanes: (exhibitionMode === 'cutaway' && clipPlane) ? [clipPlane] : []
+    });
+
+    switch (typeIndex) {
+        case 0: {
+            // 0. 南宋官窑·八方贯耳弦纹瓶 (八方棱面调制 + 双贯耳 + 凸弦纹 + 紫口铁足)
+            const pts = [
+                new THREE.Vector2(0.0, -1.14),
+                new THREE.Vector2(0.26, -1.15),
+                new THREE.Vector2(0.32, -1.10),
+                new THREE.Vector2(0.35, -0.90),
+                new THREE.Vector2(0.54, -0.68),
+                new THREE.Vector2(0.69, -0.35),
+                new THREE.Vector2(0.63, -0.05),
+                new THREE.Vector2(0.42, 0.26),
+                new THREE.Vector2(0.31, 0.52),
+                new THREE.Vector2(0.31, 0.84),
+                new THREE.Vector2(0.35, 0.98),
+                new THREE.Vector2(0.31, 1.01)
+            ];
+            const octMod = (ang) => 1.0 + 0.028 * Math.cos(8 * ang);
+            const bodyGeo = createSmoothVesselLathe(pts, octMod, 64);
+            const bodyMesh = new THREE.Mesh(bodyGeo, glazeMat);
+            bodyMesh.castShadow = bodyMesh.receiveShadow = true;
+            group.add(bodyMesh);
+
+            // 双贯耳 (精致中空管耳 + 上下如意连接梁)
+            for (let side of [-1, 1]) {
+                const earGroup = new THREE.Group();
+                const earGeo = new THREE.CylinderGeometry(0.068, 0.068, 0.36, 32, 1, false);
+                const earMesh = new THREE.Mesh(earGeo, glazeMat);
+                earGroup.add(earMesh);
+
+                const holeGeo = new THREE.CylinderGeometry(0.042, 0.042, 0.37, 24);
+                const holeMesh = new THREE.Mesh(holeGeo, tiezuMat);
+                earGroup.add(holeMesh);
+
+                earGroup.position.set(side * 0.355, 0.66, 0);
+                group.add(earGroup);
+            }
+
+            // 三道凸起弦纹
+            const ringY = [-0.36, -0.08, 0.48];
+            const ringR = [0.695, 0.638, 0.322];
+            for (let r = 0; r < ringY.length; r++) {
+                const ringGeo = new THREE.TorusGeometry(ringR[r], 0.016, 20, 64);
+                const ringMesh = new THREE.Mesh(ringGeo, glazeMat);
+                ringMesh.rotation.x = Math.PI / 2;
+                ringMesh.position.y = ringY[r];
+                group.add(ringMesh);
+            }
+
+            // 紫口与铁足露胎环
+            const lipMesh = new THREE.Mesh(new THREE.TorusGeometry(0.325, 0.012, 16, 64), tiezuMat);
+            lipMesh.rotation.x = Math.PI / 2;
+            lipMesh.position.y = 1.00;
+            group.add(lipMesh);
+
+            const footMesh = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.022, 16, 64), tiezuMat);
+            footMesh.rotation.x = Math.PI / 2;
+            footMesh.position.y = -1.15;
+            group.add(footMesh);
+            break;
+        }
+
+        case 1: {
+            // 1. 北宋汝窑·天青椭圆四足水仙盆 (台北故宫国宝比例 + 四云头足 + 五枚芝麻支钉)
+            const pts = [
+                new THREE.Vector2(0.0, -0.27),
+                new THREE.Vector2(0.45, -0.27),
+                new THREE.Vector2(0.72, -0.26),
+                new THREE.Vector2(0.86, -0.14),
+                new THREE.Vector2(0.95, 0.04),
+                new THREE.Vector2(1.02, 0.16),
+                new THREE.Vector2(0.96, 0.19)
+            ];
+            const basinGeo = createSmoothVesselLathe(pts, null, 64);
+            const basinMesh = new THREE.Mesh(basinGeo, glazeMat);
+            basinMesh.scale.set(1.28, 1.0, 0.88);
+            basinMesh.castShadow = basinMesh.receiveShadow = true;
+            group.add(basinMesh);
+
+            // 四只雕琢如意云头足
+            const footPositions = [
+                { x: 0.68, z: 0.42 }, { x: -0.68, z: 0.42 },
+                { x: 0.68, z: -0.42 }, { x: -0.68, z: -0.42 }
+            ];
+            for (let pos of footPositions) {
+                const footGeo = new THREE.CylinderGeometry(0.075, 0.048, 0.12, 24);
+                const footMesh = new THREE.Mesh(footGeo, glazeMat);
+                footMesh.scale.set(1.3, 1.0, 0.9);
+                footMesh.position.set(pos.x, -0.32, pos.z);
+                group.add(footMesh);
+            }
+
+            // 五枚芝麻花细小支钉痕
+            const spurMat = new THREE.MeshStandardMaterial({ color: 0xa69f94, roughness: 0.9 });
+            const spurs = [
+                { x: 0, z: 0 }, { x: 0.42, z: 0.18 }, { x: -0.42, z: 0.18 },
+                { x: 0.42, z: -0.18 }, { x: -0.42, z: -0.18 }
+            ];
+            for (let s of spurs) {
+                const spur = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), spurMat);
+                spur.scale.set(1.4, 0.35, 0.85);
+                spur.position.set(s.x, -0.278, s.z);
+                group.add(spur);
+            }
+            break;
+        }
+
+        case 2: {
+            // 2. 北宋定窑·白釉划花莲纹梅瓶 (修长丰肩 + 芒口鎏金铜扣)
+            const pts = [
+                new THREE.Vector2(0.0, -1.14),
+                new THREE.Vector2(0.26, -1.15),
+                new THREE.Vector2(0.31, -0.92),
+                new THREE.Vector2(0.39, -0.50),
+                new THREE.Vector2(0.56, 0.02),
+                new THREE.Vector2(0.69, 0.46),
+                new THREE.Vector2(0.58, 0.70),
+                new THREE.Vector2(0.21, 0.80),
+                new THREE.Vector2(0.19, 0.90),
+                new THREE.Vector2(0.28, 0.96),
+                new THREE.Vector2(0.24, 0.99)
+            ];
+            const meipingGeo = createSmoothVesselLathe(pts, null, 64);
+            const meipingMesh = new THREE.Mesh(meipingGeo, glazeMat);
+            meipingMesh.castShadow = meipingMesh.receiveShadow = true;
+            group.add(meipingMesh);
+
+            // 定窑覆烧芒口镶皇家鎏金铜扣
+            const goldRim = new THREE.Mesh(new THREE.TorusGeometry(0.265, 0.015, 20, 64), goldMat);
+            goldRim.rotation.x = Math.PI / 2;
+            goldRim.position.y = 0.975;
+            group.add(goldRim);
+            break;
+        }
+
+        case 3: {
+            // 3. 宋哥窑·金丝铁线胆式瓶 (悬胆垂腹 + 紫口铁足)
+            const pts = [
+                new THREE.Vector2(0.0, -1.09),
+                new THREE.Vector2(0.30, -1.10),
+                new THREE.Vector2(0.37, -0.92),
+                new THREE.Vector2(0.71, -0.46),
+                new THREE.Vector2(0.67, -0.10),
+                new THREE.Vector2(0.49, 0.22),
+                new THREE.Vector2(0.25, 0.55),
+                new THREE.Vector2(0.21, 0.85),
+                new THREE.Vector2(0.23, 1.05),
+                new THREE.Vector2(0.19, 1.06)
+            ];
+            const danGeo = createSmoothVesselLathe(pts, null, 64);
+            const danMesh = new THREE.Mesh(danGeo, glazeMat);
+            danMesh.castShadow = danMesh.receiveShadow = true;
+            group.add(danMesh);
+
+            const lipMesh = new THREE.Mesh(new THREE.TorusGeometry(0.215, 0.013, 16, 48), tiezuMat);
+            lipMesh.rotation.x = Math.PI / 2;
+            lipMesh.position.y = 1.055;
+            group.add(lipMesh);
+
+            const footMesh = new THREE.Mesh(new THREE.TorusGeometry(0.315, 0.022, 16, 48), tiezuMat);
+            footMesh.rotation.x = Math.PI / 2;
+            footMesh.position.y = -1.10;
+            group.add(footMesh);
+            break;
+        }
+
+        case 4: {
+            // 4. 北宋钧窑·玫瑰紫海棠出戟尊 (四瓣海棠曲线调制 + 四方齿状出戟)
+            const pts = [
+                new THREE.Vector2(0.0, -1.08),
+                new THREE.Vector2(0.44, -1.10),
+                new THREE.Vector2(0.47, -1.02),
+                new THREE.Vector2(0.37, -0.72),
+                new THREE.Vector2(0.64, -0.22),
+                new THREE.Vector2(0.61, 0.06),
+                new THREE.Vector2(0.39, 0.36),
+                new THREE.Vector2(0.67, 0.84),
+                new THREE.Vector2(0.76, 0.95),
+                new THREE.Vector2(0.70, 0.96)
+            ];
+            const begoniaMod = (ang) => 1.0 + 0.065 * Math.cos(4 * ang);
+            const zunGeo = createSmoothVesselLathe(pts, begoniaMod, 64);
+            const zunMesh = new THREE.Mesh(zunGeo, glazeMat);
+            zunMesh.castShadow = zunMesh.receiveShadow = true;
+            group.add(zunMesh);
+
+            // 四面立体齿状出戟 (Flanges)
+            for (let i = 0; i < 4; i++) {
+                const angle = (i / 4) * Math.PI * 2;
+                const flangeGroup = new THREE.Group();
+                flangeGroup.rotation.y = angle;
+
+                const fTop = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.36, 0.038), glazeMat);
+                fTop.position.set(0.51, 0.56, 0);
+                flangeGroup.add(fTop);
+
+                const fMid = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.34, 0.042), glazeMat);
+                fMid.position.set(0.67, -0.10, 0);
+                flangeGroup.add(fMid);
+
+                const fBot = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.28, 0.038), glazeMat);
+                fBot.position.set(0.45, -0.88, 0);
+                flangeGroup.add(fBot);
+
+                group.add(flangeGroup);
+            }
+            break;
+        }
+
+        case 5: {
+            // 5. 宋建窑·兔毫曜变天目斗茶盏 (束口注汤槽 + 垂珠釉滴 + 铁胎圈足)
+            const pts = [
+                new THREE.Vector2(0.0, -0.72),
+                new THREE.Vector2(0.26, -0.74),
+                new THREE.Vector2(0.31, -0.58),
+                new THREE.Vector2(0.56, -0.26),
+                new THREE.Vector2(0.79, 0.08),
+                new THREE.Vector2(0.87, 0.26),
+                new THREE.Vector2(0.84, 0.33),
+                new THREE.Vector2(0.89, 0.39),
+                new THREE.Vector2(0.84, 0.40)
+            ];
+            const bowlGeo = createSmoothVesselLathe(pts, null, 64);
+            const bowlMesh = new THREE.Mesh(bowlGeo, glazeMat);
+            bowlMesh.castShadow = bowlMesh.receiveShadow = true;
+            group.add(bowlMesh);
+
+            // 下腹流釉垂珠 (Glaze Tear Drops)
+            for (let k = 0; k < 10; k++) {
+                const ang = (k / 10) * Math.PI * 2;
+                const drop = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 14), glazeMat);
+                drop.scale.set(0.9, 1.45, 0.9);
+                drop.position.set(Math.cos(ang) * 0.36, -0.52 + (k % 2) * 0.03, Math.sin(ang) * 0.36);
+                group.add(drop);
+            }
+
+            // 粗黑铁胎足
+            const footGeo = new THREE.CylinderGeometry(0.28, 0.26, 0.14, 48);
+            const footMesh = new THREE.Mesh(footGeo, tiezuMat);
+            footMesh.position.y = -0.72;
+            group.add(footMesh);
+            break;
+        }
+
+        case 6: {
+            // 6. 明宣德·青花缠枝莲纹玉壶春瓶 (曼妙水滴腹 + 喇叭撇口)
+            const pts = [
+                new THREE.Vector2(0.0, -1.09),
+                new THREE.Vector2(0.34, -1.10),
+                new THREE.Vector2(0.41, -1.02),
+                new THREE.Vector2(0.45, -0.84),
+                new THREE.Vector2(0.73, -0.36),
+                new THREE.Vector2(0.66, 0.02),
+                new THREE.Vector2(0.43, 0.34),
+                new THREE.Vector2(0.25, 0.66),
+                new THREE.Vector2(0.31, 0.92),
+                new THREE.Vector2(0.51, 1.14),
+                new THREE.Vector2(0.46, 1.15)
+            ];
+            const yuGeo = createSmoothVesselLathe(pts, null, 64);
+            const yuMesh = new THREE.Mesh(yuGeo, glazeMat);
+            yuMesh.castShadow = yuMesh.receiveShadow = true;
+            group.add(yuMesh);
+            break;
+        }
+    }
+
+    // 若处于 X光胎骨剖面模式，叠加右侧半透明高精密结构网格与金色剖面高亮线
+    if (exhibitionMode === 'cutaway') {
+        const xrayMat = new THREE.MeshBasicMaterial({
+            color: 0x7caab4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.22
+        });
+        group.traverse((child) => {
+            if (child.isMesh && child.geometry) {
+                const ghost = new THREE.Mesh(child.geometry.clone(), xrayMat);
+                ghost.scale.copy(child.scale);
+                ghost.position.copy(child.position);
+                ghost.rotation.copy(child.rotation);
+                group.add(ghost);
+            }
+        });
+    }
+
+    return group;
+}
+
+/**
+ * 构建单器精鉴台底座 + 体积聚光灯光束 (Volumetric Light Cone) + 悬浮流金微粒
+ */
+function createInspectorStage() {
+    pedestalGroup = new THREE.Group();
+
+    // 1. 黑曜石双层旋转高定底座
+    const topDisk = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.48, 1.56, 0.14, 72),
+        new THREE.MeshStandardMaterial({ color: 0x131920, roughness: 0.22, metalness: 0.35 })
+    );
+    topDisk.position.y = -1.24;
+    topDisk.receiveShadow = true;
+    pedestalGroup.add(topDisk);
+
+    const subDisk = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.68, 1.78, 0.12, 72),
+        new THREE.MeshStandardMaterial({ color: 0x0c1015, roughness: 0.4, metalness: 0.2 })
+    );
+    subDisk.position.y = -1.36;
+    pedestalGroup.add(subDisk);
+
+    // 2. 底座双层鎏金镶圈
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xc5a059, roughness: 0.25, metalness: 0.88 });
+    const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.50, 0.015, 16, 96), goldMat);
+    ring1.rotation.x = Math.PI / 2;
+    ring1.position.y = -1.17;
+    pedestalGroup.add(ring1);
+
+    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.008, 12, 96), goldMat);
+    ring2.rotation.x = Math.PI / 2;
+    ring2.position.y = -1.168;
+    pedestalGroup.add(ring2);
+
+    // 3. 顶部博物馆体积聚光灯束 (Volumetric Spotlight Cone)
+    const coneGeo = new THREE.ConeGeometry(2.1, 5.2, 48, 1, true);
+    const coneMat = new THREE.MeshBasicMaterial({
+        color: 0xa8cdd4,
+        transparent: true,
+        opacity: 0.045,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+    spotConeMesh = new THREE.Mesh(coneGeo, coneMat);
+    spotConeMesh.position.y = 1.35;
+    pedestalGroup.add(spotConeMesh);
+
+    scene.add(pedestalGroup);
+
+    // 4. 悬浮流金与天青微尘粒子系统 (Floating Atmospheric Particles)
+    const pCount = 160;
+    const positions = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount; i++) {
+        const r = 0.8 + Math.random() * 3.8;
+        const theta = Math.random() * Math.PI * 2;
+        positions[i * 3] = Math.cos(theta) * r;
+        positions[i * 3 + 1] = -1.2 + Math.random() * 4.2;
+        positions[i * 3 + 2] = Math.sin(theta) * r;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const pMat = new THREE.PointsMaterial({
+        color: 0xe5c888,
+        size: 0.032,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+    particleSystem = new THREE.Points(pGeo, pMat);
+    scene.add(particleSystem);
+}
+
+/**
+ * 构建【3D 全景数字博物馆大展厅 (Virtual Museum Rotunda Hall)】
+ * 7 尊传世名瓷同时陈列于环形穹顶大展厅的独立玻璃展柜内，支持点击漫游巡礼！
+ */
+function buildVirtualMuseumHall() {
+    if (hallGroup) {
+        scene.remove(hallGroup);
+        disposeGroup(hallGroup);
+    }
+    hallGroup = new THREE.Group();
+    hallGroup.visible = (exhibitionMode === 'hall');
+
+    // 1. 展厅玄青玉石镜面大地面与鎏金罗盘圈
+    const floorGeo = new THREE.CylinderGeometry(13.5, 13.5, 0.1, 96);
+    const floorMat = new THREE.MeshStandardMaterial({
+        color: 0x0d1319,
+        roughness: 0.18,
+        metalness: 0.35
+    });
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.position.y = -1.45;
+    floorMesh.receiveShadow = true;
+    hallGroup.add(floorMesh);
+
+    const compassGold = new THREE.MeshStandardMaterial({ color: 0xc5a059, roughness: 0.3, metalness: 0.85 });
+    [2.6, 5.8, 8.8, 11.5].forEach(rad => {
+        const rMesh = new THREE.Mesh(new THREE.TorusGeometry(rad, 0.02, 12, 96), compassGold);
+        rMesh.rotation.x = Math.PI / 2;
+        rMesh.position.y = -1.39;
+        hallGroup.add(rMesh);
+    });
+
+    // 2. 环形宋式柱廊 (12根朱漆玄金立柱 + 顶部藻井天光环)
+    const colGeo = new THREE.CylinderGeometry(0.22, 0.25, 6.2, 24);
+    const colMat = new THREE.MeshStandardMaterial({ color: 0x1c252e, roughness: 0.4, metalness: 0.3 });
+    for (let c = 0; c < 12; c++) {
+        const ang = (c / 12) * Math.PI * 2;
+        const col = new THREE.Mesh(colGeo, colMat);
+        col.position.set(Math.cos(ang) * 10.5, 1.65, Math.sin(ang) * 10.5);
+        hallGroup.add(col);
+
+        // 柱础金环
+        const baseRing = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.025, 12, 32), compassGold);
+        baseRing.rotation.x = Math.PI / 2;
+        baseRing.position.set(Math.cos(ang) * 10.5, -1.38, Math.sin(ang) * 10.5);
+        hallGroup.add(baseRing);
+    }
+
+    // 穹顶藻井流光圆环
+    const domeRing = new THREE.Mesh(
+        new THREE.TorusGeometry(6.2, 0.06, 16, 96),
+        new THREE.MeshBasicMaterial({ color: 0x8fb8c0 })
+    );
+    domeRing.rotation.x = Math.PI / 2;
+    domeRing.position.y = 4.2;
+    hallGroup.add(domeRing);
+
+    // 3. 七座独立高定博物馆展柜 (弧形环列，每座展柜陈列一件传世名瓷标准器)
+    const arcRadius = 5.6;
+    for (let idx = 0; idx < porcelainModelsData.length; idx++) {
+        const mData = porcelainModelsData[idx];
+        // 在前方 240 度扇形弧线上均匀排布 7 座展柜
+        const angle = ((idx - 3) / 6) * (Math.PI * 1.15);
+        const vx = Math.sin(angle) * arcRadius;
+        const vz = -Math.cos(angle) * arcRadius + 1.8;
+
+        const booth = new THREE.Group();
+        booth.position.set(vx, 0, vz);
+        booth.lookAt(0, 0, 2.5);
+        booth.userData = { vitrineIndex: idx };
+
+        // 展柜乌木基座
+        const podium = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.85, 0.95, 0.9, 48),
+            new THREE.MeshStandardMaterial({ color: 0x151d26, roughness: 0.3, metalness: 0.25 })
+        );
+        podium.position.y = -0.95;
+        podium.userData = { vitrineIndex: idx };
+        booth.add(podium);
+
+        // 展柜鎏金腰线
+        const podiumGold = new THREE.Mesh(new THREE.TorusGeometry(0.86, 0.015, 12, 48), compassGold);
+        podiumGold.rotation.x = Math.PI / 2;
+        podiumGold.position.y = -0.50;
+        booth.add(podiumGold);
+
+        // 防眩光博物馆超白玻璃罩
+        const glassBell = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.82, 0.82, 1.85, 36, 1, true),
+            new THREE.MeshPhysicalMaterial({
+                color: 0xd8f0f5,
+                transparent: true,
+                opacity: 0.14,
+                roughness: 0.05,
+                metalness: 0.05,
+                clearcoat: 1.0
+            })
+        );
+        glassBell.position.y = 0.42;
+        glassBell.userData = { vitrineIndex: idx };
+        booth.add(glassBell);
+
+        // 顶部独立体积光束
+        const vBeam = new THREE.Mesh(
+            new THREE.ConeGeometry(0.95, 3.2, 24, 1, true),
+            new THREE.MeshBasicMaterial({
+                color: idx === currentModelIndex ? 0xe5c888 : 0x8fb8c0,
+                transparent: true,
+                opacity: idx === currentModelIndex ? 0.09 : 0.04,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            })
+        );
+        vBeam.position.y = 1.6;
+        booth.add(vBeam);
+
+        // 展柜内陈列的传世瓷器模型 (缩放至 0.52 适配展柜)
+        const vesselMeshGroup = buildGeometry(idx, mData.defaultGlaze);
+        vesselMeshGroup.scale.set(0.52, 0.52, 0.52);
+        vesselMeshGroup.position.y = 0.12;
+        vesselMeshGroup.traverse(c => { c.userData = { vitrineIndex: idx }; });
+        booth.add(vesselMeshGroup);
+
+        hallGroup.add(booth);
+    }
+
+    scene.add(hallGroup);
 }
 
 /**
@@ -505,28 +1284,21 @@ function generateTuhaoTexture() {
  */
 function initThreeJS() {
     const canvas = document.getElementById('three-canvas');
-    if (!canvas) return;
+    if (!canvas || typeof THREE === 'undefined') return;
 
     try {
-        if (typeof THREE === 'undefined') {
-            console.warn('[ThreeJS] THREE library is not loaded');
-            return;
-        }
-
-        // 1. 创建场景与雾效，打造文博展厅的幽远景深
+        // 1. 场景与深邃景深雾效
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x13181d);
-        scene.fog = new THREE.FogExp2(0x13181d, 0.08);
+        scene.background = new THREE.Color(0x090d12);
+        scene.fog = new THREE.FogExp2(0x090d12, 0.045);
 
-        // 2. 摄像机 (针对移动端窄屏自适应视野与视距)
+        // 2. 透视相机
         const width = canvas.clientWidth || 800;
-        const height = canvas.clientHeight || 600;
-        const aspect = width / height;
-        const isMobile = window.innerWidth < 640;
-        camera = new THREE.PerspectiveCamera(isMobile ? 48 : 42, aspect, 0.1, 100);
-        camera.position.set(0, 1.2, isMobile ? 4.3 : 3.8);
+        const height = canvas.clientHeight || 560;
+        camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+        camera.position.set(0, 1.05, 3.65);
 
-        // 3. 渲染器 (抗锯齿与物理色调映射)
+        // 3. 高动态范围渲染器 + 局部剖切支持
         renderer = new THREE.WebGLRenderer({
             canvas,
             antialias: true,
@@ -536,831 +1308,442 @@ function initThreeJS() {
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.15;
-        renderer.shadowMap.enabled = true;
+        renderer.toneMappingExposure = 1.22;
+        renderer.shadowMap.enabled = false;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.localClippingEnabled = false;
 
-        // 3.5. 搭建文博展厅物理环境光照 (IBL Environment Map - 赋能清漆镜面与玉质反射)
-        setupStudioEnvironment(renderer);
+        // 初始化X光动态剖切平面 (沿X=0纵向切开器物)
+        clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.0);
 
-        // 4. 灯光系统 (主光、侧补光、轮廓逆光、文人雅室漫射环境光)
-        ambientLight = new THREE.AmbientLight(0xdbe6ea, 0.75);
+        // 4. 生成程序化 HDR 博物馆环境反射贴图
+        envMapTexture = createStudioEnvironment(renderer);
+        if (envMapTexture) {
+            scene.environment = envMapTexture;
+        }
+
+        // 5. 四点博物馆专业布光系统
+        ambientLight = new THREE.AmbientLight(0xdbe8ec, 0.85);
         scene.add(ambientLight);
 
-        lightMain = new THREE.DirectionalLight(0xfff8ed, 1.8);
-        lightMain.position.set(3, 5, 4);
+        lightMain = new THREE.DirectionalLight(0xfff6e8, 2.1);
+        lightMain.position.set(3.2, 5.2, 4.0);
         lightMain.castShadow = true;
         scene.add(lightMain);
 
-        lightFill = new THREE.DirectionalLight(0x8eb3c7, 0.9);
-        lightFill.position.set(-3.5, 2, -2.5);
+        lightFill = new THREE.DirectionalLight(0x88b8c8, 1.05);
+        lightFill.position.set(-3.8, 2.2, -2.5);
         scene.add(lightFill);
 
-        lightRim = new THREE.PointLight(0xffffff, 0.8, 10);
-        lightRim.position.set(0, 4, -2.5);
+        lightRim = new THREE.PointLight(0xffe4b5, 1.1, 14);
+        lightRim.position.set(0, 3.8, -3.2);
         scene.add(lightRim);
 
-        // 5. 展台底座与温润微阴影承托
-        createPedestal();
+        topSpotLight = new THREE.SpotLight(0xffffff, 1.6, 15, Math.PI / 5, 0.65, 1.5);
+        topSpotLight.position.set(0, 5.5, 0.5);
+        scene.add(topSpotLight);
 
-        // 6. 初始化默认模型
+        // 6. 创建单器精鉴台与全景博物馆展厅
+        createInspectorStage();
         loadPorcelainModel(0);
 
-        // 7. 绑定高质量交互手势 (阻尼旋转、滚轮多级缩放、双击视角还原)
+        // 7. 绑定交互手势与 Raycaster 展柜点选
         setupControls(canvas);
-
-        // 8. 窗口尺寸自适应与智能视口节能监听
         window.addEventListener('resize', handleThreeResize);
         setupVisibilityObserver(canvas);
 
-        // 9. 开启渲染循环
+        // 8. 启动 60FPS 渲染循环
         animate();
-
-        // 10. 更新 UI 研鉴卡片
-        updateModelInfoCard(0);
     } catch (err) {
-        console.warn('[ThreeJS 研鉴空间] WebGL 渲染器初始化异常或受设备环境限制:', err);
+        console.warn('[ThreeJS 研鉴空间] 初始化异常:', err);
     }
 }
 
 /**
- * 展台底座与柔和暗影
+ * 切换四大 3D 展览与检视模式：
+ * 'inspector' (单器精鉴台) | 'hall' (3D全景展厅漫游) | 'cutaway' (X光胎骨剖面)
  */
-function createPedestal() {
-    const baseGroup = new THREE.Group();
+function switchExhibitionMode(mode) {
+    if (!renderer) return;
+    exhibitionMode = mode;
 
-    // 黑色大理石雅座
-    const baseGeo = new THREE.CylinderGeometry(1.6, 1.7, 0.12, 64);
-    const baseMat = new THREE.MeshStandardMaterial({
-        color: 0x1b2026,
-        roughness: 0.4,
-        metalness: 0.1
+    ['inspector', 'hall', 'cutaway'].forEach(m => {
+        const btn = document.getElementById(`mode-btn-${m}`);
+        if (btn) btn.classList.toggle('active', m === mode);
     });
-    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
-    baseMesh.position.y = -1.25;
-    baseMesh.receiveShadow = true;
-    baseGroup.add(baseMesh);
 
-    // 底座金色铜圈装饰边缘
-    const ringGeo = new THREE.TorusGeometry(1.61, 0.015, 16, 64);
-    const ringMat = new THREE.MeshStandardMaterial({
-        color: 0x9b7842,
-        roughness: 0.3,
-        metalness: 0.8
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = Math.PI / 2;
-    ringMesh.position.y = -1.19;
-    baseGroup.add(ringMesh);
-
-    scene.add(baseGroup);
-}
-
-const porcelainSkinCache = {};
-
-/**
- * 动态程序化生成宋代名窑自然流釉、紫口铁足与聚沫攒珠气泡微观贴图
- */
-function generatePorcelainSkinTexture(glazeKey) {
-    const cacheKey = glazeKey + (showCrackle ? '_crackle' : '_plain');
-    if (porcelainSkinCache[cacheKey]) return porcelainSkinCache[cacheKey];
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d');
-
-    const cfg = glazePalettes[glazeKey] || glazePalettes.tianqing;
-    const baseColor = new THREE.Color(cfg.color);
-
-    // 1. 基础纯净玉质釉浆底色
-    ctx.fillStyle = `#${baseColor.getHexString()}`;
-    ctx.fillRect(0, 0, 1024, 1024);
-
-    // 2. 垂直流釉与宋代“紫口铁足”自然色阶层级
-    const vertGrad = ctx.createLinearGradient(0, 0, 0, 1024);
-    // 口沿 (y=0~80): 釉层自然向下淌薄，透出紫黑暗灰胎骨 (紫口出筋)
-    vertGrad.addColorStop(0.0, 'rgba(40, 28, 22, 0.72)');
-    vertGrad.addColorStop(0.02, 'rgba(68, 50, 42, 0.42)');
-    vertGrad.addColorStop(0.06, 'rgba(110, 92, 85, 0.16)');
-    vertGrad.addColorStop(0.12, 'rgba(255, 255, 255, 0)');
-    // 器身积釉转折 (y=500~800): 釉汁凝结，翠意更深
-    vertGrad.addColorStop(0.55, 'rgba(10, 30, 26, 0.08)');
-    vertGrad.addColorStop(0.85, 'rgba(18, 42, 38, 0.12)');
-    // 足部圈足 (y=960~1024): 露铁胎黑褐干涩 (铁足)
-    vertGrad.addColorStop(0.93, 'rgba(255, 255, 255, 0)');
-    vertGrad.addColorStop(0.97, 'rgba(48, 32, 24, 0.68)');
-    vertGrad.addColorStop(1.0, 'rgba(30, 20, 14, 0.94)');
-
-    ctx.fillStyle = vertGrad;
-    ctx.fillRect(0, 0, 1024, 1024);
-
-    // 3. 微观“聚沫攒珠”气泡点缀 (宋汝窑、官窑微观典型鉴定特征)
-    for (let i = 0; i < 260; i++) {
-        const bx = Math.random() * 1024;
-        const by = Math.random() * 1024;
-        const br = 0.8 + Math.random() * 2.0;
-        const bAlpha = 0.06 + Math.random() * 0.14;
-        ctx.fillStyle = `rgba(255, 255, 255, ${bAlpha})`;
-        ctx.beginPath();
-        ctx.arc(bx, by, br, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // 4. 若开启开片，叠加宋代哥窑/官窑分形自然裂纹
-    if (showCrackle) {
-        // 主干铁线 (粗深墨铁色)
-        ctx.strokeStyle = 'rgba(38, 28, 22, 0.65)';
-        ctx.lineWidth = 1.8;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        const mainPoints = [];
-        for (let i = 0; i < 36; i++) {
-            mainPoints.push({ x: Math.random() * 1024, y: Math.random() * 1024 });
+    if (mode === 'hall') {
+        // 切换至 3D 全景博物馆大展厅漫游
+        renderer.localClippingEnabled = false;
+        if (currentGroup) currentGroup.visible = false;
+        if (pedestalGroup) pedestalGroup.visible = false;
+        buildVirtualMuseumHall();
+        if (hallGroup) hallGroup.visible = true;
+        focusVitrineInHall(currentModelIndex);
+        if (typeof showToast === 'function') {
+            showToast('🏛️ 已步入【3D 全景数字博物馆大展厅】！点击任意展柜或下方器型即可漫游走近观摩');
         }
-        for (let i = 0; i < mainPoints.length; i++) {
-            for (let j = i + 1; j < mainPoints.length; j++) {
-                const dist = Math.hypot(mainPoints[i].x - mainPoints[j].x, mainPoints[i].y - mainPoints[j].y);
-                if (dist < 190) {
-                    ctx.beginPath();
-                    ctx.moveTo(mainPoints[i].x, mainPoints[i].y);
-                    const cx = (mainPoints[i].x + mainPoints[j].x) / 2 + (Math.random() - 0.5) * 24;
-                    const cy = (mainPoints[i].y + mainPoints[j].y) / 2 + (Math.random() - 0.5) * 24;
-                    ctx.quadraticCurveTo(cx, cy, mainPoints[j].x, mainPoints[j].y);
-                    ctx.stroke();
-                }
-            }
+    } else if (mode === 'cutaway') {
+        // 切换至 X光胎骨剖面透视模式
+        renderer.localClippingEnabled = true;
+        if (hallGroup) hallGroup.visible = false;
+        if (pedestalGroup) pedestalGroup.visible = true;
+        loadPorcelainModel(currentModelIndex, true);
+        camPosTarget = { x: 0.2, y: 0.65, z: 3.25 };
+        camLookTarget = { x: 0, y: 0, z: 0 };
+        if (typeof showToast === 'function') {
+            showToast('🔬 已开启【X光胎骨180°纵向剖面透视】！可直观审视宋瓷“薄胎厚釉、口薄底厚”的内部力学构造');
         }
-
-        // 次生金丝 (细密金黄色小纹)
-        ctx.strokeStyle = 'rgba(185, 138, 70, 0.45)';
-        ctx.lineWidth = 0.9;
-        for (let k = 0; k < 140; k++) {
-            const x = Math.random() * 1024;
-            const y = Math.random() * 1024;
-            const len = 25 + Math.random() * 70;
-            const ang = Math.random() * Math.PI * 2;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
-            ctx.stroke();
-        }
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1, 1);
-    porcelainSkinCache[cacheKey] = texture;
-    return texture;
-}
-
-/**
- * 生成当前选定釉色的 PBR MeshPhysicalMaterial (高仿真微观物理材质 · 次表面玉质透光)
- */
-function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
-    // 铁足胎骨专用材质 (紫黑灰褐铁胎，粗糙干涩露胎)
-    if (isTieZu) {
-        return new THREE.MeshStandardMaterial({
-            color: 0x2b1e17,
-            roughness: 0.92,
-            metalness: 0.12,
-            wireframe: isWireframe
-        });
-    }
-
-    const cfg = glazePalettes[glazeKey] || glazePalettes.tianqing;
-    const matOptions = {
-        color: cfg.color,
-        emissive: cfg.emissive || 0x000000,
-        roughness: cfg.roughness !== undefined ? cfg.roughness : 0.12,
-        metalness: cfg.metalness !== undefined ? cfg.metalness : 0.04,
-        clearcoat: cfg.clearcoat || 0.98,
-        clearcoatRoughness: cfg.clearcoatRoughness || 0.03,
-        ior: cfg.ior || 1.52,
-        reflectivity: cfg.reflectivity || 0.88,
-        // 次表面透光玉质感 (光线穿透外表清漆漫射，告别塑料感)
-        transmission: 0.32,
-        wireframe: isWireframe,
-        envMapIntensity: 1.45
-    };
-
-    // 贴图与法线物理混合
-    if (glazeKey === 'qinghua') {
-        matOptions.map = generateQinghuaTexture();
-        matOptions.transmission = 0.12;
-        matOptions.roughness = 0.12;
-        matOptions.clearcoat = 0.98;
-        matOptions.clearcoatRoughness = 0.03;
-    } else if (glazeKey === 'jianhei') {
-        matOptions.map = generateTuhaoTexture();
-        matOptions.transmission = 0.0;
-        matOptions.roughness = 0.28;
-        matOptions.metalness = 0.18;
-        matOptions.clearcoat = 0.85;
     } else {
-        // 宋代单色釉：赋予带紫口出筋与垂直流釉之高真贴图
-        matOptions.map = generatePorcelainSkinTexture(glazeKey);
-        if (showCrackle) {
-            const normMap = generateCrackleNormalMap();
-            if (normMap) {
-                matOptions.normalMap = normMap;
-                matOptions.normalScale = new THREE.Vector2(0.28, 0.28);
-            }
+        // 默认：单器 360° 精鉴台
+        renderer.localClippingEnabled = false;
+        if (hallGroup) hallGroup.visible = false;
+        if (pedestalGroup) pedestalGroup.visible = true;
+        loadPorcelainModel(currentModelIndex, true);
+        camPosTarget = { x: 0, y: 1.05, z: 3.65 };
+        camLookTarget = { x: 0, y: 0, z: 0 };
+        if (typeof showToast === 'function') {
+            showToast('✨ 已切换至【单器 360° 微距精鉴台】');
         }
     }
-
-    return new THREE.MeshPhysicalMaterial(matOptions);
+    render3DHotspotsDOM();
 }
 
 /**
- * 核心：七大传世古代器型高精度几何体生成器
+ * 在 3D 全景展厅中平滑运镜飞向第 index 号展柜
  */
-function buildGeometry(typeIndex) {
-    const group = new THREE.Group();
-    const glazeMat = getPorcelainMaterial(currentGlazeIndex);
-    const tiezuMat = getPorcelainMaterial(currentGlazeIndex, true);
+function focusVitrineInHall(index) {
+    const arcRadius = 5.6;
+    const angle = ((index - 3) / 6) * (Math.PI * 1.15);
+    const vx = Math.sin(angle) * arcRadius;
+    const vz = -Math.cos(angle) * arcRadius + 1.8;
 
-    switch (typeIndex) {
-        case 0: {
-            // ==========================================
-            // 0. 宋汝窑·天青椭圆四足水仙盆
-            // ==========================================
-            // 盆体主体：深腹内凹椭圆平底水仙盆（封闭实心底，彻底解决底心镂空空洞BUG）
-            const points = [
-                new THREE.Vector2(0.0, -0.27),   // 底部外平底中心
-                new THREE.Vector2(0.40, -0.272), // 底部外平底延伸
-                new THREE.Vector2(0.70, -0.28),  // 底部外边缘 (转折弧)
-                new THREE.Vector2(0.84, -0.16),  // 盆腹下弧
-                new THREE.Vector2(0.93, 0.02),   // 盆腹丰满外鼓
-                new THREE.Vector2(0.98, 0.15),   // 广口外缘
-                new THREE.Vector2(0.95, 0.18),   // 柔和微圆唇边口沿
-                new THREE.Vector2(0.90, 0.17),   // 内口沿
-                new THREE.Vector2(0.85, 0.02),   // 盆内壁上部
-                new THREE.Vector2(0.76, -0.14),  // 盆内壁下收
-                new THREE.Vector2(0.65, -0.20),  // 盆内底交界圆角
-                new THREE.Vector2(0.40, -0.205), // 盆内底平展面
-                new THREE.Vector2(0.0, -0.21)    // 盆内底中心！完整闭合实心盆底！
-            ];
-            const basinGeo = new THREE.LatheGeometry(points, 64);
-            const basinMesh = new THREE.Mesh(basinGeo, glazeMat);
-            // 压扁成典雅的宋代椭圆型 (长径:短径 比例约 1.25 : 0.88)
-            basinMesh.scale.set(1.25, 1.0, 0.88);
-            basinMesh.castShadow = true;
-            basinMesh.receiveShadow = true;
-            group.add(basinMesh);
+    // 相机停在展柜正前方 2.3 米处，略高于展柜中心
+    const camDist = 2.35;
+    camPosTarget = {
+        x: vx - Math.sin(angle) * camDist,
+        y: 0.62,
+        z: vz + Math.cos(angle) * camDist
+    };
+    camLookTarget = { x: vx, y: 0.08, z: vz };
+}
 
-            // 四只如意云头短足 (底部承托)
-            const footPositions = [
-                { x: 0.65, z: 0.4 },
-                { x: -0.65, z: 0.4 },
-                { x: 0.65, z: -0.4 },
-                { x: -0.65, z: -0.4 }
-            ];
-            for (let pos of footPositions) {
-                const footGroup = new THREE.Group();
-                const footGeo = new THREE.CylinderGeometry(0.06, 0.045, 0.10, 16);
-                const footMesh = new THREE.Mesh(footGeo, glazeMat);
-                footMesh.position.y = -0.02;
-                footGroup.position.set(pos.x, -0.31, pos.z);
-                footGroup.add(footMesh);
-                group.add(footGroup);
-            }
+/**
+ * 开启/关闭【策展人自动导览巡礼】
+ */
+function toggleCuratorialTour() {
+    curatorialTourActive = !curatorialTourActive;
+    const btn = document.getElementById('mode-btn-tour');
+    const label = document.getElementById('tour-btn-label');
+    if (btn) btn.classList.toggle('active', curatorialTourActive);
+    if (label) label.textContent = curatorialTourActive ? '停止巡礼' : '策展自动巡礼';
 
-            // 汝窑官窑“芝麻花细小支钉”痕迹 (底面考据级五枚支烧痕)
-            const spurPositions = [
-                { x: 0.0, z: 0.0 },
-                { x: 0.38, z: 0.16 },
-                { x: -0.38, z: 0.16 },
-                { x: 0.38, z: -0.16 },
-                { x: -0.38, z: -0.16 }
-            ];
-            const spurMat = new THREE.MeshStandardMaterial({
-                color: 0x9b958c, // 芝麻支钉露灰白胎骨
-                roughness: 0.9,
-                metalness: 0.05
-            });
-            for (let s of spurPositions) {
-                const spurGeo = new THREE.SphereGeometry(0.018, 8, 8);
-                const spurMesh = new THREE.Mesh(spurGeo, spurMat);
-                spurMesh.scale.set(1.4, 0.35, 0.8);
-                spurMesh.position.set(s.x, -0.276, s.z);
-                group.add(spurMesh);
-            }
-
-            group.position.y = -0.05;
-            break;
-        }
-
-        case 1: {
-            // ==========================================
-            // 1. 宋官窑·八方贯耳弦纹瓶
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.0, -1.05),  // 圈足底心凹底（封闭）
-                new THREE.Vector2(0.20, -1.08),
-                new THREE.Vector2(0.24, -1.15), // 圈足底
-                new THREE.Vector2(0.32, -1.13), // 圈足外缘
-                new THREE.Vector2(0.35, -0.9),  // 圈足收口
-                new THREE.Vector2(0.48, -0.75), // 瓶腹下沿
-                new THREE.Vector2(0.68, -0.4),  // 瓶腹最宽
-                new THREE.Vector2(0.64, -0.1),  // 瓶腹转折
-                new THREE.Vector2(0.42, 0.2),   // 敛颈
-                new THREE.Vector2(0.30, 0.4),   // 细颈
-                new THREE.Vector2(0.30, 0.8),   // 直颈
-                new THREE.Vector2(0.34, 0.95),  // 侈口
-                new THREE.Vector2(0.32, 1.0),   // 口沿唇边
-                new THREE.Vector2(0.26, 1.0),   // 内口沿
-                new THREE.Vector2(0.24, 0.85),  // 颈内壁
-                new THREE.Vector2(0.18, 0.5),
-                new THREE.Vector2(0.0, 0.35)    // 瓶内颈深处封闭
-            ];
-            // 旋转体（32段，微带八方棱角折光感）
-            const bodyGeo = new THREE.LatheGeometry(points, 32);
-            const bodyMesh = new THREE.Mesh(bodyGeo, glazeMat);
-            bodyMesh.castShadow = true;
-            group.add(bodyMesh);
-
-            // 颈部两只贯耳 (垂直中空圆管)
-            for (let side of [-1, 1]) {
-                const earGeo = new THREE.CylinderGeometry(0.065, 0.065, 0.35, 24, 1, true);
-                const earMesh = new THREE.Mesh(earGeo, glazeMat);
-                earMesh.position.set(side * 0.33, 0.65, 0);
-                group.add(earMesh);
-            }
-
-            // 瓶身凸起弦纹 (Torus)
-            const ringY = [-0.4, -0.1, 0.5];
-            const ringR = [0.685, 0.645, 0.315];
-            for (let r = 0; r < ringY.length; r++) {
-                const ringGeo = new THREE.TorusGeometry(ringR[r], 0.018, 16, 48);
-                const ringMesh = new THREE.Mesh(ringGeo, glazeMat);
-                ringMesh.rotation.x = Math.PI / 2;
-                ringMesh.position.y = ringY[r];
-                group.add(ringMesh);
-            }
-
-            // 紫口铁足底环 (圈足露铁胎)
-            const footGeo = new THREE.TorusGeometry(0.28, 0.02, 16, 48);
-            const footMesh = new THREE.Mesh(footGeo, tiezuMat);
-            footMesh.rotation.x = Math.PI / 2;
-            footMesh.position.y = -1.15;
-            group.add(footMesh);
-
-            group.position.y = 0.05;
-            break;
-        }
-
-        case 2: {
-            // ==========================================
-            // 2. 宋定窑·白釉划花莲纹梅瓶
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.24, -1.15), // 圈足底
-                new THREE.Vector2(0.30, -1.12),
-                new THREE.Vector2(0.32, -0.9),  // 挺拔下腹
-                new THREE.Vector2(0.38, -0.5),  // 柔收腰部
-                new THREE.Vector2(0.55, 0.0),   // 丰满中腹
-                new THREE.Vector2(0.68, 0.45),  // 丰肩
-                new THREE.Vector2(0.60, 0.68),  // 溜肩收缩
-                new THREE.Vector2(0.22, 0.78),  // 极细短颈
-                new THREE.Vector2(0.18, 0.88),  // 颈口
-                new THREE.Vector2(0.28, 0.94),  // 小口翻唇（梯形盘口）
-                new THREE.Vector2(0.27, 0.98),
-                new THREE.Vector2(0.12, 0.98),  // 小口内径
-                new THREE.Vector2(0.10, 0.82)
-            ];
-            const meipingGeo = new THREE.LatheGeometry(points, 64);
-            const meipingMesh = new THREE.Mesh(meipingGeo, glazeMat);
-            meipingMesh.castShadow = true;
-            group.add(meipingMesh);
-
-            // 定窑芒口露胎圈
-            const mangGeo = new THREE.TorusGeometry(0.275, 0.01, 16, 48);
-            const mangMesh = new THREE.Mesh(mangGeo, tiezuMat);
-            mangMesh.rotation.x = Math.PI / 2;
-            mangMesh.position.y = 0.96;
-            group.add(mangMesh);
-
-            group.position.y = 0.08;
-            break;
-        }
-
-        case 3: {
-            // ==========================================
-            // 3. 宋哥窑·金丝铁线胆式瓶
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.28, -1.1),
-                new THREE.Vector2(0.36, -1.08),
-                new THREE.Vector2(0.42, -0.85),
-                new THREE.Vector2(0.72, -0.45), // 悬胆垂腹最低最宽处
-                new THREE.Vector2(0.68, -0.1),
-                new THREE.Vector2(0.52, 0.2),   // 顺滑向上收敛
-                new THREE.Vector2(0.26, 0.5),   // 细长颈
-                new THREE.Vector2(0.22, 0.8),
-                new THREE.Vector2(0.24, 1.05),  // 直口微厚
-                new THREE.Vector2(0.16, 1.05),
-                new THREE.Vector2(0.15, 0.85)
-            ];
-            const danGeo = new THREE.LatheGeometry(points, 64);
-            const danMesh = new THREE.Mesh(danGeo, glazeMat);
-            danMesh.castShadow = true;
-            group.add(danMesh);
-
-            // 紫口紫褐釉口沿
-            const lipGeo = new THREE.TorusGeometry(0.23, 0.015, 16, 48);
-            const lipMesh = new THREE.Mesh(lipGeo, tiezuMat);
-            lipMesh.rotation.x = Math.PI / 2;
-            lipMesh.position.y = 1.05;
-            group.add(lipMesh);
-
-            // 铁足
-            const footGeo = new THREE.TorusGeometry(0.32, 0.02, 16, 48);
-            const footMesh = new THREE.Mesh(footGeo, tiezuMat);
-            footMesh.rotation.x = Math.PI / 2;
-            footMesh.position.y = -1.1;
-            group.add(footMesh);
-
-            group.position.y = 0.05;
-            break;
-        }
-
-        case 4: {
-            // ==========================================
-            // 4. 宋钧窑·玫瑰紫海棠出戟尊
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.0, -0.92),  // 高圈足内凹顶心（封闭）
-                new THREE.Vector2(0.35, -1.02),
-                new THREE.Vector2(0.42, -1.1),  // 外撇高圈足底
-                new THREE.Vector2(0.48, -1.08),
-                new THREE.Vector2(0.38, -0.75), // 圈足缩腹
-                new THREE.Vector2(0.62, -0.2),  // 尊腹凸起最宽处
-                new THREE.Vector2(0.60, 0.05),
-                new THREE.Vector2(0.40, 0.35),  // 颈部收束
-                new THREE.Vector2(0.68, 0.85),  // 大喇叭口外敞
-                new THREE.Vector2(0.75, 0.95),  // 花瓣唇沿
-                new THREE.Vector2(0.65, 0.95),
-                new THREE.Vector2(0.35, 0.35),  // 喇叭口内壁收束
-                new THREE.Vector2(0.48, -0.1),  // 腹内壁
-                new THREE.Vector2(0.28, -0.4),  // 尊内腹底
-                new THREE.Vector2(0.0, -0.45)   // 尊内底中心（完全封闭！）
-            ];
-            const zunGeo = new THREE.LatheGeometry(points, 48);
-            const zunMesh = new THREE.Mesh(zunGeo, glazeMat);
-            zunMesh.castShadow = true;
-            group.add(zunMesh);
-
-            // 四面立体出戟棱齿 (Flanges)
-            for (let i = 0; i < 4; i++) {
-                const angle = (i / 4) * Math.PI * 2;
-                const flangeGroup = new THREE.Group();
-                flangeGroup.rotation.y = angle;
-
-                // 颈部出戟
-                const flangeTop = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.35, 0.04), glazeMat);
-                flangeTop.position.set(0.48, 0.55, 0);
-                flangeGroup.add(flangeTop);
-
-                // 腹部出戟
-                const flangeMid = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.32, 0.04), glazeMat);
-                flangeMid.position.set(0.65, -0.1, 0);
-                flangeGroup.add(flangeMid);
-
-                // 足部出戟
-                const flangeBot = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.28, 0.04), glazeMat);
-                flangeBot.position.set(0.44, -0.9, 0);
-                flangeGroup.add(flangeBot);
-
-                group.add(flangeGroup);
-            }
-
-            group.position.y = 0.05;
-            break;
-        }
-
-        case 5: {
-            // ==========================================
-            // 5. 宋建窑·兔毫曜变天目斗茶盏
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.0, -0.70),  // 盏底心外凹（封闭）
-                new THREE.Vector2(0.14, -0.72),
-                new THREE.Vector2(0.18, -0.75), // 极小矮圈足
-                new THREE.Vector2(0.28, -0.72),
-                new THREE.Vector2(0.32, -0.6),  // 铁胎露出部
-                new THREE.Vector2(0.55, -0.3),  // 腹壁斜直展开
-                new THREE.Vector2(0.78, 0.05),  // 扩口
-                new THREE.Vector2(0.86, 0.25),  // 束口暗槽下
-                new THREE.Vector2(0.84, 0.32),  // 束口内敛暗槽 (宋代点茶汤花防止溢出)
-                new THREE.Vector2(0.88, 0.38),  // 盏口唇沿
-                new THREE.Vector2(0.82, 0.38),  // 盏内壁
-                new THREE.Vector2(0.45, -0.2),
-                new THREE.Vector2(0.16, -0.55), // 盏内底心斜收
-                new THREE.Vector2(0.0, -0.58)   // 盏内底心（完全封闭！）
-            ];
-            const bowlGeo = new THREE.LatheGeometry(points, 64);
-            const bowlMesh = new THREE.Mesh(bowlGeo, glazeMat);
-            bowlMesh.castShadow = true;
-            group.add(bowlMesh);
-
-            // 盏底深黑铁足露出
-            const footGeo = new THREE.CylinderGeometry(0.28, 0.26, 0.12, 32);
-            const footMesh = new THREE.Mesh(footGeo, tiezuMat);
-            footMesh.position.y = -0.72;
-            group.add(footMesh);
-
-            group.position.y = -0.15;
-            break;
-        }
-
-        case 6: {
-            // ==========================================
-            // 6. 明宣德·青花缠枝莲纹玉壶春瓶
-            // ==========================================
-            const points = [
-                new THREE.Vector2(0.32, -1.1),  // 圈足底
-                new THREE.Vector2(0.42, -1.08),
-                new THREE.Vector2(0.45, -0.85), // 垂腹起弧
-                new THREE.Vector2(0.72, -0.35), // 最丰满水滴圆腹
-                new THREE.Vector2(0.66, 0.0),
-                new THREE.Vector2(0.45, 0.3),   // 细腰长颈
-                new THREE.Vector2(0.26, 0.65),  // 颈部极细处
-                new THREE.Vector2(0.30, 0.9),   // 喇叭形撇口起弧
-                new THREE.Vector2(0.52, 1.15),  // 优美外翻大撇口
-                new THREE.Vector2(0.45, 1.15),
-                new THREE.Vector2(0.22, 0.65),
-                new THREE.Vector2(0.35, -0.4)
-            ];
-            const yuGeo = new THREE.LatheGeometry(points, 64);
-            const yuMesh = new THREE.Mesh(yuGeo, glazeMat);
-            yuMesh.castShadow = true;
-            group.add(yuMesh);
-
-            // 圈足底青花双圈
-            const footGeo = new THREE.TorusGeometry(0.38, 0.015, 16, 48);
-            const footMesh = new THREE.Mesh(footGeo, tiezuMat);
-            footMesh.rotation.x = Math.PI / 2;
-            footMesh.position.y = -1.1;
-            group.add(footMesh);
-
-            group.position.y = 0.02;
-            break;
-        }
-
-        default:
-            break;
+    if (tourTimer) {
+        clearInterval(tourTimer);
+        tourTimer = null;
     }
 
-    return group;
-}
-
-const loadedGltfCache = {};
-
-/**
- * 将解析好的实物扫描 3D 模型装配入场景
- */
-function applyLoadedGltfModel(model, m) {
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const targetScale = m.targetScale || (2.2 / (size.y || 1));
-    model.scale.set(targetScale, targetScale, targetScale);
-
-    const center = box.getCenter(new THREE.Vector3());
-    model.position.x = -center.x * targetScale;
-    model.position.y = (m.offsetY !== undefined ? m.offsetY : -1.1);
-    model.position.z = -center.z * targetScale;
-
-    model.traverse((child) => {
-        if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            if (child.material) {
-                child.material.envMapIntensity = 1.35;
-                child.material.side = THREE.DoubleSide;
-                child.material.wireframe = isWireframe;
-            }
+    if (curatorialTourActive) {
+        if (exhibitionMode !== 'hall') {
+            switchExhibitionMode('hall');
         }
-    });
-
-    currentGroup = new THREE.Group();
-    currentGroup.add(model);
-    if (scene) scene.add(currentGroup);
+        if (typeof showToast === 'function') {
+            showToast('🎬 已开启【策展人自动巡礼】，镜头将依次带您漫游馆藏七大传世名瓷展柜');
+        }
+        tourTimer = setInterval(() => {
+            const nextIdx = (currentModelIndex + 1) % porcelainModelsData.length;
+            loadPorcelainModel(nextIdx);
+            if (typeof playPorcelainChime === 'function') {
+                playPorcelainChime(2200 + nextIdx * 120);
+            }
+        }, 4200);
+    } else {
+        if (typeof showToast === 'function') {
+            showToast('已暂停策展自动巡礼，您可自由旋转或点选观摩');
+        }
+    }
 }
 
 /**
- * 加载并切换指定器型 (双轨支持：馆藏实物真迹扫描 / 宋代御窑法典数字推演)
+ * 加载并切换指定器型
  */
-function loadPorcelainModel(index) {
+function loadPorcelainModel(index, keepMode = false) {
+    currentModelIndex = index;
+    if (porcelainModelsData[index] && porcelainModelsData[index].defaultGlaze && !keepMode) {
+        currentGlazeIndex = porcelainModelsData[index].defaultGlaze;
+    }
+
     if (currentGroup) {
         disposeGroup(currentGroup);
-        if (scene) scene.remove(currentGroup);
-        currentGroup = null;
-    }
-    currentModelIndex = index;
-
-    const m = porcelainModelsData[index];
-    if (!m) return;
-
-    if (m.isScanned) {
-        // 馆藏实物真迹扫描模型
-        if (loadedGltfCache[index]) {
-            applyLoadedGltfModel(loadedGltfCache[index].clone(true), m);
-        } else {
-            if (typeof THREE.GLTFLoader === 'undefined') {
-                console.error('GLTFLoader not ready');
-                return;
-            }
-            const loader = new THREE.GLTFLoader();
-
-            // 1. 核心优先：从本地自包含内存数据直接解析 (零网络请求、完全免疫 file:/// 跨域拦截，100%秒开)
-            if (typeof window !== 'undefined' && window.SCANNED_MODELS_DATA && window.SCANNED_MODELS_DATA[m.modelKey]) {
-                try {
-                    const gltfData = window.SCANNED_MODELS_DATA[m.modelKey];
-                    loader.parse(JSON.stringify(gltfData), '', (gltf) => {
-                        const model = gltf.scene || gltf.scenes[0];
-                        loadedGltfCache[index] = model;
-                        applyLoadedGltfModel(model.clone(true), m);
-                    }, (err) => {
-                        console.warn('[GLTF Loader] 内存解析遇微瑕，回退网络载入:', err);
-                        loadGltfByUrlFallback(loader, m, index);
-                    });
-                } catch (e) {
-                    loadGltfByUrlFallback(loader, m, index);
-                }
-            } else {
-                loadGltfByUrlFallback(loader, m, index);
-            }
-        }
-    } else {
-        // 宋代御窑法典数字推演器型 (启用次表面玉质透光)
-        if (m.defaultGlaze) {
-            currentGlazeIndex = m.defaultGlaze;
-        }
-        // 几何体索引为 index - 2 (前两个为实物扫描)
-        const geoIndex = index - 2;
-        currentGroup = buildGeometry(geoIndex);
-        if (scene) scene.add(currentGroup);
+        scene.remove(currentGroup);
     }
 
-    // 缓动平滑复位视角
-    if (camera) {
-        camera.position.set(0, 1.2, 3.8);
-        camera.lookAt(0, 0, 0);
+    currentGroup = buildGeometry(index);
+    currentGroup.visible = (exhibitionMode !== 'hall');
+    scene.add(currentGroup);
+
+    if (showDimensions) {
+        if (dimensionGroup) scene.remove(dimensionGroup);
+        dimensionGroup = createDimensionLines(index);
+        scene.add(dimensionGroup);
     }
 
-    // 更新信息卡片与按钮高亮
+    if (exhibitionMode === 'hall') {
+        buildVirtualMuseumHall();
+        focusVitrineInHall(index);
+    } else if (!keepMode) {
+        userOrbitAngles = { theta: 0, phi: 0.28, radius: 3.65 };
+        camPosTarget = { x: 0, y: 1.05, z: 3.65 };
+        camLookTarget = { x: 0, y: 0, z: 0 };
+    }
+
     updateModelInfoCard(index);
     highlightActiveModelBtn(index);
-    if (!m.isScanned) {
-        highlightActiveGlazeBtn(currentGlazeIndex);
+    highlightActiveGlazeBtn(currentGlazeIndex);
+    render3DHotspotsDOM();
+}
+
+/**
+ * 构建并更新 3D 空间器物特征解剖锚点 DOM
+ */
+function render3DHotspotsDOM() {
+    const layer = document.getElementById('three-hotspots-layer');
+    if (!layer) return;
+
+    if (!showHotspots || exhibitionMode === 'hall') {
+        layer.innerHTML = '';
+        return;
+    }
+
+    const m = porcelainModelsData[currentModelIndex];
+    if (!m || !m.hotspots) {
+        layer.innerHTML = '';
+        return;
+    }
+
+    layer.innerHTML = m.hotspots.map((h, i) => `
+        <button class="vessel-3d-hotspot" id="vessel-hotspot-${i}" onclick="focusHotspot(${i})">
+            <span class="pulse-dot"></span>
+            <span>${h.label}</span>
+        </button>
+    `).join('');
+}
+
+function focusHotspot(hotspotIdx) {
+    const m = porcelainModelsData[currentModelIndex];
+    if (!m || !m.hotspots || !m.hotspots[hotspotIdx]) return;
+    const h = m.hotspots[hotspotIdx];
+    setCameraView(h.view || 'front');
+    if (typeof playPorcelainChime === 'function') playPorcelainChime(2680);
+    if (typeof showToast === 'function') {
+        showToast(`🔍 特写聚焦：【${h.label}】`);
+    }
+}
+
+function toggle3DHotspots() {
+    showHotspots = !showHotspots;
+    const btn = document.getElementById('btn-hotspots-toggle');
+    if (btn) btn.classList.toggle('active', showHotspots);
+    render3DHotspotsDOM();
+    if (typeof showToast === 'function') {
+        showToast(showHotspots ? '已开启【3D器物解剖锚点】' : '已隐藏 3D 解剖锚点');
     }
 }
 
 /**
- * 网络 URL 载入备用通道 (支持本地 HTTP 服务器)
+ * 实时计算 3D 解剖锚点在 2D 屏幕上的投影坐标
  */
-function loadGltfByUrlFallback(loader, m, index) {
-    if (!m.modelUrl) return;
-    loader.load(m.modelUrl, (gltf) => {
-        const model = gltf.scene || gltf.scenes[0];
-        loadedGltfCache[index] = model;
-        applyLoadedGltfModel(model.clone(true), m);
-    }, undefined, (err) => {
-        console.warn('[GLTF Loader] 外部模型载入受环境限制，自动平滑呈现御窑代表器型:', err);
-        // 优雅自愈回退到天青水仙盆，确保展台绝不空白
-        currentGroup = buildGeometry(0);
-        scene.add(currentGroup);
+function updateHotspotsScreenProjection() {
+    if (!showHotspots || exhibitionMode === 'hall' || !currentGroup || !camera) return;
+    const canvas = document.getElementById('three-canvas');
+    if (!canvas) return;
+    const m = porcelainModelsData[currentModelIndex];
+    if (!m || !m.hotspots) return;
+
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+
+    m.hotspots.forEach((spot, i) => {
+        const el = document.getElementById(`vessel-hotspot-${i}`);
+        if (!el) return;
+        const vec = new THREE.Vector3(spot.pos[0], spot.pos[1], spot.pos[2]);
+        vec.applyEuler(currentGroup.rotation);
+        vec.project(camera);
+
+        const sx = (vec.x * 0.5 + 0.5) * w;
+        const sy = (-(vec.y * 0.5) + 0.5) * h;
+
+        if (vec.z < 1.0 && sx > 20 && sx < w - 20 && sy > 50 && sy < h - 50) {
+            el.style.left = `${sx}px`;
+            el.style.top = `${sy}px`;
+            el.style.opacity = '1';
+        } else {
+            el.style.opacity = '0';
+        }
     });
 }
 
 /**
- * 切换釉色 (实时重构物理次表面 SSS 材质)
+ * 光影实验室：切换四大博物馆与历史场景色温光效
+ */
+function setStudioLighting(preset) {
+    const label = document.getElementById('light-preset-name');
+    if (!lightMain || !lightFill || !lightRim || !scene) return;
+
+    if (preset === 'palace') {
+        scene.background = new THREE.Color(0x090d12);
+        scene.fog.color.setHex(0x090d12);
+        lightMain.color.setHex(0xfff6e8);
+        lightMain.intensity = 2.1;
+        lightFill.color.setHex(0x88b8c8);
+        lightFill.intensity = 1.05;
+        lightRim.color.setHex(0xffe4b5);
+        if (label) label.textContent = '宋代轩窗天光';
+    } else if (preset === 'museum') {
+        scene.background = new THREE.Color(0x060a0f);
+        scene.fog.color.setHex(0x060a0f);
+        lightMain.color.setHex(0xeef7ff);
+        lightMain.intensity = 2.35;
+        lightFill.color.setHex(0x9ec8e0);
+        lightFill.intensity = 1.2;
+        lightRim.color.setHex(0xd8f0ff);
+        if (label) label.textContent = '博物馆高显色冷光';
+    } else if (preset === 'candle') {
+        scene.background = new THREE.Color(0x120c08);
+        scene.fog.color.setHex(0x120c08);
+        lightMain.color.setHex(0xffb86c);
+        lightMain.intensity = 2.2;
+        lightFill.color.setHex(0x8c583a);
+        lightFill.intensity = 0.8;
+        lightRim.color.setHex(0xff9436);
+        if (label) label.textContent = '宫廷夜宴烛火';
+    } else if (preset === 'kiln') {
+        scene.background = new THREE.Color(0x180805);
+        scene.fog.color.setHex(0x180805);
+        lightMain.color.setHex(0xff6b2b);
+        lightMain.intensity = 2.6;
+        lightFill.color.setHex(0xc83214);
+        lightFill.intensity = 1.1;
+        lightRim.color.setHex(0xffbf40);
+        if (label) label.textContent = '龙窑1300℃火曜';
+    }
+    if (typeof showToast === 'function') {
+        showToast(`💡 已切换展厅光影氛围：【${label ? label.textContent : preset}】`);
+    }
+}
+
+function rotateMainLight(deg) {
+    if (!lightMain) return;
+    const rad = (parseFloat(deg) * Math.PI) / 180;
+    lightMain.position.set(Math.cos(rad) * 4.5, 5.2, Math.sin(rad) * 4.5);
+}
+
+/**
+ * 全屏沉浸式观展模式
+ */
+function toggle3DFullscreen() {
+    const container = document.getElementById('three-stage-container');
+    const icon = document.getElementById('fullscreen-icon');
+    if (!container) return;
+
+    container.classList.toggle('fullscreen-mode');
+    const isFull = container.classList.contains('fullscreen-mode');
+    if (icon) {
+        icon.className = isFull ? 'fa-solid fa-compress text-amber-400' : 'fa-solid fa-expand text-tianqing-light';
+    }
+    setTimeout(handleThreeResize, 60);
+    if (typeof showToast === 'function') {
+        showToast(isFull ? '已进入【全屏沉浸式 3D 展馆】，再次点击右上角按钮可退出' : '已退出全屏展览模式');
+    }
+}
+
+/**
+ * 切换釉色
  */
 function switchGlaze(glazeKey) {
     if (!glazePalettes[glazeKey]) return;
-    const m = porcelainModelsData[currentModelIndex];
-    if (m && m.isScanned) {
-        showToast('当前展示为【馆藏实物真迹扫描】，保留真实出土/传世摄影烘焙表面；请选择下方【御窑法典复原】器型进行釉色试烧。');
-        return;
-    }
     currentGlazeIndex = glazeKey;
-    // 重新构建材质
     if (currentGroup) {
+        const prevRotY = currentGroup.rotation.y;
         disposeGroup(currentGroup);
         scene.remove(currentGroup);
-        const geoIndex = currentModelIndex - 2;
-        currentGroup = buildGeometry(geoIndex);
+        currentGroup = buildGeometry(currentModelIndex);
+        currentGroup.rotation.y = prevRotY;
+        currentGroup.visible = (exhibitionMode !== 'hall');
         scene.add(currentGroup);
     }
     highlightActiveGlazeBtn(glazeKey);
-    showToast(`已切换釉色为：【${glazePalettes[glazeKey].name}】`);
+    if (typeof playPorcelainChime === 'function') playPorcelainChime(2450);
+    if (typeof showToast === 'function') {
+        showToast(`已切换 PBR 釉色：【${glazePalettes[glazeKey].name}】`);
+    }
 }
 
-/**
- * 开关开片纹理 (金丝铁线/冰裂纹)
- */
 function toggleCrackle() {
-    const m = porcelainModelsData[currentModelIndex];
-    if (m && m.isScanned) {
-        showToast('当前展示为实物真迹三维点云扫描，已记录自然岁月风化与真迹开片。');
-        return;
-    }
     showCrackle = !showCrackle;
-    if (currentGroup) {
-        disposeGroup(currentGroup);
-        scene.remove(currentGroup);
-        const geoIndex = currentModelIndex - 2;
-        currentGroup = buildGeometry(geoIndex);
-        scene.add(currentGroup);
-    }
+    loadPorcelainModel(currentModelIndex, true);
     const btn = document.getElementById('btn-crackle-toggle');
-    if (btn) {
-        btn.classList.toggle('active', showCrackle);
+    if (btn) btn.classList.toggle('active', showCrackle);
+    if (typeof showToast === 'function') {
+        showToast(showCrackle ? '已开启【开片冰裂金丝铁线凹凸法线】' : '已切换为【无纹素净玉面】');
     }
-    showToast(showCrackle ? '已开启【开片冰裂金丝铁线】' : '已关闭开片纹理（素净玉面）');
 }
 
-/**
- * 开关线框透视研鉴模式 (Wireframe)
- */
 function toggleWireframe() {
     isWireframe = !isWireframe;
-    const m = porcelainModelsData[currentModelIndex];
-    if (m && m.isScanned) {
-        if (currentGroup) {
-            currentGroup.traverse(child => {
-                if (child.isMesh && child.material) {
-                    child.material.wireframe = isWireframe;
-                }
-            });
-        }
-    } else {
-        if (currentGroup) {
-            disposeGroup(currentGroup);
-            scene.remove(currentGroup);
-            const geoIndex = currentModelIndex - 2;
-            currentGroup = buildGeometry(geoIndex);
-            scene.add(currentGroup);
-        }
-    }
+    loadPorcelainModel(currentModelIndex, true);
     const btn = document.getElementById('btn-wireframe-toggle');
-    if (btn) {
-        btn.classList.toggle('active', isWireframe);
+    if (btn) btn.classList.toggle('active', isWireframe);
+    if (typeof showToast === 'function') {
+        showToast(isWireframe ? '已开启【128段器型力学网格透视】' : '已恢复【PBR 物理釉面渲染】');
     }
-    showToast(isWireframe ? '已开启【器型力学校对线框模式】' : '已恢复【PBR 物理渲染模式】');
 }
 
-/**
- * 切换自动旋转
- */
 function toggleAutoRotate() {
     autoRotate = !autoRotate;
     const btn = document.getElementById('btn-rotate-toggle');
-    if (btn) {
-        btn.classList.toggle('active', autoRotate);
-    }
+    if (btn) btn.classList.toggle('active', autoRotate);
 }
 
-/**
- * 切换视角 (正视、俯视、底足、45度)
- */
 function setCameraView(viewType) {
+    if (exhibitionMode === 'hall') {
+        switchExhibitionMode('inspector');
+    }
     autoRotate = false;
     const btn = document.getElementById('btn-rotate-toggle');
     if (btn) btn.classList.remove('active');
-
-    if (!currentGroup) return;
-    currentGroup.rotation.set(0, 0, 0);
+    if (currentGroup) currentGroup.rotation.set(0, 0, 0);
 
     switch (viewType) {
         case 'front':
-            camera.position.set(0, 0, 3.6);
+            camPosTarget = { x: 0, y: 0.1, z: 3.4 };
             break;
         case 'top':
-            camera.position.set(0, 4.0, 0.1);
+            camPosTarget = { x: 0, y: 3.8, z: 0.25 };
             break;
         case 'bottom':
-            camera.position.set(0, -3.2, 1.8);
+            camPosTarget = { x: 0, y: -2.9, z: 1.65 };
             break;
-        case 'perspective':
         default:
-            camera.position.set(0, 1.2, 3.8);
+            camPosTarget = { x: 0, y: 1.05, z: 3.65 };
             break;
     }
-    camera.lookAt(0, 0, 0);
+    camLookTarget = { x: 0, y: 0, z: 0 };
 }
 
-/**
- * 鼠标与触屏阻尼交互控制
- */
-/**
- * 测绘标线系统 (Dimension Measurement System)
- */
-let showDimensions = false;
-let dimensionGroup = null;
+function resetCamera() {
+    if (exhibitionMode === 'hall') {
+        camPosTarget = { x: 0, y: 1.8, z: 4.8 };
+        camLookTarget = { x: 0, y: 0.2, z: -2.5 };
+        return;
+    }
+    camPosTarget = { x: 0, y: 1.05, z: 3.65 };
+    camLookTarget = { x: 0, y: 0, z: 0 };
+    if (currentGroup) currentGroup.rotation.set(0, 0, 0);
+    autoRotate = true;
+    const btn = document.getElementById('btn-rotate-toggle');
+    if (btn) btn.classList.add('active');
+}
 
 function toggleDimensionLines() {
     showDimensions = !showDimensions;
@@ -1369,62 +1752,36 @@ function toggleDimensionLines() {
         dimensionGroup = null;
     }
     if (showDimensions && currentGroup) {
-        dimensionGroup = createDimensionLines(currentModelIndex);
+        dimensionGroup = createDimensionLines();
         scene.add(dimensionGroup);
     }
     const btn = document.getElementById('btn-dimensions-toggle');
     if (btn) btn.classList.toggle('active', showDimensions);
-    showToast(showDimensions ? '已开启【器物公分测绘标定线】' : '已关闭测绘标线');
+    if (typeof showToast === 'function') {
+        showToast(showDimensions ? '📏 已开启【器物考古测绘标定线】' : '已关闭测绘标线');
+    }
 }
 
-function createDimensionLines(index) {
+function createDimensionLines() {
     const group = new THREE.Group();
-    const lineMat = new THREE.LineDashedMaterial({
-        color: 0x8FB8C0,
-        dashSize: 0.04,
-        gapSize: 0.02,
-        linewidth: 1
-    });
+    const lineMat = new THREE.LineDashedMaterial({ color: 0xe5c888, dashSize: 0.05, gapSize: 0.025 });
 
-    // 绘制侧面垂直基准高线
-    const heightGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(1.15, -1.15, 0),
-        new THREE.Vector3(1.15, 1.05, 0)
-    ]);
-    const heightLine = new THREE.Line(heightGeo, lineMat);
-    heightLine.computeLineDistances();
-    group.add(heightLine);
-
-    // 水平指示箭头线
-    const topGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0.35, 1.05, 0),
-        new THREE.Vector3(1.2, 1.05, 0)
-    ]);
-    const topLine = new THREE.Line(topGeo, lineMat);
-    topLine.computeLineDistances();
-    group.add(topLine);
-
-    const botGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0.35, -1.15, 0),
-        new THREE.Vector3(1.2, -1.15, 0)
-    ]);
-    const botLine = new THREE.Line(botGeo, lineMat);
-    botLine.computeLineDistances();
-    group.add(botLine);
-
+    const addSeg = (p1, p2) => {
+        const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+        const line = new THREE.Line(geo, lineMat);
+        line.computeLineDistances();
+        group.add(line);
+    };
+    addSeg(new THREE.Vector3(1.12, -1.15, 0), new THREE.Vector3(1.12, 1.05, 0));
+    addSeg(new THREE.Vector3(0.35, 1.05, 0), new THREE.Vector3(1.18, 1.05, 0));
+    addSeg(new THREE.Vector3(0.35, -1.15, 0), new THREE.Vector3(1.18, -1.15, 0));
     return group;
 }
 
-/**
- * 打开宋瓷 100x 显微镜微观聚沫攒珠视图
- */
 function openMicroscopeView() {
     const modal = document.getElementById('microscope-modal');
-    if (!modal) return;
-    modal.classList.add('active');
-    if (typeof playCrackleSound === 'function') {
-        playCrackleSound();
-    }
+    if (modal) modal.classList.add('active');
+    if (typeof playCrackleSound === 'function') playCrackleSound();
 }
 
 function closeMicroscopeView() {
@@ -1433,275 +1790,188 @@ function closeMicroscopeView() {
 }
 
 /**
- * 鼠标与触屏阻尼交互控制 (全面支持多指触屏缩放)
+ * 鼠标与触屏阻尼交互控制 + Raycaster 3D 展柜点击拾取
  */
 function setupControls(canvas) {
-    let isDragging = false;
     let prevX = 0, prevY = 0;
-    let rotX = 0, rotY = 0;
+    let pointerDownPos = { x: 0, y: 0 };
     let initialPinchDist = null;
-    let initialCameraZ = 3.8;
+    let initialCamZ = 3.65;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
     canvas.addEventListener('pointerdown', (e) => {
-        isDragging = true;
-        prevX = e.clientX;
-        prevY = e.clientY;
+        isUserDragging = true;
+        prevX = pointerDownPos.x = e.clientX;
+        pointerDownPos.y = prevY = e.clientY;
         autoRotate = false;
         const btn = document.getElementById('btn-rotate-toggle');
         if (btn) btn.classList.remove('active');
     });
 
     window.addEventListener('pointermove', (e) => {
-        if (!isDragging || !currentGroup) return;
+        if (!isUserDragging) return;
         const deltaX = e.clientX - prevX;
         const deltaY = e.clientY - prevY;
-
-        rotY += deltaX * 0.008;
-        rotX += deltaY * 0.008;
-
-        // 垂直俯仰角限制，避免翻转
-        rotX = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, rotX));
-
-        currentGroup.rotation.y = rotY;
-        currentGroup.rotation.x = rotX;
-
         prevX = e.clientX;
         prevY = e.clientY;
+
+        if (exhibitionMode === 'hall') {
+            // 展厅漫游模式下拖拽环视整个圆形展馆
+            camLookTarget.x -= deltaX * 0.015;
+            camLookTarget.y = Math.max(-0.8, Math.min(1.8, camLookTarget.y + deltaY * 0.01));
+        } else if (currentGroup) {
+            currentGroup.rotation.y += deltaX * 0.0085;
+            currentGroup.rotation.x = Math.max(-Math.PI / 2.6, Math.min(Math.PI / 2.6, currentGroup.rotation.x + deltaY * 0.0085));
+        }
     });
 
-    window.addEventListener('pointerup', () => {
-        isDragging = false;
+    window.addEventListener('pointerup', (e) => {
+        if (!isUserDragging) return;
+        isUserDragging = false;
+
+        // 判断是否为轻点 (Click) 动作
+        const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+        if (moveDist < 6) {
+            if (exhibitionMode === 'hall' && hallGroup) {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const hits = raycaster.intersectObjects(hallGroup.children, true);
+                for (let hit of hits) {
+                    if (hit.object && hit.object.userData && hit.object.userData.vitrineIndex !== undefined) {
+                        const targetIdx = hit.object.userData.vitrineIndex;
+                        loadPorcelainModel(targetIdx);
+                        if (typeof playPorcelainChime === 'function') playPorcelainChime(2500);
+                        break;
+                    }
+                }
+            } else if (typeof playPorcelainChime === 'function') {
+                playPorcelainChime(2200 + Math.random() * 400);
+            }
+        }
     });
 
-    // 移动端双指 Pinch 捏合缩放
+    // 滚轮丝滑缩放
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY * 0.0028;
+        camPosTarget.z = Math.max(1.75, Math.min(6.8, camPosTarget.z + delta));
+    }, { passive: false });
+
+    // 移动端双指捏合缩放
     canvas.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
             initialPinchDist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
-            initialCameraZ = camera.position.z;
+            initialCamZ = camPosTarget.z;
         }
     }, { passive: true });
 
     canvas.addEventListener('touchmove', (e) => {
         if (e.touches.length === 2 && initialPinchDist) {
-            const currentDist = Math.hypot(
+            const dist = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
                 e.touches[0].clientY - e.touches[1].clientY
             );
-            const scale = initialPinchDist / currentDist;
-            camera.position.z = Math.max(1.8, Math.min(6.5, initialCameraZ * scale));
+            const scale = initialPinchDist / dist;
+            camPosTarget.z = Math.max(1.75, Math.min(6.8, initialCamZ * scale));
         }
     }, { passive: true });
 
-    canvas.addEventListener('touchend', (e) => {
-        if (e.touches.length < 2) {
-            initialPinchDist = null;
-        }
-    });
-
-    // 滚轮缩放
-    canvas.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const delta = e.deltaY * 0.003;
-        camera.position.z = Math.max(1.8, Math.min(6.5, camera.position.z + delta));
-    }, { passive: false });
-
-    // 单击器物发声
-    canvas.addEventListener('click', () => {
-        if (typeof playPorcelainChime === 'function') {
-            playPorcelainChime(2200 + Math.random() * 400);
-        }
-    });
-
-    // 双击还原初始视角
-    canvas.addEventListener('dblclick', () => {
-        resetCamera();
-    });
-
-    // 支持拖拽本地实物扫描 .glb / .gltf 文件直接投放到 3D 展台研鉴
-    canvas.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        canvas.style.outline = '2px dashed #5A9CA8';
-        canvas.style.outlineOffset = '-6px';
-    });
-    canvas.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        canvas.style.outline = 'none';
-    });
-    canvas.addEventListener('drop', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        canvas.style.outline = 'none';
-        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file && (file.name.toLowerCase().endsWith('.glb') || file.name.toLowerCase().endsWith('.gltf'))) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                parseAndDisplayGlb(ev.target.result, file.name);
-            };
-            reader.readAsArrayBuffer(file);
-        }
-    });
+    canvas.addEventListener('dblclick', resetCamera);
 }
 
-/**
- * 解析并载入外部 .glb / .gltf 瓷器扫描模型文件 (ArrayBuffer)
- */
-function parseAndDisplayGlb(arrayBuffer, modelName = '实物扫描模型') {
-    if (typeof THREE.GLTFLoader === 'undefined') {
-        alert('GLTFLoader 正在初始化，请稍候');
-        return;
-    }
-    const loader = new THREE.GLTFLoader();
-    loader.parse(arrayBuffer, '', (gltf) => {
-        const model = gltf.scene || gltf.scenes[0];
-        if (!model) return;
-
-        // 计算真实包围盒，自适应居中并缩放至标准展台尺寸
-        const box = new THREE.Box3().setFromObject(model);
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const targetScale = 2.0 / (maxDim || 1);
-        model.scale.set(targetScale, targetScale, targetScale);
-
-        const center = box.getCenter(new THREE.Vector3());
-        model.position.x = -center.x * targetScale;
-        model.position.y = -center.y * targetScale + 0.1;
-        model.position.z = -center.z * targetScale;
-
-        // 为扫描模型中的所有网格启用阴影与展厅物理环境光照
-        model.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-                if (child.material) {
-                    child.material.envMapIntensity = 1.35;
-                }
-            }
-        });
-
-        if (currentGroup) {
-            disposeGroup(currentGroup);
-            scene.remove(currentGroup);
-        }
-
-        currentGroup = new THREE.Group();
-        currentGroup.add(model);
-        scene.add(currentGroup);
-
-        // 重置视角与光照
-        camera.position.set(0, 1.2, 3.8);
-        camera.lookAt(0, 0, 0);
-
-        // 更新 UI 说明卡片
-        const titleEl = document.getElementById('model-detail-title');
-        const descEl = document.getElementById('model-detail-desc');
-        if (titleEl) titleEl.textContent = `实物真迹扫描 · ${modelName}`;
-        if (descEl) descEl.textContent = '此模型为外置高精度实物三维激光扫描/摄影测量重建物体，已接入展厅 PBR 环境光照渲染与物理阴影系统。';
-        if (typeof showToast === 'function') {
-            showToast(`已成功载入实物扫描 3D 模型：${modelName}`);
-        }
-    }, (err) => {
-        console.error('[GLTF Loader] 模型解析失败:', err);
-        alert('所选 3D 文件解析异常，请确保为标准的 .glb 或 .gltf 文件。');
-    });
-}
-
-function handleGlbFileSelect(event) {
-    const file = event.target.files && event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            parseAndDisplayGlb(ev.target.result, file.name);
-        };
-        reader.readAsArrayBuffer(file);
-    }
-}
-
-if (typeof window !== 'undefined') {
-    window.parseAndDisplayGlb = parseAndDisplayGlb;
-    window.handleGlbFileSelect = handleGlbFileSelect;
-}
-
-/**
- * 重置视角
- */
-function resetCamera() {
-    camera.position.set(0, 1.2, 3.8);
-    camera.lookAt(0, 0, 0);
-    if (currentGroup) currentGroup.rotation.set(0, 0, 0);
-    autoRotate = true;
-    const btn = document.getElementById('btn-rotate-toggle');
-    if (btn) btn.classList.add('active');
-}
-
-/**
- * 递归释放几何体与材质内存，彻底防止 WebGL 显存泄漏
- */
 function disposeGroup(grp) {
     if (!grp) return;
     grp.traverse((child) => {
         if (child.isMesh) {
             if (child.geometry) child.geometry.dispose();
             if (child.material) {
-                if (Array.isArray(child.material)) {
-                    child.material.forEach(m => m.dispose());
-                } else {
-                    child.material.dispose();
-                }
+                if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                else child.material.dispose();
             }
         }
     });
 }
 
-/**
- * 动画渲染循环 (智能视口节能：脱离视口自动暂停，入屏平滑恢复)
- */
 let isCanvasVisible = true;
-
 function setupVisibilityObserver(canvas) {
-    if (!canvas || !('IntersectionObserver' in window)) {
-        isCanvasVisible = true;
-        return;
-    }
+    if (!canvas || !('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
         const wasVisible = isCanvasVisible;
         isCanvasVisible = entries[0].isIntersecting;
-        if (!wasVisible && isCanvasVisible) {
-            requestAnimationFrame(animate);
-        }
-    }, { threshold: 0.05 });
+        if (!wasVisible && isCanvasVisible) requestAnimationFrame(animate);
+    }, { threshold: 0.04 });
     observer.observe(canvas);
 }
 
-function animate() {
+/**
+ * 主渲染循环：平滑相机阻尼插值 + 器物旋转 + 流金粒子漂浮 + 3D 锚点投影
+ */
+let lastFrameTime = 0;
+function animate(now) {
     if (!isCanvasVisible) return;
     requestAnimationFrame(animate);
-    if (currentGroup && autoRotate) {
-        currentGroup.rotation.y += 0.006;
+    if (now && now - lastFrameTime < 28) return;
+    lastFrameTime = now || 0;
+
+    // 1. 相机平滑阻尼追踪 (Damped Camera Interpolation)
+    camera.position.x += (camPosTarget.x - camera.position.x) * 0.08;
+    camera.position.y += (camPosTarget.y - camera.position.y) * 0.08;
+    camera.position.z += (camPosTarget.z - camera.position.z) * 0.08;
+
+    camLookCurrent.x += (camLookTarget.x - camLookCurrent.x) * 0.08;
+    camLookCurrent.y += (camLookTarget.y - camLookCurrent.y) * 0.08;
+    camLookCurrent.z += (camLookTarget.z - camLookCurrent.z) * 0.08;
+    camera.lookAt(camLookCurrent.x, camLookCurrent.y, camLookCurrent.z);
+
+    // 2. 器物与展厅内展品自转
+    if (currentGroup && autoRotate && exhibitionMode !== 'hall') {
+        currentGroup.rotation.y += 0.0055;
     }
+    if (hallGroup && exhibitionMode === 'hall') {
+        hallGroup.children.forEach(child => {
+            if (child.userData && child.userData.vitrineIndex !== undefined) {
+                const vGroup = child.children[child.children.length - 1];
+                if (vGroup) vGroup.rotation.y += 0.006;
+            }
+        });
+    }
+
+    // 3. 悬浮流金微粒缓缓上升与盘旋
+    if (particleSystem) {
+        particleSystem.rotation.y += 0.0012;
+        const pos = particleSystem.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            let py = pos.getY(i) + 0.0025;
+            if (py > 2.8) py = -1.2;
+            pos.setY(i, py);
+        }
+        pos.needsUpdate = true;
+    }
+
+    // 4. 更新 3D 空间解剖锚点屏幕坐标
+    updateHotspotsScreenProjection();
+
     renderer.render(scene, camera);
 }
 
-/**
- * 视口调整
- */
 function handleThreeResize() {
     const canvas = document.getElementById('three-canvas');
     if (!canvas || !renderer || !camera) return;
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
     camera.aspect = w / h;
-    const isMobile = window.innerWidth < 640;
-    camera.fov = isMobile ? 48 : 42;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
 }
 
 /**
- * 更新右侧/下方器物研鉴详情卡片
+ * 更新右侧器物研鉴详情卡片
  */
 function updateModelInfoCard(index) {
     const infoEl = document.getElementById('3d-model-info');
@@ -1711,65 +1981,60 @@ function updateModelInfoCard(index) {
 
     infoEl.innerHTML = `
         <div class="space-y-4">
-            <div class="flex items-start justify-between">
+            <div class="flex items-start justify-between gap-2">
                 <div>
-                    <span class="badge ${m.isScanned ? 'bg-amber-800 text-amber-100' : 'bg-tianqing-deep text-white'} text-xs mb-2 inline-block">
-                        ${m.isScanned ? '★ 真实文物三维扫描数字孪生' : m.period}
-                    </span>
-                    <h3 class="text-xl font-serif-cn text-text-title font-medium flex items-center gap-2">
-                        <span>${m.name}</span>
-                        ${m.isScanned ? '<span class="text-xs text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-sans font-normal border border-amber-300">真迹点云</span>' : ''}
-                    </h3>
-                    <p class="text-xs text-text-muted mt-1 font-serif-cn">${m.english}</p>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="badge bg-tianqing-deep text-white text-xs">${m.period}</span>
+                        <span class="text-[11px] font-mono text-amber-400">${m.dimensions || ''}</span>
+                    </div>
+                    <h3 class="text-xl font-serif-cn text-text-title font-semibold">${m.name}</h3>
+                    <p class="text-[11px] text-text-muted mt-0.5 font-serif-cn">${m.english}</p>
                 </div>
-                <div class="text-right">
-                    <span class="text-xs ${m.isScanned ? 'text-amber-900 bg-amber-100 border border-amber-300' : 'text-tianqing-deep bg-yuebai'} px-3 py-1 rounded-full font-medium">
-                        ${m.kiln}
-                    </span>
-                </div>
+                <span class="text-xs text-tianqing-deep bg-yuebai px-3 py-1 rounded-full font-medium shrink-0 border border-border-light">${m.kiln}</span>
             </div>
-            
-            <p class="text-sm text-text-body leading-relaxed font-light">${m.desc}</p>
-            
+
+            <p class="text-xs sm:text-sm text-text-body leading-relaxed font-light">${m.desc}</p>
+
             <div class="border-t border-border-light pt-3">
-                <h4 class="text-xs text-text-title font-medium mb-2 tracking-wider flex items-center justify-between">
-                    <span>${m.isScanned ? '【真迹采集测绘与物理特征】' : '【研鉴要领与器物特征】'}</span>
+                <h4 class="text-xs text-text-title font-medium mb-2.5 tracking-wider flex items-center justify-between">
+                    <span>【三维器物学与物理鉴藏要领】</span>
                     <button onclick="openMicroscopeView()" class="text-tianqing-deep hover:underline text-[11px] font-normal flex items-center gap-1">
                         <i class="fa-solid fa-microscope"></i>
-                        <span>100x显微镜观察</span>
+                        <span>100x晶相观察</span>
                     </button>
                 </h4>
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     ${m.features.map(f => `
-                        <div class="flex items-center gap-1.5 text-text-body ${m.isScanned ? 'bg-amber-50/80 border border-amber-100' : 'bg-bg-main'} p-2 rounded-lg">
-                            <i class="fa-solid ${m.isScanned ? 'fa-certificate text-amber-600' : 'fa-check text-tianqing'} text-[10px]"></i>
+                        <div class="flex items-center gap-1.5 text-text-body bg-bg-main p-2 rounded-lg border border-border-light">
+                            <i class="fa-solid fa-check text-amber-400 text-[10px]"></i>
                             <span>${f}</span>
                         </div>
                     `).join('')}
                 </div>
             </div>
+
+            <div class="pt-2 flex items-center justify-between gap-2 text-xs">
+                <button onclick="switchExhibitionMode(exhibitionMode === 'cutaway' ? 'inspector' : 'cutaway')" class="flex-1 py-2 px-3 rounded-xl bg-yuebai hover:bg-tianqing hover:text-white text-text-title font-serif-cn transition-colors flex items-center justify-center gap-1.5 border border-border-light">
+                    <i class="fa-solid fa-layer-group text-tianqing-deep"></i>
+                    <span>切换 X光胎壁剖面</span>
+                </button>
+                <button onclick="switchExhibitionMode(exhibitionMode === 'hall' ? 'inspector' : 'hall')" class="flex-1 py-2 px-3 rounded-xl bg-tianqing-deep text-white hover:bg-tianqing font-serif-cn transition-colors flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-building-columns text-amber-200"></i>
+                    <span>${exhibitionMode === 'hall' ? '返回单器精鉴' : '在全景展厅观摩'}</span>
+                </button>
+            </div>
         </div>
     `;
 }
 
-/**
- * 按钮高亮管理 (区分实物扫描真品与御窑复原)
- */
 function highlightActiveModelBtn(index) {
     document.querySelectorAll('.model-btn').forEach((btn, i) => {
-        const isScan = i < 2;
         if (i === index) {
-            if (isScan) {
-                btn.className = 'model-btn px-3.5 py-1.5 text-xs rounded-full bg-amber-800 text-white font-serif-cn transition-all shrink-0 shadow-sm flex items-center gap-1.5 ring-2 ring-amber-500';
-            } else {
-                btn.className = 'model-btn px-3 py-1.5 text-xs rounded-full bg-tianqing-deep text-white font-serif-cn transition-all shrink-0 shadow-sm flex items-center gap-1';
-            }
+            btn.classList.add('bg-tianqing-deep', 'text-white');
+            btn.classList.remove('bg-yuebai', 'text-text-body');
         } else {
-            if (isScan) {
-                btn.className = 'model-btn px-3.5 py-1.5 text-xs rounded-full bg-amber-100/90 text-amber-900 border border-amber-300 font-serif-cn transition-all shrink-0 flex items-center gap-1.5 hover:bg-amber-200';
-            } else {
-                btn.className = 'model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20';
-            }
+            btn.classList.remove('bg-tianqing-deep', 'text-white');
+            btn.classList.add('bg-yuebai', 'text-text-body');
         }
     });
 }
@@ -1777,14 +2042,14 @@ function highlightActiveModelBtn(index) {
 function highlightActiveGlazeBtn(glazeKey) {
     document.querySelectorAll('.glaze-btn').forEach(btn => {
         if (btn.dataset.glaze === glazeKey) {
-            btn.classList.add('ring-2', 'ring-tianqing-deep', 'scale-105');
+            btn.classList.add('ring-2', 'scale-105');
         } else {
-            btn.classList.remove('ring-2', 'ring-tianqing-deep', 'scale-105');
+            btn.classList.remove('ring-2', 'scale-105');
         }
     });
 }
 
-// 挂载至全局，便于 HTML 事件调用
+// 挂载全局方法
 window.initThreeJS = initThreeJS;
 window.loadPorcelainModel = loadPorcelainModel;
 window.switchGlaze = switchGlaze;
@@ -1796,4 +2061,10 @@ window.setCameraView = setCameraView;
 window.resetCamera = resetCamera;
 window.openMicroscopeView = openMicroscopeView;
 window.closeMicroscopeView = closeMicroscopeView;
-
+window.switchExhibitionMode = switchExhibitionMode;
+window.toggleCuratorialTour = toggleCuratorialTour;
+window.toggle3DHotspots = toggle3DHotspots;
+window.focusHotspot = focusHotspot;
+window.setStudioLighting = setStudioLighting;
+window.rotateMainLight = rotateMainLight;
+window.toggle3DFullscreen = toggle3DFullscreen;
