@@ -9,21 +9,13 @@
     <title>华夏器道 — 中国古代传统文化与古瓷数字化研鉴空间</title>
     <meta name="description" content="华夏器道 - 个人古代传统文化与古陶瓷数字化研鉴空间。3D WebGL 传世古瓷仿真、AI 智能识瓷鉴宝、陶瓷通史与东方美学体系。">
 
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Font Awesome 6 (本地极速加载，零网络阻塞) -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
 
     <!-- 自定义水墨与宋韵定制样式 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<!-- ==================== 加载遮罩屏 ==================== -->
-<div id="loading-screen">
-    <div class="text-center">
-        <div class="loader-ring mx-auto mb-4"></div>
-        <p class="text-text-body text-sm tracking-wider font-serif-cn" data-i18n="loading">正在载入华夏器物美学长卷...</p>
-    </div>
-</div>
 
 <!-- 移动端侧滑遮罩层 -->
 <div id="mobile-menu-overlay" class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
@@ -123,9 +115,9 @@
             <span data-i18n="hero.badge">个人学术与数字文博专栏 · 独立研鉴</span>
         </div>
 
-        <!-- 传世名器主图 (高精度渲染器物) -->
+        <!-- 传世名器主图 (高精度极速渲染器物) -->
         <div class="hero-main-image mb-6 fade-up">
-            <img src="./images/1.png" alt="宋代官瓷八方瓶" class="mx-auto rounded-2xl drop-shadow-2xl" style="max-height:360px; max-width:100%; object-fit:contain;" fetchpriority="high" decoding="async">
+            <img src="./images/1.jpg" alt="宋代官瓷八方瓶" class="mx-auto rounded-2xl drop-shadow-2xl" style="max-height:360px; max-width:100%; object-fit:contain;" fetchpriority="high" decoding="async">
         </div>
 
         <h1 class="text-text-title text-3xl sm:text-4xl md:text-5xl font-serif-cn font-medium tracking-widest mb-4 fade-up" data-i18n="hero.title">器以载道 · 格物致知</h1>
@@ -808,8 +800,8 @@
     <i class="fa-solid fa-chevron-up text-sm"></i>
 </button>
 
-<!-- 核心脚本加载链路 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- 核心脚本加载链路 (本地极速加载，零网络阻塞) -->
+<script src="js/three.min.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/data.js"></script>
 <script src="js/three-scene.js"></script>
