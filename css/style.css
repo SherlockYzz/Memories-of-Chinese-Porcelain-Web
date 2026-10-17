@@ -1663,3 +1663,31 @@ section[id] {
     border-color: var(--tianqing);
     transform: translateY(-1px);
 }
+
+
+/* ==================== 昼夜展陈罗盘切换仪专属样式 ==================== */
+.active-theme-pill {
+    background: #FFFFFF !important;
+    color: #1A2733 !important;
+    border: 1px solid rgba(197, 160, 89, 0.55) !important;
+    box-shadow: 0 4px 14px rgba(197, 160, 89, 0.28), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    font-weight: 600 !important;
+}
+
+html[data-theme="dark"] .active-theme-pill {
+    background: #172433 !important;
+    color: #F5D184 !important;
+    border: 1px solid rgba(240, 205, 120, 0.85) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 14px rgba(240, 205, 120, 0.40) !important;
+    font-weight: 600 !important;
+}
+
+#btn-floating-theme {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(197, 160, 89, 0.35);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html[data-theme="dark"] #btn-floating-theme {
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 18px rgba(214, 177, 106, 0.45);
+    background: rgba(18, 28, 38, 0.94) !important;
+}

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -6,8 +6,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#080C10">
-    <title>华夏器道 · 仝瓷记忆 — 中国古陶瓷 3D 数字博物院与智能研鉴空间 (V3.0 旗舰全量版)</title>
-    <meta name="description" content="华夏器道 · 仝瓷记忆 (V3.0) — 殿堂级中国古代传统文化与古陶瓷数字化研鉴空间。集成真实3D物理室内场景、1:1实测三维扫描真品孪生、WebGL双层清漆PBR渲染、Sobel开片应力计算机视觉鉴宝、古瓷釉料化学实验室、宋代点茶百戏与1300℃龙窑拉坯造物工坊。">
+    <title>华夏器道 · 仝瓷记忆 — 中国古陶瓷 3D 数字博物院与智能研鉴空间 (V3.2 旗舰至尊版)</title>
+    <meta name="description" content="华夏器道 · 仝瓷记忆 (V3.2) — 殿堂级中国古代传统文化与古陶瓷数字化研鉴空间。集成真实3D物理室内场景、1:1实测三维扫描真品孪生、WebGL双层清漆PBR渲染、Sobel开片应力计算机视觉鉴宝、古瓷釉料化学实验室、宋代点茶百戏与1300℃龙窑拉坯造物工坊。">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
 
     <!-- Font Awesome 6 (本地极速加载) -->
@@ -30,7 +30,7 @@
                         <span class="font-serif-cn font-bold text-text-title text-lg tracking-widest" data-i18n="brand">华夏器道</span>
                         <span class="hero-seal-stamp">仝瓷记忆</span>
                     </div>
-                    <span class="text-[10px] text-text-muted tracking-wider font-light">古陶瓷 3D 数字博物院 · 非遗活态研鉴空间 (V3.0)</span>
+                    <span class="text-[10px] text-text-muted tracking-wider font-light">古陶瓷 3D 数字博物院 · 非遗活态研鉴空间 (V3.2)</span>
                 </div>
             </a>
 
@@ -129,7 +129,7 @@
             <!-- 左侧 7列：东方宋韵大标题与核心数字文博导览 -->
             <div class="lg:col-span-7 text-left space-y-5">
                 <div class="inline-flex flex-wrap items-center gap-2.5 px-4 py-1.5 rounded-full bg-yuebai border border-border-light text-tianqing-deep text-xs font-serif-cn shadow-sm">
-                    <span class="hero-seal-stamp">V3.0 旗舰全量版</span>
+                    <span class="hero-seal-stamp">V3.2 旗舰至尊版</span>
                     <span data-i18n="hero.badge">真实 3D 物理室内雅室 · 1:1实测三维扫描孪生 · 纯前端 CV 视觉鉴宝 · 语音导览与非遗工坊</span>
                 </div>
 
@@ -280,6 +280,24 @@
             <h2 data-i18n="3d.sectionTitle">传世名瓷 · 3D全息数字文博馆</h2>
             <p class="section-subtitle" data-i18n="3d.sectionSub">集成【2尊1:1实测三维扫描真品 + 7尊128段高精度程序化标准器】· 支持单器精鉴、全景展厅漫游与X光胎骨剖面</p>
             <div class="section-divider"></div>
+        </div>
+
+        <!-- 🌟 核心展陈视效：晴窗抚古 (白昼) / 夜宴观瓷 (暗夜) C位显性切换胶囊 -->
+        <div class="flex justify-center mb-8">
+            <div class="inline-flex items-center p-1.5 rounded-full bg-yuebai border border-border-hover shadow-lg backdrop-blur-md gap-1">
+                <span class="text-xs font-serif-cn text-text-title font-bold px-3 flex items-center gap-1.5">
+                    <i class="fa-solid fa-sun-plant-wilt text-amber-500"></i>
+                    <span>展陈昼夜光景：</span>
+                </span>
+                <button id="stage-btn-day" onclick="setMuseumTheme('light')" class="px-4 py-1.5 rounded-full text-xs font-serif-cn font-medium transition-all flex items-center gap-1.5 shadow-sm active-theme-pill" title="白昼观景：宋韵澄心堂宣纸暖阳，青瓷温润如玉">
+                    <i class="fa-solid fa-sun text-amber-500"></i>
+                    <span>☀️ 晴窗抚古 (白昼素雅)</span>
+                </button>
+                <button id="stage-btn-night" onclick="setMuseumTheme('dark')" class="px-4 py-1.5 rounded-full text-xs font-serif-cn font-medium transition-all flex items-center gap-1.5 text-text-muted hover:text-amber-400" title="夜晚观景：故宫夜宴暗夜流金，聚光灯与烛光照彻宝光">
+                    <i class="fa-solid fa-moon text-blue-400"></i>
+                    <span>🌙 夜宴观瓷 (暗夜玄金)</span>
+                </button>
+            </div>
         </div>
 
         <!-- 3D 研鉴交互工作台 (7:5 黄金分栏) -->
@@ -1259,7 +1277,7 @@
             </div>
         </div>
         <div class="border-t border-white/10 pt-8 text-center text-xs text-white/40 font-light tracking-wider font-serif-cn">
-            <p data-i18n="footer.copyright">&copy; 2026 华夏器道 · 仝瓷记忆 (V3.0 旗舰全量版) — 中国古代传统文化与古瓷数字化研鉴空间.</p>
+            <p data-i18n="footer.copyright">&copy; 2026 华夏器道 · 仝瓷记忆 (V3.2 旗舰至尊版) — 中国古代传统文化与古瓷数字化研鉴空间.</p>
         </div>
     </div>
 </footer>

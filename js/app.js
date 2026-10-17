@@ -131,25 +131,83 @@ function switchHeroShowcase(imgSrc, titleText, modelIdx, btnEl) {
     if (typeof playPorcelainChime === 'function') playPorcelainChime(2520);
 }
 
-function toggleMuseumTheme() {
+function setMuseumTheme(theme, showToastMsg = true) {
     const html = document.documentElement;
-    const current = html.getAttribute('data-theme') || 'light';
-    const next = current === 'light' ? 'dark' : 'light';
-    html.setAttribute('data-theme', next);
+    html.setAttribute('data-theme', theme);
 
-    const icon = document.getElementById('theme-toggle-icon');
-    const label = document.getElementById('theme-toggle-label');
-    if (next === 'dark') {
-        if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-xs';
-        if (label) label.textContent = '晴窗抚古';
-        showToast('🌙 已切换至【夜宴观瓷 · 故宫夜巡】暗调沉浸主题');
-        if (typeof switchRealisticSceneEnv === 'function') switchRealisticSceneEnv('palace', false);
+    // 1. 同步顶部导航栏主题按钮
+    const navIcon = document.getElementById('theme-toggle-icon');
+    const navLabel = document.getElementById('theme-toggle-label');
+
+    // 2. 同步 3D 展馆 C 位显性切换胶囊
+    const stageBtnDay = document.getElementById('stage-btn-day');
+    const stageBtnNight = document.getElementById('stage-btn-night');
+
+    // 3. 同步屏幕右侧常驻浮动罗盘
+    const floatIcon = document.getElementById('floating-theme-icon');
+    const floatTitle = document.getElementById('floating-theme-title');
+    const floatSub = document.getElementById('floating-theme-sub');
+
+    if (theme === 'dark') {
+        // 暗夜模式【夜宴观瓷】
+        if (navIcon) navIcon.className = 'fa-solid fa-sun text-amber-400 text-xs';
+        if (navLabel) navLabel.textContent = '晴窗抚古';
+
+        if (stageBtnDay) {
+            stageBtnDay.classList.remove('active-theme-pill');
+            stageBtnDay.classList.add('text-text-muted');
+        }
+        if (stageBtnNight) {
+            stageBtnNight.classList.add('active-theme-pill');
+            stageBtnNight.classList.remove('text-text-muted');
+        }
+
+        if (floatIcon) floatIcon.className = 'fa-solid fa-sun text-amber-400';
+        if (floatTitle) { floatTitle.textContent = '切至白昼晴窗'; floatTitle.className = 'font-bold text-tianqing-deep'; }
+        if (floatSub) floatSub.textContent = '当前：暗夜夜宴';
+
+        if (showToastMsg && typeof showToast === 'function') {
+            showToast('🌙 已切换至【夜宴观瓷 · 故宫夜巡】暗夜沉浸主题！浑天流金星轨与烛光已亮起');
+        }
+        if (typeof switchRealisticSceneEnv === 'function') {
+            switchRealisticSceneEnv('palace', false);
+        }
     } else {
-        if (icon) icon.className = 'fa-solid fa-moon text-tianqing-deep text-xs';
-        if (label) label.textContent = '夜宴观瓷';
-        showToast('☀️ 已切换至【晴窗抚古 · 澄心堂】宋韵宣纸素雅主题');
-        if (typeof switchRealisticSceneEnv === 'function') switchRealisticSceneEnv('studio', false);
+        // 白昼模式【晴窗抚古】
+        if (navIcon) navIcon.className = 'fa-solid fa-moon text-tianqing-deep text-xs';
+        if (navLabel) navLabel.textContent = '夜宴观瓷';
+
+        if (stageBtnDay) {
+            stageBtnDay.classList.add('active-theme-pill');
+            stageBtnDay.classList.remove('text-text-muted');
+        }
+        if (stageBtnNight) {
+            stageBtnNight.classList.remove('active-theme-pill');
+            stageBtnNight.classList.add('text-text-muted');
+        }
+
+        if (floatIcon) floatIcon.className = 'fa-solid fa-moon text-blue-400';
+        if (floatTitle) { floatTitle.textContent = '切至暗夜夜宴'; floatTitle.className = 'font-bold text-amber-500'; }
+        if (floatSub) floatSub.textContent = '当前：白昼晴窗';
+
+        if (showToastMsg && typeof showToast === 'function') {
+            showToast('☀️ 已切换至【晴窗抚古 · 澄心堂】宋韵白昼宣纸雅集主题！温润天光映照青瓷玉质');
+        }
+        if (typeof switchRealisticSceneEnv === 'function') {
+            switchRealisticSceneEnv('studio', false);
+        }
     }
+
+    // 触发全局 3D 引力冲击波，令用户视觉震撼感知昼夜气象切换！
+    if (typeof window.triggerOrientalShockwave === 'function') {
+        window.triggerOrientalShockwave(window.innerWidth * 0.5, window.innerHeight * 0.5);
+    }
+}
+
+function toggleMuseumTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'light' ? 'dark' : 'light';
+    setMuseumTheme(next, true);
 }
 
 // ================================================================
