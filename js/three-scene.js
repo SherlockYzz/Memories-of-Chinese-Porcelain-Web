@@ -1,5 +1,5 @@
 ﻿/**
- * 华夏器道 · 仝瓷记忆 — 旗舰级 3D 数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
+ * 华夏器道 · 天青泥火 — 旗舰级 3D 数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
  * 2. 博物馆级暗调金碧水墨屏风背景，彻底解决前景青瓷/白瓷过曝问题，凸显双层清漆 (Clearcoat) 玉质感
@@ -3051,7 +3051,7 @@ function strike3DVesselSound() {
  * 语音策展讲解 (Web Speech API)
  */
 /**
- * 华夏器道 · 仝瓷记忆 — 小米 MiMo 博物馆资深讲解员原声导览引擎 (双核状态机 + 零延迟秒开)
+ * 华夏器道 · 天青泥火 — 小米 MiMo 博物馆资深讲解员原声导览引擎 (双核状态机 + 零延迟秒开)
  */
 let currentCuratorAudio = null;
 let isCuratorAudioPlaying = false;
@@ -3204,7 +3204,7 @@ function capture3DSnapshot() {
     // 底部博物馆典藏题签栏
     ctx.fillStyle = '#EEF4F7';
     ctx.font = 'bold 26px "Noto Serif SC", "Songti SC", serif';
-    ctx.fillText(`华夏器道 · 仝瓷记忆 — ${m.name}`, 45, 775);
+    ctx.fillText(`华夏器道 · 天青泥火 — ${m.name}`, 45, 775);
 
     ctx.fillStyle = '#8BC2CE';
     ctx.font = '16px "Noto Serif SC", sans-serif';

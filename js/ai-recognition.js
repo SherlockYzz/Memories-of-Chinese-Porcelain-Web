@@ -1,5 +1,5 @@
 ﻿/**
- * 华夏器道 · 仝瓷记忆 — AI 智能古瓷计算机视觉与多维光谱研考工作站 (National Award Flagship CV Engine)
+ * 华夏器道 · 天青泥火 — AI 智能古瓷计算机视觉与多维光谱研考工作站 (National Award Flagship CV Engine)
  * 核心升级：
  * 1. 纯前端真实像素级计算机视觉算子：
  *    - Sobel 一阶梯度卷积算子实时生成【高频开片裂隙与器型边缘特征图 (#ai-edge-canvas)】
@@ -814,7 +814,7 @@ function downloadAiCertificate() {
     // 2. 顶部证书标题
     ctx.fillStyle = '#E5C888';
     ctx.font = 'bold 30px "Noto Serif SC", "Songti SC", serif';
-    ctx.fillText('华夏器道 · 仝瓷记忆 — 古陶瓷数字化研鉴证书', 60, 88);
+    ctx.fillText('华夏器道 · 天青泥火 — 古陶瓷数字化研鉴证书', 60, 88);
 
     ctx.fillStyle = '#8BC2CE';
     ctx.font = '14px monospace';
@@ -898,7 +898,7 @@ function downloadAiCertificate() {
 
     ctx.fillStyle = '#768999';
     ctx.font = '13px "Noto Serif SC", serif';
-    ctx.fillText('签证机构：华夏器道 · 仝瓷记忆中国古陶瓷数字化研鉴空间（计算机视觉与光谱实验室）', 60, 685);
+    ctx.fillText('签证机构：华夏器道 · 天青泥火中国古陶瓷数字化研鉴空间（计算机视觉与光谱实验室）', 60, 685);
 
     const link = document.createElement('a');
     link.download = `华夏器道_AI数字研鉴证书_${sourceName}_${Date.now()}.png`;

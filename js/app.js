@@ -1,5 +1,5 @@
 ﻿/**
- * 华夏器道 · 仝瓷记忆 — 前端综合调度主控制器 (National Award Flagship App Controller)
+ * 华夏器道 · 天青泥火 — 前端综合调度主控制器 (National Award Flagship App Controller)
  * 核心涵盖：
  * 1. 首屏水墨流金粒子动态背景 (#hero-ambient-canvas) 与特展双模展柜切换
  * 2. 宣纸雅集(Light) / 玄金暗夜博物院(Dark) 双主题实时切换
@@ -1728,7 +1728,7 @@ function exportStudyNotes() {
     const userNotes = notesInput ? notesInput.value : '';
     const favItems = archivePorcelains.filter(item => studyBookmarks.includes(item.id));
 
-    let content = `# 华夏器道 · 仝瓷记忆个人古瓷研学手记\n\n`;
+    let content = `# 华夏器道 · 天青泥火个人古瓷研学手记\n\n`;
     content += `> 研学导出时间：${new Date().toLocaleString()}\n\n`;
     content += `## 一、典藏标本收录清单 (${favItems.length} 件)\n\n`;
     if (favItems.length === 0) {

@@ -1,5 +1,5 @@
 ﻿/**
- * 华夏器道 · 仝瓷记忆 — 3D光影指尖拉坯、自由青花手绘、底款篆刻与1300℃龙窑温控曲线仿真引擎
+ * 华夏器道 · 天青泥火 — 3D光影指尖拉坯、自由青花手绘、底款篆刻与1300℃龙窑温控曲线仿真引擎
  * 核心升级：
  * 1. 48层高密度曲面切片 + Blinn-Phong 3D法线高光 + 实时计算器高(cm)、口径(cm)、腹径(cm)、容积(mL)与宋韵美学评分
  * 2. 五大造物交互手法：向内收束 / 向外鼓腹 / 竹刀修光 / 深刻弦纹 / 【青花自由手绘笔刷 (指尖直接在旋转坯体上绘青花环带)】
@@ -913,7 +913,7 @@ function downloadPotteryArtwork() {
     // 顶部博物院藏品抬头
     ctx.fillStyle = '#E5C888';
     ctx.font = 'bold 28px "Noto Serif SC", "Songti SC", serif';
-    ctx.fillText('华夏器道 · 仝瓷记忆 — 陶然天成数字藏品证书', 56, 86);
+    ctx.fillText('华夏器道 · 天青泥火 — 陶然天成数字藏品证书', 56, 86);
     ctx.fillStyle = '#8BC2CE';
     ctx.font = '14px monospace';
     ctx.fillText(`DIGITAL TWIN NFT ID: #TC-${Date.now().toString().slice(-6)}   |   1300℃ DRAGON KILN CERTIFIED`, 56, 114);
@@ -949,7 +949,7 @@ function downloadPotteryArtwork() {
 
     ctx.fillStyle = '#768999';
     ctx.font = '14px "Noto Serif SC", serif';
-    ctx.fillText('“雨过天青云破处，这般颜色做将来。” —— 华夏器道 · 仝瓷记忆数字造物工坊监制', 56, 965);
+    ctx.fillText('“雨过天青云破处，这般颜色做将来。” —— 华夏器道 · 天青泥火数字造物工坊监制', 56, 965);
 
     const link = document.createElement('a');
     link.download = `华夏器道_数字藏品证书_${currentPotSeal}_${Date.now()}.png`;
