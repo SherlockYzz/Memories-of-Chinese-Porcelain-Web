@@ -179,7 +179,7 @@
                     <!-- 浮动使用提示 -->
                     <div class="canvas-hint-badge">
                         <i class="fa-solid fa-arrows-spin text-tianqing"></i>
-                        <span>按住鼠标拖拽旋转 · 滚轮自由缩放 · 双击复位</span>
+                        <span>按住拖拽旋转 · 滚轮缩放 · 双击复位 · 支持拖拽/导入实物 .glb 扫描件</span>
                     </div>
 
                     <!-- 3D WebGL Canvas -->
@@ -208,6 +208,10 @@
                         <button class="canvas-tool-btn" onclick="setCameraView('bottom')" title="底足圈足特写">
                             <i class="fa-solid fa-shoe-prints"></i>
                         </button>
+                        <button class="canvas-tool-btn" onclick="document.getElementById('glb-model-input').click()" title="导入本地实物扫描 3D 模型 (.glb / .gltf)">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </button>
+                        <input type="file" id="glb-model-input" accept=".glb,.gltf" style="display:none;" onchange="handleGlbFileSelect(event)">
                         <button class="canvas-tool-btn" onclick="resetCamera()" title="还原正重视角">
                             <i class="fa-solid fa-arrows-to-dot"></i>
                         </button>
@@ -802,6 +806,7 @@
 
 <!-- 核心脚本加载链路 (本地极速加载，零网络阻塞) -->
 <script src="js/three.min.js"></script>
+<script src="js/GLTFLoader.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/data.js"></script>
 <script src="js/three-scene.js"></script>

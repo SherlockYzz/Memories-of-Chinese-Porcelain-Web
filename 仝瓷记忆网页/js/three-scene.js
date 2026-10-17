@@ -168,10 +168,144 @@ const glazePalettes = {
     }
 };
 
-// 内存中生成的开片、青花、兔毫动态贴图缓存
+// 内存中生成的开片、青花、兔毫、法线与展厅环境贴图缓存
 let crackleTextureCache = null;
+let crackleNormalCache = null;
 let qinghuaTextureCache = null;
 let tuhaoTextureCache = null;
+let studioEnvTextureCache = null;
+
+/**
+ * 展厅级物理环境反射贴图 (IBL Environment Map)
+ * 渲染宋式文雅幽暗展厅的柔光箱、冷暖补光与实木地面漫射，给瓷器釉面注入镜面清漆反射灵魂
+ */
+function setupStudioEnvironment(r) {
+    if (!scene) return;
+    try {
+        if (!studioEnvTextureCache) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // 展厅幽暗主色 (深墨青木质展厅)
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, 512);
+            bgGrad.addColorStop(0, '#101418');
+            bgGrad.addColorStop(0.48, '#1e262c');
+            bgGrad.addColorStop(1, '#0c0f12');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, 1024, 512);
+
+            // 顶部主柔光箱 (Warm Overhead Studio Softbox)
+            const softbox1 = ctx.createRadialGradient(512, 110, 8, 512, 110, 220);
+            softbox1.addColorStop(0, 'rgba(255, 252, 242, 1.0)');
+            softbox1.addColorStop(0.25, 'rgba(255, 240, 215, 0.75)');
+            softbox1.addColorStop(0.65, 'rgba(195, 215, 230, 0.22)');
+            softbox1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = softbox1;
+            ctx.fillRect(200, 0, 624, 280);
+
+            // 左侧青冷调漫反射板 (Cool Side Fill - 勾勒青瓷冷翠轮廓)
+            const softbox2 = ctx.createRadialGradient(160, 250, 5, 160, 250, 180);
+            softbox2.addColorStop(0, 'rgba(205, 235, 245, 0.85)');
+            softbox2.addColorStop(0.35, 'rgba(150, 195, 215, 0.35)');
+            softbox2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = softbox2;
+            ctx.fillRect(0, 80, 360, 340);
+
+            // 右侧暖金调边缘轮廓光 (Warm Accent Light)
+            const softbox3 = ctx.createRadialGradient(860, 220, 5, 860, 220, 160);
+            softbox3.addColorStop(0, 'rgba(255, 235, 205, 0.8)');
+            softbox3.addColorStop(0.4, 'rgba(215, 175, 130, 0.3)');
+            softbox3.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = softbox3;
+            ctx.fillRect(680, 70, 344, 300);
+
+            // 地面微反光
+            const floorGrad = ctx.createLinearGradient(0, 380, 0, 512);
+            floorGrad.addColorStop(0, 'rgba(32, 44, 52, 0.45)');
+            floorGrad.addColorStop(1, 'rgba(10, 13, 16, 0.95)');
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, 380, 1024, 132);
+
+            const envTexture = new THREE.CanvasTexture(canvas);
+            envTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+            if (r && typeof THREE.PMREMGenerator !== 'undefined') {
+                try {
+                    const pmrem = new THREE.PMREMGenerator(r);
+                    pmrem.compileEquirectangularShader();
+                    const envTarget = pmrem.fromEquirectangular(envTexture);
+                    studioEnvTextureCache = envTarget.texture;
+                    envTexture.dispose();
+                    pmrem.dispose();
+                } catch (e) {
+                    studioEnvTextureCache = envTexture;
+                }
+            } else {
+                studioEnvTextureCache = envTexture;
+            }
+        }
+        scene.environment = studioEnvTextureCache;
+    } catch (err) {
+        console.warn('[ThreeJS 展厅环境光照] IBL 环境贴图跳过:', err);
+    }
+}
+
+/**
+ * 动态程序化生成具有切线空间物理微凹凸的开片/橘皮法线贴图 (Normal Map)
+ */
+function generateCrackleNormalMap() {
+    if (crackleNormalCache) return crackleNormalCache;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    // 基础切线空间法线颜色：纯平面 (128, 128, 255)
+    ctx.fillStyle = 'rgb(128, 128, 255)';
+    ctx.fillRect(0, 0, 1024, 1024);
+
+    // 1. 绘制带有左右法线倾角的物理开片槽
+    const points = [];
+    for (let i = 0; i < 48; i++) {
+        points.push({ x: (i * 137 + 43) % 1024, y: (i * 283 + 97) % 1024 });
+    }
+
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+            const dist = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
+            if (dist < 180) {
+                // 左侧阳面微倾斜
+                ctx.strokeStyle = 'rgb(162, 128, 255)';
+                ctx.beginPath();
+                ctx.moveTo(points[i].x - 1, points[i].y - 1);
+                ctx.lineTo(points[j].x - 1, points[j].y - 1);
+                ctx.stroke();
+
+                // 右侧阴面微倾斜
+                ctx.strokeStyle = 'rgb(94, 128, 255)';
+                ctx.beginPath();
+                ctx.moveTo(points[i].x + 1, points[i].y + 1);
+                ctx.lineTo(points[j].x + 1, points[j].y + 1);
+                ctx.stroke();
+            }
+        }
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 2);
+    crackleNormalCache = texture;
+    return texture;
+}
 
 /**
  * 动态程序化生成金丝铁线/冰裂纹理贴图 (HTML5 Canvas 离屏绘制)
@@ -380,6 +514,9 @@ function initThreeJS() {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+        // 3.5. 搭建文博展厅物理环境光照 (IBL Environment Map - 赋能清漆镜面与玉质反射)
+        setupStudioEnvironment(renderer);
+
         // 4. 灯光系统 (主光、侧补光、轮廓逆光、文人雅室漫射环境光)
         ambientLight = new THREE.AmbientLight(0xdbe6ea, 0.75);
         scene.add(ambientLight);
@@ -454,15 +591,15 @@ function createPedestal() {
 }
 
 /**
- * 生成当前选定釉色的 PBR MeshPhysicalMaterial
+ * 生成当前选定釉色的 PBR MeshPhysicalMaterial (高仿真微观物理材质)
  */
 function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
-    // 铁足胎骨专用材质 (紫黑灰褐胎)
+    // 铁足胎骨专用材质 (紫黑灰褐铁胎，粗糙干涩露胎)
     if (isTieZu) {
         return new THREE.MeshStandardMaterial({
-            color: 0x33261f,
-            roughness: 0.85,
-            metalness: 0.15,
+            color: 0x2b1e17,
+            roughness: 0.92,
+            metalness: 0.12,
             wireframe: isWireframe
         });
     }
@@ -473,21 +610,33 @@ function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
         emissive: cfg.emissive,
         roughness: cfg.roughness,
         metalness: cfg.metalness,
-        clearcoat: cfg.clearcoat,
-        clearcoatRoughness: cfg.clearcoatRoughness,
-        ior: cfg.ior,
-        reflectivity: cfg.reflectivity,
-        wireframe: isWireframe
+        clearcoat: cfg.clearcoat || 0.96,
+        clearcoatRoughness: cfg.clearcoatRoughness || 0.05,
+        ior: cfg.ior || 1.52,
+        reflectivity: cfg.reflectivity || 0.85,
+        wireframe: isWireframe,
+        envMapIntensity: 1.35
     };
 
-    // 贴图混合
+    // 贴图与法线物理混合
     if (glazeKey === 'qinghua') {
         matOptions.map = generateQinghuaTexture();
+        matOptions.roughness = 0.14;
+        matOptions.clearcoat = 0.98;
+        matOptions.clearcoatRoughness = 0.04;
     } else if (glazeKey === 'jianhei') {
         matOptions.map = generateTuhaoTexture();
+        matOptions.roughness = 0.28;
+        matOptions.metalness = 0.18;
+        matOptions.clearcoat = 0.85;
     } else if (showCrackle) {
-        // 宋官窑、汝窑、哥窑添加金丝铁线/冰裂法线模拟
+        // 宋官窑、汝窑、哥窑金丝铁线与冰裂纹：双重贴图（漫反射染色 + 物理微凹凸法线）
         matOptions.map = generateCrackleTexture();
+        const normMap = generateCrackleNormalMap();
+        if (normMap) {
+            matOptions.normalMap = normMap;
+            matOptions.normalScale = new THREE.Vector2(0.28, 0.28);
+        }
     }
 
     return new THREE.MeshPhysicalMaterial(matOptions);
@@ -1123,6 +1272,110 @@ function setupControls(canvas) {
     canvas.addEventListener('dblclick', () => {
         resetCamera();
     });
+
+    // 支持拖拽本地实物扫描 .glb / .gltf 文件直接投放到 3D 展台研鉴
+    canvas.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        canvas.style.outline = '2px dashed #5A9CA8';
+        canvas.style.outlineOffset = '-6px';
+    });
+    canvas.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        canvas.style.outline = 'none';
+    });
+    canvas.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        canvas.style.outline = 'none';
+        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file && (file.name.toLowerCase().endsWith('.glb') || file.name.toLowerCase().endsWith('.gltf'))) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                parseAndDisplayGlb(ev.target.result, file.name);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+}
+
+/**
+ * 解析并载入外部 .glb / .gltf 瓷器扫描模型文件 (ArrayBuffer)
+ */
+function parseAndDisplayGlb(arrayBuffer, modelName = '实物扫描模型') {
+    if (typeof THREE.GLTFLoader === 'undefined') {
+        alert('GLTFLoader 正在初始化，请稍候');
+        return;
+    }
+    const loader = new THREE.GLTFLoader();
+    loader.parse(arrayBuffer, '', (gltf) => {
+        const model = gltf.scene || gltf.scenes[0];
+        if (!model) return;
+
+        // 计算真实包围盒，自适应居中并缩放至标准展台尺寸
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetScale = 2.0 / (maxDim || 1);
+        model.scale.set(targetScale, targetScale, targetScale);
+
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.x = -center.x * targetScale;
+        model.position.y = -center.y * targetScale + 0.1;
+        model.position.z = -center.z * targetScale;
+
+        // 为扫描模型中的所有网格启用阴影与展厅物理环境光照
+        model.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                if (child.material) {
+                    child.material.envMapIntensity = 1.35;
+                }
+            }
+        });
+
+        if (currentGroup) {
+            disposeGroup(currentGroup);
+            scene.remove(currentGroup);
+        }
+
+        currentGroup = new THREE.Group();
+        currentGroup.add(model);
+        scene.add(currentGroup);
+
+        // 重置视角与光照
+        camera.position.set(0, 1.2, 3.8);
+        camera.lookAt(0, 0, 0);
+
+        // 更新 UI 说明卡片
+        const titleEl = document.getElementById('model-detail-title');
+        const descEl = document.getElementById('model-detail-desc');
+        if (titleEl) titleEl.textContent = `实物真迹扫描 · ${modelName}`;
+        if (descEl) descEl.textContent = '此模型为外置高精度实物三维激光扫描/摄影测量重建物体，已接入展厅 PBR 环境光照渲染与物理阴影系统。';
+        if (typeof showToast === 'function') {
+            showToast(`已成功载入实物扫描 3D 模型：${modelName}`);
+        }
+    }, (err) => {
+        console.error('[GLTF Loader] 模型解析失败:', err);
+        alert('所选 3D 文件解析异常，请确保为标准的 .glb 或 .gltf 文件。');
+    });
+}
+
+function handleGlbFileSelect(event) {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            parseAndDisplayGlb(ev.target.result, file.name);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.parseAndDisplayGlb = parseAndDisplayGlb;
+    window.handleGlbFileSelect = handleGlbFileSelect;
 }
 
 /**
