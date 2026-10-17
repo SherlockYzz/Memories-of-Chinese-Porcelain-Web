@@ -1,19 +1,1423 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>华夏器道 — 中国古代传统文化与古瓷数字化研鉴空间</title>
-  <meta http-equiv="refresh" content="0; url=./仝瓷记忆网页/主代码.html">
-  <script>
-    window.location.replace("./仝瓷记忆网页/主代码.html");
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#080C10">
+    <title>华夏器道 · 仝瓷记忆 — 中国古陶瓷 3D 数字博物院与智能研鉴空间 (V3.0 旗舰全量版)</title>
+    <meta name="description" content="华夏器道 · 仝瓷记忆 (V3.0) — 殿堂级中国古代传统文化与古陶瓷数字化研鉴空间。集成真实3D物理室内场景、1:1实测三维扫描真品孪生、WebGL双层清漆PBR渲染、Sobel开片应力计算机视觉鉴宝、古瓷釉料化学实验室、宋代点茶百戏与1300℃龙窑拉坯造物工坊。">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
+
+    <!-- Font Awesome 6 (本地极速加载) -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- 殿堂级东方宋韵数字博物院样式系统 -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body style="background:#13181d;color:#d8e4e6;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',serif;">
-  <div style="text-align:center;padding:2rem;">
-    <h1 style="font-size:1.5rem;font-weight:400;letter-spacing:0.15em;margin-bottom:0.8rem;color:#8FB8C0;">华夏器道 · 格物致知</h1>
-    <p style="font-size:0.9rem;color:#9cb1b8;font-weight:300;letter-spacing:0.05em;">正在步入中国古代传统文化与古陶瓷 3D 数字化交互研鉴空间……</p>
-    <p style="margin-top:1.5rem;font-size:0.8rem;"><a href="./仝瓷记忆网页/主代码.html" style="color:#cad8dc;text-decoration:none;border-bottom:1px solid #5A9CA8;padding-bottom:2px;">如浏览器未自动跳转，请点击此处进入展馆</a></p>
-  </div>
+<body>
+
+<!-- ==================== 顶部导航栏 (高定流体毛玻璃) ==================== -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- 品牌标识 -->
+            <a href="#hero" class="flex items-center gap-3 shrink-0">
+                <div class="brand-seal"></div>
+                <div class="flex flex-col leading-tight">
+                    <div class="flex items-center gap-2">
+                        <span class="font-serif-cn font-bold text-text-title text-lg tracking-widest" data-i18n="brand">华夏器道</span>
+                        <span class="hero-seal-stamp">仝瓷记忆</span>
+                    </div>
+                    <span class="text-[10px] text-text-muted tracking-wider font-light">古陶瓷 3D 数字博物院 · 非遗活态研鉴空间 (V3.0)</span>
+                </div>
+            </a>
+
+            <!-- 桌面端主菜单导航 -->
+            <div class="hidden xl:flex items-center gap-3.5 text-xs text-text-body font-serif-cn whitespace-nowrap">
+                <a href="#3d-gallery" class="hover:text-tianqing-deep transition-colors font-medium" data-i18n="nav.3d"><i class="fa-solid fa-vr-cardboard text-amber-400 mr-1"></i>3D数字展馆</a>
+                <a href="#ai-recognition" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.ai">AI视觉研鉴</a>
+                <a href="#history" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.history">陶瓷通史</a>
+                <a href="#kiln-map-section" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.kilnmap">九州窑系舆图</a>
+                <a href="#workshop" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.workshop">天工七十二工</a>
+                <a href="#pottery-studio" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.pottery">3D拉坯工坊</a>
+                <a href="#colors" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.colors">釉色化学与色谱</a>
+                <a href="#four-arts" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.fourarts">文人四艺与点茶</a>
+                <a href="#video-theatre" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.videotheatre"><i class="fa-solid fa-film text-amber-400 mr-1"></i>视听研学</a>
+                <a href="#archive" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.archive">典藏与款识</a>
+                <a href="#notes" class="hover:text-tianqing-deep transition-colors" data-i18n="nav.notes">博古殿试</a>
+            </div>
+
+            <!-- 右侧交互控件 -->
+            <div class="flex items-center gap-2">
+                <!-- 全局快速检索 (Ctrl+K) -->
+                <button onclick="openCommandPalette()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-all flex items-center gap-1.5 shadow-sm" title="全局检索器物、窑口、釉色 (快捷键 Ctrl+K)">
+                    <i class="fa-solid fa-magnifying-glass text-tianqing-deep text-[11px]"></i>
+                    <span class="hidden sm:inline">博古检索</span>
+                    <span class="hidden sm:inline text-[10px] font-mono text-text-muted bg-bg-main px-1.5 py-0.5 rounded border border-border-light">⌘K</span>
+                </button>
+
+                <!-- 宋韵古琴与瓷磬背景雅乐开关 -->
+                <button id="ambient-music-btn" onclick="toggleAmbientGuqin()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="开启/关闭宋代古琴与瓷磬背景雅乐">
+                    <i id="ambient-music-icon" class="fa-solid fa-music text-amber-400 text-xs"></i>
+                </button>
+
+                <!-- 昼夜展厅主题切换 -->
+                <button id="theme-toggle-btn" onclick="toggleMuseumTheme()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-all flex items-center gap-1.5 shadow-sm" title="切换玄夜博物院 / 宋韵宣纸雅集主题">
+                    <i id="theme-toggle-icon" class="fa-solid fa-moon text-tianqing-deep text-xs"></i>
+                    <span id="theme-toggle-label" class="hidden sm:inline">夜宴观瓷</span>
+                </button>
+
+                <!-- 研学手记收藏夹 -->
+                <button onclick="openStudyNotebook()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-all flex items-center gap-1.5 shadow-sm" title="查阅已收录名瓷与个人研考手记">
+                    <i class="fa-solid fa-bookmark text-tianqing-deep text-[11px]"></i>
+                    <span class="hidden sm:inline">典藏集</span>
+                    <span id="bookmark-count-badge" class="bg-tianqing-deep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-mono">2</span>
+                </button>
+
+                <!-- 中英切换 -->
+                <button id="lang-toggle" class="px-3 py-1.5 text-xs font-serif-cn rounded-full border border-border-light text-text-title bg-yuebai hover:border-tianqing transition-colors whitespace-nowrap flex items-center shrink-0">
+                    <i class="fa-solid fa-language text-amber-400 mr-1"></i>中 / EN
+                </button>
+
+                <!-- 移动端菜单按钮 -->
+                <button id="hamburger" class="xl:hidden w-9 h-9 rounded-full bg-yuebai border border-border-light flex flex-col items-center justify-center gap-1" aria-label="展开导航菜单">
+                    <span class="w-4 h-0.5 bg-text-title rounded"></span>
+                    <span class="w-4 h-0.5 bg-text-title rounded"></span>
+                    <span class="w-3 h-0.5 bg-text-title rounded"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 移动端侧滑遮罩与抽屉菜单 -->
+<div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+<div id="mobile-menu" class="mobile-menu">
+    <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-3">
+        <div class="flex items-center gap-2">
+            <span class="hero-seal-stamp">器道</span>
+            <span class="font-serif-cn text-white font-medium text-base">华夏器道 · 展馆导览</span>
+        </div>
+        <button id="mobile-close" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white" aria-label="关闭菜单">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <a href="#hero" data-i18n="nav.home">首页 · 器道序厅</a>
+    <a href="#3d-gallery" data-i18n="nav.3d">3D名瓷全景研鉴馆 (12尊)</a>
+    <a href="#ai-recognition" data-i18n="nav.ai">AI视觉识瓷与光谱工作站</a>
+    <a href="#history" data-i18n="nav.history">陶瓷通史八千年长卷</a>
+    <a href="#kiln-map-section">九州名窑山川地理与贡道图</a>
+    <a href="#workshop" data-i18n="nav.workshop">天工七十二道制瓷工序</a>
+    <a href="#pottery-studio">陶然天成 · 3D拉坯与手绘青花</a>
+    <a href="#colors" data-i18n="nav.colors">古瓷色谱与釉料化学实验室</a>
+    <a href="#four-arts" data-i18n="nav.fourarts">文人四艺与宋代点茶百戏</a>
+    <a href="#video-theatre"><i class="fa-solid fa-film text-amber-400 mr-1.5"></i>陶埏天工视听研学</a>
+    <a href="#archive" data-i18n="nav.archive">传世国宝与历代官窑款识</a>
+    <a href="#notes" data-i18n="nav.notes">学术札记与博古殿试考卷</a>
+    <a href="#about" data-i18n="nav.about">主理人致辞</a>
+</div>
+
+<!-- ==================== 序厅首屏：高定东方数字文博巨幕 (Hero) ==================== -->
+<section id="hero" class="hero-section">
+    <!-- 全屏实时水墨流金粒子环境画布 -->
+    <canvas id="hero-ambient-canvas"></canvas>
+
+    <div class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-12 gap-10 items-center">
+            <!-- 左侧 7列：东方宋韵大标题与核心数字文博导览 -->
+            <div class="lg:col-span-7 text-left space-y-5">
+                <div class="inline-flex flex-wrap items-center gap-2.5 px-4 py-1.5 rounded-full bg-yuebai border border-border-light text-tianqing-deep text-xs font-serif-cn shadow-sm">
+                    <span class="hero-seal-stamp">V3.0 旗舰全量版</span>
+                    <span data-i18n="hero.badge">真实 3D 物理室内雅室 · 1:1实测三维扫描孪生 · 纯前端 CV 视觉鉴宝 · 语音导览与非遗工坊</span>
+                </div>
+
+                <div>
+                    <p class="text-xs sm:text-sm font-mono tracking-widest text-amber-400 mb-2">SONG DYNASTY CELADON &amp; DIGITAL HERITAGE MUSEUM</p>
+                    <h1 class="hero-title-gradient text-3xl sm:text-4xl md:text-5xl font-serif-cn font-bold tracking-widest leading-tight" data-i18n="hero.title">
+                        器以载道 · 格物致知
+                    </h1>
+                    <p class="text-tianqing-deep text-base sm:text-xl mt-3 font-serif-cn tracking-wider font-medium" data-i18n="hero.subtitle">
+                        中国古代传统文化与宋韵古陶瓷 3D 数字化交互研鉴空间
+                    </p>
+                </div>
+
+                <p class="text-text-body text-sm sm:text-base leading-relaxed font-light max-w-2xl" data-i18n="hero.desc">
+                    雨过天青云破处，这般颜色做将来。融合 1:1 实测古瓷三维扫描孪生、程序化 HDR 穹顶光影、双层玻璃相清漆着色器、Voronoi 热应力冰裂开片与 X 光胎骨剖面解构，邀您步入虚实交融的千年名窑殿堂。
+                </p>
+
+                <!-- 核心直达按钮组 -->
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <a href="#3d-gallery" onclick="setTimeout(()=>switchExhibitionMode('hall'), 250)" class="px-6 py-3 bg-tianqing-deep text-white rounded-full font-serif-cn text-sm tracking-wider hover:bg-tianqing transition-all shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-landmark text-amber-200"></i>
+                        <span>步入 3D 全景九柜展厅</span>
+                    </a>
+                    <a href="#3d-gallery" onclick="setTimeout(()=>loadPorcelainModel(7), 250)" class="px-5 py-3 bg-amber-700 text-white rounded-full font-serif-cn text-sm tracking-wider hover:bg-tianqing transition-all shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish text-amber-200"></i>
+                        <span>检视 1:1 实测三维扫描真品</span>
+                    </a>
+                    <a href="#pottery-studio" class="px-5 py-3 bg-yuebai text-text-title rounded-full font-serif-cn text-sm tracking-wider border border-border-light hover:border-tianqing transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-hands text-amber-400"></i>
+                        <span>指尖拉坯与青花手绘</span>
+                    </a>
+                </div>
+
+                <!-- 博物馆四大硬核技术指标卡 -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                    <div class="hero-stat-card">
+                        <div class="text-xl font-bold font-serif-cn text-tianqing-deep">12 尊</div>
+                        <div class="text-xs text-text-title font-medium font-serif-cn">全息3D馆藏重器 (7标准+5实测)</div>
+                        <div class="text-[10px] text-text-muted">含2尊1K实测扫描真品</div>
+                    </div>
+                    <div class="hero-stat-card">
+                        <div class="text-xl font-bold font-serif-cn text-amber-400">Sobel + RGB</div>
+                        <div class="text-xs text-text-title font-medium font-serif-cn">CV开片与光谱算子</div>
+                        <div class="text-[10px] text-text-muted">实时卷积特征图与证书</div>
+                    </div>
+                    <div class="hero-stat-card">
+                        <div class="text-xl font-bold font-serif-cn text-tianqing-deep">1300 ℃</div>
+                        <div class="text-xs text-text-title font-medium font-serif-cn">还原焰温控拉坯</div>
+                        <div class="text-[10px] text-text-muted">支持青花手绘与底款篆刻</div>
+                    </div>
+                    <div class="hero-stat-card">
+                        <div class="text-xl font-bold font-serif-cn text-amber-400">Fe²⁺ / Cu⁰</div>
+                        <div class="text-xs text-text-title font-medium font-serif-cn">釉料化学与点茶百戏</div>
+                        <div class="text-[10px] text-text-muted">跨学科非遗活态实验室</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 5列：宋官窑/汝窑馆藏真品高定悬浮展柜橱窗 -->
+            <div class="lg:col-span-5">
+                <div class="hero-showcase-stage">
+                    <div class="flex items-center justify-between mb-3 relative z-10">
+                        <span class="text-xs font-serif-cn text-amber-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-crown text-amber-400"></i>
+                            <span id="hero-showcase-title">特展一号柜 · 南宋官窑天青冰裂纹盘口瓶</span>
+                        </span>
+                        <span class="text-[10px] font-mono text-white/80 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">IOR 1.54 · 双层清漆</span>
+                    </div>
+
+                    <!-- 馆藏名器高清主视觉与可交互热点标定 -->
+                    <div class="relative rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-white/15" style="background: radial-gradient(circle at 50% 45%, #1c2a34 0%, #070b0f 100%);">
+                        <img id="hero-featured-img" src="./images/13.jpg" alt="宋代官窑天青冰裂纹盘口瓶" class="w-full h-full object-cover transition-all duration-300">
+
+                        <!-- 悬浮文物解剖热点 1 -->
+                        <a href="#3d-gallery" onclick="loadPorcelainModel(0)" class="hero-hotspot-tag" style="top: 14%; left: 6%;">
+                            <span class="dot"></span>
+                            <span>盘口微侈 · 釉薄显紫口</span>
+                        </a>
+                        <!-- 悬浮文物解剖热点 2 -->
+                        <a href="#3d-gallery" onclick="openMicroscopeView()" class="hero-hotspot-tag" style="top: 48%; right: 5%; animation-delay: 1.2s;">
+                            <span class="dot"></span>
+                            <span>百极碎冰裂 · 聚沫攒珠</span>
+                        </a>
+                        <!-- 悬浮文物解剖热点 3 -->
+                        <a href="#3d-gallery" onclick="loadPorcelainModel(0); setTimeout(()=>setCameraView('bottom'),350)" class="hero-hotspot-tag" style="bottom: 10%; left: 8%; animation-delay: 2.2s;">
+                            <span class="dot"></span>
+                            <span>凤凰山紫金土 · 铁足露胎</span>
+                        </a>
+                    </div>
+
+                    <!-- 橱窗底部快速切换珍品缩略栏 -->
+                    <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between gap-2 relative z-10">
+                        <div class="flex items-center gap-2">
+                            <button onclick="switchHeroShowcase('./images/13.jpg', '特展一号柜 · 南宋官窑冰裂纹盘口瓶', 0, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-amber-400 ring-2 p-0.5 bg-black/50" title="南宋官窑冰裂纹盘口瓶">
+                                <img src="./images/13.jpg" class="w-full h-full object-cover rounded" alt="官窑">
+                            </button>
+                            <button onclick="switchHeroShowcase('./images/10.jpg', '特展二号柜 · 北宋汝官窑天青胆式瓶', 1, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="北宋汝官窑天青胆式瓶">
+                                <img src="./images/10.jpg" class="w-full h-full object-cover rounded" alt="汝窑">
+                            </button>
+                            <button onclick="switchHeroShowcase('./images/9.jpg', '特展三号柜 · 宋韵粉青镂空玲珑茶器组', 4, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="宋韵粉青镂空玲珑茶器组">
+                                <img src="./images/9.jpg" class="w-full h-full object-cover rounded" alt="粉青玲珑">
+                            </button>
+                            <button onclick="switchHeroShowcase('./images/15.jpg', '特展四号柜 · 明宣德青花山水云纹赏瓶', 6, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="明宣德青花山水赏瓶">
+                                <img src="./images/15.jpg" class="w-full h-full object-cover rounded" alt="青花">
+                            </button>
+                            <button onclick="switchHeroShowcase('./images/1.jpg', '特展五号柜 · 1:1实测三维扫描青瓷标本', 7, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="1:1实测三维扫描青瓷标本">
+                                <img src="./images/1.jpg" class="w-full h-full object-cover rounded" alt="实测扫描">
+                            </button>
+                        </div>
+                        <a href="#3d-gallery" class="px-3.5 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shrink-0">
+                            <i class="fa-solid fa-cube text-[10px]"></i>
+                            <span>进入3D展柜</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 快捷索引导览条 ==================== -->
+<section class="py-3.5 bg-white border-t border-b border-border-light relative z-30">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="quick-nav">
+            <a href="#3d-gallery"><i class="fa-solid fa-cubes text-tianqing-deep"></i> <span data-i18n="quick.3d">3D全景数字展厅</span></a>
+            <a href="#ai-recognition"><i class="fa-solid fa-brain text-tianqing-deep"></i> <span data-i18n="quick.ai">AI视觉光谱鉴宝</span></a>
+            <a href="#history"><i class="fa-solid fa-timeline text-tianqing-deep"></i> <span data-i18n="quick.history">八千载陶瓷通史</span></a>
+            <a href="#kiln-map-section"><i class="fa-solid fa-map-location-dot text-tianqing-deep"></i> <span>九州名窑山川舆图</span></a>
+            <a href="#workshop"><i class="fa-solid fa-hammer text-tianqing-deep"></i> <span data-i18n="quick.workshop">天工七十二道工序</span></a>
+            <a href="#pottery-studio"><i class="fa-solid fa-hands text-tianqing-deep"></i> <span>3D拉坯与手绘青花</span></a>
+            <a href="#colors"><i class="fa-solid fa-flask-vial text-tianqing-deep"></i> <span data-i18n="quick.colors">古瓷釉色化学实验室</span></a>
+            <a href="#four-arts"><i class="fa-solid fa-mug-hot text-tianqing-deep"></i> <span>文人四艺与宋代点茶</span></a>
+            <a href="#video-theatre"><i class="fa-solid fa-film text-tianqing-deep"></i> <span>陶埏天工视听</span></a>
+            <a href="#archive"><i class="fa-solid fa-stamp text-tianqing-deep"></i> <span data-i18n="quick.archive">传世国宝与官窑款识</span></a>
+            <a href="#notes"><i class="fa-solid fa-graduation-cap text-tianqing-deep"></i> <span>学术札记与博古殿试</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块一：3D 传世名瓷数字化研鉴馆 (9尊馆藏：7尊程序化标准器 + 2尊实测3D扫描真品) ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main" id="3d-gallery">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-sparkles text-amber-200"></i>
+                <span>Three.js HDR 穹顶光影 · 双层清漆 PBR · 1:1 实测三维扫描真品孪生</span>
+            </span>
+            <h2 data-i18n="3d.sectionTitle">传世名瓷 · 3D全息数字文博馆</h2>
+            <p class="section-subtitle" data-i18n="3d.sectionSub">集成【2尊1:1实测三维扫描真品 + 7尊128段高精度程序化标准器】· 支持单器精鉴、全景展厅漫游与X光胎骨剖面</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 3D 研鉴交互工作台 (7:5 黄金分栏) -->
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+            <!-- 左侧 7列：WebGL 3D 旗舰画布舱 -->
+            <div class="lg:col-span-7">
+                <div class="three-canvas-container" id="three-stage-container">
+                    <!-- 顶部：四大展览模式切换舱 + 全屏/锚点控制 -->
+                    <div class="exhibition-mode-bar">
+                        <div class="mode-switch-group">
+                            <button class="mode-switch-btn active" id="mode-btn-inspector" onclick="switchExhibitionMode('inspector')">
+                                <i class="fa-solid fa-magnifying-glass-plus text-amber-200"></i>
+                                <span>单器精鉴台</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-hall" onclick="switchExhibitionMode('hall')">
+                                <i class="fa-solid fa-building-columns text-amber-200"></i>
+                                <span>3D全景九柜漫游</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-cutaway" onclick="switchExhibitionMode('cutaway')">
+                                <i class="fa-solid fa-layer-group text-amber-200"></i>
+                                <span>X光胎骨剖面</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-tour" onclick="toggleCuratorialTour()">
+                                <i class="fa-solid fa-route text-amber-200"></i>
+                                <span id="tour-btn-label">策展自动巡礼</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button class="mode-switch-btn bg-black/65 border border-white/15 active" id="btn-hotspots-toggle" onclick="toggle3DHotspots()" title="显示/隐藏器物3D空间解剖锚点">
+                                <i class="fa-solid fa-location-crosshairs text-amber-400"></i>
+                                <span>解剖锚点</span>
+                            </button>
+                            <button class="mode-switch-btn bg-black/65 border border-white/15" onclick="toggle3DFullscreen()" title="全屏沉浸式观展">
+                                <i class="fa-solid fa-expand text-tianqing-light" id="fullscreen-icon"></i>
+                                <span>全屏展览</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- X光剖面深度可调滑块条 (仅在X光模式下显示) -->
+                    <div id="cutaway-slider-bar" class="hidden absolute top-14 left-4 z-20 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400 flex items-center gap-3 text-xs text-white font-serif-cn">
+                        <span><i class="fa-solid fa-scissors text-amber-400 mr-1"></i>X光剖切面深度：</span>
+                        <input type="range" min="-0.65" max="0.65" step="0.02" value="0" oninput="setCutawayOffset(this.value)" class="w-28">
+                        <span id="cutaway-offset-val" class="font-mono text-amber-200">0%</span>
+                    </div>
+
+                    <!-- 3D 空间动态投影解剖锚点层 -->
+                    <div id="three-hotspots-layer"></div>
+
+                    <!-- 左下角：3D 真实空间环境与意境光影面板 -->
+                    <div class="lighting-lab-overlay" id="lighting-lab-panel">
+                        <div class="flex items-center justify-between text-[11px] text-amber-200 font-serif-cn">
+                            <span><i class="fa-solid fa-landmark mr-1"></i>3D 真实展陈空间意境</span>
+                            <span id="light-preset-name" class="text-white/80">宋代雨后雅室</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button id="scene-env-btn-studio" onclick="switchRealisticSceneEnv('studio')" class="scene-env-btn active">🌿 宋代雅室</button>
+                            <button id="scene-env-btn-palace" onclick="switchRealisticSceneEnv('palace')" class="scene-env-btn">🏛️ 文博殿堂</button>
+                            <button id="scene-env-btn-kiln" onclick="switchRealisticSceneEnv('kiln')" class="scene-env-btn">🔥 御窑幽室</button>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 border-t border-white/10 gap-1 text-[10px] text-white/70">
+                            <button onclick="setStudioLighting('candle')" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors">夜宴烛火</button>
+                            <div class="flex items-center gap-1 flex-1 justify-end">
+                                <span>主光角度</span>
+                                <input type="range" min="0" max="360" value="45" oninput="rotateMainLight(this.value)" class="w-16">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D WebGL 主画布 -->
+                    <canvas id="three-canvas"></canvas>
+
+                    <!-- 3D 展馆小米 MiMo 资深讲解员实时声波悬浮字幕条 -->
+                    <div id="curator-subtitle-bar" class="hidden"></div>
+
+                    <!-- 底部悬浮快捷交互工具条 -->
+                    <div class="canvas-quick-toolbar">
+                        <button class="canvas-tool-btn active" id="btn-room-scene-toggle" onclick="toggleRealisticScene()" title="开启/隐藏 3D 真实室内环境场景">
+                            <i class="fa-solid fa-landmark"></i>
+                        </button>
+                        <button class="canvas-tool-btn active" id="btn-rotate-toggle" onclick="toggleAutoRotate()" title="自动缓动旋转">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-wireframe-toggle" onclick="toggleWireframe()" title="三维拓扑网格力学透视">
+                            <i class="fa-solid fa-border-none"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-dimensions-toggle" onclick="toggleDimensionLines()" title="器物考古测绘标定线">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                        </button>
+                        <button class="canvas-tool-btn active" id="btn-crackle-toggle" onclick="toggleCrackle()" title="开片冰裂/金丝铁线凹凸法线开关">
+                            <i class="fa-solid fa-braille"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="openMicroscopeView()" title="100x显微镜微观聚沫攒珠观察">
+                            <i class="fa-solid fa-microscope"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="setCameraView('top')" title="俯视内膛与口沿">
+                            <i class="fa-regular fa-circle-dot"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="setCameraView('bottom')" title="翻转审视底足/支钉/铁足">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="resetCamera()" title="复位标准展位视角">
+                            <i class="fa-solid fa-arrows-to-dot"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 器型切换标签栏 (9大馆藏标准器：7尊程序化 + 2尊实测3D扫描) -->
+                <div class="mt-4 p-4 rounded-2xl feature-card">
+                    <div class="text-xs text-text-muted font-serif-cn mb-2.5 flex flex-wrap items-center justify-between gap-2">
+                        <span><i class="fa-solid fa-gem text-amber-400 mr-1.5"></i>【馆藏十二大传世与实测标准器】点击切换 3D 器型或漫游展柜：</span>
+                        <span class="text-amber-400 font-medium">★ 第⑧~⑫号为 1:1 结构光激光扫描 CC0 文物真品</span>
+                    </div>
+                    <div class="model-btn-scroll pb-1">
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-tianqing-deep text-white ring-2 font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(0)">① 八方贯耳瓶 (南宋官窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(1)">② 天青水仙盆 (北宋汝窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(2)">③ 刻花白釉梅瓶 (北宋定窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(3)">④ 金丝铁线胆瓶 (传世哥窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(4)">⑤ 玫瑰紫出戟尊 (北宋钧窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(5)">⑥ 曜变兔毫茶盏 (宋代建窑)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(6)">⑦ 青花缠枝玉壶春 (明宣德)</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 border border-amber-400/40" onclick="loadPorcelainModel(7)">⑧ ★3D实测·影青撇口净水瓶</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 border border-amber-400/40" onclick="loadPorcelainModel(8)">⑨ ★3D实测·铁锈花修身瓶</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 border border-amber-400/40" onclick="loadPorcelainModel(9)">⑩ ★3D实测·龙泉双系圆腹罐</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 border border-amber-400/40" onclick="loadPorcelainModel(10)">⑪ ★3D实测·洁白长颈瓶</button>
+                        <button class="model-btn px-3.5 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 border border-amber-400/40" onclick="loadPorcelainModel(11)">⑫ ★3D实测·双耳弦纹汲水陶壶</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 5列：PBR 釉色试烧盘、光学参数微调器与器物深度考据档案 -->
+            <div class="lg:col-span-5 space-y-4">
+                <!-- 釉色实时拾取盘 + PBR 微晶光学调校 -->
+                <div class="feature-card p-5 space-y-4">
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-medium mb-3 flex items-center justify-between">
+                            <span>【PBR 双层微晶釉色实时试烧】</span>
+                            <span class="text-amber-400 text-[11px] font-normal">含法线凹凸开片与玻璃相清漆</span>
+                        </h4>
+                        <div class="flex items-center justify-between gap-2">
+                            <button class="glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" onclick="switchGlaze('tianqing')" style="background: radial-gradient(circle at 35% 35%, #b8dce2, #7ea8b0 65%, #4d737a);" title="雨过天青 (汝官窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="fenqing" onclick="switchGlaze('fenqing')" style="background: radial-gradient(circle at 35% 35%, #b5dece, #7eaf9b 65%, #4a7564);" title="粉青如玉 (龙泉/南宋官窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="yuebai" onclick="switchGlaze('yuebai')" style="background: radial-gradient(circle at 35% 35%, #f5f9fa, #d2dfe5 65%, #8fa3ad);" title="月白莹霜 (官钧窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="dingbai" onclick="switchGlaze('dingbai')" style="background: radial-gradient(circle at 35% 35%, #fffdf7, #ede4d1 65%, #b8ad96);" title="定窑牙白 (曲阳定窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="junhong" onclick="switchGlaze('junhong')" style="background: radial-gradient(circle at 35% 35%, #d6699b, #7a2e53 60%, #2c1e4a);" title="玫瑰紫海棠红窑变 (禹州钧窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="jianhei" onclick="switchGlaze('jianhei')" style="background: radial-gradient(circle at 35% 35%, #597296, #211c1d 55%, #0a0808);" title="建盏曜变乌金 (建阳建窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="qinghua" onclick="switchGlaze('qinghua')" style="background: radial-gradient(circle at 35% 35%, #f0f6fa, #3d6ba8 55%, #162f59);" title="宣德苏麻离青花 (景德镇御窑)"></button>
+                        </div>
+                    </div>
+
+                    <!-- PBR 物理光学参数实时调校滑块 -->
+                    <div class="pt-3 border-t border-border-light space-y-2 text-[11px]">
+                        <div class="flex items-center justify-between text-text-muted font-serif-cn">
+                            <span><i class="fa-solid fa-sliders text-tianqing-deep mr-1"></i>釉面物理光学着色器实时调校：</span>
+                            <button onclick="resetPbrParams()" class="text-amber-400 hover:underline">复位参数</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>清漆厚度</span><span id="pbr-val-clearcoat" class="font-mono text-amber-400">98%</span></div>
+                                <input id="pbr-slider-clearcoat" type="range" min="0" max="1" step="0.02" value="0.98" oninput="setPbrParam('clearcoat', this.value)" class="w-full">
+                            </div>
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>微晶散射</span><span id="pbr-val-roughness" class="font-mono text-tianqing-deep">14%</span></div>
+                                <input id="pbr-slider-roughness" type="range" min="0.02" max="0.65" step="0.02" value="0.14" oninput="setPbrParam('roughness', this.value)" class="w-full">
+                            </div>
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>折射率 IOR</span><span id="pbr-val-ior" class="font-mono text-text-title">1.54</span></div>
+                                <input id="pbr-slider-ior" type="range" min="1.35" max="1.85" step="0.01" value="1.54" oninput="setPbrParam('ior', this.value)" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 动态器物研鉴详情档案卡 -->
+                <div class="feature-card p-6" id="3d-model-info"></div>
+            </div>
+        </div>
+
+        <!-- 名瓷双物并照 · 九大馆藏多维学术对照研考 -->
+        <div class="mt-8 p-6 rounded-2xl feature-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-border-light">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-tianqing-deep"></span>
+                    <h3 class="font-serif-cn text-base font-medium text-text-title">双器并照 · 两宋与明代名瓷多维学术对照研考台</h3>
+                </div>
+                <span class="text-xs text-text-muted font-serif-cn">支持任意两件馆藏或实测三维扫描标本在胎骨、釉相、烧成规制上的同台比对与一键调入 3D 展台</span>
+            </div>
+            <div id="porcelain-comparison-display"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块二：AI 智能识瓷 · 计算机视觉与多维光谱研考工作站 ==================== -->
+<section class="py-16 sm:py-24 bg-white" id="ai-recognition">
+    <div id="ai-section-anchor" class="scroll-mt-24"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-microchip text-amber-200"></i>
+                <span>纯前端计算机视觉特征工程 · Sobel 开片边缘卷积算子 · 64通道 RGB 光谱直方图</span>
+            </span>
+            <h2 data-i18n="ai.sectionTitle">AI智能识瓷 · 多维计算机视觉与光谱研考中心</h2>
+            <p class="section-subtitle" data-i18n="ai.sectionSub">融合传统器物学目鉴法门与纯前端像素级 RGB/HSL 光谱直方图、Sobel 高频开片裂隙梯度卷积算子</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto space-y-6">
+            <!-- 顶部：识图输入方式三合一 (传世标本库一键诊断 + 本地上传/摄像头扫描) -->
+            <div class="grid lg:grid-cols-12 gap-6 items-stretch">
+                <!-- 左侧 7列：馆藏名瓷标本库 · 一键触发CV诊断 -->
+                <div class="lg:col-span-7 feature-card p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs sm:text-sm font-serif-cn text-text-title font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                                <span>【六大传世标准器标本库 · 点击即刻执行 CV 卷积与光谱诊断】</span>
+                            </h4>
+                            <span class="text-[11px] text-tianqing-deep font-serif-cn">实时像素级计算</span>
+                        </div>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5" id="preset-vessels-list"></div>
+                    </div>
+                </div>
+
+                <!-- 右侧 5列：本地上传或摄像头实时取景 -->
+                <div class="lg:col-span-5 flex flex-col">
+                    <div id="ai-drop-area" class="ai-dropzone flex-1 flex flex-col items-center justify-center">
+                        <input type="file" id="ai-file-input" class="hidden" accept="image/*">
+                        <div class="w-12 h-12 rounded-full bg-yuebai flex items-center justify-center mb-2.5 text-tianqing-deep text-xl border border-border-light">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h4 class="text-sm font-serif-cn text-text-title font-medium mb-1">拖拽或上传自定义古瓷图片送检</h4>
+                        <p class="text-[11px] text-text-muted mb-3.5 font-light">支持瓷器全景、开片微距或底足照片 (JPG / PNG / WebP)</p>
+
+                        <div class="flex items-center gap-2.5">
+                            <button type="button" onclick="document.getElementById('ai-file-input').click()" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+                                <i class="fa-solid fa-image mr-1"></i>选取相册图片
+                            </button>
+                            <button type="button" onclick="startCameraScan()" class="px-4 py-2 rounded-full bg-yuebai border border-tianqing text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">
+                                <i class="fa-solid fa-camera mr-1"></i>摄像头扫一扫
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下方：实时计算机视觉三联画布 + 权威学术鉴定报告工作站 -->
+            <div id="ai-result-section" class="feature-card p-6 sm:p-8">
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    <!-- 左侧 4列：三联计算机视觉分析视窗 (原图激光扫描 + Sobel开片边缘图 + RGB光谱直方图) -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <!-- 视窗 1：原图与激光扫描 -->
+                        <div class="rounded-2xl overflow-hidden shadow-md bg-black relative border border-border-light aspect-square">
+                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" class="w-full h-full object-cover">
+                            <div id="ai-scan-animation" class="hidden absolute inset-0 bg-black/45 backdrop-blur-sm flex flex-col items-center justify-center">
+                                <div class="ai-scan-line-laser"></div>
+                                <div class="bg-black/80 px-4 py-2 rounded-full text-white text-xs font-serif-cn flex items-center gap-2 shadow-lg border border-amber-400">
+                                    <i class="fa-solid fa-microchip animate-spin text-amber-400"></i>
+                                    <span>Sobel 卷积提取釉面光谱与开片应力...</span>
+                                </div>
+                            </div>
+                            <span class="absolute top-2.5 left-2.5 bg-black/75 text-amber-200 text-[10px] px-2.5 py-0.5 rounded-full font-serif-cn border border-white/15">
+                                ① 原始器物取样影像
+                            </span>
+                        </div>
+
+                        <!-- 视窗 2 & 3：Sobel 开片特征图 + RGB 光谱直方图 -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center">
+                                <span class="text-[10px] font-serif-cn text-tianqing-deep block mb-1.5">② Sobel 开片/轮廓卷积图</span>
+                                <canvas id="ai-edge-canvas" width="160" height="160" class="w-full aspect-square rounded-lg bg-black block border border-white/10"></canvas>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center flex flex-col justify-between">
+                                <span class="text-[10px] font-serif-cn text-amber-400 block mb-1.5">③ RGB 釉色光谱直方图</span>
+                                <canvas id="ai-hist-canvas" width="160" height="130" class="w-full flex-1 rounded-lg bg-black block border border-white/10"></canvas>
+                                <span class="text-[9px] text-text-muted font-mono mt-1 block">R/G/B 64-Bin Spectral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧 8列：权威学术鉴定档案卡 -->
+                    <div class="lg:col-span-8" id="ai-report-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块三：华夏陶瓷通史八千年长卷 ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main" id="history">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">自新石器仰韶彩陶、东汉成熟青瓷至当代数字孪生</span>
+            <h2 data-i18n="history.sectionTitle">文脉回响 · 华夏陶瓷八千年通史长卷</h2>
+            <p class="section-subtitle" data-i18n="history.sectionSub">自新石器仰韶彩陶、东汉成熟青瓷、两宋五大名窑至明清御器厂 · 纵览泥与火的文明演进</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto space-y-6">
+            <div class="history-nav-scroll pb-2" id="history-nav-nodes"></div>
+            <div id="history-active-display"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块三点五：九州名窑 · 全国山川地理与贡道交互图谱 ==================== -->
+<section class="py-16 sm:py-24 bg-white border-t border-b border-border-light" id="kiln-map-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">山川形胜 · 汴河御贡漕运 · 海上丝绸之路</span>
+            <h2>九州名窑 · 全国核心窑口地理与氧化物图谱</h2>
+            <p class="section-subtitle">交互式水墨山川疆域舆图 · 展现两宋五大名窑、建窑、景德镇御窑与东京汴梁/行在临安贡道脉络及XRF化学配比</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 舆图图层切换按钮组 -->
+        <div class="flex flex-wrap items-center justify-center gap-2.5 mb-6">
+            <button class="map-layer-btn active" data-layer="all" onclick="switchKilnMapLayer('all')">
+                <i class="fa-solid fa-layer-group mr-1"></i>全要素总览 (山川水系+御贡+海丝)
+            </button>
+            <button class="map-layer-btn" data-layer="tribute" onclick="switchKilnMapLayer('tribute')">
+                <i class="fa-solid fa-crown text-amber-400 mr-1"></i>两宋汴京/临安御贡漕运专道
+            </button>
+            <button class="map-layer-btn" data-layer="maritime" onclick="switchKilnMapLayer('maritime')">
+                <i class="fa-solid fa-sailboat text-tianqing mr-1"></i>海上丝绸之路外销航线
+            </button>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            <!-- 左侧 7列：全国名窑水墨山川河洛交互地图 -->
+            <div class="lg:col-span-7">
+                <div class="kiln-map-container" id="kiln-map-wrapper">
+                    <div id="kiln-map-svg-bg"></div>
+                    <div id="kiln-map-spots"></div>
+                    <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] text-amber-200 font-serif-cn z-20 border border-white/15">
+                        <i class="fa-solid fa-compass mr-1"></i>点击地图上的八大名窑坐标点，实时切换御贡航线与矿物化学档案
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 5列：选定窑口档案与XRF氧化物配比卡 -->
+            <div class="lg:col-span-5 feature-card p-6" id="kiln-map-info"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块四：天工开物 · 古代制瓷七十二道核心工序 ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main" id="workshop">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">宋应星《天工开物·陶埏》：“共计一坯工力，过手七十二，方克成器”</span>
+            <h2 data-i18n="workshop.sectionTitle">天工开物 · 景德镇与官窑七十二道核心制瓷工序</h2>
+            <p class="section-subtitle" data-i18n="workshop.sectionSub">水碓舂石、澄泥陈腐、菊花揉泥、飞轮拉坯、半刀泥刻花、苏麻离青分水、松柴龙窑 1300℃ 还原涅槃</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 匠心七艺 · 手绘水墨制瓷图谱展示带 -->
+        <div class="max-w-6xl mx-auto mb-10">
+            <div class="seven-crafts-strip">
+                <div class="craft-icon-card" onclick="openStepDetailModal(3)">
+                    <img src="./images/图标/1.jpg" alt="菊花揉泥">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">① 菊花揉泥</span>
+                    <span class="text-[10px] text-text-muted">百炼排气 · 膏腻无泡</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(1)">
+                    <img src="./images/图标/2.jpg" alt="水浸澄泥">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">② 水浸陈腐</span>
+                    <span class="text-[10px] text-text-muted">源泉澄澈 · 润土生香</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(4)">
+                    <img src="./images/图标/3.jpg" alt="轮盘拉坯">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">③ 飞轮拉坯</span>
+                    <span class="text-[10px] text-text-muted">圆器生形 · 气韵端庄</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(2)">
+                    <img src="./images/图标/4.jpg" alt="淘洗澄浆">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">④ 淘洗除铁</span>
+                    <span class="text-[10px] text-text-muted">马尾细罗 · 细腻如脂</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(5)">
+                    <img src="./images/图标/5.jpg" alt="利坯修刀">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">⑤ 利坯刻花</span>
+                    <span class="text-[10px] text-text-muted">刀旋薄胎 · 半刀泥法</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(6)">
+                    <img src="./images/图标/6.jpg" alt="素烧定骨">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">⑥ 八百素烧</span>
+                    <span class="text-[10px] text-text-muted">低温定骨 · 坚致待釉</span>
+                </div>
+                <div class="craft-icon-card" onclick="openStepDetailModal(8)">
+                    <img src="./images/图标/7.jpg" alt="龙窑柴烧">
+                    <span class="text-xs font-serif-cn font-semibold text-text-title">⑦ 龙窑还原</span>
+                    <span class="text-[10px] text-text-muted">千三烈焰 · 窑变天成</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工艺工序八部曲网格 -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" id="workshop-grid-container"></div>
+    </div>
+</section>
+
+<!-- ==================== 板块四点五：陶然天成 · 指尖拉坯、青花手绘与 1300℃ 温控曲线烧造工坊 ==================== -->
+<section class="py-16 sm:py-24 bg-white border-b border-border-light" id="pottery-studio">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-fire-flame-curved text-amber-200"></i>
+                <span>第一视角 3D 光影陶轮 · 自由青花手绘笔刷 · 底款篆刻 · 1300℃ 升温曲线仿真</span>
+            </span>
+            <h2>陶然天成 · 指尖拉坯与窑火造物数字工坊</h2>
+            <p class="section-subtitle">在陶轮上按住推拉塑形或切换“青花手绘笔刷”自由绘纹，体验从高岭土拉坯、镌刻底款到 1300℃ 还原焰烧造成器的完整蜕变</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            <!-- 左侧 7列：拉坯旋转交互 3D 光影 Canvas 工作台 -->
+            <div class="lg:col-span-7 space-y-3">
+                <div class="pottery-canvas-wrap">
+                    <canvas id="pottery-canvas" width="560" height="450"></canvas>
+
+                    <!-- 1300℃ 柴火烧造全屏遮罩与实时升温曲线图 -->
+                    <div id="kiln-fire-overlay" class="hidden">
+                        <i class="fa-solid fa-fire-flame-curved text-4xl mb-2 animate-bounce text-amber-200"></i>
+                        <h4 class="text-xl font-serif-cn font-semibold tracking-widest mb-1">龙窑松柴强还原焰烧造中</h4>
+                        <p class="text-xs text-white/90 font-light mb-2 font-serif-cn" id="kiln-stage-text">阶段一：排湿素烧 · 胎骨定型</p>
+                        <div class="text-4xl font-bold font-mono tracking-wider text-amber-200 mb-3" id="kiln-temp-text">25 ℃</div>
+                        <canvas id="kiln-curve-canvas" width="320" height="90" class="rounded-xl border border-white/30"></canvas>
+                        <span class="text-[10px] text-white/75 mt-1.5 font-mono">实时窑温-时间热力学曲线 (25℃ → 1300℃)</span>
+                    </div>
+
+                    <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3.5 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-2 border border-white/15">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="pottery-status-badge">高岭土湿坯 · 旋转塑形中</span>
+                    </div>
+
+                    <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/80 font-serif-cn pointer-events-none">
+                        <span><i class="fa-solid fa-hand-pointer text-amber-400 mr-1"></i>在泥坯表面按住拖拽即可改变器型曲线或手绘青花</span>
+                        <span id="pottery-metrics-label" class="font-mono text-amber-200">转速 120 RPM</span>
+                    </div>
+                </div>
+
+                <!-- 实时器物三维几何参数与宋韵美学评分条 -->
+                <div id="pottery-live-specs" class="p-3 rounded-xl bg-bg-main border border-border-light flex flex-wrap items-center justify-around gap-2 text-xs font-serif-cn text-text-body"></div>
+            </div>
+
+            <!-- 右侧 5列：工具箱、器型模版、纹饰雕刻、底款篆刻与窑火控制 -->
+            <div class="lg:col-span-5">
+                <div class="feature-card p-6 space-y-4 text-left">
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【一、拉坯塑形与自由青花笔刷】</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-tianqing-deep text-white transition-all" data-mode="push" onclick="setPotTool('push')">
+                                <i class="fa-solid fa-compress mr-1"></i>向内收束
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="pull" onclick="setPotTool('pull')">
+                                <i class="fa-solid fa-expand mr-1"></i>向外鼓腹
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="smooth" onclick="setPotTool('smooth')">
+                                <i class="fa-solid fa-hand-sparkles mr-1"></i>跟随修光
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="brush" onclick="setPotTool('brush')">
+                                <i class="fa-solid fa-paintbrush text-amber-400 mr-1"></i>手绘青花
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【二、经典宋明官样器型模版】</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" onclick="applyPresetVessel('meiping')">宋定窑梅瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" onclick="applyPresetVessel('vase')">玉壶春瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" onclick="applyPresetVessel('gourd')">大吉葫芦瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" onclick="applyPresetVessel('bowl')">建窑斗茶盏</button>
+                            <button class="px-3 py-1.5 rounded-full border border-border-light text-text-muted text-xs font-serif-cn hover:text-text-title transition-colors" onclick="resetClay()">重置泥柱</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【三、器身纹饰雕刻与彩绘】</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-tianqing-deep text-white transition-all" data-pattern="none" onclick="setPotPattern('none')">素面玉肌 (极简无纹)</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="lotus" onclick="setPotPattern('lotus')">定窑浮雕划花莲瓣</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="qinghua" onclick="setPotPattern('qinghua')">苏麻离青缠枝宝相</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="goldring" onclick="setPotPattern('goldring')">官窑凸弦鎏金瑞纹</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 items-center">
+                        <div>
+                            <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【四、选配秘制矿物釉】</h4>
+                            <div class="flex items-center gap-2">
+                                <button class="pot-glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" onclick="selectPotGlaze('tianqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b8dce2, #6f97a0);" title="雨过天青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="fenqing" onclick="selectPotGlaze('fenqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b4dbca, #618d7c);" title="龙泉粉青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="yuebai" onclick="selectPotGlaze('yuebai')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #f0f6f8, #9eb2ba);" title="官窑月白釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="junhong" onclick="selectPotGlaze('junhong')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #d46598, #631d3f);" title="钧窑玫瑰紫釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="jianhei" onclick="selectPotGlaze('jianhei')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #4d6485, #171314);" title="建盏乌金兔毫釉"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【五、器底篆刻落款】</h4>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-tianqing-deep text-white" data-seal="大宋宣和" onclick="selectPotSeal('大宋宣和')">大宋宣和</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="修内司窑" onclick="selectPotSeal('修内司窑')">修内司窑</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="河大文博" onclick="selectPotSeal('河大文博')">河大文博</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="仝瓷雅制" onclick="selectPotSeal('仝瓷雅制')">仝瓷雅制</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-border-light flex flex-col gap-2">
+                        <button onclick="firePotInKiln()" class="w-full py-3 rounded-xl bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-fire text-amber-200"></i>
+                            <span>入窑 1300℃ 松柴还原焰烧造 (实时温控曲线)</span>
+                        </button>
+                        <button onclick="downloadPotteryArtwork()" class="w-full py-2.5 rounded-xl bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-certificate"></i>
+                            <span>生成并导出《专属数字藏品收藏证书》海报</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空灵瓷韵 · 古代五声音阶瓷编磬 -->
+        <div class="mt-8 p-6 rounded-2xl feature-card max-w-5xl mx-auto text-left">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 mb-3 pb-2 border-b border-border-light">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-400"></i>
+                    <h3 class="font-serif-cn text-base font-medium text-text-title">空灵瓷韵 · 叩瓷听音古代五声编磬</h3>
+                </div>
+                <span class="text-[11px] text-text-muted font-serif-cn">点击下方琴键或按键盘 1~5 键 · 聆听“声如磬、清越悠扬”的物理泛音</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="pentatonic-keys-container"></div>
+            <div class="mt-3 p-3 rounded-xl bg-yuebai/50 text-xs text-text-body font-light border border-border-light" id="pentatonic-current-desc">
+                <span class="text-tianqing-deep font-medium font-serif-cn">听瓷之音</span>：中国古代视精瓷如美玉，“声如磬，清脆越人”。点击上方音阶，体验宫商角徵羽与名瓷共振的空灵之美。
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块五：东方色谱 · 传统古瓷釉色美学与矿物化学实验室 ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main" id="colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">华夏传统色彩美学 · 硅酸盐过渡金属离子显色机理</span>
+            <h2 data-i18n="colors.sectionTitle">东方色谱 · 古瓷传统釉色美学与矿物化学实验室</h2>
+            <p class="section-subtitle" data-i18n="colors.sectionSub">雨过天青、粉青如玉、月白莹霜、玫瑰紫变、曜变乌金 · 实时模拟铁铜钴矿物配比与窑炉气氛呈色机理</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 新增国赛核心亮点：古瓷釉料矿物化学配比与还原焰/氧化焰实时试烧实验室 -->
+        <div class="max-w-6xl mx-auto mb-10 feature-card p-6 sm:p-8" id="glaze-chem-lab">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-6 border-b border-border-light">
+                <div>
+                    <span class="badge bg-amber-700 text-white text-xs mb-1"><i class="fa-solid fa-flask mr-1"></i>跨学科数字文博实验室 (化学 × 材料物理 × 非遗)</span>
+                    <h3 class="text-xl font-serif-cn font-semibold text-text-title">土与火的炼金术 · 古瓷釉料氧化物配比与窑变气氛仿真器</h3>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="applyChemPreset('ru')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">汝窑天青配方</button>
+                    <button onclick="applyChemPreset('ding')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">定窑牙白配方</button>
+                    <button onclick="applyChemPreset('jun')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">钧窑铜红配方</button>
+                    <button onclick="applyChemPreset('jian')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">建盏乌金配方</button>
+                    <button onclick="applyChemPreset('qinghua')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">宣德青花配方</button>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- 左侧 6列：四大矿物配比滑块与窑炉气氛开关 -->
+                <div class="lg:col-span-6 space-y-4 text-left text-xs">
+                    <div class="p-3.5 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                        <div class="flex justify-between font-serif-cn">
+                            <span class="text-text-title font-medium">① 氧化铁 (Fe₂O₃ · 青瓷/黑瓷核心呈色剂)</span>
+                            <strong id="chem-fe-val" class="font-mono text-tianqing-deep">1.8%</strong>
+                        </div>
+                        <input id="chem-fe-slider" type="range" min="0.2" max="9.0" step="0.2" value="1.8" oninput="updateGlazeChemistrySimulation()" class="w-full">
+                        <p class="text-[11px] text-text-muted">0.4%定窑白瓷 · 1.8%汝窑天青 · 2.5%龙泉粉青 · >8%建盏黑釉析晶</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                        <div class="flex justify-between font-serif-cn">
+                            <span class="text-text-title font-medium">② 氧化铜 (CuO · 钧窑玫瑰紫/铜绿呈色剂)</span>
+                            <strong id="chem-cu-val" class="font-mono text-amber-400">0.0%</strong>
+                        </div>
+                        <input id="chem-cu-slider" type="range" min="0.0" max="1.8" step="0.1" value="0.0" oninput="updateGlazeChemistrySimulation()" class="w-full">
+                        <p class="text-[11px] text-text-muted">还原焰下生成纳米胶体铜（Cu⁰）呈玫瑰紫；氧化焰下生成 Cu²⁺ 呈翠绿色</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                            <div class="flex justify-between font-serif-cn">
+                                <span class="text-text-title font-medium">③ 苏麻离青 (CoO)</span>
+                                <strong id="chem-co-val" class="font-mono text-tianqing-deep">0.0%</strong>
+                            </div>
+                            <input id="chem-co-slider" type="range" min="0.0" max="2.0" step="0.1" value="0.0" oninput="updateGlazeChemistrySimulation()" class="w-full">
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                            <div class="flex justify-between font-serif-cn">
+                                <span class="text-text-title font-medium">④ 玛瑙微晶散射</span>
+                                <strong id="chem-agate-val" class="font-mono text-amber-400">18%</strong>
+                            </div>
+                            <input id="chem-agate-slider" type="range" min="0" max="35" step="1" value="18" oninput="updateGlazeChemistrySimulation()" class="w-full">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="font-serif-cn text-text-title font-medium">⑤ 1300℃ 窑炉烧成气氛：</span>
+                        <div class="flex items-center gap-2">
+                            <button class="chem-atm-btn active" data-atm="reduction" onclick="setGlazeChemAtmosphere('reduction')">🔥 松柴强还原焰 (CO)</button>
+                            <button class="chem-atm-btn" data-atm="oxidation" onclick="setGlazeChemAtmosphere('oxidation')">💨 富氧氧化焰 (O₂)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧 6列：实时烧成玉璧试釉盘与化学机理输出 -->
+                <div class="lg:col-span-6 p-6 rounded-2xl bg-bg-main border border-border-light flex flex-col sm:flex-row items-center gap-6 text-left">
+                    <div class="shrink-0 text-center">
+                        <canvas id="glaze-chem-disc-canvas" width="210" height="210" class="mx-auto block"></canvas>
+                        <span class="text-[11px] text-text-muted font-serif-cn mt-2 block">实时高光微晶试釉玉璧</span>
+                    </div>
+                    <div class="space-y-3 flex-1">
+                        <span class="badge bg-tianqing-deep text-white text-[11px]">实时热化学反应判读</span>
+                        <h4 id="chem-result-title" class="text-lg font-serif-cn font-semibold text-text-title">北宋汝官窑 · 雨过天青玛瑙釉</h4>
+                        <div id="chem-result-equation" class="p-2.5 rounded-lg bg-yuebai font-mono text-[11px] text-amber-400 border border-border-light">
+                            Fe₂O₃ + CO (1250℃) → 2FeO + CO₂↑
+                        </div>
+                        <p id="chem-result-desc" class="text-xs text-text-body font-light leading-relaxed"></p>
+                        <button id="chem-apply-3d-btn" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-cube text-amber-200"></i>
+                            <span>将该实验配方同步至 3D 展厅试烧</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 传统八大釉色色谱卡片网格 -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" id="traditional-colors-grid"></div>
+    </div>
+</section>
+
+<!-- ==================== 板块六：文人四艺 · 宋代雅集生活与建盏点茶百戏 ==================== -->
+<section class="py-16 sm:py-24 bg-white" id="four-arts">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">宋代雅集生活美学 · 宋徽宗《大观茶论》活态交互</span>
+            <h2 data-i18n="fourarts.sectionTitle">文人四艺 · 宋代雅集生活与建盏点茶百戏</h2>
+            <p class="section-subtitle" data-i18n="fourarts.sectionSub">焚香、点茶、插花、挂画 · 亲手体验宋徽宗《大观茶论》“七汤击拂、盏面作画”之风雅</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-10" id="four-arts-container"></div>
+
+        <!-- 新增互动体验：宋代建盏“七汤点茶 · 水丹青茶百戏”互动工作台 -->
+        <div class="max-w-5xl mx-auto feature-card p-6 sm:p-8">
+            <div class="grid md:grid-cols-12 gap-8 items-center">
+                <div class="md:col-span-5 text-center">
+                    <div class="relative inline-block">
+                        <canvas id="tea-whisk-canvas" width="280" height="280" class="mx-auto rounded-full shadow-lg cursor-crosshair"></canvas>
+                    </div>
+                    <p class="text-[11px] text-text-muted mt-2 font-serif-cn">
+                        <i class="fa-solid fa-hand-pointer text-amber-400 mr-1"></i>在建盏内按住滑动即可用茶筅击拂雪沫或手绘水丹青
+                    </p>
+                </div>
+
+                <div class="md:col-span-7 space-y-4 text-left">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="badge bg-tianqing-deep text-white text-xs">宋代非遗点茶模拟器 · 建阳乌金兔毫盏</span>
+                        <span id="tea-stage-badge" class="text-xs font-serif-cn text-amber-400 font-medium">五汤珠玑 · 粟文蟹眼</span>
+                    </div>
+                    <h3 class="text-xl font-serif-cn font-semibold text-text-title">晴窗细乳戏分茶 · 建盏七汤击拂与茶百戏体验</h3>
+                    <p class="text-xs text-text-body font-light leading-relaxed">
+                        宋代斗茶尚黑釉建盏：“茶色白，宜黑盏”。碾末注汤，以茶筅回环击拂七汤，使雪白茶沫紧咬盏沿久聚不散（谓之“咬盏”），更可以清水幻化出竹石花鸟，称“水丹青（茶百戏）”。
+                    </p>
+
+                    <!-- 乳花咬盏进度条 -->
+                    <div class="w-full h-2.5 rounded-full bg-bg-main overflow-hidden border border-border-light">
+                        <div id="tea-foam-progress" class="h-full bg-tianqing-deep transition-all" style="width: 65%;"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-serif-cn text-text-title font-medium block">【一键施展宋代茶百戏（水丹青）雅画】：</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="whiskTeaStep()" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+                                <i class="fa-solid fa-Sync mr-1"></i>茶筅注水击拂 (+1汤)
+                            </button>
+                            <button onclick="setTeaBailiMotif('bamboo')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">🎍 清风疎竹</button>
+                            <button onclick="setTeaBailiMotif('plum')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">🌸 雪夜寒梅</button>
+                            <button onclick="setTeaBailiMotif('crane')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">🕊️ 瑞鹤凌云</button>
+                            <button onclick="resetTeaBowl()" class="px-3.5 py-2 rounded-full border border-border-light text-text-muted text-xs font-serif-cn hover:text-text-title transition-colors">重新候汤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==================== 视听研学 · 陶埏天工技艺展映与东方意境音景 ==================== -->
+<section class="py-16 sm:py-24 bg-yuebai/30 border-y border-border-light" id="video-theatre">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-film text-amber-200"></i>
+                <span>天工开物 · 华夏非遗制瓷视听研学展映厅</span>
+            </span>
+            <h2 data-i18n="video.sectionTitle">视听研学 · 陶埏天工技艺展映</h2>
+            <p class="section-subtitle" data-i18n="video.sectionSub">四大传统核心工序高清实况展映 · 融合 Web Audio API 东方意境环境音景实时发生器</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-start max-w-6xl mx-auto">
+            <!-- 左侧 8列：高清视频沉浸放映舱与学术考据 -->
+            <div class="lg:col-span-8">
+                <div class="feature-card p-5 sm:p-6 space-y-4">
+                    <!-- 视频主视窗 -->
+                    <div class="relative rounded-2xl overflow-hidden bg-black shadow-xl aspect-video border border-border-light group">
+                        <video id="craft-main-video" src="videos/ceramic_making.webm" controls autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+                        <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-1.5 border border-white/10 pointer-events-none">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="craft-video-duration">00:24 · 高清实景循环</span>
+                        </div>
+                    </div>
+
+                    <!-- 视频解说与文献考据 -->
+                    <div class="space-y-3 pt-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span id="craft-video-chapter" class="badge bg-tianqing-deep/15 text-tianqing-deep border border-tianqing/30 font-medium">工序五 · 轮盘拉坯</span>
+                            <span class="text-xs text-text-muted font-serif-cn"><i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i>CC0 开放非遗视听档案</span>
+                        </div>
+                        <h3 id="craft-video-title" class="text-xl font-serif-cn font-semibold text-text-title tracking-wide">《陶轮拉坯 · 指尖生形》</h3>
+                        <p id="craft-video-subtitle" class="text-xs text-tianqing-deep font-serif-cn">飞轮旋转，十指感知泥料筋骨厚薄，一呼一吸间提拉出曼妙曲线</p>
+                        
+                        <blockquote id="craft-video-quote" class="p-3.5 rounded-xl bg-yuebai/60 border-l-2 border-tianqing text-xs text-text-muted italic leading-relaxed font-serif-cn">
+                            “陶轮一转天地开，素手揉出万象来” ——《天工开物 · 陶埏篇》
+                        </blockquote>
+
+                        <p id="craft-video-desc" class="text-xs text-text-body leading-relaxed font-light">
+                            陶轮拉坯是传统手工制瓷最具生命力的核心工序。匠人将练好的熟泥掷于旋转转盘中心，以双手拇指开孔，四指提拉外壁。利用离心力与指尖均匀推压，将致密泥料顺势拔高，器物之口沿、修颈、溜肩、圆腹在此一气呵成。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 4列：工序剧目选集 + Web Audio 东方环境音景 -->
+            <div class="lg:col-span-4 space-y-5">
+                <!-- 工序选集切换 -->
+                <div class="feature-card p-5">
+                    <h4 class="text-xs font-serif-cn font-medium text-text-title mb-3 flex items-center justify-between pb-2 border-b border-border-light">
+                        <span><i class="fa-solid fa-clapperboard text-amber-400 mr-1.5"></i>核心工序实录剧目</span>
+                        <span class="text-[11px] text-text-muted">4集高清实况</span>
+                    </h4>
+                    <div class="space-y-2.5">
+                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group border-tianqing bg-tianqing-deep/15" onclick="switchCraftVideo(0)">
+                            <div class="space-y-0.5">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">01. 陶轮拉坯 · 指尖生形</div>
+                                <div class="text-[10px] text-text-muted">轮盘飞转，十指拔高出曼妙曲线</div>
+                            </div>
+                            <i class="fa-solid fa-play text-xs text-tianqing-deep shrink-0"></i>
+                        </button>
+
+                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" onclick="switchCraftVideo(1)">
+                            <div class="space-y-0.5">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">02. 修光利坯 · 削泥如玉</div>
+                                <div class="text-[10px] text-text-muted">毫厘无差，钢刀旋出规整铁足</div>
+                            </div>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                        </button>
+
+                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" onclick="switchCraftVideo(2)">
+                            <div class="space-y-0.5">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">03. 矿彩荡釉 · 翠色成衣</div>
+                                <div class="text-[10px] text-text-muted">玛瑙长石入浆，厚施温润如凝脂</div>
+                            </div>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                        </button>
+
+                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" onclick="switchCraftVideo(3)">
+                            <div class="space-y-0.5">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">04. 龙窑柴烧 · 烈焰涅槃</div>
+                                <div class="text-[10px] text-text-muted">1300℃缺氧还原，天青出窑成绝响</div>
+                            </div>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 东方环境音景发生器 -->
+                <div class="feature-card p-5">
+                    <h4 class="text-xs font-serif-cn font-medium text-text-title mb-1 flex items-center justify-between">
+                        <span><i class="fa-solid fa-headphones-simple text-tianqing-deep mr-1.5"></i>东方意境 · 环境音景发生器</span>
+                        <span class="text-[10px] text-emerald-500 font-normal">Web Audio 实时合成</span>
+                    </h4>
+                    <p class="text-[11px] text-text-muted font-light mb-3">纯前端声学算法振荡与环境白噪音，可叠加开启，营造沉浸式研学雅境：</p>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="ambient-btn-fire" onclick="toggleAmbientSound('fire')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                            <span class="text-base">🔥</span>
+                            <div class="text-left leading-tight">
+                                <div class="font-medium">龙窑松柴</div>
+                                <div class="text-[9px] text-text-muted">烈火噼啪</div>
+                            </div>
+                        </button>
+
+                        <button id="ambient-btn-water" onclick="toggleAmbientSound('water')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                            <span class="text-base">💧</span>
+                            <div class="text-left leading-tight">
+                                <div class="font-medium">山泉水磨</div>
+                                <div class="text-[9px] text-text-muted">澄泥潺潺</div>
+                            </div>
+                        </button>
+
+                        <button id="ambient-btn-guqin" onclick="toggleAmbientSound('guqin')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                            <span class="text-base">🎵</span>
+                            <div class="text-left leading-tight">
+                                <div class="font-medium">古琴五音</div>
+                                <div class="text-[9px] text-text-muted">泛音空灵</div>
+                            </div>
+                        </button>
+
+                        <button id="ambient-btn-chime" onclick="toggleAmbientSound('chime')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                            <span class="text-base">🔔</span>
+                            <div class="text-left leading-tight">
+                                <div class="font-medium">叩瓷玉振</div>
+                                <div class="text-[9px] text-text-muted">声如鸣磬</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="mt-3 pt-2.5 border-t border-border-light text-[10px] text-text-muted font-light flex items-center justify-between">
+                        <span><i class="fa-solid fa-volume-high mr-1 text-tianqing"></i>物理级实时滤波与包络</span>
+                        <span class="text-tianqing-deep">零外部音频依赖</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块七：传世名品典藏库与历代官窑款识大辞典 ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main" id="archive">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">数字化复原 · 实测点云孪生 · 历代帝王纪年官窑底款图谱</span>
+            <h2 data-i18n="archive.sectionTitle">名器考据 · 传世国宝典藏库与历代官窑款识大辞典</h2>
+            <p class="section-subtitle" data-i18n="archive.sectionSub">精选两宋五大名窑与明清御窑标准器档案 · 附历代帝王纪年官窑底款篆刻图谱与一键 3D 检视</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 典藏分类筛选栏 -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-8 max-w-4xl mx-auto">
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-tianqing-deep text-white font-serif-cn transition-all shadow-sm active" data-filter="all" data-dynasty="all" onclick="filterArchivePorcelains('all')">
+                <i class="fa-solid fa-layer-group mr-1.5"></i>全部国宝典藏 (24件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="song" data-dynasty="song" onclick="filterArchivePorcelains('song')">
+                <i class="fa-solid fa-feather mr-1.5"></i>两宋极简峰峦 (11件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="ming" data-dynasty="ming" onclick="filterArchivePorcelains('ming')">
+                <i class="fa-solid fa-dragon mr-1.5"></i>大明宣德成化御窑 (4件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="qing" data-dynasty="qing" onclick="filterArchivePorcelains('qing')">
+                <i class="fa-solid fa-crown mr-1.5"></i>大清康雍乾盛世彩瓷 (6件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="tang" data-dynasty="tang" onclick="filterArchivePorcelains('tang')">
+                <i class="fa-solid fa-scroll mr-1.5"></i>隋唐南青北白 (2件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="yuan" data-dynasty="yuan" onclick="filterArchivePorcelains('yuan')">
+                <i class="fa-solid fa-horse mr-1.5"></i>大元雄浑青花 (1件)
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all border border-amber-400/40" data-filter="scanned" data-dynasty="scanned" onclick="filterArchivePorcelains('scanned')">
+                <i class="fa-solid fa-satellite-dish mr-1.5 text-amber-400"></i>★ 1:1 实测3D扫描真品 (5件)
+            </button>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12" id="archive-grid-container"></div>
+
+        <!-- 新增模块：历代官窑纪年款识与支钉制度图典 -->
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-6">
+                <span class="badge bg-amber-700 text-white text-xs mb-2">古陶瓷断代核心铁证</span>
+                <h3 class="text-xl sm:text-2xl font-serif-cn font-semibold text-text-title">历代官窑底款篆刻与支烧规制图典</h3>
+                <p class="text-xs text-text-muted mt-1 font-serif-cn">从北宋汝窑“奉华”刻款、钧窑数字编号至明清御器厂帝王年号款识</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="imperial-marks-grid"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块八：研鉴札记与“文博殿试”互动考卷 ==================== -->
+<section class="py-16 sm:py-24 bg-white" id="notes">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">硅酸盐物理专论 · 热应力断裂力学 · 博古殿试科举问答</span>
+            <h2 data-i18n="notes.sectionTitle">格物致知 · 独立学术札记与“文博殿试”互动考卷</h2>
+            <p class="section-subtitle" data-i18n="notes.sectionSub">探究胎釉热膨胀失配动力学、紫口铁足矿物学成因，参与博古殿试赢取“文博翰林”数字荣誉勋章</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 三篇深度学术研考专论 (点击可展卷深读全文) -->
+        <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-10" id="scholar-notes-container"></div>
+
+        <!-- 新增模块：文博殿试 · 古陶瓷非遗与材料科学互动考卷 -->
+        <div class="max-w-4xl mx-auto feature-card p-6 sm:p-8">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-border-light">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-scroll text-amber-400 text-lg"></i>
+                    <div>
+                        <h3 class="text-lg font-serif-cn font-semibold text-text-title">文博殿试 · 中国古陶瓷非遗与材料科学策问</h3>
+                        <p class="text-[11px] text-text-muted">答对策问即可获授“大宋文博翰林学士”雅衔，检验您的古瓷鉴藏造诣</p>
+                    </div>
+                </div>
+            </div>
+            <div id="scholar-quiz-container"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 板块九：主理人致辞与学术宣言 ==================== -->
+<section class="py-16 sm:py-24 bg-bg-main border-t border-border-light" id="about">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="w-16 h-16 rounded-full bg-yuebai flex items-center justify-center mx-auto mb-5 text-tianqing-deep text-2xl shadow-sm border border-border-light">
+            <i class="fa-solid fa-pen-fancy"></i>
+        </div>
+        <h2 class="font-serif-cn text-2xl sm:text-3xl text-text-title font-semibold mb-3" data-i18n="about.title">研鉴空间主理人寄语 · 河南大学数字人文文博工程</h2>
+        <div class="section-divider mx-auto mb-8"></div>
+        <div class="feature-card p-8 sm:p-10 text-left space-y-4 font-light leading-relaxed text-sm text-text-body">
+            <p class="font-serif-cn text-base sm:text-lg text-amber-400 leading-relaxed">
+                “器以载道，道由心悟。中国陶瓷绝非冰冷的土与火之熔融，而是数千年来东方文人安顿性命、追寻天人合一的精神舟楫。”
+            </p>
+            <p data-i18n="about.desc">
+                本数字空间旨在以现代三维物理渲染（WebGL PBR）、实测文物结构光点云重建、计算机视觉特征工程与硅酸盐热化学仿真，复原两宋五大名窑与明清御窑的不朽神采。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方造物之美。
+            </p>
+            <div class="pt-4 border-t border-border-light flex flex-col sm:flex-row sm:items-center justify-between text-xs text-text-muted gap-2 font-serif-cn">
+                <span>华夏器道 · 仝瓷记忆 — 中国古陶瓷数字化研鉴与非遗活态传承平台</span>
+                <span class="text-tianqing-deep font-medium">恪守格物诚意 · 以数字科技守护华夏文脉</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== 页脚 (Footer) ==================== -->
+<footer class="bg-text-title text-white/70 pt-16 pb-12 border-t border-white/10 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+            <div>
+                <div class="flex items-center gap-2.5 mb-4">
+                    <div class="brand-seal"></div>
+                    <span class="font-serif-cn font-semibold text-white text-lg tracking-widest" data-i18n="brand">华夏器道</span>
+                </div>
+                <p class="text-xs leading-relaxed font-light text-white/60 mb-2" data-i18n="footer.slogan">器以载道，以数字科技传承东方文明之光。</p>
+                <p class="text-xs leading-relaxed font-light text-white/50">聚焦两宋五大名窑、1:1实测三维扫描真品孪生、CV视觉鉴宝与传统造物哲学体系。</p>
+            </div>
+            <div>
+                <h4 class="text-white font-serif-cn font-medium mb-4 text-sm tracking-wider">核心数字展厅</h4>
+                <ul class="space-y-2.5 text-xs font-light text-white/60">
+                    <li><a href="#3d-gallery" class="hover:text-tianqing transition-colors" data-i18n="nav.3d">3D名瓷全景研鉴馆 (9尊)</a></li>
+                    <li><a href="#ai-recognition" class="hover:text-tianqing transition-colors" data-i18n="nav.ai">AI视觉识瓷与光谱中心</a></li>
+                    <li><a href="#history" class="hover:text-tianqing transition-colors" data-i18n="nav.history">陶瓷通史八千年长卷</a></li>
+                    <li><a href="#pottery-studio" class="hover:text-tianqing transition-colors">3D指尖拉坯与青花工坊</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-serif-cn font-medium mb-4 text-sm tracking-wider">跨学科实验室</h4>
+                <ul class="space-y-2.5 text-xs font-light text-white/60">
+                    <li><a href="#kiln-map-section" class="hover:text-tianqing transition-colors">九州名窑山川与XRF配比图</a></li>
+                    <li><a href="#colors" class="hover:text-tianqing transition-colors" data-i18n="nav.colors">古瓷釉料化学配比实验室</a></li>
+                    <li><a href="#four-arts" class="hover:text-tianqing transition-colors" data-i18n="nav.fourarts">宋代七汤点茶与茶百戏</a></li>
+                    <li><a href="#archive" class="hover:text-tianqing transition-colors" data-i18n="nav.archive">传世国宝与官窑款识辞典</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-serif-cn font-medium mb-4 text-sm tracking-wider">数字工程特性</h4>
+                <p class="text-xs font-light leading-relaxed text-white/60">纯前端零外部网络依赖构建：Three.js 程序化 HDR 环境反射、实测 GLTF 1K PBR 点云模型、Sobel 开片梯度算子与 Web Audio 古琴瓷磬物理泛音合成。</p>
+            </div>
+        </div>
+        <div class="border-t border-white/10 pt-8 text-center text-xs text-white/40 font-light tracking-wider font-serif-cn">
+            <p data-i18n="footer.copyright">&copy; 2026 华夏器道 · 仝瓷记忆 (V3.0 旗舰全量版) — 中国古代传统文化与古瓷数字化研鉴空间.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ==================== 全局快速检索命令面板模态框 (Ctrl/Cmd + K) ==================== -->
+<div id="command-palette-modal" class="modal-backdrop" onclick="if(event.target===this)closeCommandPalette()">
+    <div class="modal-content-lg">
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
+            <div class="flex items-center gap-2 text-text-title font-serif-cn font-semibold">
+                <i class="fa-solid fa-magnifying-glass text-tianqing-deep"></i>
+                <span>博古通今 · 全站器物 / 窑口 / 釉色 / 工序快速检索引擎</span>
+            </div>
+            <button onclick="closeCommandPalette()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-text-body"></i>
+            </button>
+        </div>
+        <input id="command-search-input" type="text" oninput="renderCommandResults(this.value)" placeholder="输入关键词检索（如：汝窑、官窑、苏麻离青、水仙盆、梅瓶、实测扫描...）" class="w-full px-4 py-3 rounded-xl bg-bg-main border border-border-light text-xs sm:text-sm text-text-title outline-none mb-4 font-serif-cn">
+        <div id="command-results-list" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1"></div>
+    </div>
+</div>
+
+<!-- ==================== 摄像头实时扫一扫模态框 ==================== -->
+<div id="camera-modal" class="modal-backdrop" onclick="if(event.target===this)stopCameraScan()">
+    <div class="modal-content-lg text-center">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-camera text-tianqing-deep"></i>
+                <span>实时摄像头取景识瓷</span>
+            </h3>
+            <button onclick="stopCameraScan()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-text-body"></i>
+            </button>
+        </div>
+        <div class="relative rounded-2xl overflow-hidden bg-black mb-4">
+            <video id="camera-video" autoplay playsinline muted></video>
+            <div class="ai-scan-line-laser"></div>
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-xs font-serif-cn">
+                请将瓷器居中对齐取景框
+            </div>
+        </div>
+        <div class="flex items-center justify-center gap-4">
+            <button onclick="captureAndIdentify()" class="px-6 py-2.5 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md">
+                <i class="fa-solid fa-circle-dot mr-1.5"></i>定格拍照并送检
+            </button>
+            <button onclick="stopCameraScan()" class="px-5 py-2.5 border border-border-light text-text-body rounded-full text-xs font-serif-cn hover:bg-yuebai transition-colors">
+                取消
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 宋瓷 100x 显微镜微观观察窗模态框 ==================== -->
+<div id="microscope-modal" class="modal-backdrop" onclick="if(event.target===this)closeMicroscopeView()">
+    <div class="modal-content-lg text-center">
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
+            <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-microscope text-tianqing-deep"></i>
+                <span>宋明御瓷 100x 显微镜微观晶相研考观察窗</span>
+            </h3>
+            <button onclick="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-text-body"></i>
+            </button>
+        </div>
+
+        <div id="microscope-preset-tabs" class="flex flex-wrap items-center justify-center gap-2 mb-3"></div>
+
+        <div class="microscope-lens-viewport">
+            <div id="microscope-bubbles-layer" class="w-full h-full relative transition-all"></div>
+        </div>
+
+        <div class="flex items-center justify-center gap-3 my-3 max-w-xs mx-auto">
+            <i class="fa-solid fa-crosshairs text-tianqing-deep text-xs"></i>
+            <span class="text-xs text-text-muted font-serif-cn">目镜焦距：</span>
+            <input type="range" min="60" max="140" value="100" oninput="adjustMicroscopeFocus(this.value)" class="w-28 sm:w-36">
+            <span id="microscope-focus-value" class="text-xs font-mono text-text-title w-10">100%</span>
+        </div>
+
+        <div id="microscope-desc-card" class="bg-yuebai/50 p-4 rounded-xl border border-border-light text-left text-xs text-text-body space-y-2 font-light"></div>
+
+        <button onclick="closeMicroscopeView()" class="mt-4 px-6 py-2 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+            关闭目镜视野
+        </button>
+    </div>
+</div>
+
+<!-- ==================== 个人古瓷研学手记与收藏夹模态框 ==================== -->
+<div id="study-notebook-modal" class="modal-backdrop" onclick="if(event.target===this)closeStudyNotebook()">
+    <div class="modal-content-lg">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-border-light">
+            <h3 class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-bookmark text-tianqing-deep"></i>
+                <span>个人古瓷研学手记 · 典藏集</span>
+            </h3>
+            <button onclick="closeStudyNotebook()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-text-body"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4 max-h-[68vh] overflow-y-auto pr-1">
+            <div>
+                <h4 class="text-xs font-serif-cn font-medium text-text-title mb-2 flex items-center justify-between">
+                    <span>【已收录馆藏标本】</span>
+                    <span class="text-[11px] text-text-muted">在典藏珍库点击书签即可收录</span>
+                </h4>
+                <div id="study-notebook-list" class="space-y-2"></div>
+            </div>
+
+            <div class="pt-3 border-t border-border-light">
+                <h4 class="text-xs font-serif-cn font-medium text-text-title mb-2">【个人考据随笔与灵感手记】</h4>
+                <textarea id="study-notebook-textarea" oninput="saveStudyNotes()" rows="4" placeholder="在此随时记录您的古瓷鉴赏心得、窑口考证灵感、胎釉比对备忘（浏览器本地自动持久化保存）..." class="w-full bg-yuebai/50 border border-border-light rounded-xl p-3 text-xs text-text-title outline-none font-light resize-none leading-relaxed"></textarea>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="text-[11px] text-text-muted font-light"><i class="fa-solid fa-database mr-1 text-tianqing"></i>本地持久化存储</span>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button onclick="exportStudyNotes()" class="px-4 py-2 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-export text-[10px]"></i>
+                    <span>导出 Markdown 研学手记</span>
+                </button>
+                <button onclick="closeStudyNotebook()" class="px-4 py-2 bg-yuebai text-text-body rounded-full text-xs font-serif-cn">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 传世文物、工序与学术专论通用模态框 ==================== -->
+<div id="universal-modal" class="modal-backdrop" onclick="if(event.target===this)closeUniversalModal()">
+    <div class="modal-content-lg">
+        <div class="flex items-center justify-between mb-5 pb-3 border-b border-border-light">
+            <h3 id="modal-title" class="font-serif-cn text-lg font-semibold text-text-title"></h3>
+            <button onclick="closeUniversalModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭">
+                <i class="fa-solid fa-xmark text-text-body"></i>
+            </button>
+        </div>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<!-- 回到顶部按钮 -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">
+    <i class="fa-solid fa-chevron-up text-sm"></i>
+</button>
+
+<!-- 核心脚本加载链路 (新增加载 GLTFLoader.js 与 scanned-models-data.js 实测3D点云模型数据) -->
+<script src="js/three.min.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script src="js/scanned-models-data.js"></script>
+    <script src="js/museum-audio-data.js"></script>
+    <script src="js/oriental-ambient.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/three-scene.js"></script>
+<script src="js/ai-recognition.js"></script>
+<script src="js/pottery-workshop.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>
