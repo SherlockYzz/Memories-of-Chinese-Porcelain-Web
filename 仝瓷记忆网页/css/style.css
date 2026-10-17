@@ -2023,3 +2023,623 @@ footer::after {
         -webkit-backdrop-filter: none !important;
     }
 }
+
+/* ================================================================
+   华夏器道 · 3D 研鉴馆与 AI 识图专属增强样式
+   ================================================================ */
+
+/* 3D 研鉴容器与高精度 Canvas */
+.three-canvas-container {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    background: radial-gradient(circle at 50% 40%, #1e2630 0%, #11151a 100%);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.15);
+}
+
+#three-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    cursor: grab;
+}
+
+#three-canvas:active {
+    cursor: grabbing;
+}
+
+/* 3D 悬浮指示徽章 */
+.canvas-hint-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(19, 24, 29, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cad8dc;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* 3D 视角与功能开关工具条 */
+.canvas-quick-toolbar {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(19, 24, 29, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
+    z-index: 10;
+}
+
+.canvas-tool-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9cb1b8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.8rem;
+}
+
+.canvas-tool-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.canvas-tool-btn.active {
+    color: #ffffff;
+    background: var(--tianqing-deep);
+    box-shadow: 0 0 10px rgba(90, 156, 168, 0.5);
+}
+
+/* 釉色拾取圆形色块按钮 */
+.glaze-picker-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+.glaze-picker-btn:hover {
+    transform: translateY(-2px) scale(1.1);
+}
+
+.glaze-picker-btn.ring-2 {
+    border-color: var(--tianqing-deep);
+}
+
+/* AI 识图上传拖拽区 */
+.ai-dropzone {
+    border: 2px dashed #d0dce0;
+    border-radius: 1.25rem;
+    background: #fbfdfd;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ai-dropzone:hover {
+    border-color: var(--tianqing-deep);
+    background: var(--yuebai);
+}
+
+/* AI 扫描动态激光线 */
+.ai-scan-line-laser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #5A9CA8, #A8CDD4, #5A9CA8, transparent);
+    box-shadow: 0 0 16px #5A9CA8, 0 0 32px #5A9CA8;
+    animation: laserScan 2.4s ease-in-out infinite;
+    z-index: 20;
+}
+
+@keyframes laserScan {
+    0% { top: 0%; opacity: 0.3; }
+    50% { top: 96%; opacity: 1; }
+    100% { top: 0%; opacity: 0.3; }
+}
+
+/* 摄像头全屏弹窗视频 */
+#camera-video {
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+    border-radius: 1rem;
+    background: #000;
+}
+
+/* 历史朝代滚动容器 */
+.history-nav-scroll {
+    display: flex;
+    gap: 0.6rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--tianqing) transparent;
+}
+
+.history-nav-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+.history-nav-scroll::-webkit-scrollbar-thumb {
+    background: var(--tianqing);
+    border-radius: 9999px;
+}
+
+/* 通用全屏模态框 */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 30, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content-lg {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    max-width: 680px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.modal-backdrop.active .modal-content-lg {
+    transform: translateY(0);
+}
+
+/* ================================================================
+   华夏名窑地理图谱 · 水墨光点交互样式
+   ================================================================ */
+.kiln-map-container {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    background: radial-gradient(ellipse at 60% 50%, #f4f8f9 0%, #e2ecee 100%);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.kiln-map-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 60% 48%, rgba(90, 156, 168, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 72% 62%, rgba(90, 156, 168, 0.10) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.kiln-map-spot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    transition: transform 0.2s ease;
+}
+
+.kiln-map-spot:hover,
+.kiln-map-spot.active {
+    transform: translate(-50%, -50%) scale(1.18);
+    z-index: 20;
+}
+
+.spot-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: var(--tianqing-deep);
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 8px rgba(90, 156, 168, 0.6);
+    position: relative;
+}
+
+.kiln-map-spot.active .spot-dot {
+    background: #d9534f;
+    box-shadow: 0 0 12px rgba(217, 83, 79, 0.8);
+}
+
+.spot-ping {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 9999px;
+    border: 2px solid var(--tianqing-deep);
+    animation: spotPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    opacity: 0.75;
+}
+
+@keyframes spotPing {
+    0% { transform: scale(0.6); opacity: 0.9; }
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+.spot-label {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-title);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2px 6px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    font-family: serif;
+}
+
+/* ================================================================
+   指尖拉坯交互仿真工坊样式
+   ================================================================ */
+.pottery-canvas-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    background: radial-gradient(circle at 50% 30%, #2b2520 0%, #15110e 100%);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+}
+
+#pottery-canvas {
+    width: 100%;
+    height: 420px;
+    display: block;
+    cursor: ew-resize;
+    touch-action: none;
+}
+
+#kiln-fire-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 90, 0, 0.85) 0%, rgba(180, 20, 0, 0.95) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 30;
+    animation: kilnFlicker 0.2s infinite alternate;
+}
+
+@keyframes kilnFlicker {
+    0% { opacity: 0.92; filter: brightness(1.0); }
+    100% { opacity: 1.0; filter: brightness(1.2); }
+}
+
+/* ================================================================
+   100x 显微镜微观聚沫攒珠视图样式
+   ================================================================ */
+.microscope-lens-viewport {
+    width: 280px;
+    height: 280px;
+    border-radius: 9999px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    overflow: hidden;
+    border: 8px solid #222930;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.2);
+    background: radial-gradient(circle at 45% 45%, #9ec3cb 0%, #57858f 70%, #2f4e56 100%);
+}
+
+.microscope-lens-viewport::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 模拟微观聚沫攒珠大小气泡 */
+.micro-bubble {
+    position: absolute;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.2) 60%, rgba(0,0,0,0.4) 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.micro-crack {
+    position: absolute;
+    width: 140px;
+    height: 2px;
+    background: rgba(40, 30, 25, 0.7);
+    filter: blur(0.5px);
+    transform: rotate(35deg);
+}
+
+/* GPU 硬件加速 */
+.three-canvas-container,
+#pottery-canvas,
+.feature-card,
+.kiln-map-spot {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* ================================================================
+   移动端触控手势防误滚与防穿透保护
+   ================================================================ */
+#three-canvas,
+#pottery-canvas {
+    touch-action: none !important;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+body.no-scroll {
+    overflow: hidden !important;
+    touch-action: none;
+}
+
+/* ================================================================
+   现代水墨微磨砂移动端抽屉与遮罩
+   ================================================================ */
+.mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 18, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 890;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(85vw, 320px);
+    height: 100%;
+    background: rgba(22, 28, 34, 0.97);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-left: 1px solid rgba(143, 184, 192, 0.2);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-menu a {
+    font-size: 0.95rem;
+    color: #dbe6ea;
+    font-family: 'Noto Serif SC', serif;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.6rem;
+    transition: all 0.2s ease;
+    letter-spacing: 0.08em;
+    font-weight: 300;
+}
+
+.mobile-menu a:hover,
+.mobile-menu a:active {
+    background: rgba(143, 184, 192, 0.18);
+    color: var(--tianqing-light);
+}
+
+/* ================================================================
+   新增特色组件样式 (五音古编磬、双器对比台、显微镜调焦)
+   ================================================================ */
+.chime-key-card {
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.chime-key-card:hover {
+    border-color: var(--tianqing);
+    box-shadow: 0 6px 16px rgba(90, 156, 168, 0.15);
+}
+
+.chime-key-card:active {
+    transform: scale(0.95);
+    border-color: var(--tianqing-deep);
+}
+
+/* 显微镜调焦滑块 */
+input[type="range"].accent-tianqing-deep {
+    accent-color: var(--tianqing-deep);
+}
+
+/* 横滑药丸菜单体验优化 */
+.model-btn-scroll,
+.history-nav-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.model-btn-scroll::-webkit-scrollbar,
+.history-nav-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* ================================================================
+   移动端与平板响应式深度适配规则 (@media 768px / 640px)
+   ================================================================ */
+@media (max-width: 768px) {
+    /* 3D 展馆移动端紧凑高度与手势 */
+    .three-canvas-container {
+        height: 350px !important;
+        border-radius: 1rem;
+    }
+
+    .canvas-quick-toolbar {
+        bottom: 0.75rem;
+        padding: 0.35rem 0.6rem;
+        gap: 0.35rem;
+        max-width: 90%;
+        overflow-x: auto;
+    }
+
+    .canvas-tool-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+
+    .canvas-hint-badge {
+        font-size: 9px;
+        padding: 0.25rem 0.6rem;
+        top: 0.5rem;
+        left: 0.5rem;
+    }
+
+    /* 名窑地图移动端高度自适应 */
+    .kiln-map-container {
+        min-height: 320px;
+        border-radius: 1rem;
+    }
+
+    /* 模态框移动端适配 */
+    .modal-content-lg {
+        width: 94vw !important;
+        max-width: 94vw !important;
+        max-height: 86vh !important;
+        padding: 1.25rem !important;
+        border-radius: 1.25rem !important;
+    }
+
+    .microscope-lens-viewport {
+        width: 220px;
+        height: 220px;
+        border-width: 6px;
+    }
+
+    /* 回到顶部按钮移动端避开全面屏安全区 */
+    #back-to-top {
+        bottom: calc(1.5rem + env(safe-area-inset-bottom));
+        right: 1.25rem;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 640px) {
+    /* 首屏 Hero 移动端优化 */
+    .hero-section {
+        padding: 5.5rem 1rem 3rem !important;
+        min-height: auto;
+    }
+
+    h1 {
+        font-size: 1.85rem !important;
+        letter-spacing: 0.12em !important;
+        line-height: 1.35 !important;
+    }
+
+    h2 {
+        font-size: 1.35rem !important;
+    }
+
+    .section-title-group {
+        margin-bottom: 2rem;
+    }
+
+    /* 3D 展馆手机端极致自适应 */
+    .three-canvas-container {
+        height: 310px !important;
+    }
+
+    /* 陶轮拉坯画布手机端自适应 */
+    .pottery-canvas-wrap {
+        width: 100%;
+        border-radius: 1rem;
+    }
+
+    #pottery-canvas {
+        height: 360px !important;
+    }
+
+    /* 东方色谱在手机上保持双列 */
+    #traditional-colors-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.75rem !important;
+    }
+
+    .color-card {
+        padding: 0.75rem !important;
+    }
+
+    /* 文人四艺在手机上单列 */
+    #four-arts-container {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+
+

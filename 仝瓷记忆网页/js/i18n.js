@@ -1,187 +1,141 @@
 /**
- * 宋煌官瓷数字化体验平台 - 国际化模块
+ * 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间
+ * 国际化多语言词条模块 (中/EN)
  */
+
+let currentLang = 'zh';
 
 const translations = {
     zh: {
-        brand: '慧眼识瓷',
-        loading: '加载中...',
+        brand: '华夏器道',
+        tagline: '中国古代传统文化与古陶瓷数字化研鉴空间',
+        loading: '正在载入华夏器物美学长卷...',
         'nav.home': '首页',
-        'nav.workshop': '匠心工坊',
-        'nav.history': '官瓷通史',
-        'nav.3d': '3D展馆',
-        'nav.ar': 'AR体验',
-        'nav.exhibition': '展览预约',
-        'nav.shop': '在线商城',
-        'nav.about': '关于我们',
-        'hero.title': '宋煌官瓷',
-        'hero.subtitle': '器以载道 · AI赋能非遗技艺数字化传承',
-        'hero.cta1': '进入3D展馆',
-        'hero.cta2': 'AR实景体验',
-        'hero.scroll': '向下探索',
-        'entry.knead': '揉泥技法',
-        'entry.throw': '拉坯成型',
-        'entry.carve': '精细雕刻',
-        'entry.fire': '烧制工艺',
-        'slogan.title': '器以载道',
-        'slogan.subtitle': 'AI赋能非遗技艺数字化传承',
-        'card1.tag': 'AI识别',
-        'card1.title': '慧眼识瓷',
-        'card1.desc': 'AR扫一扫，解锁千年非遗故事',
-        'card2.tag': '互动操作',
-        'card2.title': '快速体验',
-        'card2.desc': '第一视角陶艺互动体验',
-        'museum.title': '沉浸式数字博物馆',
-        'workshop.title': '匠心工坊 · 72道工序',
-        'workshop.subtitle': '从选料到成器，每一步都凝聚匠心',
-        'history.title': '官瓷通史 · 千年传承',
-        'history.subtitle': '从北宋至今，官窑瓷器的历史演变',
-        'ar.title': '虚实共生的视觉盛宴',
-        'ar.subtitle': 'AR实景交互体验',
-        'ar.desc': '虚实融合，穿越千年触碰匠心',
-        'ar.hint': '将摄像头对准瓷器',
-        'ar.note': 'AR功能需要后端支持和移动端摄像头权限',
-        'ar.btn': '开始AR体验',
-        '3d.title': '云端3D数字展馆',
-        '3d.desc': '360°沉浸式品鉴官瓷珍品',
-        '3d.model1': '官瓷瓶',
-        '3d.model2': '莲花碗',
-        '3d.model3': '三足炉',
-        'commerce.title': '全链路文化服务',
-        'exhibition.title': '瓷品展览预约',
-        'shop.title': '在线商城',
-        'i18n.title': '助力文化出海',
-        'i18n.desc': '多语言覆盖，让世界看见宋瓷之美',
-        'i18n.countries': '覆盖 30+ 国家和地区',
-        'i18n.langs': '支持 4 种语言',
-        'footer.desc': '河南大学仝瓷记忆技术团队，致力于用现代科技传承和弘扬中华优秀传统文化，让千年官瓷技艺在数字时代焕发新生。',
-        'footer.links': '快速链接',
-        'footer.contact': '联系我们',
-        'footer.address': '河南省郑州市宋煌官瓷文化中心',
-        'footer.privacy': '隐私政策',
-        'footer.terms': '服务条款',
-        'footer.copy': '宋煌官瓷数字化体验平台. 保留所有权利.',
-        'modal.ar.title': 'AR实景体验',
-        'modal.ar.desc': 'AR功能需要后端服务支持和移动端摄像头权限。请在后端接口对接完成后使用此功能。',
-        'modal.close': '我知道了',
-        'modal.booking.title': '展览预约',
-        'modal.booking.name': '姓名',
-        'modal.booking.phone': '手机号',
-        'modal.booking.date': '预约日期',
-        'modal.booking.count': '参观人数',
-        'modal.booking.submit': '确认预约',
-        'cart.title': '购物车',
-        'cart.empty': '购物车是空的',
-        'cart.total': '合计',
-        'cart.checkout': '结算（仅UI演示）',
-        'cart.added': '已加入购物车',
-        'booking.success': '预约成功！我们会尽快与您联系。',
-        'product.addToCart': '加入购物车',
-        'product.custom': '私人定制',
-        'exhibition.book': '立即预约',
-        'exhibition.items': '件展品',
+        'nav.3d': '3D研鉴馆',
+        'nav.ai': 'AI智能识瓷',
+        'nav.history': '陶瓷通史',
+        'nav.workshop': '天工七十二工',
+        'nav.fourarts': '文人四艺',
+        'nav.colors': '东方色谱',
+        'nav.archive': '传世典藏',
+        'nav.notes': '研考手记',
+        'nav.about': '主理人致辞',
+        'hero.badge': '个人学术与数字文博专栏 · 独立研鉴',
+        'hero.title': '器以载道 · 格物致知',
+        'hero.subtitle': '中国古代传统文化与宋韵古陶瓷 3D 数字化交互研鉴空间',
+        'hero.desc': '以现代三维渲染与图像智能算法，探寻宋代官瓷“紫口铁足、天青如玉”之千古幽绝。虽单骑独行，亦当以数字科技守护华夏造物文脉。',
+        'hero.cta1': '进入3D研鉴馆',
+        'hero.cta2': 'AI智能识图鉴宝',
+        'hero.scroll': '顺流而下 · 纵览文脉',
+        'quick.3d': '3D交互展馆',
+        'quick.ai': 'AI识图研鉴',
+        'quick.history': '华夏陶瓷通史',
+        'quick.workshop': '制瓷工序大观',
+        'quick.colors': '传统釉色色谱',
+        'quick.archive': '名物典藏档案',
+        '3d.sectionTitle': '传世名瓷 · 3D交互研鉴馆',
+        '3d.sectionSub': '360° 无死角审视宋代经典器型 · PBR物理釉面与动态金丝铁线',
+        'ai.sectionTitle': 'AI智能识瓷 · 古陶瓷图像研考',
+        'ai.sectionSub': '基于色彩直方图与高频纹理开片检测算法的纯前端古物诊断体系',
+        'history.sectionTitle': '文脉回响 · 华夏陶瓷通史长卷',
+        'history.sectionSub': '从新石器彩陶至当代数字文博 · 贯穿万年的泥火史诗',
+        'workshop.sectionTitle': '天工开物 · 古代制瓷核心工序',
+        'workshop.sectionSub': '采石淘泥、百炼成膏、旋转生形、柴窑涅槃',
+        'colors.sectionTitle': '东方色谱 · 传统古瓷釉色美学',
+        'colors.sectionSub': '雨过天青、粉青如玉、月白莹霜、玫瑰紫变、曜变乌金',
+        'fourarts.sectionTitle': '文人四艺 · 传统器物哲学生活',
+        'fourarts.sectionSub': '焚香、点茶、插花、挂画 · 器文互映的心灵净土',
+        'archive.sectionTitle': '名器考据 · 传世古陶瓷典藏库',
+        'archive.sectionSub': '精选两宋五大名窑与明清御窑标准器研鉴档案',
+        'notes.sectionTitle': '研鉴札记 · 独立学术手记',
+        'notes.sectionSub': '关于胎釉热膨胀应力、紫口铁足矿物成因的深度观察',
+        'about.title': '独立研鉴人寄语',
+        'about.desc': '本数字空间由我个人独立设计、研发并长久维护。因对华夏传统造物智慧与宋代极简美学之无限痴迷，我不惜投入大量心血，纯前端构建了此套 3D 古瓷仿真与智能识图系统。器物有形而道韵无涯，愿与海内外每一位热爱中华传统文化的朋友，共赏东方素雅之美。',
+        'footer.copyright': '华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间. 个人独立研制保留所有权利.',
+        'footer.slogan': '器以载道，以数字科技传承东方文明之光。'
     },
     en: {
-        brand: 'Smart Porcelain',
-        loading: 'Loading...',
+        brand: 'Vessels of China',
+        tagline: 'Chinese Traditional Culture & Porcelain Digital Research Space',
+        loading: 'Loading Chinese Aesthetic Heritage...',
         'nav.home': 'Home',
-        'nav.workshop': 'Workshop',
-        'nav.history': 'History',
         'nav.3d': '3D Gallery',
-        'nav.ar': 'AR Experience',
-        'nav.exhibition': 'Exhibitions',
-        'nav.shop': 'Shop',
-        'nav.about': 'About',
-        'hero.title': 'Song Huang Guan Ci',
-        'hero.subtitle': 'Vessels of the Way · AI-Powered Digital Heritage',
-        'hero.cta1': 'Enter 3D Gallery',
-        'hero.cta2': 'AR Experience',
-        'hero.scroll': 'Scroll to Explore',
-        'entry.knead': 'Clay Kneading',
-        'entry.throw': 'Wheel Throwing',
-        'entry.carve': 'Fine Carving',
-        'entry.fire': 'Kiln Firing',
-        'slogan.title': 'Vessels of the Way',
-        'slogan.subtitle': 'AI-Powered Digital Preservation of Intangible Heritage',
-        'card1.tag': 'AI Recognition',
-        'card1.title': 'Smart Porcelain ID',
-        'card1.desc': 'AR scan to unlock millennia of heritage stories',
-        'card2.tag': 'Interactive',
-        'card2.title': 'Quick Experience',
-        'card2.desc': 'First-person pottery interaction',
-        'museum.title': 'Immersive Digital Museum',
-        'workshop.title': 'Craft Workshop · 72 Processes',
-        'workshop.subtitle': 'From raw material to masterpiece, every step reflects masterful craft',
-        'history.title': 'Porcelain History · A Millennium',
-        'history.subtitle': 'The historical evolution of imperial kilns from the Northern Song to today',
-        'ar.title': 'A Visual Feast of Real & Virtual',
-        'ar.subtitle': 'AR Interactive Experience',
-        'ar.desc': 'Blending reality and virtual, touching ancient craft across time',
-        'ar.hint': 'Point camera at porcelain',
-        'ar.note': 'AR requires backend support and camera permissions',
-        'ar.btn': 'Start AR Experience',
-        '3d.title': 'Cloud 3D Digital Gallery',
-        '3d.desc': '360° immersive appreciation of imperial porcelain',
-        '3d.model1': 'Guan Vase',
-        '3d.model2': 'Lotus Bowl',
-        '3d.model3': 'Tripod Censer',
-        'commerce.title': 'Full-Chain Cultural Services',
-        'exhibition.title': 'Exhibition Booking',
-        'shop.title': 'Online Shop',
-        'i18n.title': 'Global Cultural Outreach',
-        'i18n.desc': 'Multi-language coverage, sharing Song porcelain beauty with the world',
-        'i18n.countries': 'Covering 30+ countries',
-        'i18n.langs': 'Supporting 4 languages',
-        'footer.desc': 'Empowering millennia of imperial porcelain heritage with digital technology, bringing traditional culture to radiant new life.',
-        'footer.links': 'Quick Links',
-        'footer.contact': 'Contact Us',
-        'footer.address': 'Song Huang Cultural Center, Zhengzhou, Henan',
-        'footer.privacy': 'Privacy Policy',
-        'footer.terms': 'Terms of Service',
-        'footer.copy': '2026 Song Huang Guan Ci Digital Platform. All rights reserved.',
-        'modal.ar.title': 'AR Experience',
-        'modal.ar.desc': 'AR features require backend support and mobile camera permissions. Please use after API integration is complete.',
-        'modal.close': 'Got It',
-        'modal.booking.title': 'Book Exhibition',
-        'modal.booking.name': 'Name',
-        'modal.booking.phone': 'Phone',
-        'modal.booking.date': 'Date',
-        'modal.booking.count': 'Visitors',
-        'modal.booking.submit': 'Confirm Booking',
-        'cart.title': 'Shopping Cart',
-        'cart.empty': 'Your cart is empty',
-        'cart.total': 'Total',
-        'cart.checkout': 'Checkout (Demo Only)',
-        'cart.added': 'Added to cart',
-        'booking.success': 'Booking successful! We will contact you soon.',
-        'product.addToCart': 'Add to Cart',
-        'product.custom': 'Custom Order',
-        'exhibition.book': 'Book Now',
-        'exhibition.items': ' items',
+        'nav.ai': 'AI Identifier',
+        'nav.history': 'Ceramic History',
+        'nav.workshop': 'Craftsmanship',
+        'nav.fourarts': 'Literati Arts',
+        'nav.colors': 'Traditional Colors',
+        'nav.archive': 'Collections',
+        'nav.notes': 'Research Notes',
+        'nav.about': 'Scholar Note',
+        'hero.badge': 'Independent Digital Heritage & Research Column',
+        'hero.title': 'Vessels of the Way · Quest for Truth',
+        'hero.subtitle': '3D Interactive Research Space for Ancient Chinese Ceramics',
+        'hero.desc': 'Exploring the celestial celadon glazes and crackle aesthetics of Song imperial kilns through cutting-edge 3D rendering and image recognition.',
+        'hero.cta1': 'Explore 3D Gallery',
+        'hero.cta2': 'AI Porcelain Identifier',
+        'hero.scroll': 'Scroll Down to Explore',
+        'quick.3d': '3D Research Gallery',
+        'quick.ai': 'AI Image Appraisal',
+        'quick.history': 'Ceramic History',
+        'quick.workshop': '72 Craft Steps',
+        'quick.colors': 'Color Aesthetic',
+        'quick.archive': 'Classic Treasures',
+        '3d.sectionTitle': 'Classic Treasures · 3D Interactive Gallery',
+        '3d.sectionSub': '360° inspection of classic Song vessels with PBR glazes and procedural crackles',
+        'ai.sectionTitle': 'AI Porcelain Identifier · Digital Appraisal',
+        'ai.sectionSub': 'Pure frontend diagnostics using color histograms and high-frequency crackle texture analysis',
+        'history.sectionTitle': 'Echo of Civilization · Ceramic Chronology',
+        'history.sectionSub': '10,000 years of clay and fire from Neolithic pottery to modern digital heritage',
+        'workshop.sectionTitle': 'Tiangong Kaiwu · Imperial Craftsmanship',
+        'workshop.sectionSub': 'Mining, kneading, wheel throwing, and reduction firing in wood kilns',
+        'colors.sectionTitle': 'Eastern Colors · Classical Ceramic Glazes',
+        'colors.sectionSub': 'Sky Blue, Powder Green, Moonlight White, Rose Purple, and Obsidian Black',
+        'fourarts.sectionTitle': 'Four Literati Arts · Philosophy of Vessels',
+        'fourarts.sectionSub': 'Incense, Whisked Tea, Flower Arrangement, and Painting Hanging',
+        'archive.sectionTitle': 'Archaeological Archives · Masterpieces',
+        'archive.sectionSub': 'Curated standard pieces from the Five Great Kilns of the Song Dynasty',
+        'notes.sectionTitle': 'Scholar Notes · Research Monograph',
+        'notes.sectionSub': 'Deep insights on thermal stress crackles and iron foot mineral genesis',
+        'about.title': 'Independent Scholar\'s Statement',
+        'about.desc': 'This digital space is independently designed, developed, and maintained by myself. Dedicated to the eternal spirit of Chinese aesthetic heritage.',
+        'footer.copyright': 'Vessels of China · Independent Ceramic Heritage Project. All rights reserved.',
+        'footer.slogan': 'Embodying the Way through vessels, illuminating ancient wisdom with digital technology.'
     }
 };
 
-let currentLang = localStorage.getItem('lang') || 'zh';
-
-/**
- * 翻译函数
- * @param {string} key - 翻译键
- * @returns {string}
- */
 function t(key) {
-    return (translations[currentLang] && translations[currentLang][key]) || key;
+    if (translations[currentLang] && translations[currentLang][key]) {
+        return translations[currentLang][key];
+    }
+    return key;
 }
 
-/**
- * 应用当前语言到所有带 data-i18n 属性的元素
- */
-function applyLang() {
-    document.documentElement.setAttribute('data-lang', currentLang);
-    document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+function switchLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (translations[currentLang] && translations[currentLang][key]) {
-            el.textContent = translations[currentLang][key];
+        if (translations[lang] && translations[lang][key]) {
+            el.textContent = translations[lang][key];
         }
     });
+
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) {
+        langBtn.textContent = (lang === 'zh') ? '中 / EN' : 'EN / 中';
+    }
+
+    // 重新渲染依赖语言的动态列表
+    if (typeof renderHistoryTimeline === 'function') renderHistoryTimeline();
+    if (typeof renderWorkshopGrid === 'function') renderWorkshopGrid();
+    if (typeof renderArchiveGrid === 'function') renderArchiveGrid();
 }
+
+function toggleLanguage() {
+    switchLanguage(currentLang === 'zh' ? 'en' : 'zh');
+}
+
+window.t = t;
+window.switchLanguage = switchLanguage;
+window.toggleLanguage = toggleLanguage;
