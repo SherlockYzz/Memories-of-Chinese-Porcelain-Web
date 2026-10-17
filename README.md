@@ -117,4 +117,4 @@ Memories-of-Chinese-Porcelain-Web/
 
 ---
 
-*策划与研制 · 折木柯南*
+*网页开发 · 折木柯南*
