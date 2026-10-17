@@ -167,7 +167,7 @@
         <div class="section-title-group fade-up">
             <span class="badge bg-tianqing-deep text-white text-xs mb-3 inline-block">Three.js PBR 物理级光影仿真</span>
             <h2 data-i18n="3d.sectionTitle">传世名瓷 · 3D交互研鉴馆</h2>
-            <p class="section-subtitle" data-i18n="3d.sectionSub">360° 无死角审视宋代经典器型 · PBR物理釉面与动态金丝铁线</p>
+            <p class="section-subtitle" data-i18n="3d.sectionSub">360° 无死角审视 · 馆藏实物真迹高精激光点云扫描 · 宋代御窑法典次表面玉质仿真</p>
             <div class="section-divider"></div>
         </div>
 
@@ -218,20 +218,36 @@
                     </div>
                 </div>
 
-                <!-- 器型切换标签栏 (7大经典器物) -->
+                <!-- 器型切换标签栏 (馆藏实物真迹扫描 + 宋代御窑数字复原) -->
                 <div class="mt-4 p-4 rounded-2xl bg-white border border-border-light shadow-sm">
                     <div class="text-xs text-text-muted font-serif-cn mb-3 flex items-center justify-between">
-                        <span>【经典器型选择】点击即时切换三维几何体模型：</span>
-                        <span class="text-tianqing-deep">共 7 款古代代表作</span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+                            <span class="font-medium text-text-title">【器型体系】馆藏实物真迹扫描 1:1 孪生 / 宋代御窑法典复原：</span>
+                        </span>
+                        <span class="text-tianqing-deep text-[11px]">2款实物真迹扫描 · 7款御窑数字复原</span>
                     </div>
-                    <div class="model-btn-scroll flex gap-2 overflow-x-auto pb-1">
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-tianqing-deep text-white font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(0)">八方贯耳瓶 (官窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(1)">天青水仙盆 (汝窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(2)">白釉梅瓶 (定窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(3)">金丝胆瓶 (哥窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(4)">出戟海棠尊 (钧窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(5)">兔毫天目盏 (建窑)</button>
-                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0" onclick="loadPorcelainModel(6)">青花玉壶春 (御窑)</button>
+                    <div class="model-btn-scroll flex gap-2 overflow-x-auto pb-1 items-center">
+                        <!-- 馆藏实物高精度三维激光/摄影测量扫描模型 (专属真迹高亮) -->
+                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-amber-800 text-white font-serif-cn transition-all shrink-0 shadow-sm flex items-center gap-1.5 ring-2 ring-amber-500" onclick="loadPorcelainModel(0)">
+                            <i class="fa-solid fa-gem text-amber-300 text-[10px]"></i>
+                            <span>【真迹扫描】弦纹双耳瓶</span>
+                        </button>
+                        <button class="model-btn px-3.5 py-1.5 text-xs rounded-full bg-amber-100/90 text-amber-900 border border-amber-300 font-serif-cn transition-all shrink-0 flex items-center gap-1.5 hover:bg-amber-200" onclick="loadPorcelainModel(1)">
+                            <i class="fa-solid fa-gem text-amber-600 text-[10px]"></i>
+                            <span>【真迹扫描】窑变古陶尊</span>
+                        </button>
+
+                        <span class="text-border-light font-thin mx-1">|</span>
+
+                        <!-- 宋代御窑法典数字推演器型 (物理次表面 SSS 玉质感与紫口铁足) -->
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(2)">天青水仙盆 (汝窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(3)">八方贯耳瓶 (官窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(4)">白釉梅瓶 (定窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(5)">金丝胆瓶 (哥窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(6)">出戟海棠尊 (钧窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(7)">兔毫天目盏 (建窑)</button>
+                        <button class="model-btn px-3 py-1.5 text-xs rounded-full bg-yuebai text-text-body font-serif-cn transition-all shrink-0 hover:bg-tianqing/20" onclick="loadPorcelainModel(8)">青花玉壶春 (御窑)</button>
                     </div>
                 </div>
             </div>
