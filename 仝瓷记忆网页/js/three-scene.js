@@ -14,6 +14,19 @@ let lightMain, lightFill, lightRim, ambientLight, topSpotLight;
 let envMapTexture = null;
 let clipPlane = null;
 
+// 真实 3D 空间与物理环境场景
+let realisticRoomGroup = null;
+let currentRoomEnv = 'studio'; // 'studio' (宋代雨后雅室) | 'palace' (国家文博展殿) | 'kiln' (御窑秘境)
+let showRealisticScene = true;
+let incenseSmokeSystem = null;
+let volumetricGodRays = null;
+let roomFloorMesh = null;
+let roomScreenMesh = null;
+let roomWallMesh = null;
+let roomWindowMesh = null;
+let roomTableMesh = null;
+let contactShadowMesh = null;
+
 // 交互与展览状态
 let autoRotate = true;
 let isWireframe = false;
@@ -233,6 +246,503 @@ const glazePalettes = {
 
 // 纹理贴图缓存
 const textureCache = {};
+
+/**
+ * 0.1 宋代青石板地面贴图 (具有青灰质感、凹凸砖缝与自然石材斑驳包浆)
+ */
+function getRealisticStoneFloorTexture() {
+    if (textureCache.stoneFloor) return textureCache.stoneFloor;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        // 宋代文博青石地砖底色（冷青灰基调）
+        ctx.fillStyle = '#263238';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // 绘制交错排列的青石大方砖 (4行 x 2列交替)
+        const rows = 4;
+        const cols = 2;
+        const rh = 512 / rows;
+        const cw = 512 / cols;
+
+        for (let r = 0; r < rows; r++) {
+            const offset = (r % 2) * (cw / 2);
+            for (let c = -1; c <= cols; c++) {
+                const x = c * cw + offset;
+                const y = r * rh;
+
+                // 每块青石板有细微色泽变化
+                const toneShift = (Math.sin(r * 3.7 + c * 2.1) * 8);
+                const rVal = Math.max(20, Math.floor(38 + toneShift));
+                const gVal = Math.max(30, Math.floor(48 + toneShift));
+                const bVal = Math.max(35, Math.floor(54 + toneShift));
+                ctx.fillStyle = `rgb(${rVal}, ${gVal}, ${bVal})`;
+                ctx.fillRect(x + 2, y + 2, cw - 4, rh - 4);
+
+                // 石材质感颗粒与深浅包浆
+                for (let i = 0; i < 45; i++) {
+                    const px = x + 4 + Math.random() * (cw - 8);
+                    const py = y + 4 + Math.random() * (rh - 8);
+                    const pr = 1 + Math.random() * 3.5;
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.07)';
+                    ctx.beginPath();
+                    ctx.arc(px, py, pr, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // 砖缝凹槽阴影
+                ctx.strokeStyle = '#12181b';
+                ctx.lineWidth = 2.5;
+                ctx.strokeRect(x + 1, y + 1, cw - 2, rh - 2);
+            }
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(4, 4);
+        textureCache.stoneFloor = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.2 故宫墨黑金砖地面贴图 (深沉如墨玉，平滑桐油高反光)
+ */
+function getRealisticGoldBrickTexture() {
+    if (textureCache.goldBrick) return textureCache.goldBrick;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#101418';
+        ctx.fillRect(0, 0, 512, 512);
+
+        const size = 256;
+        for (let r = 0; r < 2; r++) {
+            for (let c = 0; c < 2; c++) {
+                const x = c * size;
+                const y = r * size;
+                ctx.fillStyle = (r + c) % 2 === 0 ? '#151b22' : '#0e1216';
+                ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+
+                const grad = ctx.createLinearGradient(x, y, x + size, y + size);
+                grad.addColorStop(0, 'rgba(212, 175, 106, 0.06)');
+                grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.03)');
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+
+                ctx.strokeStyle = '#322818';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
+            }
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(3, 3);
+        textureCache.goldBrick = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.3 御窑粗粝耐火青砖地面贴图 (带窑火高温烟熏红褐色泽)
+ */
+function getRealisticKilnBrickTexture() {
+    if (textureCache.kilnBrick) return textureCache.kilnBrick;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#2d1f1c';
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let r = 0; r < 6; r++) {
+            const rh = 512 / 6;
+            const offset = (r % 2) * 64;
+            for (let c = -1; c < 5; c++) {
+                const cw = 128;
+                const x = c * cw + offset;
+                const y = r * rh;
+                ctx.fillStyle = (c + r) % 3 === 0 ? '#422822' : '#321c18';
+                ctx.fillRect(x + 2, y + 2, cw - 4, rh - 4);
+
+                for (let i = 0; i < 35; i++) {
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 120, 40, 0.07)' : 'rgba(0, 0, 0, 0.22)';
+                    ctx.fillRect(x + Math.random() * cw, y + Math.random() * rh, 2 + Math.random() * 4, 2 + Math.random() * 3);
+                }
+                ctx.strokeStyle = '#180a07';
+                ctx.lineWidth = 2.5;
+                ctx.strokeRect(x + 1, y + 1, cw - 2, rh - 2);
+            }
+        }
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(4, 4);
+        textureCache.kilnBrick = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.4 宋代三折紫檀屏风绢本水墨山水画心 (米芾米氏云山/千里烟云/题款印章)
+ */
+function getScreenPaintingTexture() {
+    if (textureCache.screenPainting) return textureCache.screenPainting;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
+
+        // 绢本生绢氧化古香暖黄基底
+        const silkGrad = ctx.createLinearGradient(0, 0, 0, 1024);
+        silkGrad.addColorStop(0.0, '#dfd3bd');
+        silkGrad.addColorStop(0.5, '#d4c5a9');
+        silkGrad.addColorStop(1.0, '#c7b494');
+        ctx.fillStyle = silkGrad;
+        ctx.fillRect(0, 0, 1024, 1024);
+
+        // 经纬暗纹
+        ctx.strokeStyle = 'rgba(140, 120, 90, 0.04)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 1024; i += 8) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0); ctx.lineTo(i, 1024);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, i); ctx.lineTo(1024, i);
+            ctx.stroke();
+        }
+
+        // 上部文人题款与落款印章
+        ctx.font = '24px "Kaiti", "STKaiti", "楷体", serif';
+        ctx.fillStyle = 'rgba(40, 30, 20, 0.72)';
+        ctx.fillText('山 色 空 蒙 雨 亦 奇', 700, 120);
+        ctx.font = '16px "Kaiti", "STKaiti", "楷体", serif';
+        ctx.fillStyle = 'rgba(60, 45, 30, 0.55)';
+        ctx.fillText('宋 · 米友仁法意 墨戏仿古', 726, 160);
+
+        // 朱红印章两方
+        ctx.fillStyle = '#a62b21';
+        ctx.fillRect(702, 138, 20, 20);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px serif';
+        ctx.fillText('器', 706, 153);
+
+        ctx.fillStyle = '#a62b21';
+        ctx.fillRect(702, 190, 20, 26);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('道', 706, 208);
+
+        // 远山水墨峰峦
+        const drawMountain = (baseY, amp, seed, color) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 1024);
+            ctx.lineTo(0, baseY);
+            for (let x = 0; x <= 1024; x += 16) {
+                const y = baseY - Math.sin((x + seed) * 0.005) * amp - Math.cos((x * 2 + seed) * 0.008) * (amp * 0.4);
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(1024, baseY);
+            ctx.lineTo(1024, 1024);
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        drawMountain(380, 120, 120, 'rgba(110, 100, 85, 0.18)');
+        drawMountain(460, 160, 340, 'rgba(85, 78, 65, 0.28)');
+        drawMountain(580, 190, 780, 'rgba(65, 58, 48, 0.42)');
+
+        // 中景云雾氤氲横贯江渚 (白色半透柔雾带)
+        const fogGrad = ctx.createLinearGradient(0, 500, 0, 720);
+        fogGrad.addColorStop(0.0, 'rgba(215, 205, 185, 0.0)');
+        fogGrad.addColorStop(0.4, 'rgba(225, 218, 200, 0.78)');
+        fogGrad.addColorStop(0.7, 'rgba(220, 212, 192, 0.72)');
+        fogGrad.addColorStop(1.0, 'rgba(210, 200, 180, 0.0)');
+        ctx.fillStyle = fogGrad;
+        ctx.fillRect(0, 500, 1024, 220);
+
+        // 近景怪石坡陀
+        ctx.fillStyle = 'rgba(45, 38, 30, 0.68)';
+        ctx.beginPath();
+        ctx.moveTo(0, 1024);
+        ctx.lineTo(0, 780);
+        ctx.bezierCurveTo(240, 750, 420, 820, 680, 760);
+        ctx.bezierCurveTo(860, 720, 960, 790, 1024, 750);
+        ctx.lineTo(1024, 1024);
+        ctx.closePath();
+        ctx.fill();
+
+        // 米点皴 (Mi-dots)
+        ctx.fillStyle = 'rgba(32, 26, 20, 0.75)';
+        for (let i = 0; i < 400; i++) {
+            const mx = Math.random() * 1024;
+            const my = 680 + Math.random() * 320;
+            ctx.beginPath();
+            ctx.ellipse(mx, my, 8 + Math.random() * 12, 2.5 + Math.random() * 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 左侧苍劲古松
+        ctx.strokeStyle = 'rgba(28, 22, 16, 0.88)';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(180, 980);
+        ctx.quadraticCurveTo(170, 820, 240, 680);
+        ctx.quadraticCurveTo(280, 580, 250, 480);
+        ctx.stroke();
+
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.moveTo(240, 680);
+        ctx.quadraticCurveTo(340, 640, 420, 660);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(250, 560);
+        ctx.quadraticCurveTo(140, 520, 90, 550);
+        ctx.stroke();
+
+        // 松针墨团
+        ctx.fillStyle = 'rgba(24, 30, 22, 0.85)';
+        const pineClusters = [
+            [420, 660], [360, 630], [250, 480], [220, 440], [280, 460], [90, 550], [140, 510]
+        ];
+        pineClusters.forEach(c => {
+            for (let p = 0; p < 28; p++) {
+                ctx.beginPath();
+                ctx.arc(c[0] + (Math.random() - 0.5) * 50, c[1] + (Math.random() - 0.5) * 30, 3 + Math.random() * 3.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
+
+        // 双层外边框
+        ctx.strokeStyle = 'rgba(60, 45, 30, 0.45)';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(28, 28, 968, 968);
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(36, 36, 952, 952);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        textureCache.screenPainting = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.5 明清老红木/大叶紫檀木纹贴图 (细腻牛毛纹与包浆微光)
+ */
+function getRosewoodTexture() {
+    if (textureCache.rosewood) return textureCache.rosewood;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#2b130e';
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let i = 0; i < 512; i += 2) {
+            const alpha = 0.08 + Math.random() * 0.15;
+            ctx.strokeStyle = Math.random() > 0.4 ? `rgba(18, 7, 5, ${alpha})` : `rgba(68, 28, 18, ${alpha})`;
+            ctx.lineWidth = 1 + Math.random() * 2;
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.bezierCurveTo(
+                i + (Math.random() - 0.5) * 12, 170,
+                i + (Math.random() - 0.5) * 18, 340,
+                i + (Math.random() - 0.5) * 12, 512
+            );
+            ctx.stroke();
+        }
+
+        const grad = ctx.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, 'rgba(168, 78, 42, 0.12)');
+        grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.15)');
+        grad.addColorStop(1, 'rgba(128, 52, 28, 0.1)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        textureCache.rosewood = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.6 几案织锦席垫贴图 (宫廷深蓝织金宝相花暗纹)
+ */
+function getBrocadeMatTexture() {
+    if (textureCache.brocadeMat) return textureCache.brocadeMat;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#172733';
+        ctx.fillRect(0, 0, 512, 512);
+
+        ctx.strokeStyle = '#cba766';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(24, 24, 464, 464);
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(38, 38, 436, 436);
+
+        const corners = [[48, 48], [464, 48], [48, 464], [464, 464]];
+        ctx.fillStyle = '#cba766';
+        corners.forEach(([cx, cy]) => {
+            ctx.beginPath();
+            ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.save();
+        ctx.translate(256, 256);
+        ctx.strokeStyle = 'rgba(203, 167, 102, 0.42)';
+        ctx.lineWidth = 2;
+        for (let r = 0; r < 8; r++) {
+            ctx.rotate((Math.PI * 2) / 8);
+            ctx.beginPath();
+            ctx.ellipse(65, 0, 48, 22, 0, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, 36, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(203, 167, 102, 0.35)';
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        const tex = new THREE.CanvasTexture(canvas);
+        textureCache.brocadeMat = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.7 器物足底真实接触软投影贴图 (Contact Soft Shadow)
+ */
+function getContactShadowTexture() {
+    if (textureCache.contactShadow) return textureCache.contactShadow;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+
+        const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 128);
+        grad.addColorStop(0.0, 'rgba(6, 5, 4, 0.95)');
+        grad.addColorStop(0.28, 'rgba(8, 6, 5, 0.72)');
+        grad.addColorStop(0.65, 'rgba(8, 6, 5, 0.25)');
+        grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 256, 256);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        textureCache.contactShadow = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.8 宋代直棂轩窗透光纹理 (含窗外修竹水墨淡影)
+ */
+function getWindowLatticeTexture() {
+    if (textureCache.windowLattice) return textureCache.windowLattice;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        const paperGrad = ctx.createLinearGradient(0, 0, 512, 512);
+        paperGrad.addColorStop(0.0, '#fffdf5');
+        paperGrad.addColorStop(0.6, '#f4ece0');
+        paperGrad.addColorStop(1.0, '#e8ded0');
+        ctx.fillStyle = paperGrad;
+        ctx.fillRect(0, 0, 512, 512);
+
+        // 窗外竹影
+        ctx.fillStyle = 'rgba(78, 92, 80, 0.22)';
+        for (let b = 0; b < 4; b++) {
+            const bx = 85 + b * 115;
+            ctx.fillRect(bx, 0, 12, 512);
+            for (let j = 0; j < 5; j++) {
+                ctx.fillRect(bx - 3, j * 105 + 40, 18, 4);
+            }
+            for (let l = 0; l < 8; l++) {
+                const ly = l * 65 + 30;
+                ctx.beginPath();
+                ctx.ellipse(bx + 26, ly, 28, 6, 0.45, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(bx - 26, ly + 20, 28, 6, -0.45, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        textureCache.windowLattice = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * 0.9 香炉缕缕青烟微粒贴图
+ */
+function getSmokeParticleTexture() {
+    if (textureCache.smokeTex) return textureCache.smokeTex;
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
+        const grad = ctx.createRadialGradient(32, 32, 2, 32, 32, 30);
+        grad.addColorStop(0.0, 'rgba(235, 240, 245, 0.85)');
+        grad.addColorStop(0.4, 'rgba(210, 225, 235, 0.35)');
+        grad.addColorStop(1.0, 'rgba(200, 220, 230, 0.0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        textureCache.smokeTex = tex;
+        return tex;
+    } catch (e) {
+        return null;
+    }
+}
 
 /**
  * 1. 程序化生成高动态范围 (HDR-like) 博物馆轩窗天光环境反射贴图
@@ -1076,56 +1586,393 @@ function buildGeometry(typeIndex, customGlaze = null) {
 }
 
 /**
- * 构建单器精鉴台底座 + 体积聚光灯光束 (Volumetric Light Cone) + 悬浮流金微粒
+ * 构建【真实 3D 室内环境场景 (Realistic 3D Interior Environment)】
+ * 包含：宋代青石地砖/故宫金砖、三折紫檀水墨山水插屏、宋代直棂轩窗、明清红木雕花束腰四方几案、
+ * 织金锦缎席垫、微距柔和接触投影、斜射丁达尔体积光束、博山香炉缕缕青烟与空气微尘
  */
-function createInspectorStage() {
-    pedestalGroup = new THREE.Group();
+function createRealistic3DEnvironment() {
+    if (realisticRoomGroup) {
+        scene.remove(realisticRoomGroup);
+        disposeGroup(realisticRoomGroup);
+    }
+    realisticRoomGroup = new THREE.Group();
+    realisticRoomGroup.name = 'Realistic3DRoom';
 
-    // 1. 黑曜石双层旋转高定底座
-    const topDisk = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.48, 1.56, 0.14, 72),
-        new THREE.MeshStandardMaterial({ color: 0x131920, roughness: 0.22, metalness: 0.35 })
+    const rosewoodTex = getRosewoodTexture();
+    const rosewoodMat = new THREE.MeshStandardMaterial({
+        map: rosewoodTex,
+        roughness: 0.32,
+        metalness: 0.15
+    });
+
+    // 1. 实体三维地面 (青石地砖 / 金砖 / 窑砖)
+    const floorGeo = new THREE.PlaneGeometry(18, 18, 1, 1);
+    const floorMat = new THREE.MeshStandardMaterial({
+        map: getRealisticStoneFloorTexture(),
+        roughness: 0.38,
+        metalness: 0.08
+    });
+    roomFloorMesh = new THREE.Mesh(floorGeo, floorMat);
+    roomFloorMesh.rotation.x = -Math.PI / 2;
+    roomFloorMesh.position.y = -1.68;
+    roomFloorMesh.receiveShadow = true;
+    realisticRoomGroup.add(roomFloorMesh);
+
+    // 2. 明清红木雕花束腰四方几案 (Carved Rosewood Table)
+    const tableGroup = new THREE.Group();
+    tableGroup.position.set(0, 0, 0);
+
+    // 几案桌面厚板
+    const topPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(1.68, 0.08, 1.68),
+        rosewoodMat
     );
-    topDisk.position.y = -1.24;
-    topDisk.receiveShadow = true;
-    pedestalGroup.add(topDisk);
+    topPanel.position.y = -1.18;
+    topPanel.castShadow = topPanel.receiveShadow = true;
+    tableGroup.add(topPanel);
 
-    const subDisk = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.68, 1.78, 0.12, 72),
-        new THREE.MeshStandardMaterial({ color: 0x0c1015, roughness: 0.4, metalness: 0.2 })
+    // 束腰内收结构
+    const waistMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.52, 0.05, 1.52),
+        rosewoodMat
     );
-    subDisk.position.y = -1.36;
-    pedestalGroup.add(subDisk);
+    waistMesh.position.y = -1.245;
+    waistMesh.castShadow = true;
+    tableGroup.add(waistMesh);
 
-    // 2. 底座双层鎏金镶圈
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xc5a059, roughness: 0.25, metalness: 0.88 });
-    const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.50, 0.015, 16, 96), goldMat);
-    ring1.rotation.x = Math.PI / 2;
-    ring1.position.y = -1.17;
-    pedestalGroup.add(ring1);
+    // 托腮与牙条
+    const apronMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.58, 0.06, 1.58),
+        rosewoodMat
+    );
+    apronMesh.position.y = -1.295;
+    apronMesh.castShadow = true;
+    tableGroup.add(apronMesh);
 
-    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.12, 0.008, 12, 96), goldMat);
-    ring2.rotation.x = Math.PI / 2;
-    ring2.position.y = -1.168;
-    pedestalGroup.add(ring2);
+    // 四只方实木腿 (带内翻回纹马蹄足)
+    const legGeo = new THREE.BoxGeometry(0.09, 0.38, 0.09);
+    const legOffsets = [
+        [-0.72, -0.72], [0.72, -0.72],
+        [-0.72, 0.72], [0.72, 0.72]
+    ];
+    legOffsets.forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(legGeo, rosewoodMat);
+        leg.position.set(lx, -1.485, lz);
+        leg.castShadow = true;
+        tableGroup.add(leg);
 
-    // 3. 顶部博物馆体积聚光灯束 (Volumetric Spotlight Cone)
-    const coneGeo = new THREE.ConeGeometry(2.1, 5.2, 48, 1, true);
-    const coneMat = new THREE.MeshBasicMaterial({
-        color: 0xa8cdd4,
+        // 回纹马蹄足木雕底座
+        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.04, 0.12), rosewoodMat);
+        foot.position.set(lx, -1.66, lz);
+        foot.castShadow = true;
+        tableGroup.add(foot);
+    });
+
+    // 底部罗锅横枨
+    const stretcherMat = rosewoodMat;
+    const str1 = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.035, 0.035), stretcherMat);
+    str1.position.set(0, -1.54, -0.72);
+    tableGroup.add(str1);
+    const str2 = str1.clone();
+    str2.position.set(0, -1.54, 0.72);
+    tableGroup.add(str2);
+    const str3 = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, 1.44), stretcherMat);
+    str3.position.set(-0.72, -1.54, 0);
+    tableGroup.add(str3);
+    const str4 = str3.clone();
+    str4.position.set(0.72, -1.54, 0);
+    tableGroup.add(str4);
+
+    // 案顶铺设【织锦席垫】
+    const matGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.015, 64);
+    const brocadeMat = new THREE.MeshStandardMaterial({
+        map: getBrocadeMatTexture(),
+        roughness: 0.65,
+        metalness: 0.12
+    });
+    const matMesh = new THREE.Mesh(matGeo, brocadeMat);
+    matMesh.position.y = -1.132;
+    matMesh.receiveShadow = true;
+    tableGroup.add(matMesh);
+
+    // 席垫边缘嵌金铜扣圈
+    const goldRim = new THREE.Mesh(
+        new THREE.TorusGeometry(0.725, 0.008, 12, 64),
+        new THREE.MeshStandardMaterial({ color: 0xcba766, roughness: 0.28, metalness: 0.85 })
+    );
+    goldRim.rotation.x = Math.PI / 2;
+    goldRim.position.y = -1.13;
+    tableGroup.add(goldRim);
+
+    // 【接触软阴影】：器物足底与席垫接触处的深色自然投影面片 (告别浮游感)
+    const shadowGeo = new THREE.PlaneGeometry(0.95, 0.95);
+    const shadowMat = new THREE.MeshBasicMaterial({
+        map: getContactShadowTexture(),
         transparent: true,
-        opacity: 0.045,
+        opacity: 0.85,
+        depthWrite: false
+    });
+    contactShadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+    contactShadowMesh.rotation.x = -Math.PI / 2;
+    contactShadowMesh.position.y = -1.124;
+    tableGroup.add(contactShadowMesh);
+
+    // 几案整体落地接地柔和软阴影
+    const floorShadowGeo = new THREE.PlaneGeometry(2.35, 2.35);
+    const floorShadow = new THREE.Mesh(floorShadowGeo, shadowMat);
+    floorShadow.rotation.x = -Math.PI / 2;
+    floorShadow.position.y = -1.675;
+    tableGroup.add(floorShadow);
+
+    realisticRoomGroup.add(tableGroup);
+    roomTableMesh = tableGroup;
+
+    // 3. 三折紫檀木雕水墨山水插屏 (Folding Screen)
+    const screenGroup = new THREE.Group();
+    screenGroup.position.set(0, 0, -1.75);
+
+    const screenWoodMat = rosewoodMat;
+    const screenPaintMat = new THREE.MeshStandardMaterial({
+        map: getScreenPaintingTexture(),
+        roughness: 0.82,
+        metalness: 0.02
+    });
+
+    // (A) 中央主屏 (宽 2.4m, 高 2.7m)
+    const mainScreenGroup = new THREE.Group();
+    const mainPanel = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 2.45), screenPaintMat);
+    mainPanel.position.set(0, -0.05, 0);
+    mainPanel.castShadow = mainPanel.receiveShadow = true;
+    mainScreenGroup.add(mainPanel);
+
+    // 实木边框
+    const fTop = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 0.08), screenWoodMat);
+    fTop.position.set(0, 1.22, 0);
+    mainScreenGroup.add(fTop);
+    const fBottom = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.16, 0.08), screenWoodMat);
+    fBottom.position.set(0, -1.33, 0);
+    mainScreenGroup.add(fBottom);
+    const fLeft = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.65, 0.08), screenWoodMat);
+    fLeft.position.set(-1.15, -0.05, 0);
+    mainScreenGroup.add(fLeft);
+    const fRight = fLeft.clone();
+    fRight.position.set(1.15, -0.05, 0);
+    mainScreenGroup.add(fRight);
+
+    // 屏风站牙与木座抱鼓石
+    [-1.0, 1.0].forEach(bx => {
+        const baseFoot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.28, 0.48), screenWoodMat);
+        baseFoot.position.set(bx, -1.54, 0);
+        baseFoot.castShadow = true;
+        mainScreenGroup.add(baseFoot);
+
+        const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.09, 24), screenWoodMat);
+        drum.rotation.z = Math.PI / 2;
+        drum.position.set(bx, -1.42, 0);
+        mainScreenGroup.add(drum);
+    });
+    screenGroup.add(mainScreenGroup);
+
+    // (B) 左折屏风 (向内微折 25 度)
+    const leftScreen = new THREE.Group();
+    leftScreen.position.set(-1.20, 0, 0);
+    leftScreen.rotation.y = (25 * Math.PI) / 180;
+
+    const leftPanel = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 2.3), screenPaintMat);
+    leftPanel.position.set(-0.52, -0.08, 0);
+    leftScreen.add(leftPanel);
+
+    const lfTop = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.09, 0.07), screenWoodMat);
+    lfTop.position.set(-0.52, 1.12, 0);
+    leftScreen.add(lfTop);
+    const lfBottom = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.15, 0.07), screenWoodMat);
+    lfBottom.position.set(-0.52, -1.28, 0);
+    leftScreen.add(lfBottom);
+    const lfSide = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.49, 0.07), screenWoodMat);
+    lfSide.position.set(-1.05, -0.08, 0);
+    leftScreen.add(lfSide);
+    screenGroup.add(leftScreen);
+
+    // (C) 右折屏风 (向内微折 -25 度)
+    const rightScreen = new THREE.Group();
+    rightScreen.position.set(1.20, 0, 0);
+    rightScreen.rotation.y = (-25 * Math.PI) / 180;
+
+    const rightPanel = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 2.3), screenPaintMat);
+    rightPanel.position.set(0.52, -0.08, 0);
+    rightScreen.add(rightPanel);
+
+    const rfTop = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.09, 0.07), screenWoodMat);
+    rfTop.position.set(0.52, 1.12, 0);
+    rightScreen.add(rfTop);
+    const rfBottom = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.15, 0.07), screenWoodMat);
+    rfBottom.position.set(0.52, -1.28, 0);
+    rightScreen.add(rfBottom);
+    const rfSide = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.49, 0.07), screenWoodMat);
+    rfSide.position.set(1.05, -0.08, 0);
+    rightScreen.add(rfSide);
+    screenGroup.add(rightScreen);
+
+    realisticRoomGroup.add(screenGroup);
+    roomScreenMesh = screenGroup;
+
+    // 4. 左侧宋代直棂木窗与侧墙 (Song Window & Wall)
+    const windowGroup = new THREE.Group();
+    windowGroup.position.set(-3.6, 0.45, -0.4);
+    windowGroup.rotation.y = Math.PI / 2;
+
+    const wallGeo = new THREE.BoxGeometry(4.8, 4.2, 0.15);
+    const wallMat = new THREE.MeshStandardMaterial({
+        color: 0x222a30,
+        roughness: 0.95,
+        metalness: 0.05
+    });
+    roomWallMesh = new THREE.Mesh(wallGeo, wallMat);
+    roomWallMesh.position.set(0, 0.4, -0.08);
+    windowGroup.add(roomWallMesh);
+
+    // 轩窗半透光窗纸
+    const winPaper = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.8, 2.4),
+        new THREE.MeshBasicMaterial({
+            map: getWindowLatticeTexture(),
+            side: THREE.DoubleSide
+        })
+    );
+    winPaper.position.set(0, 0.4, 0.01);
+    windowGroup.add(winPaper);
+
+    // 直棂立体木格栅
+    const latticeMat = screenWoodMat;
+    for (let i = -5; i <= 5; i++) {
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.04, 2.4, 0.05), latticeMat);
+        bar.position.set(i * 0.24, 0.4, 0.035);
+        windowGroup.add(bar);
+    }
+    for (let j = -2; j <= 2; j++) {
+        const hBar = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.05, 0.05), latticeMat);
+        hBar.position.set(0, 0.4 + j * 0.55, 0.035);
+        windowGroup.add(hBar);
+    }
+    const winFrame = new THREE.Mesh(new THREE.BoxGeometry(2.96, 2.56, 0.08), latticeMat);
+    winFrame.position.set(0, 0.4, 0.04);
+    windowGroup.add(winFrame);
+
+    realisticRoomGroup.add(windowGroup);
+    roomWindowMesh = windowGroup;
+
+    // 5. 斜射丁达尔体积光束 (Volumetric God-Rays from Window)
+    volumetricGodRays = new THREE.Group();
+    const rayMat = new THREE.MeshBasicMaterial({
+        color: 0xfff2d4,
+        transparent: true,
+        opacity: 0.055,
         side: THREE.DoubleSide,
         depthWrite: false,
         blending: THREE.AdditiveBlending
     });
-    spotConeMesh = new THREE.Mesh(coneGeo, coneMat);
-    spotConeMesh.position.y = 1.35;
-    pedestalGroup.add(spotConeMesh);
 
+    for (let r = 0; r < 3; r++) {
+        const cone = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.35 + r * 0.15, 0.95 + r * 0.25, 4.8, 32, 1, true),
+            rayMat.clone()
+        );
+        cone.position.set(-1.8 + r * 0.35, 0.25 - r * 0.1, -0.25 + r * 0.2);
+        cone.rotation.z = 0.72;
+        cone.rotation.y = 0.25;
+        volumetricGodRays.add(cone);
+    }
+    realisticRoomGroup.add(volumetricGodRays);
+
+    // 6. 文房雅玩小景 (博山香炉 + 缕缕青烟 + 研鉴手卷)
+    const deskAccGroup = new THREE.Group();
+
+    // (A) 宋式仿古青铜博山香炉
+    const censerGroup = new THREE.Group();
+    censerGroup.position.set(0.62, -1.13, -0.42);
+
+    const bronzeMat = new THREE.MeshStandardMaterial({
+        color: 0x4a5448,
+        roughness: 0.45,
+        metalness: 0.75
+    });
+    const censerTray = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.015, 32), bronzeMat);
+    censerTray.position.y = 0.01;
+    censerGroup.add(censerTray);
+    const censerBody = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.05, 0.08, 32), bronzeMat);
+    censerBody.position.y = 0.055;
+    censerGroup.add(censerBody);
+    const censerLid = new THREE.Mesh(new THREE.ConeGeometry(0.078, 0.09, 16), bronzeMat);
+    censerLid.position.y = 0.14;
+    censerGroup.add(censerLid);
+    deskAccGroup.add(censerGroup);
+
+    // (B) 香炉缕缕青烟微粒系统 (Incense Smoke Particles)
+    const smokeCount = 75;
+    const smokePositions = new Float32Array(smokeCount * 3);
+    const smokeSeeds = new Float32Array(smokeCount * 3);
+    for (let i = 0; i < smokeCount; i++) {
+        smokePositions[i * 3] = 0.62 + (Math.random() - 0.5) * 0.02;
+        smokePositions[i * 3 + 1] = -0.92 + (i / smokeCount) * 0.65;
+        smokePositions[i * 3 + 2] = -0.42 + (Math.random() - 0.5) * 0.02;
+
+        smokeSeeds[i * 3] = Math.random() * Math.PI * 2;
+        smokeSeeds[i * 3 + 1] = 0.002 + Math.random() * 0.003;
+        smokeSeeds[i * 3 + 2] = Math.random();
+    }
+    const smokeGeo = new THREE.BufferGeometry();
+    smokeGeo.setAttribute('position', new THREE.BufferAttribute(smokePositions, 3));
+    smokeGeo.userData = { seeds: smokeSeeds };
+
+    const smokeMat = new THREE.PointsMaterial({
+        map: getSmokeParticleTexture(),
+        size: 0.065,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+    incenseSmokeSystem = new THREE.Points(smokeGeo, smokeMat);
+    deskAccGroup.add(incenseSmokeSystem);
+
+    // (C) 宋代宣纸研鉴手卷
+    const scrollGroup = new THREE.Group();
+    scrollGroup.position.set(-0.62, -1.13, 0.42);
+    scrollGroup.rotation.y = 0.32;
+
+    const paperScrollMat = new THREE.MeshStandardMaterial({
+        color: 0xede4d0,
+        roughness: 0.9,
+        metalness: 0.0
+    });
+    const sheet = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.008, 0.34), paperScrollMat);
+    sheet.position.set(0, 0.005, 0);
+    scrollGroup.add(sheet);
+    const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.35, 24), screenWoodMat);
+    roll.rotation.x = Math.PI / 2;
+    roll.position.set(-0.13, 0.022, 0);
+    scrollGroup.add(roll);
+    deskAccGroup.add(scrollGroup);
+
+    realisticRoomGroup.add(deskAccGroup);
+
+    scene.add(realisticRoomGroup);
+
+    // 默认应用宋代文人雅室意境
+    switchRealisticSceneEnv(currentRoomEnv, false);
+}
+
+/**
+ * 构建单器精鉴台底座 + 真实 3D 室内环境 + 悬浮微尘
+ */
+function createInspectorStage() {
+    pedestalGroup = new THREE.Group();
     scene.add(pedestalGroup);
 
-    // 4. 悬浮流金与天青微尘粒子系统 (Floating Atmospheric Particles)
+    // 构建完整真实 3D 室内场景
+    createRealistic3DEnvironment();
+
+    // 悬浮流金与文博微尘粒子系统 (Floating Atmospheric Particles)
     const pCount = 160;
     const positions = new Float32Array(pCount * 3);
     for (let i = 0; i < pCount; i++) {
@@ -1147,6 +1994,165 @@ function createInspectorStage() {
     });
     particleSystem = new THREE.Points(pGeo, pMat);
     scene.add(particleSystem);
+}
+
+/**
+ * 切换真实 3D 室内场景三大意境：
+ * 'studio' (宋代雨后雅室) | 'palace' (国家文博展殿) | 'kiln' (御窑秘境窑火)
+ */
+function switchRealisticSceneEnv(envKey, showNotice = true) {
+    currentRoomEnv = envKey;
+    if (!scene || !realisticRoomGroup) return;
+
+    const lightLabel = document.getElementById('light-preset-name');
+
+    if (envKey === 'studio') {
+        // 1. 【宋代文人雨后雅室】
+        scene.background = new THREE.Color(0x131a20);
+        if (scene.fog) scene.fog.color.setHex(0x131a20);
+
+        if (roomFloorMesh) {
+            roomFloorMesh.material.map = getRealisticStoneFloorTexture();
+            roomFloorMesh.material.roughness = 0.38;
+            roomFloorMesh.material.metalness = 0.08;
+            roomFloorMesh.material.needsUpdate = true;
+        }
+        if (roomWallMesh) {
+            roomWallMesh.material.color.setHex(0x222a30);
+            roomWallMesh.material.needsUpdate = true;
+        }
+
+        if (lightMain) {
+            lightMain.color.setHex(0xfff5e6);
+            lightMain.intensity = 2.1;
+        }
+        if (lightFill) {
+            lightFill.color.setHex(0x92b8c4);
+            lightFill.intensity = 1.05;
+        }
+        if (lightRim) {
+            lightRim.color.setHex(0xffe8c8);
+            lightRim.intensity = 1.1;
+        }
+        if (volumetricGodRays) {
+            volumetricGodRays.visible = true;
+            volumetricGodRays.children.forEach(c => {
+                c.material.color.setHex(0xfff2d4);
+                c.material.opacity = 0.055;
+            });
+        }
+        if (particleSystem) {
+            particleSystem.material.color.setHex(0xe5c888);
+        }
+        if (lightLabel) lightLabel.textContent = '宋代雨后雅室';
+        if (showNotice && typeof showToast === 'function') {
+            showToast('🌿 已置身【宋代文人雨后雅室】！青石地砖、水墨山水屏风与直棂轩窗晨光尽显高古意境');
+        }
+    } else if (envKey === 'palace') {
+        // 2. 【国家文博特展殿堂】
+        scene.background = new THREE.Color(0x0a0f16);
+        if (scene.fog) scene.fog.color.setHex(0x0a0f16);
+
+        if (roomFloorMesh) {
+            roomFloorMesh.material.map = getRealisticGoldBrickTexture();
+            roomFloorMesh.material.roughness = 0.16;
+            roomFloorMesh.material.metalness = 0.22;
+            roomFloorMesh.material.needsUpdate = true;
+        }
+        if (roomWallMesh) {
+            roomWallMesh.material.color.setHex(0x121720);
+            roomWallMesh.material.needsUpdate = true;
+        }
+
+        if (lightMain) {
+            lightMain.color.setHex(0xf4f9ff);
+            lightMain.intensity = 2.4;
+        }
+        if (lightFill) {
+            lightFill.color.setHex(0x9dc6dc);
+            lightFill.intensity = 1.25;
+        }
+        if (lightRim) {
+            lightRim.color.setHex(0xe8f4ff);
+            lightRim.intensity = 1.2;
+        }
+        if (volumetricGodRays) {
+            volumetricGodRays.visible = true;
+            volumetricGodRays.children.forEach(c => {
+                c.material.color.setHex(0xbfdcff);
+                c.material.opacity = 0.04;
+            });
+        }
+        if (particleSystem) {
+            particleSystem.material.color.setHex(0xcbe6f5);
+        }
+        if (lightLabel) lightLabel.textContent = '国家文博殿堂';
+        if (showNotice && typeof showToast === 'function') {
+            showToast('🏛️ 已切换至【国家文博特展殿堂】！镜面金砖地面与现代高显冷光彰显国宝威仪');
+        }
+    } else if (envKey === 'kiln') {
+        // 3. 【御窑秘境窑火幽室】
+        scene.background = new THREE.Color(0x180905);
+        if (scene.fog) scene.fog.color.setHex(0x180905);
+
+        if (roomFloorMesh) {
+            roomFloorMesh.material.map = getRealisticKilnBrickTexture();
+            roomFloorMesh.material.roughness = 0.88;
+            roomFloorMesh.material.metalness = 0.02;
+            roomFloorMesh.material.needsUpdate = true;
+        }
+        if (roomWallMesh) {
+            roomWallMesh.material.color.setHex(0x28120c);
+            roomWallMesh.material.needsUpdate = true;
+        }
+
+        if (lightMain) {
+            lightMain.color.setHex(0xff6224);
+            lightMain.intensity = 2.7;
+        }
+        if (lightFill) {
+            lightFill.color.setHex(0xc43212);
+            lightFill.intensity = 1.15;
+        }
+        if (lightRim) {
+            lightRim.color.setHex(0xffa834);
+            lightRim.intensity = 1.35;
+        }
+        if (volumetricGodRays) {
+            volumetricGodRays.visible = true;
+            volumetricGodRays.children.forEach(c => {
+                c.material.color.setHex(0xff7a38);
+                c.material.opacity = 0.065;
+            });
+        }
+        if (particleSystem) {
+            particleSystem.material.color.setHex(0xffaa44);
+        }
+        if (lightLabel) lightLabel.textContent = '御窑秘境窑火';
+        if (showNotice && typeof showToast === 'function') {
+            showToast('🔥 已进入【御窑秘境窑火幽室】！1300℃窑火红曜映照，感悟入窑一色出窑万彩之奇迹');
+        }
+    }
+
+    ['studio', 'palace', 'kiln'].forEach(k => {
+        const btn = document.getElementById(`scene-env-btn-${k}`);
+        if (btn) btn.classList.toggle('active', k === envKey);
+    });
+}
+
+/**
+ * 开启/隐藏 3D 真实室内场景与几案
+ */
+function toggleRealisticScene() {
+    showRealisticScene = !showRealisticScene;
+    if (realisticRoomGroup) {
+        realisticRoomGroup.visible = showRealisticScene && (exhibitionMode !== 'hall');
+    }
+    const btn = document.getElementById('btn-room-scene-toggle');
+    if (btn) btn.classList.toggle('active', showRealisticScene);
+    if (typeof showToast === 'function') {
+        showToast(showRealisticScene ? '🏛️ 已开启【3D 真实室内环境场景】' : '已隐藏室内场景，切换为极简背景');
+    }
 }
 
 /**
@@ -1309,7 +2315,7 @@ function initThreeJS() {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.22;
-        renderer.shadowMap.enabled = false;
+        renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.localClippingEnabled = false;
 
@@ -1329,6 +2335,15 @@ function initThreeJS() {
         lightMain = new THREE.DirectionalLight(0xfff6e8, 2.1);
         lightMain.position.set(3.2, 5.2, 4.0);
         lightMain.castShadow = true;
+        lightMain.shadow.mapSize.width = 1024;
+        lightMain.shadow.mapSize.height = 1024;
+        lightMain.shadow.camera.near = 0.5;
+        lightMain.shadow.camera.far = 15;
+        lightMain.shadow.camera.left = -3;
+        lightMain.shadow.camera.right = 3;
+        lightMain.shadow.camera.top = 3;
+        lightMain.shadow.camera.bottom = -3;
+        lightMain.shadow.bias = -0.0005;
         scene.add(lightMain);
 
         lightFill = new THREE.DirectionalLight(0x88b8c8, 1.05);
@@ -1377,6 +2392,7 @@ function switchExhibitionMode(mode) {
         renderer.localClippingEnabled = false;
         if (currentGroup) currentGroup.visible = false;
         if (pedestalGroup) pedestalGroup.visible = false;
+        if (realisticRoomGroup) realisticRoomGroup.visible = false;
         buildVirtualMuseumHall();
         if (hallGroup) hallGroup.visible = true;
         focusVitrineInHall(currentModelIndex);
@@ -1388,6 +2404,7 @@ function switchExhibitionMode(mode) {
         renderer.localClippingEnabled = true;
         if (hallGroup) hallGroup.visible = false;
         if (pedestalGroup) pedestalGroup.visible = true;
+        if (realisticRoomGroup) realisticRoomGroup.visible = showRealisticScene;
         loadPorcelainModel(currentModelIndex, true);
         camPosTarget = { x: 0.2, y: 0.65, z: 3.25 };
         camLookTarget = { x: 0, y: 0, z: 0 };
@@ -1399,6 +2416,7 @@ function switchExhibitionMode(mode) {
         renderer.localClippingEnabled = false;
         if (hallGroup) hallGroup.visible = false;
         if (pedestalGroup) pedestalGroup.visible = true;
+        if (realisticRoomGroup) realisticRoomGroup.visible = showRealisticScene;
         loadPorcelainModel(currentModelIndex, true);
         camPosTarget = { x: 0, y: 1.05, z: 3.65 };
         camLookTarget = { x: 0, y: 0, z: 0 };
@@ -1584,51 +2602,42 @@ function updateHotspotsScreenProjection() {
 }
 
 /**
- * 光影实验室：切换四大博物馆与历史场景色温光效
+ * 光影实验室：切换四大博物馆与历史场景色温光效并联动真实 3D 空间
  */
 function setStudioLighting(preset) {
-    const label = document.getElementById('light-preset-name');
-    if (!lightMain || !lightFill || !lightRim || !scene) return;
-
     if (preset === 'palace') {
-        scene.background = new THREE.Color(0x090d12);
-        scene.fog.color.setHex(0x090d12);
-        lightMain.color.setHex(0xfff6e8);
-        lightMain.intensity = 2.1;
-        lightFill.color.setHex(0x88b8c8);
-        lightFill.intensity = 1.05;
-        lightRim.color.setHex(0xffe4b5);
-        if (label) label.textContent = '宋代轩窗天光';
+        switchRealisticSceneEnv('studio');
     } else if (preset === 'museum') {
-        scene.background = new THREE.Color(0x060a0f);
-        scene.fog.color.setHex(0x060a0f);
-        lightMain.color.setHex(0xeef7ff);
-        lightMain.intensity = 2.35;
-        lightFill.color.setHex(0x9ec8e0);
-        lightFill.intensity = 1.2;
-        lightRim.color.setHex(0xd8f0ff);
-        if (label) label.textContent = '博物馆高显色冷光';
-    } else if (preset === 'candle') {
-        scene.background = new THREE.Color(0x120c08);
-        scene.fog.color.setHex(0x120c08);
-        lightMain.color.setHex(0xffb86c);
-        lightMain.intensity = 2.2;
-        lightFill.color.setHex(0x8c583a);
-        lightFill.intensity = 0.8;
-        lightRim.color.setHex(0xff9436);
-        if (label) label.textContent = '宫廷夜宴烛火';
+        switchRealisticSceneEnv('palace');
     } else if (preset === 'kiln') {
-        scene.background = new THREE.Color(0x180805);
-        scene.fog.color.setHex(0x180805);
-        lightMain.color.setHex(0xff6b2b);
-        lightMain.intensity = 2.6;
-        lightFill.color.setHex(0xc83214);
-        lightFill.intensity = 1.1;
-        lightRim.color.setHex(0xffbf40);
-        if (label) label.textContent = '龙窑1300℃火曜';
-    }
-    if (typeof showToast === 'function') {
-        showToast(`💡 已切换展厅光影氛围：【${label ? label.textContent : preset}】`);
+        switchRealisticSceneEnv('kiln');
+    } else if (preset === 'candle') {
+        scene.background = new THREE.Color(0x140c06);
+        if (scene.fog) scene.fog.color.setHex(0x140c06);
+        if (lightMain) {
+            lightMain.color.setHex(0xffb258);
+            lightMain.intensity = 2.2;
+        }
+        if (lightFill) {
+            lightFill.color.setHex(0x8a4c28);
+            lightFill.intensity = 0.85;
+        }
+        if (lightRim) {
+            lightRim.color.setHex(0xff8c26);
+            lightRim.intensity = 1.25;
+        }
+        if (volumetricGodRays) {
+            volumetricGodRays.visible = true;
+            volumetricGodRays.children.forEach(c => {
+                c.material.color.setHex(0xff9f40);
+                c.material.opacity = 0.05;
+            });
+        }
+        const label = document.getElementById('light-preset-name');
+        if (label) label.textContent = '宫廷夜宴烛火';
+        if (typeof showToast === 'function') {
+            showToast('🕯️ 已切换展厅光影氛围：【宫廷夜宴烛火】');
+        }
     }
 }
 
@@ -1954,7 +2963,38 @@ function animate(now) {
         pos.needsUpdate = true;
     }
 
-    // 4. 更新 3D 空间解剖锚点屏幕坐标
+    // 4. 博山香炉缕缕青烟上升飘散循环
+    if (incenseSmokeSystem && incenseSmokeSystem.visible && realisticRoomGroup && realisticRoomGroup.visible) {
+        const sPos = incenseSmokeSystem.geometry.attributes.position;
+        const sSeeds = incenseSmokeSystem.geometry.userData.seeds;
+        if (sSeeds) {
+            for (let i = 0; i < sPos.count; i++) {
+                let py = sPos.getY(i) + sSeeds[i * 3 + 1];
+                sSeeds[i * 3] += 0.025;
+                const px = 0.62 + Math.sin(sSeeds[i * 3]) * 0.025 * (py - (-0.95));
+                const pz = -0.42 + Math.cos(sSeeds[i * 3]) * 0.025 * (py - (-0.95));
+                if (py > -0.25) {
+                    py = -0.92;
+                }
+                sPos.setX(i, px);
+                sPos.setY(i, py);
+                sPos.setZ(i, pz);
+            }
+            sPos.needsUpdate = true;
+        }
+    }
+
+    // 5. 斜射丁达尔体积光微弱呼吸起伏 (自然天光云影感)
+    if (volumetricGodRays && volumetricGodRays.visible && realisticRoomGroup && realisticRoomGroup.visible) {
+        const pulse = Math.sin(Date.now() * 0.0018) * 0.01;
+        volumetricGodRays.children.forEach((c, idx) => {
+            if (c.material) {
+                c.material.opacity = Math.max(0.02, 0.055 + pulse * (idx % 2 === 0 ? 1 : -1));
+            }
+        });
+    }
+
+    // 6. 更新 3D 空间解剖锚点屏幕坐标
     updateHotspotsScreenProjection();
 
     renderer.render(scene, camera);
@@ -2068,3 +3108,5 @@ window.focusHotspot = focusHotspot;
 window.setStudioLighting = setStudioLighting;
 window.rotateMainLight = rotateMainLight;
 window.toggle3DFullscreen = toggle3DFullscreen;
+window.switchRealisticSceneEnv = switchRealisticSceneEnv;
+window.toggleRealisticScene = toggleRealisticScene;

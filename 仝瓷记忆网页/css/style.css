@@ -951,6 +951,31 @@ button {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
+.scene-env-btn {
+    padding: 0.25rem 0.55rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 10px;
+    font-family: 'Songti SC', 'SimSun', serif;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.scene-env-btn:hover {
+    background: rgba(90, 156, 168, 0.45);
+    color: #ffffff;
+    border-color: rgba(143, 184, 192, 0.6);
+}
+.scene-env-btn.active {
+    background: #5A9CA8 !important;
+    color: #ffffff !important;
+    border-color: #C5A059 !important;
+    box-shadow: 0 0 10px rgba(90, 156, 168, 0.5);
+    font-weight: 600;
+}
+
 /* 3D 底部工具条 */
 .canvas-quick-toolbar {
     position: absolute;

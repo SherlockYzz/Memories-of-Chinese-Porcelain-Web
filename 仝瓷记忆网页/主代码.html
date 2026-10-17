@@ -313,21 +313,23 @@
                     <!-- 3D 空间动态投影解剖锚点层 (由 three-scene.js 实时计算 3D->2D 屏幕坐标驱动) -->
                     <div id="three-hotspots-layer"></div>
 
-                    <!-- 左下角：光影实验室与环境色温实时调节面板 -->
+                    <!-- 左下角：3D 真实空间环境与意境光影面板 -->
                     <div class="lighting-lab-overlay" id="lighting-lab-panel">
                         <div class="flex items-center justify-between text-[11px] text-amber-200 font-serif-cn">
-                            <span><i class="fa-solid fa-lightbulb mr-1"></i>展厅光影氛围与色温</span>
-                            <span id="light-preset-name" class="text-white/70">宋代轩窗天光</span>
+                            <span><i class="fa-solid fa-landmark mr-1"></i>3D 真实室内环境意境</span>
+                            <span id="light-preset-name" class="text-white/70">宋代雨后雅室</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <button onclick="setStudioLighting('palace')" class="px-2 py-1 rounded bg-white/10 hover:bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors">轩窗天光</button>
-                            <button onclick="setStudioLighting('museum')" class="px-2 py-1 rounded bg-white/10 hover:bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors">博物冷光</button>
-                            <button onclick="setStudioLighting('candle')" class="px-2 py-1 rounded bg-white/10 hover:bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors">夜宴烛火</button>
-                            <button onclick="setStudioLighting('kiln')" class="px-2 py-1 rounded bg-white/10 hover:bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors">龙窑火曜</button>
+                            <button id="scene-env-btn-studio" onclick="switchRealisticSceneEnv('studio')" class="scene-env-btn active" title="青石地砖、水墨山水三折插屏、直棂轩窗晨光">🌿 宋代雅室</button>
+                            <button id="scene-env-btn-palace" onclick="switchRealisticSceneEnv('palace')" class="scene-env-btn" title="镜面金砖地面、冷白高显色博物馆特展聚光灯束">🏛️ 文博殿堂</button>
+                            <button id="scene-env-btn-kiln" onclick="switchRealisticSceneEnv('kiln')" class="scene-env-btn" title="耐火青砖地面、1300℃龙窑柴烧火曜光晕">🔥 御窑幽室</button>
                         </div>
-                        <div class="flex items-center gap-2 pt-0.5">
-                            <span class="text-[10px] text-white/60">主光角度</span>
-                            <input type="range" min="0" max="360" value="45" oninput="rotateMainLight(this.value)" class="flex-1 accent-tianqing-deep cursor-pointer">
+                        <div class="flex items-center justify-between pt-1 border-t border-white/10 gap-1 text-[10px] text-white/70">
+                            <button onclick="setStudioLighting('candle')" class="px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 transition-colors">夜宴烛火</button>
+                            <div class="flex items-center gap-1 flex-1 justify-end">
+                                <span>光照</span>
+                                <input type="range" min="0" max="360" value="45" oninput="rotateMainLight(this.value)" class="w-16 accent-tianqing-deep cursor-pointer">
+                            </div>
                         </div>
                     </div>
 
@@ -336,6 +338,9 @@
 
                     <!-- 底部悬浮快捷交互工具条 -->
                     <div class="canvas-quick-toolbar">
+                        <button class="canvas-tool-btn active" id="btn-room-scene-toggle" onclick="toggleRealisticScene()" title="开启/隐藏 3D 真实室内场景（青石地砖、山水插屏、宋式直棂轩窗、红木雕花几案与博山香炉）">
+                            <i class="fa-solid fa-landmark"></i>
+                        </button>
                         <button class="canvas-tool-btn active" id="btn-rotate-toggle" onclick="toggleAutoRotate()" title="自动缓动旋转">
                             <i class="fa-solid fa-rotate"></i>
                         </button>
