@@ -1,5 +1,18 @@
 ( function () {
 
+	if ( typeof THREE !== 'undefined' ) {
+		if ( ! THREE.LoaderUtils ) THREE.LoaderUtils = {};
+		if ( typeof THREE.LoaderUtils.resolveURL !== 'function' ) {
+			THREE.LoaderUtils.resolveURL = function ( url, path ) {
+				if ( typeof url !== 'string' || url === '' ) return '';
+				if ( /^data:.*,.*$/i.test( url ) ) return url;
+				if ( /^blob:.*$/i.test( url ) ) return url;
+				if ( /^https?:.*$/i.test( url ) ) return url;
+				return ( path || '' ) + url;
+			};
+		}
+	}
+
 	class GLTFLoader extends THREE.Loader {
 
 		constructor( manager ) {
