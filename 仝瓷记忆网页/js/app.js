@@ -3,43 +3,43 @@
  * 前端综合调度主控制器 (App Controller)
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. 初始化 3D 展馆
-    if (typeof initThreeJS === 'function') {
-        initThreeJS();
+function safeRun(taskName, fn) {
+    try {
+        fn();
+    } catch (err) {
+        console.warn(`[华夏器道-防御运行] ${taskName} 初始化异常:`, err);
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 0. 优先执行静态文化模块渲染（确保页面文字、卡片、图谱第一毫秒直接呈现，零白屏风险）
+    safeRun('历史通史', () => { if (typeof renderHistoryTimeline === 'function') renderHistoryTimeline(); });
+    safeRun('窑系地理', () => { if (typeof renderKilnGeographyMap === 'function') renderKilnGeographyMap(); });
+    safeRun('制瓷工序', () => { if (typeof renderWorkshopGrid === 'function') renderWorkshopGrid(); });
+    safeRun('传统色谱', () => { if (typeof renderTraditionalColors === 'function') renderTraditionalColors(); });
+    safeRun('文人四艺', () => { if (typeof renderLiteratiArts === 'function') renderLiteratiArts(); });
+    safeRun('典藏图录', () => { if (typeof renderArchiveGrid === 'function') renderArchiveGrid(); });
+    safeRun('研考手记', () => { if (typeof renderScholarNotes === 'function') renderScholarNotes(); });
+    safeRun('名瓷对比', () => { if (typeof initPorcelainComparison === 'function') initPorcelainComparison(); });
+    safeRun('五音瓷鸣', () => { if (typeof renderPentatonicPanel === 'function') renderPentatonicPanel(); });
+    safeRun('研习笔记', () => { if (typeof initStudyNotebook === 'function') initStudyNotebook(); });
+    safeRun('显微开片', () => { if (typeof renderMicroscopeLens === 'function') renderMicroscopeLens(); });
+
+    // 1. 初始化 3D 展馆
+    safeRun('3D展馆', () => { if (typeof initThreeJS === 'function') initThreeJS(); });
 
     // 2. 初始化 AI 识瓷研鉴系统
-    if (typeof initAiRecognition === 'function') {
-        initAiRecognition();
-    }
+    safeRun('AI识瓷', () => { if (typeof initAiRecognition === 'function') initAiRecognition(); });
 
     // 3. 初始化指尖拉坯交互工坊
-    if (typeof initPotteryWorkshop === 'function') {
-        initPotteryWorkshop();
-    }
+    safeRun('拉坯工坊', () => { if (typeof initPotteryWorkshop === 'function') initPotteryWorkshop(); });
 
-    // 4. 渲染各文化模块与新增学术交互功能
-    renderHistoryTimeline();
-    renderKilnGeographyMap();
-    renderWorkshopGrid();
-    renderTraditionalColors();
-    renderLiteratiArts();
-    renderArchiveGrid();
-    renderScholarNotes();
+    // 4. 初始化页面交互组件与高性能节流滚动
+    safeRun('导航与滚动', () => { if (typeof setupNavAndScroll === 'function') setupNavAndScroll(); });
+    safeRun('移动端菜单', () => { if (typeof setupMobileMenu === 'function') setupMobileMenu(); });
+    safeRun('进场动画观察', () => { if (typeof setupFadeObserver === 'function') setupFadeObserver(); });
 
-    // 新增四大文化与研鉴功能初始化
-    initPorcelainComparison();
-    renderPentatonicPanel();
-    initStudyNotebook();
-    renderMicroscopeLens();
-
-    // 5. 初始化页面交互组件与高性能节流滚动
-    setupNavAndScroll();
-    setupMobileMenu();
-    setupFadeObserver();
-
-    // 6. 语言切换按钮
+    // 5. 语言切换按钮
     const langToggleBtn = document.getElementById('lang-toggle');
     if (langToggleBtn) {
         langToggleBtn.addEventListener('click', toggleLanguage);
@@ -49,17 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // ================================================================
 // 一、华夏陶瓷通史长卷渲染
 // ================================================================
+var currentLang = (typeof window !== 'undefined' && window.currentLang) || (typeof currentLang !== 'undefined' ? currentLang : 'zh');
 let currentHistoryId = 'song';
 
 function renderHistoryTimeline() {
     const navContainer = document.getElementById('history-nav-nodes');
     const displayContainer = document.getElementById('history-active-display');
     if (!navContainer || !displayContainer) return;
+    const lang = (typeof window !== 'undefined' && window.currentLang) || currentLang || 'zh';
 
     // 渲染历史朝代横向标签
     navContainer.innerHTML = historyPeriods.map(p => `
         <button class="history-node-btn px-4 py-2 rounded-full text-xs font-serif-cn transition-all shrink-0 ${p.id === currentHistoryId ? 'bg-tianqing-deep text-white shadow-sm' : 'bg-yuebai text-text-body hover:bg-tianqing/20'}" onclick="selectHistoryPeriod('${p.id}')">
-            <span>${p.label[currentLang]}</span>
+            <span>${(p.label && p.label[lang]) || (p.label && p.label['zh']) || ''}</span>
             <span class="text-[10px] opacity-75 ml-1">(${p.year.split(' ')[0]})</span>
         </button>
     `).join('');
@@ -69,15 +71,15 @@ function renderHistoryTimeline() {
     displayContainer.innerHTML = `
         <div class="feature-card p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8 fade-up">
             <div class="w-full md:w-1/2 aspect-video md:aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 bg-bg-main relative">
-                <img src="${p.img}" alt="${p.title[currentLang]}" class="w-full h-full object-cover">
+                <img src="${p.img}" alt="${(p.title && p.title[lang]) || (p.title && p.title['zh']) || ''}" class="w-full h-full object-cover">
                 <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-serif-cn">
                     ${p.year}
                 </div>
             </div>
             <div class="flex-1 space-y-4 text-left">
-                <span class="badge bg-tianqing-deep text-white text-xs px-3 py-1 rounded-full">${p.label[currentLang]}</span>
-                <h3 class="text-2xl font-serif-cn text-text-title font-medium leading-snug">${p.title[currentLang]}</h3>
-                <p class="text-sm text-text-body leading-relaxed font-light">${p.desc[currentLang]}</p>
+                <span class="badge bg-tianqing-deep text-white text-xs px-3 py-1 rounded-full">${(p.label && p.label[lang]) || (p.label && p.label['zh']) || ''}</span>
+                <h3 class="text-2xl font-serif-cn text-text-title font-medium leading-snug">${(p.title && p.title[lang]) || (p.title && p.title['zh']) || ''}</h3>
+                <p class="text-sm text-text-body leading-relaxed font-light">${(p.desc && p.desc[lang]) || (p.desc && p.desc['zh']) || ''}</p>
                 <div class="pt-2 flex items-center gap-3 text-xs text-text-muted">
                     <i class="fa-solid fa-scroll text-tianqing-deep"></i>
                     <span>点击上方各历史朝代，研读自远古彩陶至明清御窑之文明脉络</span>
@@ -154,11 +156,12 @@ function selectKilnSpot(id) {
 function renderWorkshopGrid() {
     const container = document.getElementById('workshop-grid-container');
     if (!container) return;
+    const lang = (typeof window !== 'undefined' && window.currentLang) || currentLang || 'zh';
 
     container.innerHTML = workshopSteps.map((step, idx) => `
         <div class="feature-card p-5 group cursor-pointer hover-lift fade-up" onclick="openStepDetailModal(${step.id})">
             <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-bg-main relative">
-                <img src="${step.img}" alt="${step.title[currentLang]}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <img src="${step.img}" alt="${(step.title && step.title[lang]) || (step.title && step.title['zh']) || ''}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 <span class="absolute top-2.5 left-2.5 bg-black/55 backdrop-blur-sm text-white text-[10px] px-2.5 py-0.5 rounded-full font-serif-cn">
                     ${step.category}
                 </span>
@@ -167,9 +170,9 @@ function renderWorkshopGrid() {
                 <div class="w-7 h-7 rounded-full bg-yuebai flex items-center justify-center shrink-0">
                     <i class="fa-solid ${step.icon} text-tianqing-deep text-xs"></i>
                 </div>
-                <h4 class="text-base font-serif-cn text-text-title font-medium">${step.title[currentLang]}</h4>
+                <h4 class="text-base font-serif-cn text-text-title font-medium">${(step.title && step.title[lang]) || (step.title && step.title['zh']) || ''}</h4>
             </div>
-            <p class="text-xs text-text-body line-clamp-2 font-light leading-relaxed">${step.desc[currentLang]}</p>
+            <p class="text-xs text-text-body line-clamp-2 font-light leading-relaxed">${(step.desc && step.desc[lang]) || (step.desc && step.desc['zh']) || ''}</p>
             <div class="mt-3 pt-2.5 border-t border-border-light flex items-center justify-between text-[11px] text-tianqing-deep">
                 <span>工序研核 #${step.id}</span>
                 <span class="group-hover:translate-x-1 transition-transform">详研要略 <i class="fa-solid fa-chevron-right text-[9px]"></i></span>
@@ -186,18 +189,19 @@ function openStepDetailModal(id) {
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
     if (!modal || !modalTitle || !modalBody) return;
+    const lang = (typeof window !== 'undefined' && window.currentLang) || currentLang || 'zh';
 
-    modalTitle.textContent = `${step.category} · ${step.title[currentLang]}`;
+    modalTitle.textContent = `${step.category} · ${(step.title && step.title[lang]) || (step.title && step.title['zh']) || ''}`;
     modalBody.innerHTML = `
         <div class="space-y-4">
             <div class="aspect-video rounded-xl overflow-hidden shadow-sm bg-bg-main">
-                <img src="${step.img}" alt="${step.title[currentLang]}" class="w-full h-full object-cover">
+                <img src="${step.img}" alt="${(step.title && step.title[lang]) || (step.title && step.title['zh']) || ''}" class="w-full h-full object-cover">
             </div>
             <div class="flex items-center gap-2">
                 <span class="badge bg-tianqing-deep text-white text-xs px-2.5 py-1 rounded-full">${step.category}</span>
                 <span class="text-xs text-text-muted">72道官窑烧造秘籍第 ${step.id} 步</span>
             </div>
-            <p class="text-sm text-text-body leading-relaxed font-light">${step.desc[currentLang]}</p>
+            <p class="text-sm text-text-body leading-relaxed font-light">${(step.desc && step.desc[lang]) || (step.desc && step.desc['zh']) || ''}</p>
             <div class="p-4 rounded-xl bg-yuebai/60 text-xs text-text-body leading-relaxed border border-border-light">
                 <strong class="font-medium text-text-title block mb-1">【古法格物技艺精髓】</strong>
                 此道工序要求制瓷匠人顺应天时物候。若有毫厘之差，在后续1300℃松柴烈火中必致胎体变形开裂或釉面失色。古人云“一窑生一窑死”，恰在日常每一道细节之极致苛求。
@@ -431,6 +435,10 @@ function setupMobileMenu() {
 // IntersectionObserver 渐显
 // ================================================================
 function setupFadeObserver() {
+    if (!('IntersectionObserver' in window)) {
+        document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+        return;
+    }
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -844,6 +852,22 @@ function exportStudyNotes() {
     link.download = `华夏器道_研学手记_${Date.now()}.md`;
     link.click();
     showToast('已成功导出个人研学手记 Markdown 文档！');
+}
+
+// ================================================================
+// Toast 提示
+// ================================================================
+function showToast(msg) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 2400);
 }
 
 // 挂载全局方法

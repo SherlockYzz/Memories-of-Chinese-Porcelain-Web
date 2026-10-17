@@ -689,4 +689,33 @@ const pentatonicNotesData = [
     }
 ];
 
+// 挂载至全局 window，确保跨脚本与各端环境 100% 可靠访问
+if (typeof window !== 'undefined') {
+    window.historyPeriods = historyPeriods;
+    window.kilnGeographyData = kilnGeographyData;
+    window.workshopSteps = workshopSteps;
+    window.traditionalColors = traditionalColors;
+    window.literatiArts = literatiArts;
+    window.archivePorcelains = archivePorcelains;
+    window.scholarNotes = scholarNotes;
+    window.microscopePresets = microscopePresets;
+    window.porcelainComparisonData = porcelainComparisonData;
+    window.pentatonicNotesData = pentatonicNotesData;
+}
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        historyPeriods,
+        kilnGeographyData,
+        workshopSteps,
+        traditionalColors,
+        literatiArts,
+        archivePorcelains,
+        scholarNotes,
+        microscopePresets,
+        porcelainComparisonData,
+        pentatonicNotesData
+    };
+}
+
+
 

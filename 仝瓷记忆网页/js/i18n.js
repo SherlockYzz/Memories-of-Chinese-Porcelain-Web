@@ -3,7 +3,10 @@
  * 国际化多语言词条模块 (中/EN)
  */
 
-let currentLang = 'zh';
+var currentLang = 'zh';
+if (typeof window !== 'undefined') {
+    window.currentLang = currentLang;
+}
 
 const translations = {
     zh: {
@@ -113,17 +116,20 @@ function t(key) {
 
 function switchLanguage(lang) {
     currentLang = lang;
-    document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-            el.textContent = translations[lang][key];
-        }
-    });
+    if (typeof window !== 'undefined') window.currentLang = lang;
+    if (typeof document !== 'undefined') {
+        document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                el.textContent = translations[lang][key];
+            }
+        });
 
-    const langBtn = document.getElementById('lang-toggle');
-    if (langBtn) {
-        langBtn.textContent = (lang === 'zh') ? '中 / EN' : 'EN / 中';
+        const langBtn = document.getElementById('lang-toggle');
+        if (langBtn) {
+            langBtn.textContent = (lang === 'zh') ? '中 / EN' : 'EN / 中';
+        }
     }
 
     // 重新渲染依赖语言的动态列表
@@ -136,6 +142,15 @@ function toggleLanguage() {
     switchLanguage(currentLang === 'zh' ? 'en' : 'zh');
 }
 
-window.t = t;
-window.switchLanguage = switchLanguage;
-window.toggleLanguage = toggleLanguage;
+if (typeof window !== 'undefined') {
+    window.t = t;
+    window.switchLanguage = switchLanguage;
+    window.toggleLanguage = toggleLanguage;
+    window.currentLang = currentLang;
+    window.translations = translations;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { t, switchLanguage, toggleLanguage, currentLang, translations };
+}
+

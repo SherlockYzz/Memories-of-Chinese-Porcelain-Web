@@ -3,6 +3,18 @@
  * 纯前端 Canvas 交互拉坯塑形、指纹旋纹拟真、温度还原焰烧成仿真、Web Audio 清脆瓷音
  */
 
+// Canvas ellipse 兼容性垫片 (保障全平台旧版浏览器/WebView零报错)
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.ellipse) {
+    CanvasRenderingContext2D.prototype.ellipse = function(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise) {
+        this.save();
+        this.translate(x, y);
+        this.rotate(rotation);
+        this.scale(radiusX, radiusY);
+        this.arc(0, 0, 1, startAngle, endAngle, anticlockwise);
+        this.restore();
+    };
+}
+
 // ================================================================
 // 一、Web Audio API 纯代码程序化陶瓷音效合成器 (零外链音频依赖)
 // ================================================================
@@ -172,6 +184,10 @@ let isPotteryVisible = true;
 
 function setupPotteryVisibilityObserver() {
     if (!potCanvas) return;
+    if (!('IntersectionObserver' in window)) {
+        isPotteryVisible = true;
+        return;
+    }
     const observer = new IntersectionObserver((entries) => {
         const wasVisible = isPotteryVisible;
         isPotteryVisible = entries[0].isIntersecting;

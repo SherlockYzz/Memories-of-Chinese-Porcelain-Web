@@ -497,16 +497,16 @@ h3 {
 }
 
 /* ================================================================
-   Scroll Animations - 墨韵浮现
+   Scroll Animations - 墨韵浮现 (默认全显，绝不隐藏内容，防白屏)
    ================================================================ */
 .fade-up {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
 }
 .fade-up.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
 }
 
 /* ================================================================

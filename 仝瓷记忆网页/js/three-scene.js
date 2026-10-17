@@ -347,66 +347,77 @@ function initThreeJS() {
     const canvas = document.getElementById('three-canvas');
     if (!canvas) return;
 
-    // 1. 创建场景与雾效，打造文博展厅的幽远景深
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x13181d);
-    scene.fog = new THREE.FogExp2(0x13181d, 0.08);
+    try {
+        if (typeof THREE === 'undefined') {
+            console.warn('[ThreeJS] THREE library is not loaded');
+            return;
+        }
 
-    // 2. 摄像机 (针对移动端窄屏自适应视野与视距)
-    const aspect = canvas.clientWidth / canvas.clientHeight;
-    const isMobile = window.innerWidth < 640;
-    camera = new THREE.PerspectiveCamera(isMobile ? 48 : 42, aspect, 0.1, 100);
-    camera.position.set(0, 1.2, isMobile ? 4.3 : 3.8);
+        // 1. 创建场景与雾效，打造文博展厅的幽远景深
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x13181d);
+        scene.fog = new THREE.FogExp2(0x13181d, 0.08);
 
-    // 3. 渲染器 (抗锯齿与物理色调映射)
-    renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: true,
-        alpha: false,
-        powerPreference: 'high-performance'
-    });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        // 2. 摄像机 (针对移动端窄屏自适应视野与视距)
+        const width = canvas.clientWidth || 800;
+        const height = canvas.clientHeight || 600;
+        const aspect = width / height;
+        const isMobile = window.innerWidth < 640;
+        camera = new THREE.PerspectiveCamera(isMobile ? 48 : 42, aspect, 0.1, 100);
+        camera.position.set(0, 1.2, isMobile ? 4.3 : 3.8);
 
-    // 4. 灯光系统 (主光、侧补光、轮廓逆光、文人雅室漫射环境光)
-    ambientLight = new THREE.AmbientLight(0xdbe6ea, 0.75);
-    scene.add(ambientLight);
+        // 3. 渲染器 (抗锯齿与物理色调映射)
+        renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: true,
+            alpha: false,
+            powerPreference: 'high-performance'
+        });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    lightMain = new THREE.DirectionalLight(0xfff8ed, 1.8);
-    lightMain.position.set(3, 5, 4);
-    lightMain.castShadow = true;
-    scene.add(lightMain);
+        // 4. 灯光系统 (主光、侧补光、轮廓逆光、文人雅室漫射环境光)
+        ambientLight = new THREE.AmbientLight(0xdbe6ea, 0.75);
+        scene.add(ambientLight);
 
-    lightFill = new THREE.DirectionalLight(0x8eb3c7, 0.9);
-    lightFill.position.set(-3.5, 2, -2.5);
-    scene.add(lightFill);
+        lightMain = new THREE.DirectionalLight(0xfff8ed, 1.8);
+        lightMain.position.set(3, 5, 4);
+        lightMain.castShadow = true;
+        scene.add(lightMain);
 
-    lightRim = new THREE.PointLight(0xffffff, 0.8, 10);
-    lightRim.position.set(0, 4, -2.5);
-    scene.add(lightRim);
+        lightFill = new THREE.DirectionalLight(0x8eb3c7, 0.9);
+        lightFill.position.set(-3.5, 2, -2.5);
+        scene.add(lightFill);
 
-    // 5. 展台底座与温润微阴影承托
-    createPedestal();
+        lightRim = new THREE.PointLight(0xffffff, 0.8, 10);
+        lightRim.position.set(0, 4, -2.5);
+        scene.add(lightRim);
 
-    // 6. 初始化默认模型
-    loadPorcelainModel(0);
+        // 5. 展台底座与温润微阴影承托
+        createPedestal();
 
-    // 7. 绑定高质量交互手势 (阻尼旋转、滚轮多级缩放、双击视角还原)
-    setupControls(canvas);
+        // 6. 初始化默认模型
+        loadPorcelainModel(0);
 
-    // 8. 窗口尺寸自适应与智能视口节能监听
-    window.addEventListener('resize', handleThreeResize);
-    setupVisibilityObserver(canvas);
+        // 7. 绑定高质量交互手势 (阻尼旋转、滚轮多级缩放、双击视角还原)
+        setupControls(canvas);
 
-    // 9. 开启渲染循环
-    animate();
+        // 8. 窗口尺寸自适应与智能视口节能监听
+        window.addEventListener('resize', handleThreeResize);
+        setupVisibilityObserver(canvas);
 
-    // 10. 更新 UI 研鉴卡片
-    updateModelInfoCard(0);
+        // 9. 开启渲染循环
+        animate();
+
+        // 10. 更新 UI 研鉴卡片
+        updateModelInfoCard(0);
+    } catch (err) {
+        console.warn('[ThreeJS 研鉴空间] WebGL 渲染器初始化异常或受设备环境限制:', err);
+    }
 }
 
 /**
@@ -1111,6 +1122,10 @@ function disposeGroup(grp) {
 let isCanvasVisible = true;
 
 function setupVisibilityObserver(canvas) {
+    if (!canvas || !('IntersectionObserver' in window)) {
+        isCanvasVisible = true;
+        return;
+    }
     const observer = new IntersectionObserver((entries) => {
         const wasVisible = isCanvasVisible;
         isCanvasVisible = entries[0].isIntersecting;
