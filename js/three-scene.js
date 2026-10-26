@@ -60,6 +60,110 @@ let isUserDragging = false;
 let vesselVibration = 0;
 
 // 九大馆藏古瓷器物数据字典与 3D 空间解剖锚点 (7尊程序化 + 2尊实测3D扫描)
+
+/**
+ * 华夏古陶瓷 12 尊标准器 底足与款识学术考据大辞典
+ * 文博专家鉴赏法门：看瓷先看底，辨真识假、断代定窑的核心依据
+ */
+const bottomConnoisseurshipData = [
+    {
+        name: "宋官窑·八方贯耳弦纹瓶",
+        footType: "八方折角宽圈足 · 铁足露胎",
+        firingCraft: "紫金土垫饼装匣正烧 · 足端刮釉露胎",
+        clayBody: "紫黑坚致铁骨胎 (含铁量约4.8%)",
+        reignMark: "宋官窑崇尚素雅，底足无刻款，纯留手工刮胎旋削痕",
+        tips: "紫口铁足，釉如堆脂。圈足露胎处经千百载自然氧化，呈现温润的黑褐色铁光与微弱火石红，绝无新仿作旧之燥气。"
+    },
+    {
+        name: "宋汝窑·天青椭圆四足水仙盆",
+        footType: "平底外撇如意云头四足 · 裹足支烧",
+        firingCraft: "满釉裹足 · 底部整齐排布六个极其细小的芝麻状支钉痕",
+        clayBody: "细腻坚密香灰胎 (微泛青灰，吸水率极低)",
+        reignMark: "传世器底有清宫造办处刻乾隆御题诗及“甲”字千字文殿阁代号",
+        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。芝麻花支钉仅小米粒大，脱落处露出纯净香灰胎，天青釉层紧紧裹住足端，天下宋瓷无出其右。"
+    },
+    {
+        name: "宋定窑·白釉划花莲纹梅瓶",
+        footType: "微凹平底 · 浅切隐圈足",
+        firingCraft: "正烧平切垫砂 · 底足露胎不施釉",
+        clayBody: "洁白坚致糯米胎 (高岭土淘洗极纯，氧化铝含量高)",
+        reignMark: "素底无款，局部可见北宋窑工手工轮制竹丝刷痕与跳刀纹",
+        tips: "“白如玉、薄如纸、声如磬”。梅瓶为立件正烧，口沿挂釉而底足露白胎，底心微凹，留有窑砂附着痕与如泪珠般垂流的“泪痕”。"
+    },
+    {
+        name: "宋哥窑·金丝铁线胆式瓶",
+        footType: "圆直圈足 · 铁足深沉",
+        firingCraft: "紫金土高钙铁胎 · 泥条垫烧后足端打磨",
+        clayBody: "黑褐色铁胎 (胎壁薄而坚致，俗称泥鳅背)",
+        reignMark: "宋代传世原款无字，底部满布深色大开片与浅黄细碎纹",
+        tips: "“金丝铁线，紫口铁足”。底足圈足打磨圆润呈泥鳅背状，露胎处色如生铁，足内覆釉自然开深黑褐色大裂隙，古意盎然。"
+    },
+    {
+        name: "宋钧窑·玫瑰紫海棠出戟尊",
+        footType: "海棠如意形圈足 · 芝麻酱釉护胎底",
+        firingCraft: "底部涂刷极薄芝麻酱色氧化铁护胎釉 · 支烧平切",
+        clayBody: "香灰色夹砂胎 (质地坚重，烧结度极高)",
+        reignMark: "底部刻汉字数字编号（如“一”至“十”），表明尊身规制尺寸",
+        tips: "“钧瓷无对，窑变无双”。官钧器底必刷一层薄薄黄褐色芝麻酱釉，底心刻划数字深沉遒劲，乃北宋宫廷御用陈设花器规制。"
+    },
+    {
+        name: "宋建窑·兔毫曜变天目斗茶盏",
+        footType: "矮浅小圈足 · 粗壮暗褐铁胎",
+        firingCraft: "仰烧高足垫饼 · 厚釉垂流止于足际形成聚釉珠",
+        clayBody: "粗颗粒高铁铁胎 (含铁高达8%以上，手感极为沉实)",
+        reignMark: "部分宋代御贡品底足刀刻“进琖”、“供御”隶楷款识",
+        tips: "“盏色贵青黑，玉毫条达”。建盏底足修刀粗犷坚决，足底露黑褐色铁胎，含砂粒感，吸水极慢，置于茶席之上稳若泰山。"
+    },
+    {
+        name: "明宣德·青花缠枝莲纹玉壶春瓶",
+        footType: "撇口微敞高圈足 · 极细润滑砂底",
+        firingCraft: "足内施亮青亮白釉 · 底心青花楷书年款",
+        clayBody: "麻仓土与高岭土合调 · 胎白细腻泛微火石红",
+        reignMark: "青花双圈内楷书“大明宣德年制”六字双行款，笔力沉雄苍劲",
+        tips: "“宣德款识满器身，德字心上无一横”。底足胎釉交界处有一线淡红火石红光，足端滚圆如泥鳅背，苏麻离青铁锈斑沉入胎骨。"
+    },
+    {
+        name: "宋景德镇窑·影青撇口净水瓶 [3D实物扫描]",
+        footType: "平底微凹浅圈足 · 垫饼支烧露胎",
+        firingCraft: "耐火土垫饼正烧 · 底部接触面自然氧化",
+        clayBody: "白中泛青高岭白泥 · 细润透光",
+        reignMark: "宋代民窑大器无刻款，底留手拉坯旋纹与垫饼粘砂痕",
+        tips: "真品实测扫描！底足呈天然赭黄色火石红圆晕，拉坯收刀痕自中心向外呈螺旋放射状，尽显宋人手作慢轮拉坯之神韵。"
+    },
+    {
+        name: "宋元金石·铁锈花修身赏瓶 [3D实物扫描]",
+        footType: "宽平厚圈足 · 粗底露砂",
+        firingCraft: "磁州窑快轮拉坯 · 垫砂叠烧",
+        clayBody: "北方大青土灰白胎 · 质地朴拙",
+        reignMark: "底部无款，粗刀平刮，保留原始泥料拉扯气孔",
+        tips: "真品实测扫描！底足厚重大气，重心极其稳定，足底粗糙未修平，带有北方窑口天然古拙之金石风骨。"
+    },
+    {
+        name: "宋元名品·龙泉青瓷双系圆腹罐 [3D实物扫描]",
+        footType: "规整圈足 · 鲜红朱砂底 (火石红)",
+        firingCraft: "足心施青厚釉 · 足圈露胎垫饼装匣高温还原",
+        clayBody: "灰白胎致密坚实 · 露胎处富氧氧化发红",
+        reignMark: "底心满施梅子青釉，圈足露胎呈现极其鲜艳的朱砂红晕",
+        tips: "真品实测扫描！“朱砂铁足，青翠欲滴”。龙泉窑圈足火石红非人工涂抹，乃胎土中铁元素在停火冷却时由内向外析出氧化而成。"
+    },
+    {
+        name: "明宣德·洁白釉修身玉壶春长颈瓶 [3D实物扫描]",
+        footType: "玉璧状修足 · 甜白莹润底",
+        firingCraft: "精细麻仓土水洗淘澄 · 白釉双面包裹",
+        clayBody: "纯净脱脂白瓷胎 · 透光如脂如玉",
+        reignMark: "底心暗刻或双圈宣德青花款，抚之滑如凝脂",
+        tips: "真品实测扫描！在强光穿透下，底足与薄胎处透出极其温润含蓄的肉红色宝光，足墙打磨极其细致，抚摸毫无划手感。"
+    },
+    {
+        name: "汉唐溯源·古拙双耳弦纹汲水陶壶 [3D实物扫描]",
+        footType: "厚重平底 · 细绳勒割线纹",
+        firingCraft: "原始土窑慢烧 · 绳割与陶垫自然粘合",
+        clayBody: "夹砂红陶红褐色胎骨 · 透气吸水",
+        reignMark: "底足保留两千年前陶工手指压捏痕与细绳勒割弧线",
+        tips: "真品实测扫描！底部粗粝厚重，绳割弧线由左向右自然发散，见证华夏先民由陶入瓷的最初造物足音。"
+    }
+];
+
 const porcelainModelsData = [
     {
         "name": "宋官窑·八方贯耳弦纹瓶",
@@ -2908,6 +3012,163 @@ function toggleAutoRotate() {
     if (btn) btn.classList.toggle('active', autoRotate);
 }
 
+
+/**
+ * -------------------------------------------------------------
+ * 华夏古瓷 3D 鉴赏升华：翻转鉴底 (Bottom Inspection) 与 强光照胎 (Torch Inspection)
+ * -------------------------------------------------------------
+ */
+let isBottomInspectionMode = false;
+let isTorchMode = false;
+let torchLight = null;
+let vesselTiltTargetX = 0;
+let vesselLiftTargetY = 0;
+let vesselTiltCurrentX = 0;
+let vesselLiftCurrentY = 0;
+let savedMaterialParams = null;
+
+/**
+ * 翻转审视底足与款识
+ */
+function toggleBottomView(forceState) {
+    if (exhibitionMode === 'hall') {
+        switchExhibitionMode('inspector');
+    }
+    const targetState = forceState !== undefined ? forceState : !isBottomInspectionMode;
+    isBottomInspectionMode = targetState;
+
+    const btn = document.getElementById('btn-bottom-inspect-toggle');
+    const bottomCard = document.getElementById('vessel-bottom-connoisseur-card');
+
+    if (isBottomInspectionMode) {
+        autoRotate = false;
+        const rotateBtn = document.getElementById('btn-rotate-toggle');
+        if (rotateBtn) rotateBtn.classList.remove('active');
+
+        // 器身平滑向前仰起 82 度，底足正对视线，略微抬升避开底座
+        vesselTiltTargetX = Math.PI * 0.46;
+        vesselLiftTargetY = 0.38;
+        camPosTarget = { x: 0, y: 0.12, z: 2.85 };
+        camLookTarget = { x: 0, y: -0.12, z: 0 };
+
+        if (btn) btn.classList.add('active');
+
+        // 呈现底足考据卡片
+        if (bottomCard) {
+            const data = bottomConnoisseurshipData[currentModelIndex] || bottomConnoisseurshipData[0];
+            bottomCard.innerHTML = `
+                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-border-light">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-shoe-prints text-amber-400 text-xs"></i>
+                        <h4 class="font-serif-cn text-xs font-semibold text-text-title">${data.name} · 底足与款识精鉴</h4>
+                    </div>
+                    <button onclick="toggleBottomView(false)" class="text-text-muted hover:text-text-title text-xs p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="space-y-1.5 text-[11px] font-light leading-relaxed text-text-body font-serif-cn">
+                    <p><strong class="text-amber-400 font-medium">【底足形制】</strong>${data.footType}</p>
+                    <p><strong class="text-amber-400 font-medium">【烧造工艺】</strong>${data.firingCraft}</p>
+                    <p><strong class="text-amber-400 font-medium">【胎骨特征】</strong>${data.clayBody}</p>
+                    <p><strong class="text-amber-400 font-medium">【款识铭记】</strong>${data.reignMark}</p>
+                    <p class="pt-1 text-tianqing-deep border-t border-border-light/60"><strong class="font-medium">【鉴赏要诀】</strong>${data.tips}</p>
+                </div>
+                <button onclick="toggleBottomView(false)" class="mt-2 w-full py-1 text-center text-[10px] rounded bg-yuebai hover:bg-tianqing hover:text-white transition-colors font-serif-cn border border-border-light">
+                    ↩️ 复位正视器身
+                </button>
+            `;
+            bottomCard.classList.remove('hidden');
+        }
+
+        if (typeof playPorcelainChime === 'function') playPorcelainChime(2380);
+        if (typeof showToast === 'function') {
+            showToast('🏺 已托起器身翻转底足！细看芝麻支钉痕、铁足露胎与官窑款识');
+        }
+    } else {
+        // 复位器身
+        vesselTiltTargetX = 0;
+        vesselLiftTargetY = 0;
+        resetCamera();
+        if (btn) btn.classList.remove('active');
+        if (bottomCard) bottomCard.classList.add('hidden');
+    }
+}
+
+/**
+ * 强光探照照胎骨 (透光检视模式)
+ */
+function toggleTransilluminationTorch() {
+    if (exhibitionMode === 'hall') {
+        switchExhibitionMode('inspector');
+    }
+    isTorchMode = !isTorchMode;
+    const btn = document.getElementById('btn-torch-inspect-toggle');
+    const container = document.getElementById('three-stage-container');
+
+    if (!torchLight && scene) {
+        torchLight = new THREE.SpotLight(0xfff6dd, 0, 10, Math.PI / 8, 0.75, 1.2);
+        torchLight.position.set(0, 0, 3.2);
+        scene.add(torchLight);
+        scene.add(torchLight.target);
+    }
+
+    if (isTorchMode) {
+        if (btn) btn.classList.add('active');
+        if (container) container.classList.add('torch-cursor-mode');
+        if (torchLight) {
+            torchLight.intensity = 6.8;
+            torchLight.color.setHex(0xfff3d6);
+        }
+
+        // 调整器物材质为玉质微透光
+        if (currentGroup) {
+            currentGroup.traverse(child => {
+                if (child.isMesh && child.material) {
+                    if (!savedMaterialParams) {
+                        savedMaterialParams = {
+                            transmission: child.material.transmission || 0,
+                            thickness: child.material.thickness || 0,
+                            roughness: child.material.roughness,
+                            ior: child.material.ior || 1.5
+                        };
+                    }
+                    child.material.transmission = 0.55;
+                    child.material.thickness = 1.35;
+                    child.material.roughness = 0.11;
+                    child.material.ior = 1.48;
+                    child.material.needsUpdate = true;
+                }
+            });
+        }
+
+        if (typeof playPorcelainChime === 'function') playPorcelainChime(2820);
+        if (typeof showToast === 'function') {
+            showToast('🔦 已开启【强光透光照胎】！移动鼠标以强光探照瓷胎透光与玉质感');
+        }
+    } else {
+        if (btn) btn.classList.remove('active');
+        if (container) container.classList.remove('torch-cursor-mode');
+        if (torchLight) torchLight.intensity = 0;
+
+        // 还原材质
+        if (currentGroup && savedMaterialParams) {
+            currentGroup.traverse(child => {
+                if (child.isMesh && child.material) {
+                    child.material.transmission = savedMaterialParams.transmission;
+                    child.material.thickness = savedMaterialParams.thickness;
+                    child.material.roughness = savedMaterialParams.roughness;
+                    child.material.ior = savedMaterialParams.ior;
+                    child.material.needsUpdate = true;
+                }
+            });
+            savedMaterialParams = null;
+        }
+        if (typeof showToast === 'function') {
+            showToast('已关闭强光透光模式');
+        }
+    }
+}
+
 function setCameraView(viewType) {
     if (exhibitionMode === 'hall') {
         switchExhibitionMode('inspector');
@@ -3360,9 +3621,14 @@ function animate(now) {
     camera.lookAt(camLookCurrent.x, camLookCurrent.y, camLookCurrent.z);
 
     if (currentGroup && exhibitionMode !== 'hall') {
-        if (autoRotate) {
+        if (autoRotate && !isBottomInspectionMode) {
             currentGroup.rotation.y += 0.0055;
         }
+        vesselTiltCurrentX += (vesselTiltTargetX - vesselTiltCurrentX) * 0.08;
+        vesselLiftCurrentY += (vesselLiftTargetY - vesselLiftCurrentY) * 0.08;
+        currentGroup.rotation.x = vesselTiltCurrentX;
+        currentGroup.position.y = -1.125 + vesselLiftCurrentY;
+
         if (vesselVibration > 0.01) {
             currentGroup.position.x = Math.sin(Date.now() * 0.08) * 0.012 * vesselVibration;
             vesselVibration *= 0.90;
@@ -3581,3 +3847,7 @@ window.toggleRealisticScene = toggleRealisticScene;
 window.strike3DVesselSound = strike3DVesselSound;
 window.speakVesselCommentary = speakVesselCommentary;
 window.capture3DSnapshot = capture3DSnapshot;
+window.toggleBottomView = toggleBottomView;
+window.toggleTransilluminationTorch = toggleTransilluminationTorch;
+window.bottomConnoisseurshipData = bottomConnoisseurshipData;
+

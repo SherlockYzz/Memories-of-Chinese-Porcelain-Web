@@ -347,6 +347,9 @@
                     <!-- 3D 空间动态投影解剖锚点层 -->
                     <div id="three-hotspots-layer"></div>
 
+                    <!-- 底足与款识学术研考悬浮卡片 (翻转鉴底时动态滑出) -->
+                    <div id="vessel-bottom-connoisseur-card" class="hidden absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md bg-bg-main/95 backdrop-blur-md p-4 rounded-xl border border-amber-400/50 shadow-2xl z-20 transition-all font-serif-cn"></div>
+
                     <!-- 左下角：3D 真实空间环境与意境光影面板 -->
                     <div class="lighting-lab-overlay" id="lighting-lab-panel">
                         <div class="flex items-center justify-between text-[11px] text-amber-200 font-serif-cn">
@@ -396,8 +399,11 @@
                         <button class="canvas-tool-btn" onclick="setCameraView('top')" title="俯视内膛与口沿">
                             <i class="fa-regular fa-circle-dot"></i>
                         </button>
-                        <button class="canvas-tool-btn" onclick="setCameraView('bottom')" title="翻转审视底足/支钉/铁足">
+                        <button class="canvas-tool-btn" id="btn-bottom-inspect-toggle" onclick="toggleBottomView()" title="双手托起翻转底足鉴赏 (查看芝麻钉/铁足露胎/官窑款识)">
                             <i class="fa-solid fa-shoe-prints"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-torch-inspect-toggle" onclick="toggleTransilluminationTorch()" title="专家强光手电照胎骨 (透光检视/玉质微晶通透感)">
+                            <i class="fa-solid fa-flashlight"></i>
                         </button>
                         <button class="canvas-tool-btn" onclick="resetCamera()" title="复位标准展位视角">
                             <i class="fa-solid fa-arrows-to-dot"></i>
@@ -716,7 +722,7 @@
             <!-- 左侧 7列：拉坯旋转交互 3D 光影 Canvas 工作台 -->
             <div class="lg:col-span-7 space-y-3">
                 <div class="pottery-canvas-wrap">
-                    <canvas id="pottery-canvas" width="560" height="450"></canvas>
+                    <canvas id="pottery-canvas" width="560" height="450" style="touch-action: none;"></canvas>
 
                     <!-- 1300℃ 柴火烧造全屏遮罩与实时升温曲线图 -->
                     <div id="kiln-fire-overlay" class="hidden">
@@ -761,6 +767,22 @@
                             <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="brush" onclick="setPotTool('brush')">
                                 <i class="fa-solid fa-paintbrush text-amber-400 mr-1"></i>手绘青花
                             </button>
+                        </div>
+
+                        <!-- 撤销操作与青花笔法切换 (浓青勾线/分水晕染/修胚刮除) -->
+                        <div class="flex items-center justify-between gap-2 pt-2 border-t border-border-light/60">
+                            <div id="pot-brush-style-group" class="hidden flex items-center gap-1.5 text-xs font-serif-cn">
+                                <span class="text-text-muted text-[11px]">笔法：</span>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-style="outline" onclick="setBrushStyle('outline')">勾线</button>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="wash" onclick="setBrushStyle('wash')">分水</button>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="erase" onclick="setBrushStyle('erase')">刮料</button>
+                            </div>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button id="btn-pot-undo" onclick="undoPotteryAction()" class="px-2.5 py-1 rounded-lg bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 shadow-sm" title="撤销上一步拉坯或手绘笔触 (快捷键 Ctrl+Z)">
+                                    <i class="fa-solid fa-rotate-left text-amber-400"></i>
+                                    <span>撤销 (Ctrl+Z)</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 

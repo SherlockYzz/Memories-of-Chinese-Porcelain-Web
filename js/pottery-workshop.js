@@ -422,8 +422,10 @@ function firePotInKiln() {
                 isFired = true;
                 updateFiringBadge('🔥 1300℃ 柴窑涅槃 · 官瓷玉成');
                 playPorcelainChime(2680);
-                setTimeout(playCrackleSound, 360);
-                setTimeout(playCrackleSound, 780);
+                setTimeout(playCrackleSound, 320);
+                setTimeout(playCrackleSound, 750);
+                setTimeout(playCrackleSound, 1320);
+                setTimeout(playCrackleSound, 1980);
                 if (typeof showToast === 'function') {
                     showToast('🔥 开窑大吉！胎骨致密如金石、釉泛温润玉光，可导出专属数字藏品证书！');
                 }
@@ -465,11 +467,17 @@ function bindPotteryEvents() {
             const distFromCenter = Math.abs(canvasX - centerX) / (potCanvas.width * 0.36);
 
             if (potToolMode === 'brush') {
-                // 自由手绘青花/描金笔刷模式
+                // 自由手绘青花/描金笔刷模式 (支持勾线/分水/修胚)
                 for (let offset = -2; offset <= 2; offset++) {
                     const idx = sliceIndex + offset;
                     if (idx >= 0 && idx < SLICE_COUNT) {
-                        customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.35);
+                        if (brushStyle === 'erase') {
+                            customBrushRings[idx] = Math.max(0, (customBrushRings[idx] || 0) - 0.38);
+                        } else if (brushStyle === 'wash') {
+                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.16);
+                        } else {
+                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.38);
+                        }
                     }
                 }
             } else {
@@ -503,6 +511,7 @@ function bindPotteryEvents() {
     };
 
     potCanvas.addEventListener('mousedown', (e) => {
+        savePotterySnapshot();
         isInteractingPot = true;
         initAudioContext();
         handlePointerAction(e);
@@ -516,6 +525,7 @@ function bindPotteryEvents() {
     });
 
     potCanvas.addEventListener('touchstart', (e) => {
+        savePotterySnapshot();
         isInteractingPot = true;
         initAudioContext();
         handlePointerAction(e);
@@ -542,8 +552,12 @@ function setPotTool(mode) {
             btn.classList.add('bg-yuebai', 'text-text-body');
         }
     });
+    const brushGroup = document.getElementById('pot-brush-style-group');
+    if (brushGroup) {
+        brushGroup.classList.toggle('hidden', mode !== 'brush');
+    }
     if (mode === 'brush' && typeof showToast === 'function') {
-        showToast('🖌️ 已切换至【青花手绘笔刷】！直接在旋转的瓷坯上涂抹即可绘制缠枝青花弦纹');
+        showToast('🖌️ 已切换至【青花手绘笔刷】！支持勾线/分水/刮料与Ctrl+Z撤销');
     }
 }
 
@@ -969,7 +983,23 @@ window.selectPotSeal = selectPotSeal;
 window.firePotInKiln = firePotInKiln;
 window.setPotTool = setPotTool;
 window.downloadPotteryArtwork = downloadPotteryArtwork;
+window.undoPotteryAction = undoPotteryAction;
+window.setBrushStyle = setBrushStyle;
+
 window.playPorcelainChime = playPorcelainChime;
 window.playCrackleSound = playCrackleSound;
 window.playPentatonicChime = playPentatonicChime;
 window.toggleAmbientGuqin = toggleAmbientGuqin;
+
+window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        const studio = document.getElementById('pottery-studio');
+        if (studio) {
+            const rect = studio.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                e.preventDefault();
+                undoPotteryAction();
+            }
+        }
+    }
+});

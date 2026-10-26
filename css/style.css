@@ -1691,3 +1691,34 @@ html[data-theme="dark"] #btn-floating-theme {
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 18px rgba(214, 177, 106, 0.45);
     background: rgba(18, 28, 38, 0.94) !important;
 }
+
+
+/* ==================== 华夏古瓷 3D 底足精鉴与强光透光照胎增强样式 ==================== */
+.torch-cursor-mode {
+    cursor: crosshair !important;
+}
+
+#vessel-bottom-connoisseur-card {
+    animation: bottomCardSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bottomCardSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.brush-style-btn {
+    border: 1px solid var(--border-light);
+}
+
+.brush-style-btn.active {
+    background-color: var(--tianqing-deep) !important;
+    color: #ffffff !important;
+    border-color: var(--gold-accent) !important;
+}
