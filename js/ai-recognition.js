@@ -1,3 +1,35 @@
+﻿
+let aiVisualMode = 'edge'; // 'edge' | 'heatmap'
+let cachedEdgeCanvas = null;
+let cachedHeatCanvas = null;
+
+function setAiVisualMode(mode) {
+    aiVisualMode = mode;
+    const edgeCanvas = document.getElementById('ai-edge-canvas');
+    if (!edgeCanvas) return;
+    const ctx = edgeCanvas.getContext('2d');
+
+    if (mode === 'heatmap' && cachedHeatCanvas) {
+        ctx.clearRect(0, 0, edgeCanvas.width, edgeCanvas.height);
+        ctx.drawImage(cachedHeatCanvas, 0, 0, edgeCanvas.width, edgeCanvas.height);
+    } else if (cachedEdgeCanvas) {
+        ctx.clearRect(0, 0, edgeCanvas.width, edgeCanvas.height);
+        ctx.drawImage(cachedEdgeCanvas, 0, 0, edgeCanvas.width, edgeCanvas.height);
+    }
+
+    document.querySelectorAll('.ai-visual-tab').forEach(btn => {
+        const isActive = btn.dataset.mode === mode;
+        btn.classList.toggle('bg-tianqing-deep', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('bg-yuebai', !isActive);
+        btn.classList.toggle('text-text-body', !isActive);
+    });
+
+    if (typeof showToast === 'function') {
+        showToast(mode === 'heatmap' ? '🌈 已切换至【多光谱微应力热力场】：红黄为高应力开片裂缝密集区，幽蓝为平滑致密区' : '🔍 已切换至【Sobel 高频边缘开片图谱】');
+    }
+}
+
 ﻿/**
  * 华夏器道 · 天青泥火 — AI 智能古瓷计算机视觉与多维光谱研考工作站 (National Award Flagship CV Engine)
  * 核心升级：
@@ -960,6 +992,7 @@ function rgbToHsl(r, g, b) {
 }
 
 window.initAiRecognition = initAiRecognition;
+window.setAiVisualMode = setAiVisualMode;
 window.identifyPresetVessel = identifyPresetVessel;
 window.startCameraScan = startCameraScan;
 window.stopCameraScan = stopCameraScan;

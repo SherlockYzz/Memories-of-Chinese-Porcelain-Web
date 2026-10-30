@@ -1398,126 +1398,203 @@ const scholarNotes = [
 const microscopePresets = [
     {
         "id": "guan",
-        "name": "宋代官窑 · 聚沫攒珠相",
-        "subtitle": "粉青厚釉 · 大中小立体气泡如珠交叠",
-        "bgGradient": "radial-gradient(circle at 45% 45%, #9ec3cb 0%, #57858f 70%, #2f4e56 100%)",
-        "bubbleCount": 18,
+        "name": "南宋官窑 · 聚沫攒珠相",
+        "subtitle": "粉青石灰碱厚釉 · 层次丰腴的大中小立体气泡如堆积白露",
+        "dynasty": "南宋 · 修内司 / 郊坛下官窑",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#618b95",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #a4cbcf 0%, #68969e 60%, #3a5c63 100%)",
+            "bubbleBorder": "rgba(40, 65, 70, 0.75)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.85)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #122126 0%, #0a1418 60%, #04090b 100%)",
+            "bubbleBorder": "rgba(120, 195, 210, 0.65)",
+            "bubbleGlint": "rgba(229, 200, 136, 0.95)"
+        },
+        "layers": {
+            "surface": { "count": 8, "sizeRange": [24, 46], "deadRate": 0.25 },
+            "middle": { "count": 28, "sizeRange": [10, 22], "deadRate": 0.10 },
+            "deep": { "count": 45, "sizeRange": [4, 11], "deadRate": 0.02 }
+        },
         "cracks": [
-            {
-                "top": "35%",
-                "left": "20%",
-                "deg": 32,
-                "len": "150px"
-            },
-            {
-                "top": "65%",
-                "left": "40%",
-                "deg": -40,
-                "len": "120px"
-            },
-            {
-                "top": "48%",
-                "left": "12%",
-                "deg": 78,
-                "len": "105px",
-                "gold": true
-            }
+            { "x1": 0.15, "y1": 0.35, "x2": 0.85, "y2": 0.62, "width": 2.2, "heavy": true },
+            { "x1": 0.45, "y1": 0.10, "x2": 0.30, "y2": 0.90, "width": 1.4, "gold": true },
+            { "x1": 0.60, "y1": 0.40, "x2": 0.90, "y2": 0.20, "width": 1.0, "gold": false }
         ],
-        "desc": "官窑采用三至四次厚施石灰碱釉，釉层肥厚如凝脂。高温下未逸出之小气泡密聚如泡沫，大气泡稀疏浮现于上层，宛如露珠攒聚，故古人称“聚沫攒珠”。深部微晶体与自然老化的深褐色破泡（死气泡）形成典型千年包浆特征。",
-        "authenticity": "现代气窑仿品多用化学助熔剂，气泡分布呈单层扁平状、大小过于均一，无纵深立体感，且缺乏古瓷历经八百年自然氧化的褐斑。"
+        "crystals": [
+            { "x": 0.32, "y": 0.45, "r": 3.5, "type": "quartz" },
+            { "x": 0.68, "y": 0.58, "r": 4.2, "type": "iron_halo" },
+            { "x": 0.52, "y": 0.22, "r": 2.8, "type": "quartz" }
+        ],
+        "desc": "南宋官窑开创多次素烧多次施釉工艺，石灰碱釉在高温下粘度极大，窑火中逸出不尽的微小气泡被层层封锁于厚釉之中。显微镜下宛若漫天泡沫翻涌，大气泡浮于表层、中小气泡密布底层，互不粘连而层叠交错，古人誉为“聚沫攒珠”。破裂之死气泡经八百年水土侵蚀，边缘自然形成黑褐色氧化铁沉淀圈。",
+        "authenticity": "【真伪铁律】：真官窑必有纵深三层以上的清晰立体景深，大泡周围包裹极细密白沫，死气泡边缘呈铁锈褐晕；现代气窑仿品多为单层分布，气泡大小过于齐整，且无自然老化析晶圈。"
     },
     {
         "id": "ru",
         "name": "北宋汝窑 · 寥若晨星相",
-        "subtitle": "天青玛瑙釉 · 稀疏明净如晓星沉水",
-        "bgGradient": "radial-gradient(circle at 45% 45%, #b2d5d8 0%, #76a7af 70%, #3e636b 100%)",
-        "bubbleCount": 7,
+        "subtitle": "天青玛瑙釉 · 稀疏纯净如晓星沉水，伴微晶云雾",
+        "dynasty": "北宋 · 宝丰清凉寺汝官窑",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#87b2b8",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #c5e3e5 0%, #87b2b8 60%, #466970 100%)",
+            "bubbleBorder": "rgba(45, 75, 80, 0.65)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.92)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #142226 0%, #0c171a 60%, #050a0c 100%)",
+            "bubbleBorder": "rgba(145, 220, 230, 0.6)",
+            "bubbleGlint": "rgba(240, 215, 150, 0.95)"
+        },
+        "layers": {
+            "surface": { "count": 4, "sizeRange": [28, 52], "deadRate": 0.30 },
+            "middle": { "count": 8, "sizeRange": [12, 24], "deadRate": 0.12 },
+            "deep": { "count": 16, "sizeRange": [4, 9], "deadRate": 0.0 }
+        },
         "cracks": [
-            {
-                "top": "48%",
-                "left": "15%",
-                "deg": 18,
-                "len": "180px"
-            },
-            {
-                "top": "30%",
-                "left": "55%",
-                "deg": -25,
-                "len": "130px"
-            },
-            {
-                "top": "70%",
-                "left": "30%",
-                "deg": 55,
-                "len": "110px"
-            }
+            { "x1": 0.10, "y1": 0.50, "x2": 0.90, "y2": 0.42, "width": 1.2, "gold": true },
+            { "x1": 0.35, "y1": 0.15, "x2": 0.65, "y2": 0.85, "width": 0.9, "gold": false }
         ],
-        "desc": "汝窑釉内掺入天然玛瑙粉末（二氧化硅隐晶质），釉料粘度高而散射柔和。100x显微镜下可见大量未完全熔融的石英微晶团簇，而大气泡极少，稀疏如破晓天际之残星，故鉴藏界奉“寥若晨星”为汝窑微观铁律。",
-        "authenticity": "真品汝窑微观下呈雾态玉脂相，大气泡寥若晨星且伴斜向蝉翼纹；若气泡密如蜂窝或清亮透底者，必为现代电炉或低硅仿品。"
+        "crystals": [
+            { "x": 0.28, "y": 0.36, "r": 6.5, "type": "agate_halo" },
+            { "x": 0.72, "y": 0.64, "r": 5.8, "type": "agate_halo" },
+            { "x": 0.48, "y": 0.75, "r": 4.5, "type": "quartz" }
+        ],
+        "desc": "北宋汝窑胎质细腻，釉中掺入名贵天然玛瑙末。在100x目镜下，最震撼的特征是：大气泡极度稀少，往往整个视场仅见三五颗孤立存在，如破晓长空中疏朗散落的残星，故得名“寥若晨星”。未完全熔融的玛瑙微粒形成絮状云雾晕，对光线产生强烈的瑞利散射，造就了汝窑“雨过天晴云破处”的神品天青色。",
+        "authenticity": "【真伪铁律】：汝窑微观严禁“气泡密集”。凡微观下气泡如沸水翻滚密密麻麻者，一概非汝；真品必呈温润乳浊云雾状，偶见斜向极薄的蝉翼纹，星芒微露。"
     },
     {
         "id": "ge",
-        "name": "宋代哥窑 · 金丝铁线微裂相",
-        "subtitle": "米黄炒米色 · 粗黑细黄两层矿物渗析",
-        "bgGradient": "radial-gradient(circle at 45% 45%, #dfd5be 0%, #a99a7e 70%, #5a4f3d 100%)",
-        "bubbleCount": 13,
+        "name": "传世哥窑 · 金丝铁线双重微裂相",
+        "subtitle": "黑褐色大裂缝深透胎骨，金黄色细裂隙浮于釉面",
+        "dynasty": "宋代 · 传世哥窑",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#c8b896",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #ebe1cc 0%, #c4b595 60%, #7d6e4d 100%)",
+            "bubbleBorder": "rgba(75, 60, 40, 0.75)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.82)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #1f1a14 0%, #120e0a 60%, #080604 100%)",
+            "bubbleBorder": "rgba(215, 185, 130, 0.65)",
+            "bubbleGlint": "rgba(255, 220, 140, 0.9)"
+        },
+        "layers": {
+            "surface": { "count": 10, "sizeRange": [18, 38], "deadRate": 0.35 },
+            "middle": { "count": 22, "sizeRange": [8, 18], "deadRate": 0.15 },
+            "deep": { "count": 30, "sizeRange": [3, 8], "deadRate": 0.05 }
+        },
         "cracks": [
-            {
-                "top": "25%",
-                "left": "10%",
-                "deg": 42,
-                "len": "200px",
-                "heavy": true
-            },
-            {
-                "top": "55%",
-                "left": "25%",
-                "deg": -35,
-                "len": "170px",
-                "heavy": true
-            },
-            {
-                "top": "40%",
-                "left": "60%",
-                "deg": 75,
-                "len": "90px",
-                "gold": true
-            },
-            {
-                "top": "68%",
-                "left": "45%",
-                "deg": -15,
-                "len": "110px",
-                "gold": true
-            }
+            { "x1": 0.08, "y1": 0.20, "x2": 0.88, "y2": 0.78, "width": 3.8, "heavy": true },
+            { "x1": 0.30, "y1": 0.85, "x2": 0.80, "y2": 0.15, "width": 3.2, "heavy": true },
+            { "x1": 0.20, "y1": 0.60, "x2": 0.60, "y2": 0.40, "width": 1.2, "gold": true },
+            { "x1": 0.50, "y1": 0.70, "x2": 0.90, "y2": 0.50, "width": 1.0, "gold": true }
         ],
-        "desc": "哥窑出窑降温时，因胎与釉热膨胀系数剧烈失配导致两次分阶段开裂。主裂纹深达胎骨、吸附炭铁呈墨黑色（铁线）；次生细裂纹如金黄色游丝交织成网（金丝），显微镜下可见色泽自裂隙向两侧釉内自然晕散过渡。",
-        "authenticity": "真品金丝铁线呈立体云雾状渗入釉层内部；现代做旧仿品多用高锰酸钾或红茶水后期热煮染色，色素仅停留在表面裂口，毫无过渡晕散。"
+        "crystals": [
+            { "x": 0.35, "y": 0.30, "r": 4.0, "type": "iron_deposit" },
+            { "x": 0.65, "y": 0.72, "r": 3.5, "type": "iron_deposit" }
+        ],
+        "desc": "哥窑开片乃胎釉热膨胀系数失配之神化。显微镜下可清晰观测到“金丝”与“铁线”的两次生成阶次：先裂者为“铁线”，缝隙粗深并深入黑色胎骨，千百年来被炭素与氧化铁彻底渗透染成深墨色；后裂者为“金丝”，网纹细密浮浅，缝隙被茶汁或铁质微弱沁染成天然金黄或赭黄。",
+        "authenticity": "【真伪铁律】：真品哥窑开片边缘有微米级的锯齿状应力拉扯撕裂痕，且铁线与金丝色差绝然不同；化学药水作旧者，缝隙颜色单调发黑发死，边缘光滑无应力阶梯。"
     },
     {
-        "id": "qinghua",
-        "name": "宣德青花 · 苏麻离青铁锈结晶相",
-        "subtitle": "高铁低锰钴料 · 锡光黑褐磁铁矿晶斑",
-        "bgGradient": "radial-gradient(circle at 45% 45%, #dbe7ef 0%, #355e99 58%, #142a52 100%)",
-        "bubbleCount": 14,
-        "cracks": [
-            {
-                "top": "38%",
-                "left": "28%",
-                "deg": 12,
-                "len": "95px",
-                "heavy": true
-            },
-            {
-                "top": "56%",
-                "left": "42%",
-                "deg": -28,
-                "len": "85px",
-                "heavy": true
-            }
+        "id": "xuande",
+        "name": "明宣德御窑 · 苏麻离青铁锈斑沉降相",
+        "subtitle": "进口苏料锡光下沉入骨，青花气泡如繁星闪耀",
+        "dynasty": "明宣德 · 景德镇御器厂",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#2b4c7e",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #eef5fa 0%, #bcd2e8 50%, #466d9b 100%)",
+            "bubbleBorder": "rgba(25, 45, 80, 0.8)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.95)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #0f1c2e 0%, #08101c 60%, #03060a 100%)",
+            "bubbleBorder": "rgba(100, 160, 240, 0.75)",
+            "bubbleGlint": "rgba(210, 230, 255, 0.95)"
+        },
+        "layers": {
+            "surface": { "count": 12, "sizeRange": [20, 42], "deadRate": 0.18 },
+            "middle": { "count": 32, "sizeRange": [9, 20], "deadRate": 0.08 },
+            "deep": { "count": 50, "sizeRange": [4, 9], "deadRate": 0.0 }
+        },
+        "cracks": [],
+        "crystals": [
+            { "x": 0.40, "y": 0.48, "r": 9.5, "type": "tin_crystal" },
+            { "x": 0.62, "y": 0.38, "r": 7.0, "type": "tin_crystal" },
+            { "x": 0.28, "y": 0.65, "r": 5.5, "type": "tin_crystal" }
         ],
-        "desc": "明永乐、宣德御窑采用波斯进口“苏麻离青”钴土矿，具有高铁低锰特性。在1300℃柴窑还原焰中，浓重青花处氧化铁过饱和析出银黑色树枝状磁铁矿（Fe₃O₄）微晶簇，形成自然下凹、迎光泛锡光之“铁锈结晶斑”。",
-        "authenticity": "真品宣德青花铁锈斑与青料自然交融、边缘呈羽毛状晕散且气泡大小不一；现代人工点涂氧化铁黑斑则浮于釉表，死板生硬。"
+        "desc": "宣德青花采用郑和下西洋带回的南洋“苏麻离青”高铁低锰钴料。在高温烧造中，高铁成分在釉中局部过度饱和，冷却时以氧化铁磁铁矿形式结晶析出，下沉陷入胎骨，形成如锡块熔融般的银黑色金属锡光。显微镜下可见结晶斑呈羽状、松针状向外扩散，周围气泡群落被青料浸润呈现纯净幽蓝宝光。",
+        "authenticity": "【真伪铁律】：真宣德铁锈斑触手凹凸不平，微观下具金属光泽并伴放射状针状晶丛（锡光下沉）；后世仿品多用人工加铁粉点染，显微镜下无晶体析出结构，仅为平板黑色色块。"
+    },
+    {
+        "id": "ding",
+        "name": "北宋定窑 · 牙白竹丝微晶透骨相",
+        "subtitle": "高铝白瓷胎骨 · 几乎不见气泡，微显竹丝拉坯刷痕与晶润泪痕",
+        "dynasty": "北宋 · 曲阳定窑",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#dfd7c2",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #fbf9f2 0%, #eae3d2 60%, #b8ab8e 100%)",
+            "bubbleBorder": "rgba(70, 65, 55, 0.55)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.95)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #1c1a16 0%, #100f0c 60%, #060504 100%)",
+            "bubbleBorder": "rgba(235, 225, 200, 0.65)",
+            "bubbleGlint": "rgba(255, 245, 210, 0.9)"
+        },
+        "layers": {
+            "surface": { "count": 2, "sizeRange": [15, 25], "deadRate": 0.1 },
+            "middle": { "count": 5, "sizeRange": [6, 12], "deadRate": 0.0 },
+            "deep": { "count": 10, "sizeRange": [2, 5], "deadRate": 0.0 }
+        },
+        "cracks": [],
+        "crystals": [
+            { "x": 0.35, "y": 0.50, "r": 3.0, "type": "teardrop_glaze" },
+            { "x": 0.65, "y": 0.40, "r": 4.5, "type": "brush_mark" }
+        ],
+        "desc": "定窑采用氧化焰高温烧成，高岭土淘洗极纯，氧化钛微量发色呈现标志性的温暖牙白（暖象牙色）。由于透气排气极其彻底，显微镜下釉面极其平滑纯净，“气泡罕见”，仅偶尔在釉厚处见微量极细小气泡。反而在透光检视下能清晰分辨窑工修坯留下的竹丝刷丝纹与釉汁自然垂流凝结如泪珠的“泪痕”微晶相。",
+        "authenticity": "【真伪铁律】：定窑微观“无大泡，有泪痕，显竹丝”。现代仿品用化学氧化铝釉，颜色死白冰冷，微观下气泡如网，缺乏定窑千百年来由内部透出的羊脂玉般油脂光泽。"
+    },
+    {
+        "id": "modern_fake",
+        "name": "现代气窑仿品 · 均质单层死气泡相 (对比鉴伪)",
+        "subtitle": "机械化工配料 · 气泡大小均一、平整单层、无自然老化析晶",
+        "dynasty": "现代 · 化学仿古作坊",
+        "magnification": "100x",
+        "scaleUm": 100,
+        "baseHue": "#8fa8af",
+        "brightfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #b8d2d8 0%, #8ca9af 60%, #4b666c 100%)",
+            "bubbleBorder": "rgba(30, 45, 50, 0.6)",
+            "bubbleGlint": "rgba(255, 255, 255, 0.7)"
+        },
+        "darkfield": {
+            "bg": "radial-gradient(circle at 48% 48%, #10181a 0%, #090e10 60%, #030506 100%)",
+            "bubbleBorder": "rgba(100, 150, 160, 0.5)",
+            "bubbleGlint": "rgba(180, 210, 220, 0.7)"
+        },
+        "layers": {
+            "surface": { "count": 28, "sizeRange": [16, 20], "deadRate": 0.0 },
+            "middle": { "count": 30, "sizeRange": [15, 19], "deadRate": 0.0 },
+            "deep": { "count": 0, "sizeRange": [0, 0], "deadRate": 0.0 }
+        },
+        "cracks": [
+            { "x1": 0.2, "y1": 0.3, "x2": 0.8, "y2": 0.7, "width": 1.0, "chemical": true }
+        ],
+        "crystals": [],
+        "desc": "现代化学工业仿古瓷的典型显微切片。因使用现代球磨机细磨泥釉、液化气或电炉恒温快速烧成，窑内升降温极快。显微镜下最直观特征是：所有气泡几乎处在同一个二维平面上，气泡直径惊人地一致（均在 16~20μm 之间），排列机械呆板；且釉内完全找不到未溶石英晶核包裹体，气泡壁透明单薄无水色，开片缝隙颜色浮于表面。",
+        "authenticity": "【鉴伪警示】：若在微观下观察到气泡如同工业圆规绘制般整齐划一，且死气泡无任何周边铁锈褐斑包浆者，99.9% 为当代流水线化学仿品，不可不察！"
     }
 ];
 

@@ -58,6 +58,11 @@
                     <span class="hidden sm:inline text-[10px] font-mono text-text-muted bg-bg-main px-1.5 py-0.5 rounded border border-border-light">⌘K</span>
                 </button>
 
+                <!-- 博古快捷键指南按钮 (按 ? 亦可唤出) -->
+                <button onclick="openShortcutsHelpModal()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="博古鉴瓷键盘快捷键总览 (按键盘 ? 或 H 呼出)">
+                    <i class="fa-solid fa-keyboard text-tianqing-deep text-xs"></i>
+                </button>
+
                 <!-- 宋韵古琴与瓷磬背景雅乐开关 -->
                 <button id="ambient-music-btn" onclick="toggleAmbientGuqin()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="开启/关闭宋代古琴与瓷磬背景雅乐">
                     <i id="ambient-music-icon" class="fa-solid fa-music text-amber-400 text-xs"></i>
@@ -319,6 +324,10 @@
                                 <i class="fa-solid fa-layer-group text-amber-200"></i>
                                 <span>X光胎骨剖面</span>
                             </button>
+                            <button class="mode-switch-btn" id="mode-btn-comparison" onclick="switchExhibitionMode('comparison')" title="两尊古瓷同台并列比对（造型尺度、胎骨成分、装烧温度与声学泛音）">
+                                <i class="fa-solid fa-code-compare text-amber-200"></i>
+                                <span>双器同台比对</span>
+                            </button>
                             <button class="mode-switch-btn" id="mode-btn-tour" onclick="toggleCuratorialTour()">
                                 <i class="fa-solid fa-route text-amber-200"></i>
                                 <span id="tour-btn-label">策展自动巡礼</span>
@@ -329,6 +338,10 @@
                             <button class="mode-switch-btn bg-black/65 border border-white/15 active" id="btn-hotspots-toggle" onclick="toggle3DHotspots()" title="显示/隐藏器物3D空间解剖锚点">
                                 <i class="fa-solid fa-location-crosshairs text-amber-400"></i>
                                 <span>解剖锚点</span>
+                            </button>
+                            <button class="mode-switch-btn bg-black/65 border border-white/15" id="btn-zen-mode" onclick="toggleZenMode()" title="纯净沉浸观赏（隐去所有悬浮按钮与辅助控制面板）">
+                                <i class="fa-solid fa-eye text-tianqing-light"></i>
+                                <span>纯净沉浸</span>
                             </button>
                             <button class="mode-switch-btn bg-black/65 border border-white/15" onclick="toggle3DFullscreen()" title="全屏沉浸式观展">
                                 <i class="fa-solid fa-expand text-tianqing-light" id="fullscreen-icon"></i>
@@ -572,7 +585,13 @@
                         <!-- 视窗 2 & 3：Sobel 开片特征图 + RGB 光谱直方图 -->
                         <div class="grid grid-cols-2 gap-3">
                             <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center">
-                                <span class="text-[10px] font-serif-cn text-tianqing-deep block mb-1.5">② Sobel 开片/轮廓卷积图</span>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-[10px] font-serif-cn text-tianqing-deep">② 计算机视觉特征图</span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="setAiVisualMode('edge')" class="ai-visual-tab px-1.5 py-0.5 rounded text-[9px] font-serif-cn bg-tianqing-deep text-white transition-colors" data-mode="edge">边缘纹理</button>
+                                        <button onclick="setAiVisualMode('heatmap')" class="ai-visual-tab px-1.5 py-0.5 rounded text-[9px] font-serif-cn bg-yuebai text-text-body transition-colors" data-mode="heatmap">应力热力</button>
+                                    </div>
+                                </div>
                                 <canvas id="ai-edge-canvas" width="160" height="160" class="w-full aspect-square rounded-lg bg-black block border border-white/10"></canvas>
                             </div>
                             <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center flex flex-col justify-between">
@@ -1330,37 +1349,122 @@
     </div>
 </div>
 
-<!-- ==================== 宋瓷 100x 显微镜微观观察窗模态框 ==================== -->
+<!-- ==================== 宋明御瓷 100x 光学显微镜微观晶相研考观察窗 ==================== -->
 <div id="microscope-modal" class="modal-backdrop" onclick="if(event.target===this)closeMicroscopeView()">
-    <div class="modal-content-lg text-center">
+    <div class="modal-content-lg text-center max-w-2xl">
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
-            <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title flex items-center gap-2">
-                <i class="fa-solid fa-microscope text-tianqing-deep"></i>
-                <span>宋明御瓷 100x 显微镜微观晶相研考观察窗</span>
-            </h3>
-            <button onclick="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-microscope text-tianqing-deep text-lg"></i>
+                <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title">宋明御瓷 100x 光学显微晶相研考观察窗</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="btn-micro-light-mode" onclick="toggleMicroscopeLightMode()" class="px-2.5 py-1 rounded-full bg-yuebai border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-all flex items-center">
+                    <i class="fa-solid fa-sun text-amber-400 mr-1"></i>明场透射
+                </button>
+                <button id="btn-micro-reticle" onclick="toggleMicrometerReticle()" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn transition-all flex items-center" title="显示/隐藏 100μm 测微目镜十字刻度线">
+                    <i class="fa-solid fa-crosshairs mr-1"></i>测微十字标尺
+                </button>
+                <button onclick="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-text-body"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 显微标本切换标签 -->
+        <div id="microscope-preset-tabs" class="flex flex-wrap items-center justify-center gap-1.5 mb-3"></div>
+
+        <!-- 真实物理光学 Canvas 显微视口 (带拖拽与滚轮调焦) -->
+        <div class="microscope-lens-viewport relative select-none">
+            <canvas id="microscope-canvas" width="320" height="320" class="w-full h-full block cursor-grab active:cursor-grabbing" title="按住拖拽平移载物台视场，滑动滚轮微调焦距"></canvas>
+            <span class="absolute bottom-2 right-4 text-[9px] font-mono text-white/50 bg-black/60 px-1.5 py-0.5 rounded pointer-events-none">100x · 100μm</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 my-2.5 max-w-md mx-auto text-xs text-text-muted font-serif-cn">
+            <div class="flex items-center gap-2 bg-yuebai/60 px-3 py-1.5 rounded-full border border-border-light">
+                <i class="fa-solid fa-sliders text-tianqing-deep"></i>
+                <span>目镜焦深：</span>
+                <input type="range" min="60" max="140" value="100" oninput="adjustMicroscopeFocus(this.value)" class="w-24 sm:w-32 cursor-pointer">
+                <span id="microscope-focus-value" class="font-mono text-text-title w-9 text-right font-medium">100%</span>
+            </div>
+            <span class="text-[11px] text-text-muted"><i class="fa-regular fa-hand-pointer mr-1 text-amber-400"></i>按住目镜可平移视场 · 滚轮微调焦深</span>
+        </div>
+
+        <!-- 显微镜学术考据与真伪辨识卡片 -->
+        <div id="microscope-desc-card" class="bg-yuebai/50 p-4 rounded-xl border border-border-light text-left text-xs text-text-body space-y-2 font-light"></div>
+
+        <button onclick="closeMicroscopeView()" class="mt-3.5 px-6 py-1.5 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+            关闭目镜视野
+        </button>
+    </div>
+</div>
+
+<!-- ==================== 博古鉴瓷键盘快捷键典籍模态框 ==================== -->
+<div id="shortcuts-help-modal" class="modal-backdrop" onclick="if(event.target===this)closeShortcutsHelpModal()">
+    <div class="modal-content-lg max-w-xl text-left">
+        <div class="flex items-center justify-between pb-3 border-b border-border-light mb-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-keyboard text-tianqing-deep text-lg"></i>
+                <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title">博古鉴瓷 · 全局交互快捷键典籍</h3>
+            </div>
+            <button onclick="closeShortcutsHelpModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
                 <i class="fa-solid fa-xmark text-text-body"></i>
             </button>
         </div>
 
-        <div id="microscope-preset-tabs" class="flex flex-wrap items-center justify-center gap-2 mb-3"></div>
-
-        <div class="microscope-lens-viewport">
-            <div id="microscope-bubbles-layer" class="w-full h-full relative transition-all"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-serif-cn mb-4">
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>3D 旋转 / 暂停环视</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Space 空格</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>双手托起翻转鉴底</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">B 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>强光透光照胎</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">T 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>双器同台并列比对</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">C 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>100x 显微晶相观察</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">M 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>X 光胎骨剖切透视</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">X 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>昼夜光景意境切换</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">D 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>纯净沉浸观赏 (Zen)</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Z 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>切换 12 尊馆藏名瓷</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">数字 1 ~ 9</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>博古全库智能检索</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Ctrl + K</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>拉坯/手绘撤销上一步</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Ctrl + Z</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>唤出本快捷键秘籍</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">? 或 H 键</kbd>
+            </div>
         </div>
 
-        <div class="flex items-center justify-center gap-3 my-3 max-w-xs mx-auto">
-            <i class="fa-solid fa-crosshairs text-tianqing-deep text-xs"></i>
-            <span class="text-xs text-text-muted font-serif-cn">目镜焦距：</span>
-            <input type="range" min="60" max="140" value="100" oninput="adjustMicroscopeFocus(this.value)" class="w-28 sm:w-36">
-            <span id="microscope-focus-value" class="text-xs font-mono text-text-title w-10">100%</span>
-        </div>
-
-        <div id="microscope-desc-card" class="bg-yuebai/50 p-4 rounded-xl border border-border-light text-left text-xs text-text-body space-y-2 font-light"></div>
-
-        <button onclick="closeMicroscopeView()" class="mt-4 px-6 py-2 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
-            关闭目镜视野
-        </button>
+        <p class="text-[11px] text-text-muted font-light leading-relaxed font-serif-cn border-t border-border-light pt-2.5">
+            提示：在任意界面敲击快捷键即可直接触达专业鉴赏法门；在输入框内输入文字时快捷键自动静音，互不干扰。
+        </p>
     </div>
 </div>
 
