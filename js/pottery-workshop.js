@@ -167,8 +167,55 @@ let potCanvas, potCtx;
 let potAnimId = null;
 let isInteractingPot = false;
 let potToolMode = 'push'; // 'push' | 'pull' | 'smooth' | 'brush'
+let brushStyle = 'outline'; // 'outline' | 'wash' | 'erase'
 let currentPotPattern = 'none'; // 'none' | 'lotus' | 'qinghua' | 'goldring'
 let currentPotSeal = '大宋宣和';
+
+const potteryHistory = [];
+const MAX_POT_HISTORY = 30;
+
+function savePotterySnapshot() {
+    if (!targetRadii || !targetRadii.length) return;
+    potteryHistory.push({
+        radii: [...targetRadii],
+        brush: [...(customBrushRings || [])],
+        pattern: currentPotPattern,
+        glaze: currentClayGlaze,
+        fired: isFired
+    });
+    if (potteryHistory.length > MAX_POT_HISTORY) potteryHistory.shift();
+}
+
+function undoPotteryAction() {
+    if (!potteryHistory.length) {
+        if (typeof showToast === 'function') showToast('已在最初造物状态');
+        return;
+    }
+    const prev = potteryHistory.pop();
+    if (prev) {
+        targetRadii = [...prev.radii];
+        clayRadii = [...prev.radii];
+        customBrushRings = [...prev.brush];
+        currentPotPattern = prev.pattern || 'none';
+        currentClayGlaze = prev.glaze || 'tianqing';
+        isFired = !!prev.fired;
+        updatePotteryLiveMetrics();
+        if (typeof showToast === 'function') showToast('↶ 已撤销上一步塑形操作');
+    }
+}
+
+function setBrushStyle(style) {
+    brushStyle = style;
+    document.querySelectorAll('.brush-style-btn').forEach(btn => {
+        if (btn.dataset.style === style) {
+            btn.classList.add('bg-tianqing-deep', 'text-white');
+            btn.classList.remove('bg-yuebai', 'text-text-body');
+        } else {
+            btn.classList.remove('bg-tianqing-deep', 'text-white');
+            btn.classList.add('bg-yuebai', 'text-text-body');
+        }
+    });
+}
 
 const SLICE_COUNT = 44;
 let clayRadii = [];
@@ -238,20 +285,21 @@ function initPotteryWorkshop() {
 }
 
 function resetClay(silent = false) {
+    savePotterySnapshot();
     clayRadii = [];
     targetRadii = [];
     customBrushRings = new Array(SLICE_COUNT).fill(0);
     isFired = false;
     for (let i = 0; i < SLICE_COUNT; i++) {
         const t = i / (SLICE_COUNT - 1);
-        const r = 0.44 + Math.sin(t * Math.PI) * 0.22 - t * 0.08;
+        const r = 0.45 + (1 - t) * 0.04;
         clayRadii.push(r);
         targetRadii.push(r);
     }
     updateFiringBadge('高岭土湿坯 · 旋转塑形中');
     updatePotteryLiveMetrics();
     if (!silent && typeof showToast === 'function') {
-        showToast('已安放新陈腐高岭土泥料，请在转盘上推拉塑形或手绘纹饰！');
+        showToast('已重置为标准高岭土泥料，可自由向内收束或向外拉伸！');
     }
 }
 
@@ -295,6 +343,7 @@ function updatePotteryLiveMetrics() {
 function applyPresetVessel(presetName) {
     const preset = vesselPresets[presetName];
     if (!preset) return;
+    savePotterySnapshot();
     isFired = false;
     for (let i = 0; i < SLICE_COUNT; i++) {
         targetRadii[i] = preset[i] !== undefined ? preset[i] : 0.45;
@@ -445,6 +494,12 @@ function bindPotteryEvents() {
 
     const handlePointerAction = (e) => {
         if (!isInteractingPot) return;
+        isPotteryVisible = true;
+        if (isFired) {
+            isFired = false;
+            updateFiringBadge('高岭土湿坯 · 随指塑形中');
+        }
+
         const rect = potCanvas.getBoundingClientRect();
         const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
         const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : null);
@@ -458,13 +513,15 @@ function bindPotteryEvents() {
         pointerPos = { x: canvasX, y: canvasY, active: true };
 
         const bottomY = potCanvas.height * 0.85;
-        const totalHeight = potCanvas.height * 0.68;
+        const totalHeight = potCanvas.height * 0.67;
         const normalizedY = (bottomY - canvasY) / totalHeight;
         const sliceIndex = Math.floor(normalizedY * SLICE_COUNT);
 
         if (sliceIndex >= 0 && sliceIndex < SLICE_COUNT) {
             const centerX = potCanvas.width / 2;
-            const distFromCenter = Math.abs(canvasX - centerX) / (potCanvas.width * 0.36);
+            const currentDist = Math.abs(canvasX - centerX);
+            const maxRadiusPx = potCanvas.width * 0.34;
+            const distRatio = Math.max(0.12, Math.min(0.98, currentDist / maxRadiusPx));
 
             if (potToolMode === 'brush') {
                 // 自由手绘青花/描金笔刷模式 (支持勾线/分水/修胚)
@@ -472,25 +529,31 @@ function bindPotteryEvents() {
                     const idx = sliceIndex + offset;
                     if (idx >= 0 && idx < SLICE_COUNT) {
                         if (brushStyle === 'erase') {
-                            customBrushRings[idx] = Math.max(0, (customBrushRings[idx] || 0) - 0.38);
+                            customBrushRings[idx] = Math.max(0, (customBrushRings[idx] || 0) - 0.45);
                         } else if (brushStyle === 'wash') {
-                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.16);
+                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.18);
                         } else {
-                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.38);
+                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.45);
                         }
                     }
                 }
             } else {
-                for (let offset = -4; offset <= 4; offset++) {
+                // 五大造物塑形模式：收束 / 鼓腹 / 跟随修光揉搓
+                const influenceRange = 5;
+                for (let offset = -influenceRange; offset <= influenceRange; offset++) {
                     const idx = sliceIndex + offset;
                     if (idx >= 0 && idx < SLICE_COUNT) {
-                        const weight = Math.cos((offset / 4.5) * (Math.PI / 2));
+                        const weight = Math.cos((offset / (influenceRange + 0.5)) * (Math.PI / 2));
                         if (potToolMode === 'push') {
-                            targetRadii[idx] = Math.max(0.16, targetRadii[idx] - 0.022 * weight);
+                            // 向内收束：手指或竹刀由外向内压塑
+                            targetRadii[idx] = Math.max(0.15, targetRadii[idx] - 0.042 * weight);
                         } else if (potToolMode === 'pull') {
-                            targetRadii[idx] = Math.min(0.98, targetRadii[idx] + 0.022 * weight);
+                            // 向外鼓腹：手指自内膛向外顶出饱满曲线
+                            targetRadii[idx] = Math.min(0.98, targetRadii[idx] + 0.042 * weight);
                         } else {
-                            targetRadii[idx] += (Math.max(0.16, Math.min(0.98, distFromCenter)) - targetRadii[idx]) * 0.18 * weight;
+                            // 跟随修光 / 指尖揉搓：泥体边缘实时柔顺跟随指尖拖拽
+                            targetRadii[idx] += (distRatio - targetRadii[idx]) * 0.32 * weight;
+                            targetRadii[idx] = Math.max(0.15, Math.min(0.98, targetRadii[idx]));
                         }
                     }
                 }
@@ -556,8 +619,14 @@ function setPotTool(mode) {
     if (brushGroup) {
         brushGroup.classList.toggle('hidden', mode !== 'brush');
     }
-    if (mode === 'brush' && typeof showToast === 'function') {
-        showToast('🖌️ 已切换至【青花手绘笔刷】！支持勾线/分水/刮料与Ctrl+Z撤销');
+    const toasts = {
+        push: '🖐️ 已切换至【向内收束】：在泥坯表面拖拽使器身向内收拢',
+        pull: '🖐️ 已切换至【向外鼓腹】：在泥坯表面拖拽使器腹向外丰满饱满',
+        smooth: '✨ 已切换至【跟随修光】：指尖揉搓泥胚，器型实时顺滑贴合',
+        brush: '🖌️ 已切换至【手绘青花】：直接在旋转坯体表面绘制青花弦纹'
+    };
+    if (typeof showToast === 'function') {
+        showToast(toasts[mode] || '已切换造物工具');
     }
 }
 
@@ -565,8 +634,6 @@ let lastPotTick = 0;
 function potAnimLoop(now) {
     if (!isPotteryVisible) return;
     potAnimId = requestAnimationFrame(potAnimLoop);
-    if (now && now - lastPotTick < 28) return;
-    lastPotTick = now || 0;
     if (!potCtx || !potCanvas) return;
 
     const w = potCanvas.width;

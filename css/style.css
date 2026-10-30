@@ -935,6 +935,69 @@ html[data-theme="dark"] .three-canvas-container {
     border-radius: 0 !important;
 }
 
+/* 3D 展馆骨架屏与极速加载反馈微动效 */
+.three-stage-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(11, 17, 22, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 25;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+.celadon-pulse-ring {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(143, 184, 192, 0.25);
+    border-top-color: #8fb8c0;
+    animation: celadonSpin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    margin-bottom: 12px;
+}
+@keyframes celadonSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.loader-text {
+    font-size: 12px;
+    color: #e5c888;
+    letter-spacing: 0.1em;
+}
+
+.three-model-loading-pill {
+    position: absolute;
+    top: 4.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(14, 22, 28, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(197, 160, 89, 0.5);
+    border-radius: 9999px;
+    padding: 6px 16px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #e5c888;
+    z-index: 20;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.3s ease;
+}
+.pulse-celadon-ring {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(143, 184, 192, 0.3);
+    border-top-color: #8fb8c0;
+    animation: celadonSpin 0.8s linear infinite;
+}
+
 #three-canvas {
     width: 100% !important;
     height: 100% !important;

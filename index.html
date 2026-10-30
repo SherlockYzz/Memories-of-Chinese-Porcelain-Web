@@ -6,8 +6,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#080C10">
-    <title>天青泥火 · 华夏古瓷三维孪生博物空间</title>
-    <meta name="description" content="天青泥火 — 华夏古瓷三维孪生博物空间。融合实测古瓷三维扫描孪生、WebGL双层微晶PBR物理渲染、Sobel计算机视觉研鉴、古瓷釉料化学仿真与宋代非遗造物体验。">
+    <title>天青泥火 · 华夏古瓷三维孪生博物空间 (v5.0 臻品全量版)</title>
+    <meta name="description" content="天青泥火 (v5.0) — 华夏古瓷三维孪生博物空间。融合实测古瓷三维扫描孪生、WebGL双层微晶PBR物理渲染、高精度3D指尖拉坯塑形、Sobel计算机视觉研鉴、古瓷釉料化学仿真与宋代非遗造物体验。">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
 
     <!-- Font Awesome 6 (本地极速加载) -->
@@ -309,6 +309,12 @@
             <!-- 左侧 7列：WebGL 3D 画布空间 -->
             <div class="lg:col-span-7">
                 <div class="three-canvas-container" id="three-stage-container">
+                    <!-- 3D 展馆首屏温润骨架屏加载过渡 -->
+                    <div id="three-stage-loader" class="three-stage-loader">
+                        <div class="celadon-pulse-ring"></div>
+                        <div class="loader-text font-serif-cn">天青釉色凝润中 · 3D 孪生空间秒级载入</div>
+                    </div>
+
                     <!-- 顶部：四大展览模式切换舱 + 全屏/锚点控制 -->
                     <div class="exhibition-mode-bar">
                         <div class="mode-switch-group">
@@ -1529,18 +1535,19 @@
     <i class="fa-solid fa-chevron-up text-sm"></i>
 </button>
 
-<!-- 核心脚本加载链路 (新增加载 GLTFLoader.js 与 scanned-models-data.js 实测3D点云模型数据) -->
+<!-- 核心脚本加载链路 (轻量引擎优先秒开，8.5MB大数据包 defer 异步非阻塞载入) -->
 <script src="js/three.min.js"></script>
 <script src="js/GLTFLoader.js"></script>
-<script src="js/scanned-models-data.js"></script>
-    <script src="js/museum-audio-data.js"></script>
-    <script src="js/oriental-ambient.js"></script>
+<script src="js/oriental-ambient.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/data.js"></script>
 <script src="js/three-scene.js"></script>
 <script src="js/ai-recognition.js"></script>
 <script src="js/pottery-workshop.js"></script>
 <script src="js/app.js"></script>
+<!-- 纯离线真品点云与全量语音解说数据包（defer 异步加载，首屏零阻塞秒开） -->
+<script src="js/scanned-models-data.js" defer></script>
+<script src="js/museum-audio-data.js" defer></script>
 
 </body>
 </html>

@@ -1790,32 +1790,100 @@ function createSmoothVesselLathe(outerPts, RadialModFn = null, radialSegments = 
 }
 
 /**
- * 预解析并缓存 `window.SCANNED_MODELS_DATA` 内的两尊 1:1 实测三维扫描 GLTF 真品模型
+ * 展馆加载与点云装载微提示
  */
-function preloadScannedGLTFModels() {
-    if (typeof THREE === 'undefined' || !THREE.GLTFLoader || !window.SCANNED_MODELS_DATA) return;
-    const loader = new THREE.GLTFLoader();
-    const keys = ['vase_01', 'vase_02', 'vase_03', 'vase_04', 'vase_05'];
+let isScanningLoading = false;
+function showStageLoadingToast(show, text = '') {
+    let toast = document.getElementById('three-model-loading-pill');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'three-model-loading-pill';
+        toast.className = 'three-model-loading-pill';
+        const container = document.getElementById('three-stage-container');
+        if (container) container.appendChild(toast);
+    }
+    if (show) {
+        toast.innerHTML = `<span class="pulse-celadon-ring"></span><span>${text}</span>`;
+        toast.style.display = 'flex';
+        toast.style.opacity = '1';
+    } else {
+        toast.style.opacity = '0';
+        setTimeout(() => { if (toast) toast.style.display = 'none'; }, 300);
+    }
+}
 
-    keys.forEach((key, idx) => {
-        if (!window.SCANNED_MODELS_DATA[key] || scannedModelCache[key]) return;
+/**
+ * 按需单件解析实测三维扫描 GLTF 文物孪生模型 (0 阻塞秒开)
+ */
+function loadSingleScannedGLTFOnDemand(key, modelIndex) {
+    if (scannedModelCache[key] || isScanningLoading) return;
+    if (!window.SCANNED_MODELS_DATA || !window.SCANNED_MODELS_DATA[key]) return;
+
+    isScanningLoading = true;
+    showStageLoadingToast(true, '正在装载古瓷三维激光扫描高精度点云孪生体...');
+
+    setTimeout(() => {
         try {
+            const loader = new THREE.GLTFLoader();
             const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
             loader.parse(jsonStr, '', (gltf) => {
+                isScanningLoading = false;
+                showStageLoadingToast(false);
                 if (gltf && gltf.scene) {
                     scannedModelCache[key] = gltf.scene;
-                    const modelIndex = 7 + idx;
                     if (currentModelIndex === modelIndex) {
                         loadPorcelainModel(currentModelIndex, true);
                     }
                 }
             }, (err) => {
+                isScanningLoading = false;
+                showStageLoadingToast(false);
                 console.warn(`[3D扫描模型解析提示] ${key}:`, err);
             });
         } catch (e) {
+            isScanningLoading = false;
+            showStageLoadingToast(false);
             console.warn(`[3D扫描模型加载异常] ${key}:`, e);
         }
-    });
+    }, 40);
+}
+
+/**
+ * 闲时后台温和预热其余扫描模型，彻底避免主线程丢帧
+ */
+function scheduleBackgroundModelPreload() {
+    const keys = ['vase_01', 'vase_02', 'vase_03', 'vase_04', 'vase_05'];
+    let idx = 0;
+    function loadNext() {
+        if (idx >= keys.length) return;
+        const key = keys[idx++];
+        if (!scannedModelCache[key] && window.SCANNED_MODELS_DATA && window.SCANNED_MODELS_DATA[key]) {
+            try {
+                const loader = new THREE.GLTFLoader();
+                const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
+                loader.parse(jsonStr, '', (gltf) => {
+                    if (gltf && gltf.scene) scannedModelCache[key] = gltf.scene;
+                    setTimeout(loadNext, 400);
+                }, () => { setTimeout(loadNext, 400); });
+            } catch (e) {
+                setTimeout(loadNext, 400);
+            }
+        } else {
+            setTimeout(loadNext, 120);
+        }
+    }
+    if (typeof requestIdleCallback !== 'undefined') {
+        requestIdleCallback(() => setTimeout(loadNext, 1600));
+    } else {
+        setTimeout(loadNext, 2500);
+    }
+}
+
+/**
+ * 兼容旧接口：温和调用后台调度
+ */
+function preloadScannedGLTFModels() {
+    scheduleBackgroundModelPreload();
 }
 
 /**
@@ -1860,7 +1928,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
             scaledBox.getCenter(center);
             cloned.position.x = -center.x;
             cloned.position.z = -center.z;
-            cloned.position.y = -scaledBox.min.y - 1.125;
+            cloned.position.y = -scaledBox.min.y;
 
             cloned.traverse(child => {
                 if (child.isMesh) {
@@ -1881,7 +1949,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
             });
             group.add(cloned);
         } else {
-            preloadScannedGLTFModels();
+            loadSingleScannedGLTFOnDemand(sKey, typeIndex);
             const fallbackPts = [
                 new THREE.Vector2(0.0, -1.12), new THREE.Vector2(0.32, -1.12),
                 new THREE.Vector2(0.38, -0.82), new THREE.Vector2(0.56, -0.18),
@@ -2176,6 +2244,18 @@ function buildGeometry(typeIndex, customGlaze = null) {
             }
             group.add(ghost);
         });
+    }
+
+    // --- 严谨几何基准面归一化：使器物（0~11）底足最底端绝对位于 y = 0 ---
+    group.updateMatrixWorld(true);
+    const overallBox = new THREE.Box3().setFromObject(group);
+    if (isFinite(overallBox.min.y) && isFinite(overallBox.max.y)) {
+        const bottomY = overallBox.min.y;
+        group.children.forEach(c => {
+            c.position.y -= bottomY;
+        });
+        group.userData.bottomOffset = bottomY;
+        group.userData.vesselHeight = overallBox.max.y - overallBox.min.y;
     }
 
     return group;
@@ -2669,13 +2749,19 @@ function initThreeJS() {
         topSpotLight.position.set(0, 5.5, 0.5);
         scene.add(topSpotLight);
 
-        preloadScannedGLTFModels();
         createInspectorStage();
         loadPorcelainModel(0);
+        scheduleBackgroundModelPreload();
 
         setupControls(canvas);
         window.addEventListener('resize', handleThreeResize);
         setupVisibilityObserver(canvas);
+
+        const stageLoader = document.getElementById('three-stage-loader');
+        if (stageLoader) {
+            stageLoader.style.opacity = '0';
+            setTimeout(() => { stageLoader.style.display = 'none'; }, 400);
+        }
 
         animate();
     } catch (err) {
@@ -3120,18 +3206,20 @@ function updateHotspotsScreenProjection() {
 
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
+    const bOffset = (currentGroup.userData && currentGroup.userData.bottomOffset !== undefined)
+        ? currentGroup.userData.bottomOffset : 0;
 
     m.hotspots.forEach((spot, i) => {
         const el = document.getElementById(`vessel-hotspot-${i}`);
         if (!el) return;
-        const vec = new THREE.Vector3(spot.pos[0], spot.pos[1], spot.pos[2]);
-        vec.applyEuler(currentGroup.rotation);
+        const vec = new THREE.Vector3(spot.pos[0], spot.pos[1] - bOffset, spot.pos[2]);
+        currentGroup.localToWorld(vec);
         vec.project(camera);
 
         const sx = (vec.x * 0.5 + 0.5) * w;
         const sy = (-(vec.y * 0.5) + 0.5) * h;
 
-        if (vec.z < 1.0 && sx > 20 && sx < w - 20 && sy > 50 && sy < h - 50) {
+        if (vec.z < 1.0 && sx > 20 && sx < w - 20 && sy > 40 && sy < h - 40) {
             el.style.left = `${sx}px`;
             el.style.top = `${sy}px`;
             el.style.opacity = '1';
@@ -3412,8 +3500,8 @@ function setCameraView(viewType) {
             camPosTarget = { x: 0, y: 3.7, z: 0.25 };
             break;
         case 'bottom':
-            camPosTarget = { x: 0, y: -2.85, z: 1.65 };
-            break;
+            toggleBottomView(true);
+            return;
         default:
             camPosTarget = { x: 0, y: 0.95, z: 3.55 };
             break;
@@ -3454,6 +3542,7 @@ function toggleDimensionLines() {
 
 function createDimensionLines() {
     const group = new THREE.Group();
+    if (!currentGroup) return group;
     const lineMat = new THREE.LineDashedMaterial({ color: 0xe5c888, dashSize: 0.05, gapSize: 0.025 });
 
     const addSeg = (p1, p2) => {
@@ -3462,9 +3551,16 @@ function createDimensionLines() {
         line.computeLineDistances();
         group.add(line);
     };
-    addSeg(new THREE.Vector3(1.12, -1.15, 0), new THREE.Vector3(1.12, 1.05, 0));
-    addSeg(new THREE.Vector3(0.35, 1.05, 0), new THREE.Vector3(1.18, 1.05, 0));
-    addSeg(new THREE.Vector3(0.35, -1.15, 0), new THREE.Vector3(1.18, -1.15, 0));
+
+    currentGroup.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(currentGroup);
+    const xGuide = (box.max.x || 0.6) + 0.35;
+    const minY = isFinite(box.min.y) ? box.min.y : -1.125;
+    const maxY = isFinite(box.max.y) ? box.max.y : 1.05;
+
+    addSeg(new THREE.Vector3(xGuide, minY, 0), new THREE.Vector3(xGuide, maxY, 0));
+    addSeg(new THREE.Vector3((box.max.x || 0.6) * 0.4, maxY, 0), new THREE.Vector3(xGuide + 0.1, maxY, 0));
+    addSeg(new THREE.Vector3((box.max.x || 0.6) * 0.4, minY, 0), new THREE.Vector3(xGuide + 0.1, minY, 0));
     return group;
 }
 
@@ -3834,8 +3930,6 @@ let lastFrameTime = 0;
 function animate(now) {
     if (!isCanvasVisible) return;
     requestAnimationFrame(animate);
-    if (now && now - lastFrameTime < 28) return;
-    lastFrameTime = now || 0;
 
     camera.position.x += (camPosTarget.x - camera.position.x) * 0.08;
     camera.position.y += (camPosTarget.y - camera.position.y) * 0.08;
