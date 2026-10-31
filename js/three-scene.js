@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -1837,6 +1837,85 @@ function preloadScannedGLTFModels() {
 }
 
 /**
+ * 为国宝三维资产打造文博级温润玉质 PBR 物理材质 (杜绝塑料感，还原双层清漆与立体纹样)
+ */
+function createMuseumMasterpieceMaterial(childMesh, typeIndex, customGlaze, activePlanes, getGlazeMat) {
+    const origMaterial = childMesh.material;
+    const isCutaway = activePlanes && activePlanes.length > 0;
+
+    // 如果用户手动在左侧釉色盘选择了自选釉色 (如雨过天青/玫瑰紫/曜变黑)
+    if (customGlaze || !useScannedOriginalTex || !origMaterial) {
+        const mat = getGlazeMat().clone();
+        mat.side = isCutaway ? THREE.DoubleSide : THREE.FrontSide;
+        mat.shadowSide = THREE.FrontSide;
+        mat.clippingPlanes = activePlanes;
+        mat.clipShadows = isCutaway;
+        return mat;
+    }
+
+    // 优先基于原模型内嵌的 2K 文保级真彩贴图构建高阶 MeshPhysicalMaterial
+    const pbrOptions = {
+        roughness: customPbrOverride.roughness !== null
+            ? customPbrOverride.roughness
+            : (typeIndex === 3 ? 0.16 : (typeIndex === 6 ? 0.08 : (typeIndex === 5 ? 0.10 : 0.12))),
+        metalness: 0.0,
+        clearcoat: customPbrOverride.clearcoat !== null ? customPbrOverride.clearcoat : 1.0,
+        clearcoatRoughness: 0.045,
+        ior: customPbrOverride.ior !== null ? customPbrOverride.ior : 1.54,
+        reflectivity: 0.62,
+        transmission: (typeIndex === 0 || typeIndex === 1) ? 0.04 : 0.02,
+        envMap: envMapTexture,
+        envMapIntensity: 1.55,
+        wireframe: isWireframe,
+        side: isCutaway ? THREE.DoubleSide : THREE.FrontSide,
+        shadowSide: THREE.FrontSide,
+        clippingPlanes: activePlanes,
+        clipShadows: isCutaway
+    };
+
+    // 绑定并校正原生真彩贴图 (启用 sRGBEncoding 与各向异性过滤)
+    if (origMaterial.map) {
+        const tex = origMaterial.map;
+        tex.encoding = THREE.sRGBEncoding;
+        tex.flipY = false;
+        tex.generateMipmaps = true;
+        tex.minFilter = THREE.LinearMipmapLinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        if (typeof renderer !== 'undefined' && renderer && renderer.capabilities) {
+            tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        }
+        tex.needsUpdate = true;
+        pbrOptions.map = tex;
+    }
+
+    // 继承或注入法线/微观开片凹凸贴图
+    if (origMaterial.normalMap) {
+        pbrOptions.normalMap = origMaterial.normalMap;
+        pbrOptions.normalScale = origMaterial.normalScale || new THREE.Vector2(1, 1);
+    } else {
+        // 针对官窑、汝窑、哥窑、定窑注入立体微观开片或刀刻凹凸
+        if (typeIndex === 0 || typeIndex === 3) {
+            // 官窑/哥窑：金丝铁线百圾碎立体凹凸
+            const crackle = getCrackleTextureBundle();
+            pbrOptions.bumpMap = crackle.bumpMap;
+            pbrOptions.bumpScale = (typeIndex === 3) ? 0.026 : 0.016;
+        } else if (typeIndex === 1) {
+            // 汝窑：蟹爪冰裂
+            const crackle = getCrackleTextureBundle();
+            pbrOptions.bumpMap = crackle.bumpMap;
+            pbrOptions.bumpScale = 0.012;
+        } else if (typeIndex === 2) {
+            // 定窑：刻花浅浮雕刀痕
+            const ding = getDingCarvedBundle();
+            pbrOptions.bumpMap = ding.bumpMap;
+            pbrOptions.bumpScale = 0.022;
+        }
+    }
+
+    return new THREE.MeshPhysicalMaterial(pbrOptions);
+}
+
+/**
  * 构建十二大传世馆藏高精度 3D 模型 (0~6 程序化建模，7~11 实测三维扫描 GLTF 模型)
  */
 function buildGeometry(typeIndex, customGlaze = null) {
@@ -1876,27 +1955,11 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
-                    if (child.geometry) child.geometry.computeVertexNormals();
-
-                    // 优先保留 GLB 内嵌的 2K 文保级真实纹样贴图（青花龙纹/金丝铁线/窑变斑/粉彩开光）
-                    if (useScannedOriginalTex && child.material && !customGlaze) {
-                        const origMat = child.material.clone();
-                        origMat.side = THREE.DoubleSide;
-                        origMat.clippingPlanes = activePlanes;
-                        origMat.clipShadows = true;
-                        if (typeof envMapTexture !== 'undefined' && envMapTexture) {
-                            origMat.envMap = envMapTexture;
-                        }
-                        origMat.envMapIntensity = 1.35;
-                        child.material = origMat;
-                    } else {
-                        // 仅在用户手动点击左侧釉色盘切换为自选单色釉时，才动态覆盖
-                        const mat = getGlazeMat().clone();
-                        mat.side = THREE.DoubleSide;
-                        mat.clippingPlanes = activePlanes;
-                        mat.clipShadows = true;
-                        child.material = mat;
+                    // 保留原装高精法线，避免强制重算导致硬折棱线发黑撕裂
+                    if (!child.geometry || !child.geometry.attributes.normal) {
+                        if (child.geometry) child.geometry.computeVertexNormals();
                     }
+                    child.material = createMuseumMasterpieceMaterial(child, typeIndex, customGlaze, activePlanes, getGlazeMat);
                 }
             });
             group.add(cloned);
@@ -1982,18 +2045,10 @@ function buildGeometry(typeIndex, customGlaze = null) {
             cloned.traverse(child => {
                 if (child.isMesh) {
                     child.castShadow = child.receiveShadow = true;
-                    if (useScannedOriginalTex && child.material && !customGlaze) {
-                        const origMat = child.material.clone();
-                        origMat.side = THREE.DoubleSide;
-                        origMat.envMap = envMapTexture;
-                        origMat.envMapIntensity = 1.25;
-                        origMat.wireframe = isWireframe;
-                        origMat.clippingPlanes = activePlanes;
-                        origMat.clipShadows = true;
-                        child.material = origMat;
-                    } else {
-                        child.material = glazeMat;
+                    if (!child.geometry || !child.geometry.attributes.normal) {
+                        if (child.geometry) child.geometry.computeVertexNormals();
                     }
+                    child.material = createMuseumMasterpieceMaterial(child, typeIndex, customGlaze, activePlanes, getGlazeMat);
                 }
             });
             group.add(cloned);
@@ -2241,44 +2296,8 @@ function createRealistic3DEnvironment() {
     }
     realisticRoomGroup.add(volumetricGodRays);
 
-    // 6. 博山香炉与青烟
+    // 6. 纯净文博陈设（隐去突兀浮空倒锥构件，突出古瓷主体器型）
     const deskAccGroup = new THREE.Group();
-    const censerGroup = new THREE.Group();
-    censerGroup.position.set(0.62, -1.13, -0.42);
-    const bronzeMat = new THREE.MeshStandardMaterial({ color: 0x5c6858, roughness: 0.42, metalness: 0.78 });
-    const censerBody = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.05, 0.08, 32), bronzeMat);
-    censerBody.position.y = 0.055;
-    censerGroup.add(censerBody);
-    const censerLid = new THREE.Mesh(new THREE.ConeGeometry(0.078, 0.09, 16), bronzeMat);
-    censerLid.position.y = 0.14;
-    censerGroup.add(censerLid);
-    deskAccGroup.add(censerGroup);
-
-    const smokeCount = 65;
-    const smokePositions = new Float32Array(smokeCount * 3);
-    const smokeSeeds = new Float32Array(smokeCount * 3);
-    for (let i = 0; i < smokeCount; i++) {
-        smokePositions[i * 3] = 0.62 + (Math.random() - 0.5) * 0.02;
-        smokePositions[i * 3 + 1] = -0.92 + (i / smokeCount) * 0.65;
-        smokePositions[i * 3 + 2] = -0.42 + (Math.random() - 0.5) * 0.02;
-        smokeSeeds[i * 3] = Math.random() * Math.PI * 2;
-        smokeSeeds[i * 3 + 1] = 0.002 + Math.random() * 0.003;
-        smokeSeeds[i * 3 + 2] = Math.random();
-    }
-    const smokeGeo = new THREE.BufferGeometry();
-    smokeGeo.setAttribute('position', new THREE.BufferAttribute(smokePositions, 3));
-    smokeGeo.userData = { seeds: smokeSeeds };
-    const smokeMat = new THREE.PointsMaterial({
-        map: getSmokeParticleTexture(),
-        size: 0.06,
-        transparent: true,
-        opacity: 0.35,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-    });
-    incenseSmokeSystem = new THREE.Points(smokeGeo, smokeMat);
-    deskAccGroup.add(incenseSmokeSystem);
-
     realisticRoomGroup.add(deskAccGroup);
     scene.add(realisticRoomGroup);
     switchRealisticSceneEnv(currentRoomEnv, false);
@@ -2518,9 +2537,19 @@ function initThreeJS() {
 
         clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), clipOffset);
 
-        envMapTexture = createStudioEnvironment();
-        if (envMapTexture) {
-            scene.environment = envMapTexture;
+        const rawEnv = createStudioEnvironment();
+        if (rawEnv) {
+            try {
+                const pmremGen = new THREE.PMREMGenerator(renderer);
+                pmremGen.compileEquirectangularShader();
+                const envRT = pmremGen.fromEquirectangular(rawEnv);
+                envMapTexture = envRT.texture;
+                scene.environment = envMapTexture;
+            } catch (pmremErr) {
+                console.warn('[PMREM环境贴图预热提示]', pmremErr);
+                envMapTexture = rawEnv;
+                scene.environment = envMapTexture;
+            }
         }
 
         ambientLight = new THREE.AmbientLight(0xdbe8ec, 0.72);
@@ -2531,7 +2560,8 @@ function initThreeJS() {
         lightMain.castShadow = true;
         lightMain.shadow.mapSize.width = 1024;
         lightMain.shadow.mapSize.height = 1024;
-        lightMain.shadow.bias = -0.0005;
+        lightMain.shadow.bias = -0.0002;
+        lightMain.shadow.normalBias = 0.035;
         scene.add(lightMain);
 
         lightFill = new THREE.DirectionalLight(0x88b8c8, 0.95);

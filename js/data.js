@@ -1,4 +1,4 @@
-﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 中国古代传统文化与古瓷数字化研鉴空间
  * 学术研考、文博档案、历史通史与非遗工序全景核心数据库
  */
@@ -840,7 +840,8 @@ const archivePorcelains = [
         ],
         "desc": "盘口修颈，腹部丰满下垂，底部圈足露紫黑铁胎。通体层层施粉青厚釉，冰裂纹如寒江碎玉，立体感极强，为大都会艺术博物馆珍藏之宋代官窑标准器。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "26.292.74"
+        "accessionNo": "26.292.74",
+        "glazeKey": "tianqing"
     },
     {
         "id": 2,
@@ -859,7 +860,8 @@ const archivePorcelains = [
         ],
         "desc": "六瓣葵花口，敞口斜壁。胎白坚致如玉，器内以竹刀流利刻划萱草纹，釉色温润泛象牙黄，外壁微见泪痕垂流，尽显北宋文人内敛之雅。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "1991.253.18"
+        "accessionNo": "1991.253.18",
+        "glazeKey": "dingbai"
     },
     {
         "id": 3,
@@ -878,12 +880,13 @@ const archivePorcelains = [
         ],
         "desc": "敛口深腹，施乳浊天蓝厚釉，釉面莹润失透如静夜碧空。胎体厚重坚实，釉汁在高温熔融流动中自然形成“蚯蚓走泥纹”，古朴沉穆。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "20.170.1"
+        "accessionNo": "20.170.1",
+        "glazeKey": "junhong"
     },
     {
         "id": 4,
         "dynastyKey": "song",
-        "modelIdx": 9,
+        "modelIdx": 10,
         "name": "南宋 · 龙泉窑粉青釉金缮胆瓶",
         "kiln": "龙泉窑 · 浙江龙泉大窑",
         "level": "宋代青瓷极品传世重器",
@@ -897,12 +900,13 @@ const archivePorcelains = [
         ],
         "desc": "直口修颈，垂腹稳重。通体施厚润粉青釉，玉质感极强。器口与腹部经百年传世带有古金缮修复金线，天工与人工交相辉映，尽显惜物美学。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "1992.165.18"
+        "accessionNo": "1992.165.18",
+        "glazeKey": "fenqing"
     },
     {
         "id": 5,
         "dynastyKey": "song",
-        "modelIdx": 5,
+        "modelIdx": 1,
         "name": "宋代 · 建窑黑釉兔毫斗茶盏",
         "kiln": "建窑 · 福建建阳水吉芦花坪",
         "level": "宋代茶道第一圣器",
@@ -916,12 +920,13 @@ const archivePorcelains = [
         ],
         "desc": "束口深腹，露黑色含铁重胎。深邃黑釉中自然析出如根根银兔毫之结晶条纹，宋代文人点茶斗茶最宜衬托白色茶沫（汤花），为茶禅一味之具象化体现。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "29.100.226"
+        "accessionNo": "29.100.226",
+        "glazeKey": "jianhei"
     },
     {
         "id": 6,
         "dynastyKey": "song",
-        "modelIdx": 5,
+        "modelIdx": 1,
         "name": "宋代 · 吉州窑剪纸贴花梅花纹天目盏",
         "kiln": "吉州窑 · 江西吉安永和镇",
         "level": "民间窑变与剪纸巧思之极",
@@ -935,12 +940,13 @@ const archivePorcelains = [
         ],
         "desc": "敞口斜壁小圈足。巧妙运用民间剪纸艺术，在黑釉之上以草木灰釉贴饰梅花纹样，经窑火烧造显现出黄褐相间的梅花绽放之姿，空灵超尘。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "29.100.228"
+        "accessionNo": "29.100.228",
+        "glazeKey": "jianhei"
     },
     {
         "id": 7,
         "dynastyKey": "song",
-        "modelIdx": 8,
+        "modelIdx": 9,
         "name": "金元 · 磁州窑白地黑花道家人物山水八角枕",
         "kiln": "磁州窑 · 河北磁县观台镇",
         "level": "北方民窑水墨文人意趣巅峰",
@@ -954,7 +960,8 @@ const archivePorcelains = [
         ],
         "desc": "八角如意形陶枕，通身以白色化妆土为底，用铁黑料挥洒水墨画虎与道家人物泛舟山水，线条刚健洒脱，既是生活实用清凉夏枕，又是民间文博墨宝。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2009.288"
+        "accessionNo": "2009.288",
+        "glazeKey": "jianhei"
     },
     {
         "id": 8,
@@ -973,12 +980,13 @@ const archivePorcelains = [
         ],
         "desc": "撇口小足，通体满施晶莹剔透之橄榄青釉。碗内以精工模印缠枝牡丹与嬉戏双童，纹饰立体浮突，积釉处青翠欲滴，刻纹锐利如刀削。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "11.165.1"
+        "accessionNo": "11.165.1",
+        "glazeKey": "fenqing"
     },
     {
         "id": 9,
         "dynastyKey": "song",
-        "modelIdx": 7,
+        "modelIdx": 8,
         "name": "北宋 · 景德镇湖田窑影青镂雕执壶",
         "kiln": "景德镇窑 · 江西景德镇湖田窑",
         "level": "宋代影青温润如玉标准器",
@@ -992,12 +1000,13 @@ const archivePorcelains = [
         ],
         "desc": "小口带盖，细长弯流如凤颈，弓形执柄挺拔。通体施青白釉，光致透影，白中含青，青中泛白，宛若雨后青天微云，宋人雅集斟酒宴饮之绝品。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "16.50"
+        "accessionNo": "16.50",
+        "glazeKey": "tianqing"
     },
     {
         "id": 10,
         "dynastyKey": "yuan",
-        "modelIdx": 6,
+        "modelIdx": 5,
         "name": "元代 · 景德镇窑青花花鸟缠枝纹大罐",
         "kiln": "御器厂前身 · 浮梁瓷局",
         "level": "元青花丝路航海雄浑代表",
@@ -1011,12 +1020,13 @@ const archivePorcelains = [
         ],
         "desc": "唇口短颈，溜肩圆腹。器身以进口苏麻离青钴料大写意绘制缠枝花卉与灵动虫鸟，青花发色浓烈苍翠，凝聚处深入胎骨呈现金属锡光斑，气魄恢弘。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2005.15"
+        "accessionNo": "2005.15",
+        "glazeKey": "qinghua"
     },
     {
         "id": 11,
         "dynastyKey": "ming",
-        "modelIdx": 6,
+        "modelIdx": 5,
         "name": "明崇祯 · 景德镇青花人物故事图观音尊",
         "kiln": "景德镇民窑巅峰 · 文人瓷画",
         "level": "明末清初文人青花代表作",
@@ -1030,12 +1040,13 @@ const archivePorcelains = [
         ],
         "desc": "撇口束颈，丰肩长筒腹。以高超的“分水五色”青花皴染技法通景通绘传统戏曲故事人物与洞石修竹，青花深浅五色分明，宛若水墨宣纸画卷。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2010.429"
+        "accessionNo": "2010.429",
+        "glazeKey": "qinghua"
     },
     {
         "id": 12,
         "dynastyKey": "ming",
-        "modelIdx": 10,
+        "modelIdx": 7,
         "name": "明成化 · 景德镇御窑斗彩折枝花鸟杯",
         "kiln": "景德镇御器厂 · 成化御制",
         "level": "大明御窑彩瓷极高美学",
@@ -1049,12 +1060,13 @@ const archivePorcelains = [
         ],
         "desc": "小巧玲珑，胎薄如蝉翼。釉下以幽雅青花勾勒轮廓线，釉上填施红、绿、黄、赭多色软彩，色彩雅致柔和，抚之如婴儿肌肤，历代藏家推崇备至。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2010.429.2"
+        "accessionNo": "2010.429.2",
+        "glazeKey": "yuebai"
     },
     {
         "id": 13,
         "dynastyKey": "ming",
-        "modelIdx": 10,
+        "modelIdx": 2,
         "name": "明代 · 德化窑白釉达摩坐像 (何朝宗风范)",
         "kiln": "德化窑 · 福建泉州德化",
         "level": "东方艺术瑰宝 · 中国白 (Blanc de Chine)",
@@ -1068,12 +1080,13 @@ const archivePorcelains = [
         ],
         "desc": "达摩祖师广额深目，双手抱膝盘坐，神态入定沉穆。通体施纯净象牙白厚釉，胎釉浑然一体，衣纹折转如吴带当风，将硬质瓷土转化为柔滑丝绸。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "63.176"
+        "accessionNo": "63.176",
+        "glazeKey": "dingbai"
     },
     {
         "id": 14,
         "dynastyKey": "tang",
-        "modelIdx": 11,
+        "modelIdx": 12,
         "name": "唐代 · 盛唐三彩胡人骑马俑",
         "kiln": "巩义窑 / 西安长安南郊窑",
         "level": "大唐万国来朝盛世见证",
@@ -1087,7 +1100,8 @@ const archivePorcelains = [
         ],
         "desc": "陶土烧胎，施黄、绿、白三色铅釉。战马体魄矫健，四蹄驻立，马上骑士深目高鼻、戴幞头，釉彩自然交融流淌，定格大唐丝路万国交融之浩瀚气象。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "54.112"
+        "accessionNo": "54.112",
+        "glazeKey": "yuebai"
     },
     {
         "id": 15,
@@ -1106,7 +1120,8 @@ const archivePorcelains = [
         ],
         "desc": "短颈卷唇，丰肩鼓腹，平底无足。胎体细白致密，施纯白透明亮釉，表面光洁如冰雪覆照，与南方越窑青瓷并称“天下无贵贱通用之”。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2013.921"
+        "accessionNo": "2013.921",
+        "glazeKey": "dingbai"
     },
     {
         "id": 16,
@@ -1125,12 +1140,13 @@ const archivePorcelains = [
         ],
         "desc": "小口微侈，半球形腹如倒扣金钟，底部三团暗刻蟠螭纹。铜红釉在还原气氛中偶泛出微小的天然翠绿苔点，红绿相映，柔和若红霞晨曦，极难烧造。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "91.1.258"
+        "accessionNo": "91.1.258",
+        "glazeKey": "junhong"
     },
     {
         "id": 17,
         "dynastyKey": "qing",
-        "modelIdx": 0,
+        "modelIdx": 1,
         "name": "清康熙 · 御窑豇豆红釉文房笔洗",
         "kiln": "景德镇御窑厂",
         "level": "八大码文房案头御供重器",
@@ -1144,7 +1160,8 @@ const archivePorcelains = [
         ],
         "desc": "敛口宽底，浅圈足平削。全器满施高温铜红胶体釉，色泽粉润如桃花瓣，口沿隐现极细一线白胎（灯草口），底书青花“大清康熙年制”楷书六字款。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "24.80.252"
+        "accessionNo": "24.80.252",
+        "glazeKey": "junhong"
     },
     {
         "id": 18,
@@ -1163,12 +1180,13 @@ const archivePorcelains = [
         ],
         "desc": "大口折沿，圈足深厚。盘心以纯正五彩料绘腾云驾雾之五爪云龙戏珠，用笔挺拔刚劲，黑料勾线如铁，矾红与水绿亮丽沉着，盛清皇家威仪跃然盘上。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "14.40.117"
+        "accessionNo": "14.40.117",
+        "glazeKey": "dingbai"
     },
     {
         "id": 19,
         "dynastyKey": "qing",
-        "modelIdx": 4,
+        "modelIdx": 7,
         "name": "清乾隆 · 御制诗文粉彩山水轿瓶",
         "kiln": "景德镇御器厂 · 督陶官唐英承造",
         "level": "乾隆帝御乘随行陈设珍器",
@@ -1182,12 +1200,13 @@ const archivePorcelains = [
         ],
         "desc": "背面扁平带穿孔以便悬于皇家轿壁，正面以精细洋彩粉彩绘依山傍水之江南烟岚，中央以金彩与黑料书乾隆御制诗《咏轿瓶》，器物与帝王诗意互构。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "79.2.1157"
+        "accessionNo": "79.2.1157",
+        "glazeKey": "yuebai"
     },
     {
         "id": 20,
         "dynastyKey": "qing",
-        "modelIdx": 4,
+        "modelIdx": 7,
         "name": "清乾隆 · 御窑柠檬黄釉兽首衔环尊",
         "kiln": "景德镇御窑厂",
         "level": "清代宫廷祭地纯色礼器",
@@ -1201,12 +1220,13 @@ const archivePorcelains = [
         ],
         "desc": "仿古青铜尊造型，肩贴双兽面衔环。全器施低温锑黄釉，色泽鲜嫩纯正如新鲜柠檬，釉面极薄而均匀，专用于紫禁城地坛皇家大祭，明亮夺目。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "2019.261"
+        "accessionNo": "2019.261",
+        "glazeKey": "yuebai"
     },
     {
         "id": 21,
         "dynastyKey": "qing",
-        "modelIdx": 2,
+        "modelIdx": 7,
         "name": "清乾隆 · 御窑粉彩牡丹草虫图折沿盘",
         "kiln": "景德镇御器厂",
         "level": "清宫造办处画样典范",
@@ -1220,7 +1240,8 @@ const archivePorcelains = [
         ],
         "desc": "盘面以玻璃白打底，融汇西洋光影明暗技法渲染双色重瓣牡丹与翻飞蜻蜓，花瓣层层晕染，质感立体娇艳欲滴，代表清代彩瓷工艺之极境。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "24.80.198"
+        "accessionNo": "24.80.198",
+        "glazeKey": "yuebai"
     },
     {
         "id": 22,
@@ -1239,7 +1260,8 @@ const archivePorcelains = [
         ],
         "desc": "小口短颈丰肩。胎体极度洁白轻灵，施温润乳白厚釉，有如白糖之晶莹莹洁，腹部暗刻细若蛛丝之缠枝牡丹纹，迎光透视隐现粉红肉光，美如幻梦。",
         "museum": "克利夫兰艺术博物馆 (CMA)",
-        "accessionNo": "1947.62"
+        "accessionNo": "1947.62",
+        "glazeKey": "dingbai"
     },
     {
         "id": 23,
@@ -1258,7 +1280,8 @@ const archivePorcelains = [
         ],
         "desc": "葵瓣式折沿撇口，胎薄如纸，釉厚如玉。釉质泛出深邃冷青色，微带稀疏金黄开片，口沿微露紫黑胎色，足底支钉痕清晰，具宋代士大夫超尘风姿。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "25.69.53"
+        "accessionNo": "25.69.53",
+        "glazeKey": "fenqing"
     },
     {
         "id": 24,
@@ -1277,7 +1300,8 @@ const archivePorcelains = [
         ],
         "desc": "双系扁圆腹，器身在天蓝纯净底釉之上天然泼洒氧化铜红微晶，出窑时蓝如晴空万里、红似夕阳晚霞飞流直下，展现大自然烈火神工不可预测之天成造化。",
         "museum": "大都会艺术博物馆 (The Met)",
-        "accessionNo": "14.60.9"
+        "accessionNo": "14.60.9",
+        "glazeKey": "junhong"
     }
 ];
 

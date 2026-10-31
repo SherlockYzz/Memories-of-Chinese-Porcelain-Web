@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeRun('移动端菜单', setupMobileMenu);
     safeRun('首屏流金粒子', initHeroAmbientCanvas);
     safeRun('3D展馆', () => { if (typeof initThreeJS === 'function') initThreeJS(); });
+    safeRun('宋代点茶模拟器', initTeaWhiskingSimulator);
 
     const langToggleBtn = document.getElementById('lang-toggle');
     if (langToggleBtn && typeof toggleLanguage === 'function') {
@@ -1130,9 +1131,9 @@ function renderArchiveGrid() {
                 <p class="text-xs text-text-body font-light line-clamp-2 leading-relaxed">${item.desc}</p>
             </div>
             <div class="mt-3.5 pt-2.5 border-t border-border-light text-[11px] text-tianqing-deep flex items-center justify-between">
-                <span>查阅数字化研考档案</span>
-                <button onclick="event.stopPropagation(); loadComparisonModelTo3D(${item.modelIdx !== undefined ? item.modelIdx : 0})" class="text-amber-400 hover:underline font-serif-cn">
-                    3D全息检视 &rarr;
+                <span class="hover:underline">查阅数字化研考档案</span>
+                <button onclick="event.stopPropagation(); loadComparisonModelTo3D(${item.id})" class="text-amber-400 hover:text-amber-300 hover:underline font-serif-cn font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-cube text-[10px]"></i>3D全息检视 &rarr;
                 </button>
             </div>
         </div>
@@ -1202,9 +1203,7 @@ function openArchiveDetailModal(id) {
                 此器物造型沉穆端庄，其釉汁层层厚施，微观100倍显微镜下可见特征气泡层与矿物结晶，属两宋至明初皇家御用或数字孪生典范之作。
             </div>
             <div class="pt-2 flex justify-end">
-                <button onclick="closeUniversalModal(); loadComparisonModelTo3D(${item.modelIdx !== undefined ? item.modelIdx : 0});" class="px-5 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors">
-                    <i class="fa-solid fa-cube mr-1"></i>调入 3D 展馆立体观摩
-                </button>
+                <button onclick="closeUniversalModal(); loadComparisonModelTo3D(${item.id});" class="px-5 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-cube"></i>调入 3D 展馆立体观摩</button>
             </div>
         </div>
     `;
@@ -1520,12 +1519,50 @@ function renderPorcelainComparison() {
     `;
 }
 
-function loadComparisonModelTo3D(id) {
+function loadComparisonModelTo3D(targetId) {
+    let modelIdx = 0;
+    let glazeKey = 'tianqing';
+    let displayName = '馆藏器物';
+
+    if (typeof targetId === 'number' && typeof archivePorcelains !== 'undefined') {
+        const item = archivePorcelains.find(a => a.id === targetId);
+        if (item) {
+            modelIdx = item.modelIdx !== undefined ? item.modelIdx : 0;
+            glazeKey = item.glazeKey || 'tianqing';
+            displayName = item.name || displayName;
+        } else if (targetId >= 0 && targetId <= 12) {
+            modelIdx = targetId;
+        }
+    } else if (typeof targetId === 'number') {
+        modelIdx = targetId;
+    }
+
+    // 1. 确保展台重置为单器 360° 精鉴模式 (防止卡在全景展厅或剖切模式)
+    if (typeof switchExhibitionMode === 'function') {
+        switchExhibitionMode('inspector');
+    }
+    // 2. 如果当前开启了纯净沉浸模式，平滑恢复控制面板
+    if (typeof isZenMode !== 'undefined' && isZenMode && typeof toggleZenMode === 'function') {
+        toggleZenMode();
+    }
+    // 3. 调入对应器物三维孪生模型
     if (typeof loadPorcelainModel === 'function') {
-        loadPorcelainModel(id);
-        const galleryEl = document.getElementById('3d-gallery');
-        if (galleryEl) galleryEl.scrollIntoView({ behavior: 'smooth' });
-        showToast('✨ 已同步将该馆藏标准器调入 3D 展馆！');
+        loadPorcelainModel(modelIdx);
+    }
+    // 4. 同步切换对应时代典型 PBR 釉色
+    if (glazeKey && typeof switchGlaze === 'function') {
+        switchGlaze(glazeKey);
+    }
+    // 5. 优雅平滑滚动至 3D 数字展台可视中心 (自动抵消顶部吸顶导航栏高度)
+    const stageEl = document.getElementById('three-stage-container') || document.getElementById('3d-gallery');
+    if (stageEl) {
+        const topOffset = stageEl.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
+    // 6. 叩瓷听音并展示文博级雅致气泡提示
+    if (typeof playPorcelainChime === 'function') playPorcelainChime(2520);
+    if (typeof showToast === 'function') {
+        showToast(`🏛️ 已同步调入【${displayName}】至 3D 展馆，支持 360° 旋转研鉴！`);
     }
 }
 
