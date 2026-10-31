@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -1585,20 +1585,22 @@
     <i class="fa-solid fa-chevron-up text-sm"></i>
 </button>
 
-<!-- 核心脚本加载链路 (首屏模块优先加载，音频与点云数据按需调取) -->
-<script src="js/three.min.js"></script>
-<script src="js/GLTFLoader.js"></script>
-<script src="js/oriental-ambient.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/data.js"></script>
-<script src="js/three-scene.js"></script>
-<!-- v7.0 3D 画面升华层：必须紧跟 three-scene.js，在 app.js 之前 -->
-<script src="js/three-fx.js"></script>
-<script src="js/ai-recognition.js"></script>
-<script src="js/pottery-workshop.js"></script>
-<script src="js/app.js"></script>
-<!-- v7.0 微交互 / 稳定视口 -->
-<script src="js/ui-enhance.js"></script>
+<!-- 全站极速自包含运行核心 (首屏高聚合核心包，彻底消灭零散请求与排队卡顿) -->
+<script src="js/bundle-core.js"></script>
+<!-- 非首屏扩展大模块按需延后装载 (首屏网络带宽独享) -->
+<script>
+    function loadAsyncScript(src, cb) {
+        if (document.querySelector('script[src="' + src + '"]')) { if (cb) cb(); return; }
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = cb;
+        document.body.appendChild(s);
+    }
+    setTimeout(function() {
+        loadAsyncScript('js/pottery-workshop.js', function() { if (typeof initPotteryWorkshop === 'function') initPotteryWorkshop(); });
+        loadAsyncScript('js/ai-recognition.js', function() { if (typeof initAiRecognition === 'function') initAiRecognition(); });
+    }, 1200);
+</script>
 
 </body>
 </html>

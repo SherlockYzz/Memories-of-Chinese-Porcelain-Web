@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * 华夏器道 · 中国古代传统文化与古瓷数字化研鉴空间
  * 国际化多语言词条模块 (中/EN)
  */
@@ -110,7 +110,7 @@ const translations = {
         "notes.sectionSub": "Thermal stress fracture mechanics, Purple-Rim & Iron-Foot mineral genesis, and interactive scholar quiz",
         "about.title": "Curator's Statement · Digital Humanities & Heritage Engineering",
         "about.desc": "Chinese porcelain is the crystallization of earth, water, fire, and philosophical contemplation. Through WebGL PBR rendering, 3D photogrammetry, computer vision, and physical harmonic synthesis, we bridge eight millennia of ceramic civilization with modern digital interactivity.",
-        "footer.copyright": "© 2026 Vessels of China · Tongci Memory Digital Ceramic Research Space. All rights reserved.",
+        "footer.copyright": "© 2026 Vessels of China · Tianqing Nihuo Digital Ceramic Connoisseurship Space. All rights reserved.",
         "footer.slogan": "Embodying the Way through vessels, illuminating ancient wisdom with digital technology.",
         "nav.kilnmap": "Kiln Atlas",
         "nav.pottery": "Pottery Studio"
