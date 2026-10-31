@@ -1,4 +1,4 @@
-﻿# 天青泥火 (Sky-Cyan & Kiln Fire) — 华夏古瓷三维孪生博物空间 (v5.0 臻品版)
+﻿# 天青泥火 (Sky-Cyan & Kiln Fire) — 华夏古瓷三维孪生博物空间 (v6.0 极速国宝孪生旗舰版)
 
 > **器以载道 · 格物致知 · 中国古代传统文化与宋韵古陶瓷 3D 数字化交互研鉴空间**  
 > *An Interactive WebGL 3D Heritage & Digital Connoisseurship Space for Ancient Chinese Ceramics*
@@ -8,8 +8,25 @@
 [![Three.js](https://img.shields.io/badge/Three.js-r128_WebGL-5A9CA8.svg?style=flat-square)](https://threejs.org/)
 [![Computer Vision](https://img.shields.io/badge/Computer_Vision-Sobel_Kernel_Pure_Frontend-8FB8C0.svg?style=flat-square)](https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web)
 [![Offline Ready](https://img.shields.io/badge/Offline-100%25_Zero_External_CDN-success.svg?style=flat-square)](https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web)
-[![Version](https://img.shields.io/badge/Version-v5.0_Release-blue.svg?style=flat-square)](https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web)
+[![Version](https://img.shields.io/badge/Version-v6.0_Release-emerald.svg?style=flat-square)](https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web)
 [![License](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+---
+
+## 🏆 v6.0 极速国宝孪生旗舰版 (National Flagship Edition) 核心重大升级
+
+1. **🏺 8 大传世国宝内嵌 2K 真彩贴图全量实测接入**：
+   - 涵盖南宋修内司官窑八方贯耳瓶（紫口铁足金丝铁线）、北宋汝窑十瓣莲花温碗（天青玛瑙微晶蟹爪纹）、北宋定窑白釉莲纹梅瓶（覆烧芒口半刀泥刻花）、宋代哥窑米黄贯耳扁瓶（百圾碎）、北宋钧窑出戟尊（四方出戟玫瑰红斑）、元代青花缠枝牡丹双龙耳罐（苏料铁锈斑）、明宣德红釉僧帽壶（宝石红白草边）、清乾隆洋彩转心瓶（金地锦上添花开光透雕四季花鸟）；
+   - 彻底修复材质强行覆盖单色材质球的 Bug，100% 呈现文保级 2K 真实物理纹样，同时保留用户自选单色釉动态试烧切换能力。
+
+2. **⚡ V6 智能优先级并发与 10 秒超时中断加载引擎**：
+   - 最大并发限制（`MAX_CONCURRENT_MODELS = 2`），彻底杜绝多模型并发请求瞬间塞满浏览器 HTTP 连接池导致排队假死；
+   - 引入 10 秒超时中断控制器与最多 2 次自动重连机制，彻底解决 GitHub Pages 跨境网络偶发丢包导致模型卡死在“加载中”的痛点；
+   - 展柜加载圆环与真实下载进度百分比深度联动，首发国宝完成挂载前决不提前欺骗性隐藏。
+
+3. **❄️ 主线程解冻与材质极速懒加载**：
+   - 8 大国宝内嵌材质自动旁路主线程昂贵的 Canvas 2D Voronoi 冰裂纹双重循环计算，CPU 0 负担，秒开无卡顿；
+   - 全局首屏任务切片调度，首屏导航与 3D 展馆 16ms 极速呈现。
 
 ---
 

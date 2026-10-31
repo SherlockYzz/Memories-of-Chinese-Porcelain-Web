@@ -1,4 +1,4 @@
-﻿﻿﻿/**
+﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -505,62 +505,197 @@ const masterTreasuresMeta = {
     }
 };
 
+// --- 智能优先级并发加载引擎 (V6.0 旗舰版：最大并发2，支持即点即插队、10秒超时重试与真实进度上报) ---
+const MAX_CONCURRENT_MODELS = 2;
+const MODEL_TIMEOUT_MS = 10000;
+const MAX_MODEL_RETRIES = 2;
+
 const masterTreasuresCache = {};
 const masterTreasuresLoading = {};
-
-// --- 极致轻量秒级就绪引擎：带发布订阅回调队列，杜绝吞噬并发请求 ---
 const masterTreasureCallbacks = {};
+const masterTreasureRetries = {};
 
-function loadSingleMasterTreasure(idx, callback) {
+let activeLoadingCount = 0;
+const modelTaskQueue = []; // [{ idx, isPriority }]
+
+function updateThreeStageLoader(text, percent = null) {
+    const stageLoader = document.getElementById('three-stage-loader');
+    if (!stageLoader) return;
+    const textEl = stageLoader.querySelector('.loader-text');
+    if (textEl) {
+        textEl.textContent = percent !== null ? `${text} (${percent}%)` : text;
+    }
+}
+
+function hideThreeStageLoader() {
+    const stageLoader = document.getElementById('three-stage-loader');
+    if (!stageLoader || stageLoader.style.display === 'none') return;
+    stageLoader.style.transition = 'opacity 0.45s ease-out';
+    stageLoader.style.opacity = '0';
+    setTimeout(() => {
+        stageLoader.style.display = 'none';
+    }, 450);
+}
+
+function showThreeStageLoader(text = '天青国宝孪生中 · 正在载入...') {
+    const stageLoader = document.getElementById('three-stage-loader');
+    if (!stageLoader) return;
+    stageLoader.style.display = 'flex';
+    stageLoader.style.opacity = '1';
+    updateThreeStageLoader(text);
+}
+
+function processModelQueue() {
+    if (activeLoadingCount >= MAX_CONCURRENT_MODELS || modelTaskQueue.length === 0) return;
+
+    // 优先提取最高优先级的任务
+    const task = modelTaskQueue.shift();
+    if (!task) return;
+    const { idx } = task;
+
+    if (masterTreasuresCache[idx]) {
+        // 已有缓存，立即触发回调并继续处理后续队列
+        const cbs = masterTreasureCallbacks[idx] || [];
+        delete masterTreasureCallbacks[idx];
+        cbs.forEach(cb => { try { cb(masterTreasuresCache[idx]); } catch (e) {} });
+        processModelQueue();
+        return;
+    }
+
+    if (masterTreasuresLoading[idx]) {
+        processModelQueue();
+        return;
+    }
+
+    activeLoadingCount++;
+    masterTreasuresLoading[idx] = true;
+
+    const meta = masterTreasuresMeta[idx];
+    if (!meta) {
+        activeLoadingCount--;
+        masterTreasuresLoading[idx] = false;
+        processModelQueue();
+        return;
+    }
+
+    const loader = new THREE.GLTFLoader();
+    let isFinished = false;
+
+    // 10秒超时断流控制器
+    const timeoutTimer = setTimeout(() => {
+        if (isFinished) return;
+        isFinished = true;
+        activeLoadingCount--;
+        masterTreasuresLoading[idx] = false;
+
+        masterTreasureRetries[idx] = (masterTreasureRetries[idx] || 0) + 1;
+        if (masterTreasureRetries[idx] <= MAX_MODEL_RETRIES) {
+            console.warn(`[国宝加载超时重试] ${meta.name} (第 ${masterTreasureRetries[idx]} 次重试)`);
+            if (idx === currentModelIndex) {
+                updateThreeStageLoader(`网络微波重连中 · 正在重试 (${masterTreasureRetries[idx]}/${MAX_MODEL_RETRIES})`);
+            }
+            modelTaskQueue.unshift({ idx, isPriority: true });
+        } else {
+            console.warn(`[国宝加载最终超时] ${meta.name}，启用高精度几何兜底`);
+            if (idx === currentModelIndex) {
+                hideThreeStageLoader();
+                if (typeof showToast === 'function') {
+                    showToast(`⚠️ 传世文物【${meta.name}】网络传输延迟，已启用高精度几何孪生`);
+                }
+            }
+        }
+        processModelQueue();
+    }, MODEL_TIMEOUT_MS);
+
+    loader.load(
+        meta.path,
+        (gltf) => {
+            if (isFinished) return;
+            isFinished = true;
+            clearTimeout(timeoutTimer);
+            activeLoadingCount--;
+            masterTreasuresLoading[idx] = false;
+
+            if (gltf && gltf.scene) {
+                gltf.scene.traverse(c => {
+                    if (c.isMesh) {
+                        c.castShadow = true;
+                        c.receiveShadow = true;
+                        if (c.geometry) c.geometry.computeVertexNormals();
+                    }
+                });
+                masterTreasuresCache[idx] = gltf.scene;
+
+                // 执行此模型所有注册的回调
+                const cbs = masterTreasureCallbacks[idx] || [];
+                delete masterTreasureCallbacks[idx];
+                cbs.forEach(cb => { try { cb(gltf.scene); } catch (e) {} });
+
+                // 如果当前选中的正处于本模型且在单器视口中，立刻无缝挂载
+                if (currentModelIndex === idx && currentGroup) {
+                    loadPorcelainModel(idx, true);
+                    hideThreeStageLoader();
+                }
+            }
+            processModelQueue();
+        },
+        (xhr) => {
+            if (isFinished) return;
+            if (xhr.lengthComputable && xhr.total > 0 && idx === currentModelIndex) {
+                const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
+                updateThreeStageLoader('天青国宝孪生中 · 正在装载', percent);
+            }
+        },
+        (err) => {
+            if (isFinished) return;
+            isFinished = true;
+            clearTimeout(timeoutTimer);
+            activeLoadingCount--;
+            masterTreasuresLoading[idx] = false;
+            console.warn('[国宝模型载入异常] ' + meta.name + ':', err);
+
+            masterTreasureRetries[idx] = (masterTreasureRetries[idx] || 0) + 1;
+            if (masterTreasureRetries[idx] <= MAX_MODEL_RETRIES) {
+                modelTaskQueue.unshift({ idx, isPriority: true });
+            } else if (idx === currentModelIndex) {
+                hideThreeStageLoader();
+            }
+            processModelQueue();
+        }
+    );
+}
+
+function loadSingleMasterTreasure(idx, callback, isPriority = false) {
     if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
     if (masterTreasuresCache[idx]) {
         if (callback) callback(masterTreasuresCache[idx]);
         return;
     }
+
     if (!masterTreasureCallbacks[idx]) masterTreasureCallbacks[idx] = [];
     if (callback) masterTreasureCallbacks[idx].push(callback);
 
-    if (masterTreasuresLoading[idx]) return;
-    masterTreasuresLoading[idx] = true;
+    const existingIndex = modelTaskQueue.findIndex(t => t.idx === idx);
+    if (isPriority) {
+        if (existingIndex > -1) modelTaskQueue.splice(existingIndex, 1);
+        modelTaskQueue.unshift({ idx, isPriority: true });
+    } else if (existingIndex === -1 && !masterTreasuresLoading[idx]) {
+        modelTaskQueue.push({ idx, isPriority: false });
+    }
 
-    const meta = masterTreasuresMeta[idx];
-    if (!meta) return;
-
-    const loader = new THREE.GLTFLoader();
-    loader.load(meta.path, (gltf) => {
-        masterTreasuresLoading[idx] = false;
-        if (gltf && gltf.scene) {
-            gltf.scene.traverse(c => {
-                if (c.isMesh) {
-                    c.castShadow = true;
-                    c.receiveShadow = true;
-                    if (c.geometry) c.geometry.computeVertexNormals();
-                }
-            });
-            masterTreasuresCache[idx] = gltf.scene;
-            const cbs = masterTreasureCallbacks[idx] || [];
-            delete masterTreasureCallbacks[idx];
-            cbs.forEach(cb => { try { cb(gltf.scene); } catch(e){} });
-            if (currentModelIndex === idx && currentGroup) {
-                loadPorcelainModel(idx, true);
-            }
-        }
-    }, undefined, (err) => {
-        masterTreasuresLoading[idx] = false;
-        console.warn('[国宝模型载入提示] ' + meta.name + ':', err);
-    });
+    processModelQueue();
 }
 
 function preloadMasterTreasures(callback) {
-    // 华夏传世 8 大国宝高精烘焙资产总计仅 968KB，启动时全量并行预载入内存，彻底杜绝后续切换卡顿与占位体
-    const indices = [0, 1, 2, 3, 4, 5, 6, 7];
-    let loaded = 0;
-    indices.forEach(idx => {
-        loadSingleMasterTreasure(idx, () => {
-            loaded++;
-            if (loaded === indices.length && callback) callback();
+    // 优先保证首发 0 号展品独占带宽极速呈现
+    loadSingleMasterTreasure(0, (scene) => {
+        hideThreeStageLoader();
+        if (callback) callback(scene);
+        // 0 号就绪后，次级模型进入平滑队列（并发上限 2，不抢占主页面任何资源）
+        [1, 2, 3, 4, 5, 6, 7].forEach(idx => {
+            loadSingleMasterTreasure(idx, null, false);
         });
-    });
+    }, true);
 }
 
 const glazePalettes = {
@@ -1707,8 +1842,18 @@ function preloadScannedGLTFModels() {
 function buildGeometry(typeIndex, customGlaze = null) {
     const group = new THREE.Group();
     const gKey = customGlaze || currentGlazeIndex;
-    const glazeMat = getPorcelainMaterial(gKey, false);
-    const tiezuMat = getPorcelainMaterial(gKey, true);
+
+    // 材质懒加载辅助：针对 0~7 号内嵌 2K 真彩贴图国宝，彻底跳过主线程昂贵的 Voronoi 冰裂纹 Canvas 循环
+    let _glazeMat = null;
+    const getGlazeMat = () => {
+        if (!_glazeMat) _glazeMat = getPorcelainMaterial(gKey, false);
+        return _glazeMat;
+    };
+    let _tiezuMat = null;
+    const getTiezuMat = () => {
+        if (!_tiezuMat) _tiezuMat = getPorcelainMaterial(gKey, true);
+        return _tiezuMat;
+    };
     const activePlanes = (exhibitionMode === 'cutaway' && clipPlane) ? [clipPlane] : [];
     const goldMat = new THREE.MeshStandardMaterial({
         color: 0xd4af6a,
@@ -1746,7 +1891,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
                         child.material = origMat;
                     } else {
                         // 仅在用户手动点击左侧釉色盘切换为自选单色釉时，才动态覆盖
-                        const mat = glazeMat.clone();
+                        const mat = getGlazeMat().clone();
                         mat.side = THREE.DoubleSide;
                         mat.clippingPlanes = activePlanes;
                         mat.clipShadows = true;
@@ -1760,7 +1905,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
             if (typeIndex === 0) {
                 // 南宋官窑：紫金土露胎圈足印迹
                 const footRimGeo = new THREE.TorusGeometry(0.32, 0.016, 16, 64);
-                const footRimMesh = new THREE.Mesh(footRimGeo, tiezuMat);
+                const footRimMesh = new THREE.Mesh(footRimGeo, getTiezuMat());
                 footRimMesh.rotation.x = Math.PI / 2;
                 footRimMesh.position.set(0, 0.006, 0);
                 group.add(footRimMesh);
@@ -1788,11 +1933,13 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 group.add(goldRim);
             }
         } else {
+            showThreeStageLoader(`天青国宝孪生中 · 正在装载【${meta.name}】...`);
             loadSingleMasterTreasure(typeIndex, () => {
                 if (currentModelIndex === typeIndex && currentGroup) {
                     loadPorcelainModel(typeIndex, true);
+                    hideThreeStageLoader();
                 }
-            });
+            }, true);
             // 极速占位网格（以防网络首次拉取闪烁）
             const fbPts = [
                 new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
@@ -1800,7 +1947,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 new THREE.Vector2(0.28, meta.targetHeight || 2.15)
             ];
             const fbGeo = createSmoothVesselLathe(fbPts, null, 48);
-            const fbMesh = new THREE.Mesh(fbGeo, glazeMat);
+            const fbMesh = new THREE.Mesh(fbGeo, getGlazeMat());
             fbMesh.castShadow = fbMesh.receiveShadow = true;
             group.add(fbMesh);
         }
@@ -1859,7 +2006,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 new THREE.Vector2(0.34, 2.10), new THREE.Vector2(0.30, 2.12)
             ];
             const fbGeo = createSmoothVesselLathe(fallbackPts, null, 48);
-            const fbMesh = new THREE.Mesh(fbGeo, glazeMat);
+            const fbMesh = new THREE.Mesh(fbGeo, getGlazeMat());
             fbMesh.castShadow = fbMesh.receiveShadow = true;
             group.add(fbMesh);
         }
