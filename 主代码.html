@@ -1,4 +1,4 @@
-﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -11,9 +11,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
 
     <!-- Font Awesome 6 (本地静态加载) -->
-        <!-- 极速首屏预加载：第一时刻并行拉取 0 号国宝三维资产与渲染引擎 -->
-    <link rel="preload" href="models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb" as="fetch" crossorigin>
-    <link rel="preload" href="js/three.min.js" as="script">
     <link rel="stylesheet" href="css/font-awesome.min.css">
 
     <!-- 东方宋韵数字博物院样式系统 -->
@@ -315,7 +312,7 @@
             <div class="lg:col-span-7">
                 <div class="three-canvas-container" id="three-stage-container">
                     <!-- 3D 展馆首屏温润骨架屏加载过渡 -->
-                    <div id="three-stage-loader" class="three-stage-loader">
+                    <div id="three-stage-loader" class="three-stage-loader" style="display: none; opacity: 0;">
                         <div class="celadon-pulse-ring"></div>
                         <div class="loader-text font-serif-cn">天青凝色 · 正在载入器物三维模型</div>
                     </div>
@@ -1589,19 +1586,19 @@
 </button>
 
 <!-- 核心脚本加载链路 (首屏模块优先加载，音频与点云数据按需调取) -->
-<script src="js/three.min.js" defer></script>
-<script src="js/GLTFLoader.js" defer></script>
-<script src="js/oriental-ambient.js" defer></script>
-<script src="js/i18n.js" defer></script>
-<script src="js/data.js" defer></script>
-<script src="js/three-scene.js" defer></script>
+<script src="js/three.min.js"></script>
+<script src="js/GLTFLoader.js"></script>
+<script src="js/oriental-ambient.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/data.js"></script>
+<script src="js/three-scene.js"></script>
 <!-- v7.0 3D 画面升华层：必须紧跟 three-scene.js，在 app.js 之前 -->
-<script src="js/three-fx.js" defer></script>
-<script src="js/ai-recognition.js" defer></script>
-<script src="js/pottery-workshop.js" defer></script>
-<script src="js/app.js" defer></script>
+<script src="js/three-fx.js"></script>
+<script src="js/ai-recognition.js"></script>
+<script src="js/pottery-workshop.js"></script>
+<script src="js/app.js"></script>
 <!-- v7.0 微交互 / 稳定视口 -->
-<script src="js/ui-enhance.js" defer></script>
+<script src="js/ui-enhance.js"></script>
 
 </body>
 </html>

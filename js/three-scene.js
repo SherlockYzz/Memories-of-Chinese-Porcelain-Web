@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -1683,23 +1683,32 @@ function buildGeometry(typeIndex, customGlaze = null) {
             });
             group.add(cloned);
         } else {
-            // 严禁在九柜展厅遍历或非当前器物渲染时弹窗阻断！
-            if (typeIndex === currentModelIndex && exhibitionMode !== 'hall') {
-                showThreeStageLoader(`天青载润 · 正在载入【${meta.name}】...`);
-            }
+            // 彻底杜绝遮罩阻断与转圈等待：0ms 瞬间生成文博级程序化器物孪生体上台渲染！
             loadSingleMasterTreasure(typeIndex, (cachedScene) => {
                 if (currentModelIndex === typeIndex && exhibitionMode !== 'hall') {
                     loadPorcelainModel(typeIndex, true);
                     hideThreeStageLoader();
                 }
             }, (typeIndex === currentModelIndex));
-            // 几何轮廓占位网格（模型加载期间平滑过渡）
-            const fbPts = [
-                new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
-                new THREE.Vector2(0.48, 0.6), new THREE.Vector2(0.36, 1.5),
-                new THREE.Vector2(0.28, meta.targetHeight || 2.15)
-            ];
-            const fbGeo = createSmoothVesselLathe(fbPts, null, 48);
+
+            // 根据器物特征生成对应的程序化温润骨架
+            let fbPts;
+            if (typeIndex === 1) { // 莲花碗
+                fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.42, 0), new THREE.Vector2(0.72, 0.45), new THREE.Vector2(0.95, 0.95)];
+            } else if (typeIndex === 2) { // 梅瓶
+                fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.35, 0), new THREE.Vector2(0.55, 1.2), new THREE.Vector2(0.68, 1.8), new THREE.Vector2(0.30, 2.2), new THREE.Vector2(0.20, 2.35)];
+            } else if (typeIndex === 4) { // 出戟尊
+                fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.45, 0), new THREE.Vector2(0.58, 0.8), new THREE.Vector2(0.42, 1.4), new THREE.Vector2(0.70, 2.2)];
+            } else if (typeIndex === 5) { // 青花罐
+                fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.48, 0), new THREE.Vector2(0.78, 0.8), new THREE.Vector2(0.85, 1.3), new THREE.Vector2(0.55, 1.85)];
+            } else { // 0号八方贯耳瓶及标准立件
+                fbPts = [
+                    new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
+                    new THREE.Vector2(0.48, 0.6), new THREE.Vector2(0.36, 1.5),
+                    new THREE.Vector2(0.28, meta.targetHeight || 2.15)
+                ];
+            }
+            const fbGeo = createSmoothVesselLathe(fbPts, (typeIndex === 0 ? (a, y) => 1.0 + Math.cos(a * 8) * 0.04 : null), 48);
             const fbMesh = new THREE.Mesh(fbGeo, getGlazeMat());
             fbMesh.castShadow = fbMesh.receiveShadow = true;
             group.add(fbMesh);

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 中国古代传统文化与古瓷数字化研鉴空间
  * 学术研考、文博档案、历史通史与非遗工序全景核心数据库
  */
@@ -831,7 +831,7 @@ const archivePorcelains = [
         "kiln": "南宋官窑 · 杭州修内司/郊坛下",
         "level": "国家一级文物 · 馆藏珍品",
         "size": "通高 34.0 cm · 口径 8.5 cm · 腹径 21.6 cm",
-        "img": "./images/collection/porcelain_01.jpg",
+        "img": "./images/collection/porcelain_01.webp",
         "tags": [
             "紫口铁足",
             "百极碎冰裂",
@@ -851,7 +851,7 @@ const archivePorcelains = [
         "kiln": "定窑 · 河北曲阳涧磁村",
         "level": "宋韵白瓷极简典范",
         "size": "高 3.2 cm · 口径 16.8 cm · 足径 5.8 cm",
-        "img": "./images/collection/porcelain_02.jpg",
+        "img": "./images/collection/porcelain_02.webp",
         "tags": [
             "覆烧芒口",
             "象牙白暖釉",
@@ -871,7 +871,7 @@ const archivePorcelains = [
         "kiln": "钧窑 · 河南禹州神垕钧台",
         "level": "宋代五大名窑瑰宝",
         "size": "高 6.5 cm · 口径 10.5 cm",
-        "img": "./images/collection/porcelain_03.jpg",
+        "img": "./images/collection/porcelain_03.webp",
         "tags": [
             "天蓝乳浊",
             "蚯蚓走泥",
@@ -891,7 +891,7 @@ const archivePorcelains = [
         "kiln": "龙泉窑 · 浙江龙泉大窑",
         "level": "宋代青瓷极品传世重器",
         "size": "通高 29.7 cm · 口径 5.6 cm · 足径 8.2 cm",
-        "img": "./images/collection/porcelain_04.jpg",
+        "img": "./images/collection/porcelain_04.webp",
         "tags": [
             "粉青如翠",
             "金缮惜物",
@@ -911,7 +911,7 @@ const archivePorcelains = [
         "kiln": "建窑 · 福建建阳水吉芦花坪",
         "level": "宋代茶道第一圣器",
         "size": "高 6.4 cm · 口径 11.7 cm · 足径 4.0 cm",
-        "img": "./images/collection/porcelain_05.jpg",
+        "img": "./images/collection/porcelain_05.webp",
         "tags": [
             "银兔毫",
             "重铁黑胎",
@@ -931,7 +931,7 @@ const archivePorcelains = [
         "kiln": "吉州窑 · 江西吉安永和镇",
         "level": "民间窑变与剪纸巧思之极",
         "size": "高 6.7 cm · 口径 12.7 cm",
-        "img": "./images/collection/porcelain_06.jpg",
+        "img": "./images/collection/porcelain_06.webp",
         "tags": [
             "剪纸贴花",
             "玳瑁斑",
@@ -951,7 +951,7 @@ const archivePorcelains = [
         "kiln": "磁州窑 · 河北磁县观台镇",
         "level": "北方民窑水墨文人意趣巅峰",
         "size": "高 15.9 cm · 宽 18.7 cm · 长 43.5 cm",
-        "img": "./images/collection/porcelain_07.jpg",
+        "img": "./images/collection/porcelain_07.webp",
         "tags": [
             "白地黑花",
             "水墨画风",
@@ -971,7 +971,7 @@ const archivePorcelains = [
         "kiln": "耀州窑 · 陕西铜川黄堡镇",
         "level": "北方刻花青瓷冠绝天下之器",
         "size": "高 6.0 cm · 口径 18.1 cm",
-        "img": "./images/collection/porcelain_08.jpg",
+        "img": "./images/collection/porcelain_08.webp",
         "tags": [
             "橄榄青翠",
             "印花婴戏",
@@ -991,7 +991,7 @@ const archivePorcelains = [
         "kiln": "景德镇窑 · 江西景德镇湖田窑",
         "level": "宋代影青温润如玉标准器",
         "size": "高 18.1 cm · 腹径 11.7 cm",
-        "img": "./images/collection/porcelain_09.jpg",
+        "img": "./images/collection/porcelain_09.webp",
         "tags": [
             "温润影青",
             "薄胎透光",
@@ -1011,7 +1011,7 @@ const archivePorcelains = [
         "kiln": "御器厂前身 · 浮梁瓷局",
         "level": "元青花丝路航海雄浑代表",
         "size": "高 34.3 cm · 腹径 28.9 cm · 口径 14.3 cm",
-        "img": "./images/collection/porcelain_10.jpg",
+        "img": "./images/collection/porcelain_10.webp",
         "tags": [
             "苏麻离青",
             "铁锈结晶",
@@ -1031,7 +1031,7 @@ const archivePorcelains = [
         "kiln": "景德镇民窑巅峰 · 文人瓷画",
         "level": "明末清初文人青花代表作",
         "size": "高 44.5 cm · 口径 12.2 cm",
-        "img": "./images/collection/porcelain_11.jpg",
+        "img": "./images/collection/porcelain_11.webp",
         "tags": [
             "分水皴染",
             "戏曲故事",
@@ -1051,7 +1051,7 @@ const archivePorcelains = [
         "kiln": "景德镇御器厂 · 成化御制",
         "level": "大明御窑彩瓷极高美学",
         "size": "高 4.5 cm · 口径 7.2 cm",
-        "img": "./images/collection/porcelain_12.jpg",
+        "img": "./images/collection/porcelain_12.webp",
         "tags": [
             "成化斗彩",
             "填彩温和",
@@ -1071,7 +1071,7 @@ const archivePorcelains = [
         "kiln": "德化窑 · 福建泉州德化",
         "level": "东方艺术瑰宝 · 中国白 (Blanc de Chine)",
         "size": "高 29.8 cm · 宽 19.0 cm · 进深 14.0 cm",
-        "img": "./images/collection/porcelain_13.jpg",
+        "img": "./images/collection/porcelain_13.webp",
         "tags": [
             "中国白",
             "象牙白玉质",
@@ -1091,7 +1091,7 @@ const archivePorcelains = [
         "kiln": "巩义窑 / 西安长安南郊窑",
         "level": "大唐万国来朝盛世见证",
         "size": "高 38.1 cm · 宽 10.8 cm · 长 33.7 cm",
-        "img": "./images/collection/porcelain_14.jpg",
+        "img": "./images/collection/porcelain_14.webp",
         "tags": [
             "唐三彩",
             "盛唐气象",
@@ -1111,7 +1111,7 @@ const archivePorcelains = [
         "kiln": "邢窑 · 河北邢台临城/内丘",
         "level": "“如银似雪”北方白瓷祖庭标准器",
         "size": "高 19.4 cm · 腹径 19.7 cm · 口径 10.2 cm",
-        "img": "./images/collection/porcelain_15.jpg",
+        "img": "./images/collection/porcelain_15.webp",
         "tags": [
             "如银类雪",
             "透影白瓷",
@@ -1131,7 +1131,7 @@ const archivePorcelains = [
         "kiln": "景德镇御窑 · 康熙藏春书屋文房",
         "level": "清代官窑单色釉最高名品",
         "size": "高 8.7 cm · 腹径 12.9 cm",
-        "img": "./images/collection/porcelain_16.jpg",
+        "img": "./images/collection/porcelain_16.webp",
         "tags": [
             "豇豆红",
             "美人醉",
@@ -1151,7 +1151,7 @@ const archivePorcelains = [
         "kiln": "景德镇御窑厂",
         "level": "八大码文房案头御供重器",
         "size": "高 3.8 cm · 口径 11.5 cm",
-        "img": "./images/collection/porcelain_17.jpg",
+        "img": "./images/collection/porcelain_17.webp",
         "tags": [
             "案头雅玩",
             "桃花片",
@@ -1171,7 +1171,7 @@ const archivePorcelains = [
         "kiln": "景德镇御窑厂",
         "level": "康熙硬彩五彩皇家重器",
         "size": "口径 32.5 cm · 高 6.2 cm",
-        "img": "./images/collection/porcelain_18.jpg",
+        "img": "./images/collection/porcelain_18.webp",
         "tags": [
             "康熙五彩",
             "硬彩刚健",
@@ -1191,7 +1191,7 @@ const archivePorcelains = [
         "kiln": "景德镇御器厂 · 督陶官唐英承造",
         "level": "乾隆帝御乘随行陈设珍器",
         "size": "通高 22.9 cm · 宽 11.4 cm · 厚 7.0 cm",
-        "img": "./images/collection/porcelain_19.jpg",
+        "img": "./images/collection/porcelain_19.webp",
         "tags": [
             "御制诗文",
             "乾隆粉彩",
@@ -1211,7 +1211,7 @@ const archivePorcelains = [
         "kiln": "景德镇御窑厂",
         "level": "清代宫廷祭地纯色礼器",
         "size": "高 26.5 cm · 口径 14.2 cm",
-        "img": "./images/collection/porcelain_20.jpg",
+        "img": "./images/collection/porcelain_20.webp",
         "tags": [
             "柠檬黄",
             "锑黄低温釉",
@@ -1231,7 +1231,7 @@ const archivePorcelains = [
         "kiln": "景德镇御器厂",
         "level": "清宫造办处画样典范",
         "size": "口径 20.8 cm · 高 4.1 cm",
-        "img": "./images/collection/porcelain_21.jpg",
+        "img": "./images/collection/porcelain_21.webp",
         "tags": [
             "洋彩粉彩",
             "没骨画法",
@@ -1251,7 +1251,7 @@ const archivePorcelains = [
         "kiln": "景德镇御器厂 · 永乐御制",
         "level": "大明甜白釉冠绝万代之尊",
         "size": "通高 31.8 cm · 口径 5.4 cm · 足径 10.2 cm",
-        "img": "./images/collection/porcelain_22.jpg",
+        "img": "./images/collection/porcelain_22.webp",
         "tags": [
             "甜白釉",
             "半脱胎",
@@ -1271,7 +1271,7 @@ const archivePorcelains = [
         "kiln": "南宋官窑 · 杭州凤凰山",
         "level": "南宋行在内廷极品",
         "size": "高 3.5 cm · 口径 17.5 cm",
-        "img": "./images/collection/porcelain_23.jpg",
+        "img": "./images/collection/porcelain_23.webp",
         "tags": [
             "葵瓣折沿",
             "聚沫攒珠",
@@ -1291,7 +1291,7 @@ const archivePorcelains = [
         "kiln": "钧窑 · 河南禹州神垕",
         "level": "宋代窑变极品神物",
         "size": "高 21.2 cm · 腹宽 15.5 cm",
-        "img": "./images/collection/porcelain_24.jpg",
+        "img": "./images/collection/porcelain_24.webp",
         "tags": [
             "双系穿带",
             "红蓝相映",
