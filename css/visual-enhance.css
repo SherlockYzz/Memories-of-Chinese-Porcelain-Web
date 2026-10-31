@@ -1,0 +1,462 @@
+﻿/**
+ * ============================================================================
+ * 天青泥火 · visual-enhance.css  (v7.0 宋韵文博视觉重塑层)
+ * ----------------------------------------------------------------------------
+ * 加载顺序：必须在 css/style.css 之后。仅「追加 / 覆盖」，不删除任何原选择器。
+ * 回退：移除 index.html 中对应 <link> 即可恢复旧版。
+ *
+ * 目录
+ *   1. 设计令牌：字体栈 / 缓动 / 金丝流光角度
+ *   2. 东方古典排版：衬线、字距、行距、标点挤压
+ *   3. 雨过天青毛玻璃 + 金丝流光边框 + 砚墨暗纹
+ *   4. 朱红印章
+ *   5. 3D 展台：暗角胶片颗粒 / 热点标签外挂 / 加载环
+ *   6. 模态框与 100x 显微镜目镜
+ *   7. 微交互：按键微抬升、墨点涟漪、焦点环
+ *   8. 移动端沉浸：dvh / 安全区 / 触控
+ *   9. 滚动入场、滚动条、选区
+ *  10. 减少动态偏好
+ * ============================================================================
+ */
+
+/* ───────────────── 1. 设计令牌 ───────────────── */
+:root {
+    --font-serif-cn: 'Noto Serif SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'STSong', 'Source Han Serif', 'SimSun', 'FangSong', serif;
+    --font-kai: 'Kaiti SC', 'STKaiti', 'KaiTi', 'BiauKai', 'Noto Serif SC', serif;
+    --ease-ink: cubic-bezier(0.22, 1, 0.36, 1);       /* 墨入宣纸：快入慢收 */
+    --ease-jade: cubic-bezier(0.45, 0.05, 0.2, 1);
+    --gold-line: rgba(214, 177, 106, 0.55);
+    --glass-celadon: linear-gradient(150deg, rgba(168, 208, 216, 0.13) 0%, rgba(20, 34, 42, 0.86) 46%, rgba(8, 13, 18, 0.92) 100%);
+    --ink-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+    --vh-safe: 100vh;
+}
+@supports (height: 100dvh) { :root { --vh-safe: 100dvh; } }
+
+/* 金丝流光角度（Chrome / Safari 16.4+ 支持；不支持时为静态金边） */
+@property --gold-ang {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+@keyframes goldSweep { to { --gold-ang: 360deg; } }
+
+/* ───────────────── 2. 东方古典排版 ───────────────── */
+body {
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    line-break: strict;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    hanging-punctuation: allow-end;
+}
+.font-serif-cn,
+h1, h2, h3, h4,
+.hero-title-gradient,
+.modal-content-lg h3 {
+    font-family: var(--font-serif-cn) !important;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+}
+h1, .hero-title-gradient { letter-spacing: 0.18em; line-height: 1.32; font-weight: 700; }
+h2 { letter-spacing: 0.14em; line-height: 1.4; text-wrap: balance; }
+h3, h4 { letter-spacing: 0.1em; line-height: 1.5; text-wrap: balance; }
+
+/* 正文：两端对齐 + 中文标点避头尾 + 孤字回避 */
+p, .text-text-body, .feature-card p {
+    text-wrap: pretty;
+}
+.feature-card p, #microscope-desc-card, #3d-model-info p, .modal-content-lg p {
+    text-align: justify;
+    text-justify: inter-character;
+    line-height: 1.85;
+    letter-spacing: 0.035em;
+}
+
+/* 英文 / 数字副标题：宽字距小型大写，营造博物馆图录的西式对仗 */
+.font-mono { letter-spacing: 0.14em; font-variant-numeric: tabular-nums; }
+.tracking-widest { letter-spacing: 0.22em !important; }
+
+/* 题跋工具类：竖排书法落款，可用于 HTML 中任意短句 <span class="tiba">… */
+.tiba {
+    font-family: var(--font-kai);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.4em;
+    line-height: 1.6;
+    color: var(--gold-accent);
+    opacity: 0.85;
+}
+
+/* 器物考据卡片：标题—副标题—正文三级节奏 */
+#3d-model-info h3, #3d-model-info h4 { letter-spacing: 0.12em; }
+#3d-model-info .font-serif-cn { font-feature-settings: 'palt' 0; }
+
+/* ───────────────── 3. 毛玻璃 + 金丝流光 + 砚墨暗纹 ───────────────── */
+.mode-switch-group,
+.lighting-lab-overlay,
+.vessel-comparison-dock,
+.canvas-quick-toolbar,
+.hero-hotspot-tag {
+    background-image: var(--ink-noise), var(--glass-celadon) !important;
+    background-blend-mode: soft-light, normal;
+    background-size: 160px 160px, auto;
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.42),
+        0 2px 6px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.35) !important;
+}
+.mode-switch-group, .lighting-lab-overlay, .vessel-comparison-dock, .modal-content-lg { position: relative; }
+.lighting-lab-overlay, .vessel-comparison-dock { position: absolute; }
+
+/* 金丝流光边框：mask 掏空中间，仅露出 1px 边 */
+.mode-switch-group::before,
+.lighting-lab-overlay::before,
+.vessel-comparison-dock::before,
+.modal-content-lg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--gold-ang),
+        rgba(214, 177, 106, 0.12) 0deg,
+        rgba(214, 177, 106, 0.12) 250deg,
+        rgba(243, 217, 158, 0.95) 300deg,
+        rgba(214, 177, 106, 0.12) 340deg,
+        rgba(214, 177, 106, 0.12) 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    animation: goldSweep 9s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+.modal-content-lg { background-image: var(--ink-noise); background-size: 160px; background-blend-mode: soft-light; }
+
+/* feature-card：鼠标跟随的"釉光"高光（由 ui-enhance.js 写入 --mx / --my） */
+.feature-card { isolation: isolate; }
+.feature-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, -20%), rgba(214, 177, 106, 0.14), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-ink);
+    pointer-events: none;
+    z-index: 0;
+}
+.feature-card:hover::after { opacity: 1; }
+.feature-card > * { position: relative; z-index: 1; }
+
+/* 模式切换按钮：选中态更像一枚"玉牌" */
+.mode-switch-btn { letter-spacing: 0.1em; position: relative; overflow: hidden; }
+.mode-switch-btn.active {
+    background: linear-gradient(160deg, #4a8e9c 0%, #2c6573 55%, #21505c 100%) !important;
+    box-shadow: 0 3px 14px rgba(90, 156, 168, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+}
+
+/* ───────────────── 4. 朱红印章 ───────────────── */
+.hero-seal-stamp,
+.seal-stamp {
+    background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.18), transparent 55%),
+        linear-gradient(145deg, #c0403a 0%, #9a2a26 55%, #7d1f1c 100%) !important;
+    color: #fbeed4 !important;
+    font-family: var(--font-kai) !important;
+    font-weight: 700;
+    letter-spacing: 0.2em !important;
+    border: none !important;
+    border-radius: 3px !important;
+    outline: 1px solid rgba(255, 232, 196, 0.55);
+    outline-offset: -3px;
+    box-shadow: 0 2px 8px rgba(130, 30, 26, 0.38), inset 0 0 6px rgba(70, 8, 6, 0.55) !important;
+    transform: rotate(-2.2deg);
+    text-shadow: 0 0 1px rgba(60, 4, 2, 0.6);
+    filter: url(#ink-rough);                         /* 朱砂印泥毛边，滤镜由 ui-enhance.js 注入 */
+}
+.brand-seal {
+    border-radius: 6px !important;
+    background: linear-gradient(145deg, #3f8796, #1d4954) !important;
+    font-family: var(--font-kai);
+}
+.brand-seal::after { font-family: var(--font-kai) !important; }
+
+/* ───────────────── 5. 3D 展台 ───────────────── */
+.three-canvas-container {
+    /* 与 three-fx.js 的背景渐变同色系，加载前后无色跳 */
+    background: radial-gradient(ellipse at 50% 28%, #2b3d44 0%, #16232a 55%, #0b1317 100%) !important;
+    border: 1px solid rgba(214, 177, 106, 0.5) !important;
+    box-shadow:
+        0 24px 60px rgba(8, 16, 20, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        inset 0 0 0 1px rgba(214, 177, 106, 0.12),
+        inset 0 0 80px rgba(0, 0, 0, 0.55) !important;
+    touch-action: none;                              /* 移动端：画布内单指旋转不再被页面滚动抢走 */
+    -webkit-tap-highlight-color: transparent;
+    contain: layout paint;
+}
+/* 暗角：压住四周、聚焦中央器物；胶片颗粒单独一层，极低不透明度 */
+.three-canvas-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 46%, transparent 52%, rgba(2, 6, 9, 0.48) 100%);
+    border-radius: inherit;
+}
+.three-canvas-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: var(--ink-noise) 0 0 / 160px;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    border-radius: inherit;
+}
+.three-canvas-container[data-env="kiln"]::after {
+    background: radial-gradient(ellipse at 50% 46%, transparent 45%, rgba(40, 8, 2, 0.55) 100%);
+}
+#three-canvas { touch-action: none; outline: none; }
+
+/* 全屏：用 dvh，消除地址栏伸缩造成的底部空白 / 抖动 */
+.three-canvas-container.fullscreen-mode {
+    height: var(--vh-safe) !important;
+    height: 100dvh !important;
+    padding-top: env(safe-area-inset-top);
+}
+
+/* 热点标签：外挂式（由 three-fx.js 根据屏幕位置加 hs-left / hs-right），不再压在瓶身上 */
+.vessel-3d-hotspot {
+    padding: 4px 12px 4px 9px;
+    font-family: var(--font-serif-cn);
+    letter-spacing: 0.08em;
+    background-image: var(--glass-celadon) !important;
+    transition: opacity 0.35s var(--ease-ink), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    will-change: left, top;
+}
+.vessel-3d-hotspot.hs-right,
+.vessel-3d-hotspot:not(.hs-left) { transform: translate(-12px, -50%); }
+.vessel-3d-hotspot.hs-left { flex-direction: row-reverse; padding: 4px 9px 4px 12px; transform: translate(calc(-100% + 12px), -50%); }
+.vessel-3d-hotspot.hs-right:hover, .vessel-3d-hotspot:not(.hs-left):hover { transform: translate(-12px, -50%) scale(1.06); }
+.vessel-3d-hotspot.hs-left:hover { transform: translate(calc(-100% + 12px), -50%) scale(1.06); }
+.vessel-3d-hotspot .pulse-dot { position: relative; flex: none; }
+.vessel-3d-hotspot .pulse-dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-light);
+    opacity: 0;
+    animation: hotspotRing 2.6s var(--ease-ink) infinite;
+}
+@keyframes hotspotRing { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(1.7); opacity: 0; } }
+
+/* 窄屏收缩态：仅显示光点，点按 / 悬停 / 聚焦时展开文字 */
+.vessel-3d-hotspot.hs-compact { padding: 6px; gap: 0; }
+.vessel-3d-hotspot.hs-compact > span:last-child { max-width: 0; overflow: hidden; opacity: 0; transition: max-width 0.35s var(--ease-ink), opacity 0.25s ease, margin 0.3s ease; }
+.vessel-3d-hotspot.hs-compact:hover > span:last-child,
+.vessel-3d-hotspot.hs-compact:focus-visible > span:last-child { max-width: 220px; opacity: 1; margin-left: 6px; }
+.vessel-3d-hotspot.hs-compact:hover, .vessel-3d-hotspot.hs-compact:focus-visible { z-index: 5; }
+
+/* 加载环：天青渐变描边 */
+.celadon-pulse-ring {
+    border: 2px solid rgba(143, 184, 192, 0.18) !important;
+    border-top-color: #bfe3ea !important;
+    border-right-color: rgba(229, 200, 136, 0.7) !important;
+    box-shadow: 0 0 18px rgba(143, 184, 192, 0.25);
+}
+.three-stage-loader { background: radial-gradient(circle at 50% 45%, rgba(24, 40, 48, 0.94), rgba(7, 12, 16, 0.96)) !important; }
+.loader-text { font-family: var(--font-serif-cn); letter-spacing: 0.28em !important; }
+
+/* 提示条：衬线 + 金边 + 自带入场弹性 */
+#toast {
+    top: calc(env(safe-area-inset-top, 0px) + 78px) !important;
+    font-family: var(--font-serif-cn) !important;
+    letter-spacing: 0.08em;
+    max-width: min(92vw, 640px);
+    text-align: center;
+    background-image: var(--glass-celadon) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+/* ───────────────── 6. 模态框与 100x 显微镜目镜 ───────────────── */
+.modal-backdrop {
+    background:
+        radial-gradient(ellipse at 50% 40%, rgba(24, 44, 52, 0.55), rgba(4, 8, 11, 0.86) 75%) !important;
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1.25rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+}
+.modal-content-lg {
+    max-height: min(88vh, 880px);
+    max-height: min(88dvh, 880px);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    transform: translateY(22px) scale(0.965);
+    filter: blur(6px);
+    opacity: 0;
+    transition: transform 0.55s var(--ease-ink), opacity 0.35s ease, filter 0.45s ease;
+    border-radius: 22px;
+    border-color: rgba(214, 177, 106, 0.45);
+}
+.modal-backdrop.active .modal-content-lg { transform: none; filter: none; opacity: 1; }
+
+/* 显微镜镜筒：黄铜双环 + 刻度环 + 玻璃反光 + 暗角 */
+.microscope-lens-viewport {
+    width: clamp(250px, 64vw, 340px);
+    height: clamp(250px, 64vw, 340px);
+    border: 0 !important;
+    background: #05090c;
+    box-shadow:
+        0 0 0 5px #20272d,
+        0 0 0 6px rgba(214, 177, 106, 0.85),
+        0 0 0 10px #0f1418,
+        0 0 0 11px rgba(214, 177, 106, 0.35),
+        0 0 0 14px rgba(20, 26, 31, 0.9),
+        inset 0 0 60px rgba(0, 0, 0, 0.85),
+        0 22px 46px rgba(0, 0, 0, 0.5) !important;
+    isolation: isolate;
+}
+.microscope-lens-viewport::before {          /* 刻度环 */
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background: repeating-conic-gradient(from -0.4deg, rgba(243, 217, 158, 0.55) 0 0.8deg, transparent 0.8deg 6deg);
+    -webkit-mask: radial-gradient(circle, transparent 90%, #000 90.5%, #000 95%, transparent 95.5%);
+    mask: radial-gradient(circle, transparent 90%, #000 90.5%, #000 95%, transparent 95.5%);
+    opacity: 0.8;
+}
+.microscope-lens-viewport::after {           /* 暗角 + 玻璃反光 */
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: 50%;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 28%, transparent 42%),
+        radial-gradient(circle, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
+}
+.modal-backdrop.active .microscope-lens-viewport { animation: lensIris 0.85s var(--ease-ink) both; }
+@keyframes lensIris { from { clip-path: circle(4% at 50% 50%); filter: brightness(2.2); } to { clip-path: circle(75% at 50% 50%); filter: none; } }
+
+#microscope-desc-card, #microscope-preset-tabs button { font-family: var(--font-serif-cn); }
+#microscope-preset-tabs button { letter-spacing: 0.08em; transition: all 0.25s var(--ease-ink); }
+
+/* 研学手记 / 命令面板同源质感 */
+#study-notebook-panel, #command-palette-panel {
+    background-image: var(--ink-noise);
+    background-size: 160px;
+    background-blend-mode: soft-light;
+}
+
+/* ───────────────── 7. 微交互 ───────────────── */
+@media (hover: hover) {
+    .mode-switch-btn:hover, .scene-env-btn:hover, .ambient-btn:hover, .archive-dynasty-btn:hover,
+    .brush-style-btn:hover, .history-node-btn:hover, .canvas-quick-toolbar button:hover {
+        transform: translateY(-1.5px);
+    }
+}
+.mode-switch-btn, .scene-env-btn, .ambient-btn, .archive-dynasty-btn, .brush-style-btn,
+.history-node-btn, .canvas-quick-toolbar button, .model-btn-scroll button, .craft-chapter-btn {
+    transition: transform 0.28s var(--ease-ink), background 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.3s ease !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.mode-switch-btn:active, .scene-env-btn:active, .ambient-btn:active, .archive-dynasty-btn:active,
+.brush-style-btn:active, .history-node-btn:active, .canvas-quick-toolbar button:active,
+.model-btn-scroll button:active, .craft-chapter-btn:active {
+    transform: translateY(1px) scale(0.965) !important;
+    transition-duration: 0.08s !important;
+}
+/* 器型按钮被按下 → 瓷器微震颤（纯 CSS 版；3D 侧同时由 ui-enhance.js 触发叩击微震） */
+.model-btn-scroll button:active { animation: porcelainTremor 0.32s linear; }
+@keyframes porcelainTremor {
+    0%, 100% { translate: 0 0; } 20% { translate: -1.2px 0; } 40% { translate: 1.2px 0; } 60% { translate: -0.8px 0; } 80% { translate: 0.6px 0; }
+}
+
+/* 墨点涟漪 */
+.ink-ripple {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(243, 217, 158, 0.55) 0%, rgba(168, 208, 216, 0.28) 45%, transparent 70%);
+    transform: scale(0);
+    opacity: 0.9;
+    animation: inkRipple 0.7s var(--ease-ink) forwards;
+}
+@keyframes inkRipple { to { transform: scale(1); opacity: 0; } }
+
+/* 键盘焦点：金丝环，替代浏览器默认蓝框 */
+:focus-visible {
+    outline: 2px solid var(--gold-light);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+button:focus-visible, a:focus-visible { box-shadow: 0 0 0 4px rgba(214, 177, 106, 0.25); }
+
+/* 范围滑块：玉质滑轨 */
+input[type='range'] { -webkit-appearance: none; appearance: none; height: 4px; border-radius: 4px; background: linear-gradient(90deg, rgba(143, 184, 192, 0.5), rgba(214, 177, 106, 0.6)); outline: none; }
+input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff7e0, #d6b16a 70%);
+    border: 1px solid rgba(70, 50, 20, 0.5); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s var(--ease-ink);
+}
+input[type='range']:active::-webkit-slider-thumb { transform: scale(1.25); }
+input[type='range']::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff7e0, #d6b16a 70%); border: 1px solid rgba(70, 50, 20, 0.5); }
+
+/* ───────────────── 8. 移动端沉浸 ───────────────── */
+@media (max-width: 768px) {
+    .three-canvas-container { height: min(74vh, 560px) !important; height: min(74svh, 560px) !important; min-height: 360px; }
+    .exhibition-mode-bar { top: max(0.6rem, env(safe-area-inset-top)); left: 0.6rem; right: 0.6rem; }
+    .mode-switch-group { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+    .mode-switch-group::-webkit-scrollbar { display: none; }
+    .mode-switch-group { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+    .mode-switch-btn { padding: 7px 12px; font-size: 11.5px; }   /* 触控目标 ≥ 32px */
+    .vessel-3d-hotspot { font-size: 10.5px; padding: 3px 10px 3px 8px; }
+    .vessel-comparison-dock { left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); }
+    #curator-subtitle-bar { bottom: calc(3.8rem + env(safe-area-inset-bottom)); }
+    .modal-content-lg { padding: 1.25rem; border-radius: 20px; }
+}
+@media (max-width: 640px) {
+    h1, .hero-title-gradient { letter-spacing: 0.1em; }
+    .tracking-widest { letter-spacing: 0.14em !important; }
+}
+#navbar { padding-top: env(safe-area-inset-top); }
+#back-to-top { bottom: max(26px, calc(env(safe-area-inset-bottom) + 16px)); right: max(20px, env(safe-area-inset-right)); }
+.mobile-menu { padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); height: var(--vh-safe); }
+.hero-section { min-height: 88vh; min-height: 88svh; }
+
+/* ───────────────── 9. 滚动入场 / 滚动条 / 选区 ───────────────── */
+html.js-reveal .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(4px);
+    transition: opacity 0.9s var(--ease-ink), transform 0.9s var(--ease-ink), filter 0.9s var(--ease-ink);
+    transition-delay: var(--reveal-delay, 0s);
+}
+html.js-reveal .reveal-on-scroll.in-view { opacity: 1; transform: none; filter: none; }
+
+::selection { background: rgba(124, 170, 180, 0.38); color: inherit; }
+* { scrollbar-width: thin; scrollbar-color: rgba(124, 170, 180, 0.5) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(124, 170, 180, 0.55), rgba(214, 177, 106, 0.45)); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ───────────────── 10. 减少动态偏好 ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    html.js-reveal .reveal-on-scroll { opacity: 1; transform: none; filter: none; }
+}
