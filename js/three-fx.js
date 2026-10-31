@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * ============================================================================
  * 天青泥火 · three-fx.js  —— 3D 展馆「画面升华」增强层 (v7.0 Visual Overhaul)
  * ----------------------------------------------------------------------------
@@ -749,7 +749,7 @@
     const GLAZE_LOOK = { clearcoat: 1.0, clearcoatRoughness: 0.035, envMapIntensity: 1.35 };
     FX.polish = function polish(group) {
         if (!group) return group;
-        const maxA = renderer && renderer.capabilities ? renderer.capabilities.getMaxAnisotropy() : 8;
+        const maxA = Math.min(4, renderer && renderer.capabilities ? renderer.capabilities.getMaxAnisotropy() : 4);
         group.traverse((o) => {
             if (!o.isMesh || !o.material || o.material.isMeshBasicMaterial) return;
             const apply = (m) => {
@@ -1067,7 +1067,7 @@
         // —— 主光阴影：2048 贴图 + 收紧视锥 → 阴影边缘更细腻、足底接地更实 ——
         if (lightMain) {
             const s = lightMain.shadow;
-            s.mapSize.set(IS_TOUCH ? 1024 : 2048, IS_TOUCH ? 1024 : 2048);
+            s.mapSize.set(1024, 1024);
             const sc = s.camera;
             sc.left = -2.4; sc.right = 2.4; sc.top = 2.8; sc.bottom = -2.2; sc.near = 2; sc.far = 14;
             sc.updateProjectionMatrix();
@@ -1124,14 +1124,14 @@
             camera.position.set(0.9, 1.7, 6.4);
             cam.lastPos = { ...camPosTarget }; cam.lastLook = { ...camLookTarget };
             cam.tween = {
-                t0: performance.now() + 350, dur: 2600,
-                fp: { x: 0.9, y: 1.7, z: 6.4 }, fl: { ...camLookCurrent }, lift: 0.18
+                t0: performance.now() + 60, dur: 850,
+                fp: { x: 0.35, y: 1.25, z: 4.4 }, fl: { ...camLookCurrent }, lift: 0.08
             };
         }
 
         FX.ready = true;
         FX.applyEnv(currentRoomEnv || 'studio');
-        FX._pf = setInterval(FX.prefetchTick, 900);   // 后台串行预取其余国宝
+        FX._pf = setInterval(FX.prefetchTick, 250);   // 后台串行预取其余国宝
     };
 
     /* ======================================================================

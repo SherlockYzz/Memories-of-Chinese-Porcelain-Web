@@ -1,2 +1,4 @@
 *.zip
 发布归档与脚本/
+
+.backup-v7-before-opt/
