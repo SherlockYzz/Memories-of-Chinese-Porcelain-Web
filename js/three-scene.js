@@ -109,7 +109,7 @@ const bottomConnoisseurshipData = [
         firingCraft: "支钉架空正烧 · 圈足底面整齐散布五枚如米粒般微小的芝麻状支钉痕",
         clayBody: "极其纯净细腻的浅灰香灰胎 (微泛青灰，吸水率近于零)",
         reignMark: "台北故宫传世孤品，底足满釉素面无刻款",
-        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。十瓣莲花温碗圈足修刀挺拔微敛，底足满裹青翠透润的天青厚釉，五枚芝麻支钉脱落处露出纯净香灰胎，天工神品无与伦比。"
+        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。十瓣莲花温碗圈足修刀挺拔微敛，底足满裹青翠透润的天青厚釉，五枚芝麻支钉脱落处露出纯净香灰胎，工艺端凝典雅。"
     },
     {
         name: "北宋定窑·白釉刻花莲纹梅瓶",
@@ -190,7 +190,7 @@ const porcelainModelsData = [
         "period": "北宋晚期 (徽宗宣和年间)",
         "kiln": "河南宝丰清凉寺汝官窑",
         "dimensions": "高 10.4 cm · 口径 16.2 cm · 足径 8.1 cm",
-        "desc": "台北故宫博物院镇院之宝，世所罕见的汝窑巅峰之作。器身仿若一朵静穆绽放的十瓣青莲，俯视如莲花重叠，仰视似莲瓣亭亭。通体满施玛瑙入釉的天青厚釉，温润如酥玉，底足圈足直立微敛，足底留有五个极细微的芝麻状支钉痕，展现了北宋文人极致的幽玄淡泊与空灵之美。",
+        "desc": "台北故宫博物院镇院之宝，传世汝窑之代表作。器身仿若一朵静穆绽放的十瓣青莲，俯视如莲花重叠，仰视似莲瓣亭亭。通体满施玛瑙入釉的天青厚釉，温润如酥玉，底足圈足直立微敛，足底留有五个极细微的芝麻状支钉痕，展现了北宋文人极致的幽玄淡泊与空灵之美。",
         "features": [
             "十瓣仰莲仿生造型",
             "雨过天青玛瑙釉",
@@ -211,7 +211,7 @@ const porcelainModelsData = [
         "period": "北宋 (960–1127)",
         "kiln": "河北曲阳涧磁村定窑",
         "dimensions": "通高 29.5 cm · 口径 4.2 cm · 腹径 16.6 cm · 足径 8.3 cm",
-        "desc": "小口微翻，短颈丰肩，修腹敛胫，线条秀拔刚劲。胎骨白净致密，敲击有清越金石磬音。口沿覆烧无釉，镶饰极尽华美的鎏金铜扣（芒口金扣覆烧巅峰）。器身以竹刀半刀泥深刻舒展翻转的缠枝莲花，积釉深洼处流淌天然暖黄牙白“蜡泪痕”。",
+        "desc": "小口微翻，短颈丰肩，修腹敛胫，线条秀拔刚劲。胎骨白净致密，敲击有清越金石磬音。口沿覆烧无釉，镶饰极尽华美的鎏金铜扣（芒口金扣覆烧工艺代表）。器身以竹刀半刀泥深刻舒展翻转的缠枝莲花，积釉深洼处流淌天然暖黄牙白“蜡泪痕”。",
         "features": [
             "芒口镶鎏金铜扣",
             "象牙白温润暖釉",
@@ -232,7 +232,7 @@ const porcelainModelsData = [
         "period": "宋代 (960–1279)",
         "kiln": "传世哥窑",
         "dimensions": "通高 20.9 cm · 口径 4.5 cm · 腹宽 12.9 cm · 足径 6.8 cm",
-        "desc": "扁圆瓶体，口侧对称设双贯耳。通身满施肥润失透之米黄厚釉，如凝脂酥油。主干裂纹呈铁黑色粗线，次生裂纹呈金黄色细丝，“金丝铁线”纵横交叠，纹如碎冰，密不透风，文人残缺画意之巅峰典范。",
+        "desc": "扁圆瓶体，口侧对称设双贯耳。通身满施肥润失透之米黄厚釉，如凝脂酥油。主干裂纹呈铁黑色粗线，次生裂纹呈金黄色细丝，“金丝铁线”纵横交叠，纹如碎冰，密不透风，宋代开片美学的典型代表。",
         "features": [
             "密不透风百圾碎",
             "金丝铁线交织",
@@ -397,7 +397,7 @@ const porcelainModelsData = [
         "period": "盛唐 (618–907)",
         "kiln": "河北内丘 / 临城邢窑",
         "dimensions": "高 21.5 cm · 口径 5.2 cm · 腹径 12.0 cm",
-        "desc": "实测三维扫描唐代白瓷巅峰标本。“南青北白”之北方领袖，器身通施纯白透明釉，胎质细腻胜雪，透光度极高，陆羽《茶经》赞曰“邢瓷类银，邢瓷类雪”，盛唐气象之纯净见证。",
+        "desc": "唐代邢窑白瓷标准标本。“南青北白”之北方领袖，器身通施纯白透明釉，胎质细腻胜雪，透光度极高，陆羽《茶经》赞曰“邢瓷类银，邢瓷类雪”，盛唐气象之纯净见证。",
         "features": [
             "1:1 实测文物点云",
             "类银类雪",
@@ -435,7 +435,7 @@ const porcelainModelsData = [
 
 /**
  * -------------------------------------------------------------
- * 华夏传世国宝 1:1 三维高精巅峰资产元数据 (Blender 烘焙高精模型，原点绝对锁定底足接地中心)
+ * 传世名瓷三维模型元数据
  * -------------------------------------------------------------
  */
 const masterTreasuresMeta = {
@@ -505,7 +505,7 @@ const masterTreasuresMeta = {
     }
 };
 
-// --- 智能优先级并发加载引擎 (V6.0 旗舰版：最大并发2，支持即点即插队、10秒超时重试与真实进度上报) ---
+// --- 模型队列与加载控制器 (并发上限 2，支持优先调度与超时重试) ---
 const MAX_CONCURRENT_MODELS = 2;
 const MODEL_TIMEOUT_MS = 10000;
 const MAX_MODEL_RETRIES = 2;
@@ -537,7 +537,7 @@ function hideThreeStageLoader() {
     }, 450);
 }
 
-function showThreeStageLoader(text = '天青国宝孪生中 · 正在载入...') {
+function showThreeStageLoader(text = '器物三维数据载入中...') {
     const stageLoader = document.getElementById('three-stage-loader');
     if (!stageLoader) return;
     stageLoader.style.display = 'flex';
@@ -592,7 +592,7 @@ function processModelQueue() {
         if (masterTreasureRetries[idx] <= MAX_MODEL_RETRIES) {
             console.warn(`[国宝加载超时重试] ${meta.name} (第 ${masterTreasureRetries[idx]} 次重试)`);
             if (idx === currentModelIndex) {
-                updateThreeStageLoader(`网络微波重连中 · 正在重试 (${masterTreasureRetries[idx]}/${MAX_MODEL_RETRIES})`);
+                updateThreeStageLoader(`网络重试中 (${masterTreasureRetries[idx]}/${MAX_MODEL_RETRIES})`);
             }
             modelTaskQueue.unshift({ idx, isPriority: true });
         } else {
@@ -600,7 +600,7 @@ function processModelQueue() {
             if (idx === currentModelIndex) {
                 hideThreeStageLoader();
                 if (typeof showToast === 'function') {
-                    showToast(`⚠️ 传世文物【${meta.name}】网络传输延迟，已启用高精度几何孪生`);
+                    showToast(`提示：【${meta.name}】网络响应较慢，已先载入几何轮廓`);
                 }
             }
         }
@@ -643,7 +643,7 @@ function processModelQueue() {
             if (isFinished) return;
             if (xhr.lengthComputable && xhr.total > 0 && idx === currentModelIndex) {
                 const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
-                updateThreeStageLoader('天青国宝孪生中 · 正在装载', percent);
+                updateThreeStageLoader('器物模型载入中', percent);
             }
         },
         (err) => {
@@ -687,7 +687,7 @@ function loadSingleMasterTreasure(idx, callback, isPriority = false) {
 }
 
 function preloadMasterTreasures(callback) {
-    // 优先保证首发 0 号展品独占带宽极速呈现
+    // 优先载入首展器物，就绪后按需加载后续器物
     loadSingleMasterTreasure(0, (scene) => {
         hideThreeStageLoader();
         if (callback) callback(scene);
@@ -1755,7 +1755,7 @@ function showStageLoadingToast(show, text = '') {
 }
 
 /**
- * 按需流式装载实测三维扫描 GLTF 数据包 (3.88MB 彻底移出首屏，秒级秒开)
+ * 按需装载实测三维扫描数据包
  */
 let isScannedScriptLoading = false;
 function ensureScannedModelsData(callback) {
@@ -1785,7 +1785,7 @@ function ensureScannedModelsData(callback) {
 }
 
 /**
- * 按需单件解析实测三维扫描 GLTF 文物孪生模型 (0 阻塞秒开)
+ * 按需解析实测三维扫描模型
  */
 function loadSingleScannedGLTFOnDemand(key, modelIndex) {
     if (scannedModelCache[key] || isScanningLoading) return;
@@ -1933,14 +1933,14 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 group.add(goldRim);
             }
         } else {
-            showThreeStageLoader(`天青国宝孪生中 · 正在装载【${meta.name}】...`);
+            showThreeStageLoader(`正在载入【${meta.name}】...`);
             loadSingleMasterTreasure(typeIndex, () => {
                 if (currentModelIndex === typeIndex && currentGroup) {
                     loadPorcelainModel(typeIndex, true);
                     hideThreeStageLoader();
                 }
             }, true);
-            // 极速占位网格（以防网络首次拉取闪烁）
+            // 几何轮廓占位网格（模型加载期间平滑过渡）
             const fbPts = [
                 new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
                 new THREE.Vector2(0.48, 0.6), new THREE.Vector2(0.36, 1.5),
@@ -3432,7 +3432,7 @@ function strike3DVesselSound() {
  * 语音策展讲解 (Web Speech API)
  */
 /**
- * 华夏器道 · 天青泥火 — 小米 MiMo 博物馆资深讲解员原声导览引擎 (双核状态机 + 零延迟秒开)
+ * 馆藏讲解语音导览控制器
  */
 let currentCuratorAudio = null;
 let isCuratorAudioPlaying = false;

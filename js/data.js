@@ -829,7 +829,7 @@ const archivePorcelains = [
         "modelIdx": 0,
         "name": "南宋 · 官窑天青冰裂纹长颈瓶",
         "kiln": "南宋官窑 · 杭州修内司/郊坛下",
-        "level": "国家一级甲等典藏神品",
+        "level": "国家一级文物 · 馆藏珍品",
         "size": "通高 34.0 cm · 口径 8.5 cm · 腹径 21.6 cm",
         "img": "./images/collection/porcelain_01.jpg",
         "tags": [
@@ -1019,7 +1019,7 @@ const archivePorcelains = [
         "modelIdx": 6,
         "name": "明崇祯 · 景德镇青花人物故事图观音尊",
         "kiln": "景德镇民窑巅峰 · 文人瓷画",
-        "level": "明末清初文人青花神品",
+        "level": "明末清初文人青花代表作",
         "size": "高 44.5 cm · 口径 12.2 cm",
         "img": "./images/collection/porcelain_11.jpg",
         "tags": [
@@ -1464,7 +1464,7 @@ const microscopePresets = [
             { "x": 0.72, "y": 0.64, "r": 5.8, "type": "agate_halo" },
             { "x": 0.48, "y": 0.75, "r": 4.5, "type": "quartz" }
         ],
-        "desc": "北宋汝窑胎质细腻，釉中掺入名贵天然玛瑙末。在100x目镜下，最震撼的特征是：大气泡极度稀少，往往整个视场仅见三五颗孤立存在，如破晓长空中疏朗散落的残星，故得名“寥若晨星”。未完全熔融的玛瑙微粒形成絮状云雾晕，对光线产生强烈的瑞利散射，造就了汝窑“雨过天晴云破处”的神品天青色。",
+        "desc": "北宋汝窑胎质细腻，釉中掺入名贵天然玛瑙末。在100x目镜下，最震撼的特征是：大气泡极度稀少，往往整个视场仅见三五颗孤立存在，如破晓长空中疏朗散落的残星，故得名“寥若晨星”。未完全熔融的玛瑙微粒形成絮状云雾晕，对光线产生强烈的瑞利散射，造就了汝窑“雨过天晴云破处”的温润天青色。",
         "authenticity": "【真伪铁律】：汝窑微观严禁“气泡密集”。凡微观下气泡如沸水翻滚密密麻麻者，一概非汝；真品必呈温润乳浊云雾状，偶见斜向极薄的蝉翼纹，星芒微露。"
     },
     {
@@ -1625,7 +1625,7 @@ const porcelainComparisonData = [
         "firingMethod": "满釉裹足支钉烧造 (五枚如粟微小芝麻支钉)",
         "rimFoot": "高深直圈足微敛，底留五枚芝麻状支钉痕",
         "soundFrequency": 2580,
-        "historicalRarity": "台北故宫镇院之宝，世所罕见的汝窑巅峰绝品"
+        "historicalRarity": "台北故宫藏品，汝窑传世代表作"
     },
     {
         "id": 2,
@@ -1667,7 +1667,7 @@ const porcelainComparisonData = [
         "firingMethod": "支烧平切，底涂芝麻酱护胎釉",
         "rimFoot": "海棠形宽圈足，底足刻汉字数字编号",
         "soundFrequency": 2350,
-        "historicalRarity": "宋徽宗宫廷花器陈设，钧瓷无双之巅峰"
+        "historicalRarity": "宋徽宗宫廷花器陈设，宋代钧瓷代表作"
     },
     {
         "id": 5,

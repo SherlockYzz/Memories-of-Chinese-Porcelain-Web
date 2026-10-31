@@ -18,7 +18,7 @@ function safeRun(taskName, fn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 阶段一：首屏秒开核心交互 (16ms 内极速上屏，零丢帧)
+    // 阶段一：核心交互与首屏展台初始化
     safeRun('导航与滚动', setupNavAndScroll);
     safeRun('移动端菜单', setupMobileMenu);
     safeRun('首屏流金粒子', initHeroAmbientCanvas);
