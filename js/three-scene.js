@@ -1,4 +1,4 @@
-/**
+﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -687,14 +687,10 @@ function loadSingleMasterTreasure(idx, callback, isPriority = false) {
 }
 
 function preloadMasterTreasures(callback) {
-    // 优先载入首展器物，就绪后按需加载后续器物
+    // 纯粹的单器按需拉取：首屏仅优先拉取当前展示的 0 号器物，彻底释放首屏带宽与网络队列
     loadSingleMasterTreasure(0, (scene) => {
         hideThreeStageLoader();
         if (callback) callback(scene);
-        // 0 号就绪后，次级模型进入平滑队列（并发上限 2，不抢占主页面任何资源）
-        [1, 2, 3, 4, 5, 6, 7].forEach(idx => {
-            loadSingleMasterTreasure(idx, null, false);
-        });
     }, true);
 }
 
@@ -790,442 +786,15 @@ const textureCache = {};
 /**
  * 0.1 宋代青石板地面贴图
  */
-function getRealisticStoneFloorTexture() {
-    if (textureCache.stoneFloor) return textureCache.stoneFloor;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
+function getRealisticStoneFloorTexture() { return null; }
+function getRealisticGoldBrickTexture() { return null; }
+function getRealisticKilnBrickTexture() { return null; }
+function getScreenPaintingTexture() { return null; }
+function getRosewoodTexture() { return null; }
+function getBrocadeMatTexture() { return null; }
+function getContactShadowTexture() { return null; }
+function getWindowLatticeTexture() { return null; }
 
-        ctx.fillStyle = '#182126';
-        ctx.fillRect(0, 0, 512, 512);
-
-        const rows = 4;
-        const cols = 2;
-        const rh = 512 / rows;
-        const cw = 512 / cols;
-
-        for (let r = 0; r < rows; r++) {
-            const offset = (r % 2) * (cw / 2);
-            for (let c = -1; c <= cols; c++) {
-                const x = c * cw + offset;
-                const y = r * rh;
-                const toneShift = (Math.sin(r * 3.7 + c * 2.1) * 6);
-                const rVal = Math.max(14, Math.floor(26 + toneShift));
-                const gVal = Math.max(20, Math.floor(35 + toneShift));
-                const bVal = Math.max(24, Math.floor(42 + toneShift));
-                ctx.fillStyle = `rgb(${rVal}, ${gVal}, ${bVal})`;
-                ctx.fillRect(x + 2, y + 2, cw - 4, rh - 4);
-
-                for (let i = 0; i < 40; i++) {
-                    const px = x + 4 + Math.random() * (cw - 8);
-                    const py = y + 4 + Math.random() * (rh - 8);
-                    const pr = 1 + Math.random() * 3.2;
-                    ctx.fillStyle = i % 2 === 0 ? 'rgba(212, 175, 106, 0.03)' : 'rgba(0, 0, 0, 0.12)';
-                    ctx.beginPath();
-                    ctx.arc(px, py, pr, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                ctx.strokeStyle = '#0c1114';
-                ctx.lineWidth = 2.5;
-                ctx.strokeRect(x + 1, y + 1, cw - 2, rh - 2);
-            }
-        }
-
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(4, 4);
-        textureCache.stoneFloor = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.2 故宫墨黑金砖地面贴图
- */
-function getRealisticGoldBrickTexture() {
-    if (textureCache.goldBrick) return textureCache.goldBrick;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#0b0e12';
-        ctx.fillRect(0, 0, 512, 512);
-
-        const size = 256;
-        for (let r = 0; r < 2; r++) {
-            for (let c = 0; c < 2; c++) {
-                const x = c * size;
-                const y = r * size;
-                ctx.fillStyle = (r + c) % 2 === 0 ? '#11161c' : '#0c1014';
-                ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-
-                const grad = ctx.createLinearGradient(x, y, x + size, y + size);
-                grad.addColorStop(0, 'rgba(212, 175, 106, 0.06)');
-                grad.addColorStop(0.5, 'rgba(139, 194, 206, 0.03)');
-                grad.addColorStop(1, 'rgba(0, 0, 0, 0.16)');
-                ctx.fillStyle = grad;
-                ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
-
-                ctx.strokeStyle = '#282015';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x + 1, y + 1, size - 2, size - 2);
-            }
-        }
-
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(3, 3);
-        textureCache.goldBrick = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.3 御窑粗粝耐火青砖地面贴图
- */
-function getRealisticKilnBrickTexture() {
-    if (textureCache.kilnBrick) return textureCache.kilnBrick;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#221512';
-        ctx.fillRect(0, 0, 512, 512);
-
-        for (let r = 0; r < 6; r++) {
-            const rh = 512 / 6;
-            const offset = (r % 2) * 64;
-            for (let c = -1; c < 5; c++) {
-                const cw = 128;
-                const x = c * cw + offset;
-                const y = r * rh;
-                ctx.fillStyle = (c + r) % 3 === 0 ? '#331e19' : '#261511';
-                ctx.fillRect(x + 2, y + 2, cw - 4, rh - 4);
-
-                for (let i = 0; i < 30; i++) {
-                    ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 110, 35, 0.06)' : 'rgba(0, 0, 0, 0.25)';
-                    ctx.fillRect(x + Math.random() * cw, y + Math.random() * rh, 2 + Math.random() * 4, 2 + Math.random() * 3);
-                }
-                ctx.strokeStyle = '#120705';
-                ctx.lineWidth = 2.5;
-                ctx.strokeRect(x + 1, y + 1, cw - 2, rh - 2);
-            }
-        }
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(4, 4);
-        textureCache.kilnBrick = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.4 宋代三折紫檀屏风 · 玄青泥金千里江山夜宴画心
- * (采用深邃玄青古绢底色与泥金青绿山水，避免浅白背景过曝吃掉前景瓷器轮廓，极大提升国宝级视觉对比度！)
- */
-function getScreenPaintingTexture() {
-    if (textureCache.screenPainting) return textureCache.screenPainting;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 1024;
-        const ctx = canvas.getContext('2d');
-
-        // 深邃宋代磁青/玄青描金绢本基底
-        const silkGrad = ctx.createLinearGradient(0, 0, 0, 1024);
-        silkGrad.addColorStop(0.0, '#121b22');
-        silkGrad.addColorStop(0.45, '#18242e');
-        silkGrad.addColorStop(0.8, '#1d2932');
-        silkGrad.addColorStop(1.0, '#11181f');
-        ctx.fillStyle = silkGrad;
-        ctx.fillRect(0, 0, 1024, 1024);
-
-        // 绢本经纬丝光暗纹
-        ctx.strokeStyle = 'rgba(212, 175, 106, 0.035)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 1024; i += 10) {
-            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1024); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1024, i); ctx.stroke();
-        }
-
-        // 一轮泥金皓月
-        const moonGrad = ctx.createRadialGradient(280, 210, 8, 280, 210, 110);
-        moonGrad.addColorStop(0.0, 'rgba(240, 213, 156, 0.35)');
-        moonGrad.addColorStop(0.45, 'rgba(197, 160, 89, 0.12)');
-        moonGrad.addColorStop(1.0, 'rgba(197, 160, 89, 0.0)');
-        ctx.fillStyle = moonGrad;
-        ctx.beginPath();
-        ctx.arc(280, 210, 110, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 上部泥金瘦金体意境题跋與朱砂御印
-        ctx.font = '26px "Noto Serif SC", "Songti SC", "STKaiti", serif';
-        ctx.fillStyle = 'rgba(229, 200, 136, 0.68)';
-        ctx.fillText('雨 过 天 青 云 破 处', 650, 130);
-        ctx.font = '16px "Noto Serif SC", "Songti SC", serif';
-        ctx.fillStyle = 'rgba(143, 184, 192, 0.52)';
-        ctx.fillText('宣和殿御赏 · 千里江山泥金屏', 670, 168);
-
-        // 朱文印章两方
-        ctx.fillStyle = '#9e2a24';
-        ctx.fillRect(650, 185, 24, 24);
-        ctx.fillStyle = '#f5efe4';
-        ctx.font = '14px serif';
-        ctx.fillText('御', 655, 202);
-
-        ctx.fillStyle = '#9e2a24';
-        ctx.fillRect(682, 185, 24, 24);
-        ctx.fillStyle = '#f5efe4';
-        ctx.fillText('赏', 687, 202);
-
-        // 千里江山青绿叠翠与泥金勾勒远山
-        const drawMountain = (baseY, amp, seed, fillColor, strokeGold) => {
-            ctx.fillStyle = fillColor;
-            ctx.beginPath();
-            ctx.moveTo(0, 1024);
-            ctx.lineTo(0, baseY);
-            for (let x = 0; x <= 1024; x += 12) {
-                const y = baseY - Math.sin((x + seed) * 0.005) * amp - Math.cos((x * 2 + seed) * 0.008) * (amp * 0.42);
-                ctx.lineTo(x, y);
-            }
-            ctx.lineTo(1024, baseY);
-            ctx.lineTo(1024, 1024);
-            ctx.closePath();
-            ctx.fill();
-
-            if (strokeGold) {
-                ctx.strokeStyle = strokeGold;
-                ctx.lineWidth = 2.2;
-                ctx.beginPath();
-                for (let x = 0; x <= 1024; x += 12) {
-                    const y = baseY - Math.sin((x + seed) * 0.005) * amp - Math.cos((x * 2 + seed) * 0.008) * (amp * 0.42);
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-        };
-
-        drawMountain(410, 115, 120, 'rgba(42, 74, 84, 0.35)', 'rgba(212, 175, 106, 0.25)');
-        drawMountain(510, 145, 360, 'rgba(32, 58, 66, 0.52)', 'rgba(229, 200, 136, 0.38)');
-        drawMountain(630, 165, 780, 'rgba(20, 36, 44, 0.72)', 'rgba(197, 160, 89, 0.45)');
-
-        // 中景天青流云柔雾带
-        const fogGrad = ctx.createLinearGradient(0, 520, 0, 740);
-        fogGrad.addColorStop(0.0, 'rgba(124, 170, 180, 0.0)');
-        fogGrad.addColorStop(0.5, 'rgba(124, 170, 180, 0.14)');
-        fogGrad.addColorStop(1.0, 'rgba(124, 170, 180, 0.0)');
-        ctx.fillStyle = fogGrad;
-        ctx.fillRect(0, 520, 1024, 220);
-
-        // 双层泥金锦边
-        ctx.strokeStyle = 'rgba(197, 160, 89, 0.45)';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(26, 26, 972, 972);
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(36, 36, 952, 952);
-
-        const tex = new THREE.CanvasTexture(canvas);
-        textureCache.screenPainting = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.5 明清老红木/大叶紫檀木纹贴图
- */
-function getRosewoodTexture() {
-    if (textureCache.rosewood) return textureCache.rosewood;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#26110c';
-        ctx.fillRect(0, 0, 512, 512);
-
-        for (let i = 0; i < 512; i += 2) {
-            const alpha = 0.08 + Math.random() * 0.15;
-            ctx.strokeStyle = Math.random() > 0.4 ? `rgba(14, 5, 3, ${alpha})` : `rgba(64, 26, 16, ${alpha})`;
-            ctx.lineWidth = 1 + Math.random() * 2;
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.bezierCurveTo(
-                i + (Math.random() - 0.5) * 12, 170,
-                i + (Math.random() - 0.5) * 18, 340,
-                i + (Math.random() - 0.5) * 12, 512
-            );
-            ctx.stroke();
-        }
-
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        textureCache.rosewood = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.6 几案织锦席垫贴图
- */
-function getBrocadeMatTexture() {
-    if (textureCache.brocadeMat) return textureCache.brocadeMat;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        ctx.fillStyle = '#14222c';
-        ctx.fillRect(0, 0, 512, 512);
-
-        ctx.strokeStyle = '#c5a059';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(24, 24, 464, 464);
-        ctx.lineWidth = 2.5;
-        ctx.strokeRect(38, 38, 436, 436);
-
-        ctx.save();
-        ctx.translate(256, 256);
-        ctx.strokeStyle = 'rgba(197, 160, 89, 0.42)';
-        ctx.lineWidth = 2;
-        for (let r = 0; r < 8; r++) {
-            ctx.rotate((Math.PI * 2) / 8);
-            ctx.beginPath();
-            ctx.ellipse(65, 0, 48, 22, 0, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-        ctx.beginPath();
-        ctx.arc(0, 0, 36, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(197, 160, 89, 0.32)';
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        const tex = new THREE.CanvasTexture(canvas);
-        textureCache.brocadeMat = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.7 器物足底真实接触软投影贴图
- */
-function getContactShadowTexture() {
-    if (textureCache.contactShadow) return textureCache.contactShadow;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-
-        const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 128);
-        grad.addColorStop(0.0, 'rgba(4, 3, 2, 0.96)');
-        grad.addColorStop(0.32, 'rgba(6, 5, 4, 0.75)');
-        grad.addColorStop(0.68, 'rgba(6, 5, 4, 0.25)');
-        grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
-
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 256, 256);
-
-        const tex = new THREE.CanvasTexture(canvas);
-        textureCache.contactShadow = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.8 宋代直棂轩窗透光纹理
- */
-function getWindowLatticeTexture() {
-    if (textureCache.windowLattice) return textureCache.windowLattice;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-
-        const paperGrad = ctx.createLinearGradient(0, 0, 512, 512);
-        paperGrad.addColorStop(0.0, '#c8d6d9');
-        paperGrad.addColorStop(0.6, '#9cb4bc');
-        paperGrad.addColorStop(1.0, '#728d96');
-        ctx.fillStyle = paperGrad;
-        ctx.fillRect(0, 0, 512, 512);
-
-        ctx.fillStyle = 'rgba(32, 48, 44, 0.35)';
-        for (let b = 0; b < 4; b++) {
-            const bx = 85 + b * 115;
-            ctx.fillRect(bx, 0, 10, 512);
-            for (let l = 0; l < 8; l++) {
-                const ly = l * 65 + 30;
-                ctx.beginPath();
-                ctx.ellipse(bx + 24, ly, 26, 5, 0.45, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(bx - 24, ly + 20, 26, 5, -0.45, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        const tex = new THREE.CanvasTexture(canvas);
-        textureCache.windowLattice = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 0.9 香炉缕缕青烟微粒贴图
- */
-function getSmokeParticleTexture() {
-    if (textureCache.smokeTex) return textureCache.smokeTex;
-    try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 64;
-        canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-
-        const grad = ctx.createRadialGradient(32, 32, 2, 32, 32, 30);
-        grad.addColorStop(0.0, 'rgba(220, 235, 242, 0.78)');
-        grad.addColorStop(0.4, 'rgba(180, 210, 222, 0.32)');
-        grad.addColorStop(1.0, 'rgba(180, 210, 222, 0.0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 64, 64);
-
-        const tex = new THREE.CanvasTexture(canvas);
-        textureCache.smokeTex = tex;
-        return tex;
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * 1. 程序化生成高动态范围 (HDR-like) 博物馆轩窗天光环境反射贴图
- */
 function createStudioEnvironment() {
     if (envMapTexture) return envMapTexture;
     try {
@@ -2106,6 +1675,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
 /**
  * 构建真实 3D 室内环境场景 (宋代玄青金碧屏风 + 紫檀束腰几案 + 博山香炉青烟 + 轩窗丁达尔光束)
  */
+const envLoader = new THREE.GLTFLoader();
+
 function createRealistic3DEnvironment() {
     if (realisticRoomGroup) {
         scene.remove(realisticRoomGroup);
@@ -2114,183 +1685,73 @@ function createRealistic3DEnvironment() {
     realisticRoomGroup = new THREE.Group();
     realisticRoomGroup.name = 'Realistic3DRoom';
 
-    const rosewoodTex = getRosewoodTexture();
-    const rosewoodMat = new THREE.MeshStandardMaterial({
-        map: rosewoodTex,
-        roughness: 0.34,
-        metalness: 0.15
-    });
-
-    // 1. 地面
-    const floorGeo = new THREE.PlaneGeometry(18, 18, 1, 1);
-    const floorMat = new THREE.MeshStandardMaterial({
-        map: getRealisticStoneFloorTexture(),
-        roughness: 0.38,
-        metalness: 0.10
-    });
+    // 1. 展厅地面 (低开销底衬)
+    const floorGeo = new THREE.PlaneGeometry(16, 16);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0c1117, roughness: 0.82, metalness: 0.08 });
     roomFloorMesh = new THREE.Mesh(floorGeo, floorMat);
     roomFloorMesh.rotation.x = -Math.PI / 2;
-    roomFloorMesh.position.y = -1.68;
+    roomFloorMesh.position.y = -0.783;
     roomFloorMesh.receiveShadow = true;
     realisticRoomGroup.add(roomFloorMesh);
 
-    // 2. 明清红木雕花束腰四方几案
-    const tableGroup = new THREE.Group();
-    const topPanel = new THREE.Mesh(new THREE.BoxGeometry(1.68, 0.08, 1.68), rosewoodMat);
-    topPanel.position.y = -1.18;
-    topPanel.castShadow = topPanel.receiveShadow = true;
-    tableGroup.add(topPanel);
-
-    const waistMesh = new THREE.Mesh(new THREE.BoxGeometry(1.52, 0.05, 1.52), rosewoodMat);
-    waistMesh.position.y = -1.245;
-    tableGroup.add(waistMesh);
-
-    const apronMesh = new THREE.Mesh(new THREE.BoxGeometry(1.58, 0.06, 1.58), rosewoodMat);
-    apronMesh.position.y = -1.295;
-    tableGroup.add(apronMesh);
-
-    const legGeo = new THREE.BoxGeometry(0.09, 0.38, 0.09);
-    [[-0.72, -0.72], [0.72, -0.72], [-0.72, 0.72], [0.72, 0.72]].forEach(([lx, lz]) => {
-        const leg = new THREE.Mesh(legGeo, rosewoodMat);
-        leg.position.set(lx, -1.485, lz);
-        tableGroup.add(leg);
-        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.04, 0.12), rosewoodMat);
-        foot.position.set(lx, -1.66, lz);
-        tableGroup.add(foot);
+    // 2. 载入宋韵紫檀束腰几案 (18KB 单文件真实构件，桌面精准对齐 Y=0)
+    envLoader.load('models/environment/rosewood_table.glb', (gltf) => {
+        const table = gltf.scene;
+        table.position.set(0, -0.783, 0);
+        table.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+        realisticRoomGroup.add(table);
+        roomTableMesh = table;
     });
 
-    const matGeo = new THREE.CylinderGeometry(0.74, 0.74, 0.015, 64);
-    const brocadeMat = new THREE.MeshStandardMaterial({
-        map: getBrocadeMatTexture(),
-        roughness: 0.65,
-        metalness: 0.12
-    });
-    const matMesh = new THREE.Mesh(matGeo, brocadeMat);
-    matMesh.position.y = -1.132;
-    matMesh.receiveShadow = true;
-    tableGroup.add(matMesh);
-
-    const goldRim = new THREE.Mesh(
-        new THREE.TorusGeometry(0.745, 0.009, 12, 64),
-        new THREE.MeshStandardMaterial({ color: 0xd4af6a, roughness: 0.28, metalness: 0.85 })
-    );
-    goldRim.rotation.x = Math.PI / 2;
-    goldRim.position.y = -1.13;
-    tableGroup.add(goldRim);
-
-    const shadowGeo = new THREE.PlaneGeometry(0.96, 0.96);
-    const shadowMat = new THREE.MeshBasicMaterial({
-        map: getContactShadowTexture(),
-        transparent: true,
-        opacity: 0.88,
-        depthWrite: false
-    });
-    contactShadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    contactShadowMesh.rotation.x = -Math.PI / 2;
-    contactShadowMesh.position.y = -1.124;
-    tableGroup.add(contactShadowMesh);
-
-    realisticRoomGroup.add(tableGroup);
-    roomTableMesh = tableGroup;
-
-    // 3. 三折紫檀木雕千里江山泥金插屏 (深色绢本彻底凸显前景器物)
-    const screenGroup = new THREE.Group();
-    screenGroup.position.set(0, 0, -1.85);
-
-    const screenWoodMat = rosewoodMat;
-    const screenPaintMat = new THREE.MeshStandardMaterial({
-        map: getScreenPaintingTexture(),
-        roughness: 0.96,
-        metalness: 0.0,
-        envMapIntensity: 0.06
+    // 3. 载入汉唐青铜博山炉香薰 (放置于几案左上方)
+    envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
+        const censer = gltf.scene;
+        censer.position.set(-0.55, 0.0, -0.22);
+        censer.scale.set(0.9, 0.9, 0.9);
+        censer.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+        realisticRoomGroup.add(censer);
     });
 
-    const mainScreenGroup = new THREE.Group();
-    const mainPanel = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 2.55), screenPaintMat);
-    mainPanel.position.set(0, -0.02, 0);
-    mainPanel.receiveShadow = true;
-    mainScreenGroup.add(mainPanel);
-
-    const fTop = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 0.08), screenWoodMat);
-    fTop.position.set(0, 1.28, 0);
-    mainScreenGroup.add(fTop);
-    const fBottom = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.16, 0.08), screenWoodMat);
-    fBottom.position.set(0, -1.33, 0);
-    mainScreenGroup.add(fBottom);
-    const fLeft = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.71, 0.08), screenWoodMat);
-    fLeft.position.set(-1.20, -0.02, 0);
-    mainScreenGroup.add(fLeft);
-    const fRight = fLeft.clone();
-    fRight.position.set(1.20, -0.02, 0);
-    mainScreenGroup.add(fRight);
-    screenGroup.add(mainScreenGroup);
-
-    const leftScreen = new THREE.Group();
-    leftScreen.position.set(-1.25, 0, 0);
-    leftScreen.rotation.y = (26 * Math.PI) / 180;
-    const leftPanel = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 2.38), screenPaintMat);
-    leftPanel.position.set(-0.54, -0.05, 0);
-    leftScreen.add(leftPanel);
-    screenGroup.add(leftScreen);
-
-    const rightScreen = new THREE.Group();
-    rightScreen.position.set(1.25, 0, 0);
-    rightScreen.rotation.y = (-26 * Math.PI) / 180;
-    const rightPanel = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 2.38), screenPaintMat);
-    rightPanel.position.set(0.54, -0.05, 0);
-    rightScreen.add(rightPanel);
-    screenGroup.add(rightScreen);
-
-    realisticRoomGroup.add(screenGroup);
-    roomScreenMesh = screenGroup;
-
-    // 4. 左侧宋代直棂木窗
-    const windowGroup = new THREE.Group();
-    windowGroup.position.set(-3.6, 0.45, -0.4);
-    windowGroup.rotation.y = Math.PI / 2;
-
-    const wallGeo = new THREE.BoxGeometry(4.8, 4.2, 0.15);
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x141c22, roughness: 0.95 });
-    roomWallMesh = new THREE.Mesh(wallGeo, wallMat);
-    roomWallMesh.position.set(0, 0.4, -0.08);
-    windowGroup.add(roomWallMesh);
-
-    const winPaper = new THREE.Mesh(
-        new THREE.PlaneGeometry(2.8, 2.4),
-        new THREE.MeshBasicMaterial({ map: getWindowLatticeTexture(), side: THREE.DoubleSide })
-    );
-    winPaper.position.set(0, 0.4, 0.01);
-    windowGroup.add(winPaper);
-    realisticRoomGroup.add(windowGroup);
-    roomWindowMesh = windowGroup;
-
-    // 5. 斜射丁达尔体积光束
-    volumetricGodRays = new THREE.Group();
-    const rayMat = new THREE.MeshBasicMaterial({
-        color: 0xffecc4,
-        transparent: true,
-        opacity: 0.038,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
+    // 4. 载入次世代全息玄武岩展台 (用于全息特展与特展展台)
+    envLoader.load('models/environment/hologram_pedestal.glb', (gltf) => {
+        const pedestal = gltf.scene;
+        pedestal.position.set(0, -0.90, 0);
+        pedestal.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+                if (child.material && child.material.name === 'M_PedestalGlow') {
+                    child.material.toneMapped = false;
+                    child.material.emissiveIntensity = 2.5;
+                }
+            }
+        });
+        if (pedestalGroup) pedestalGroup.add(pedestal);
     });
-    for (let r = 0; r < 3; r++) {
-        const cone = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.35 + r * 0.15, 0.95 + r * 0.25, 4.8, 32, 1, true),
-            rayMat.clone()
-        );
-        cone.position.set(-1.8 + r * 0.35, 0.25 - r * 0.1, -0.25 + r * 0.2);
-        cone.rotation.z = 0.72;
-        cone.rotation.y = 0.25;
-        volumetricGodRays.add(cone);
-    }
-    realisticRoomGroup.add(volumetricGodRays);
 
-    // 6. 纯净文博陈设（隐去突兀浮空倒锥构件，突出古瓷主体器型）
-    const deskAccGroup = new THREE.Group();
-    realisticRoomGroup.add(deskAccGroup);
+    // 5. 载入千里江山泥金围屏 (作为展馆背景屏障)
+    envLoader.load('models/environment/scholar_screen.glb', (gltf) => {
+        const screen = gltf.scene;
+        screen.position.set(0, -0.783, -1.45);
+        screen.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+            }
+        });
+        realisticRoomGroup.add(screen);
+        roomScreenMesh = screen;
+    });
+
     scene.add(realisticRoomGroup);
-    switchRealisticSceneEnv(currentRoomEnv, false);
 }
 
 function createInspectorStage() {
@@ -2330,8 +1791,8 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
         scene.background = new THREE.Color(0xF5F2E9);
         if (scene.fog) scene.fog.color.setHex(0x0b1116);
         if (roomFloorMesh) {
-            roomFloorMesh.material.map = getRealisticStoneFloorTexture();
-            roomFloorMesh.material.roughness = 0.38;
+            roomFloorMesh.material.color.setHex(0x182126);
+            roomFloorMesh.material.roughness = 0.82;
             roomFloorMesh.material.needsUpdate = true;
         }
         if (lightMain) { lightMain.color.setHex(0xfff5e6); lightMain.intensity = 1.85; }
@@ -2345,8 +1806,8 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
         scene.background = new THREE.Color(0x070b10);
         if (scene.fog) scene.fog.color.setHex(0x070b10);
         if (roomFloorMesh) {
-            roomFloorMesh.material.map = getRealisticGoldBrickTexture();
-            roomFloorMesh.material.roughness = 0.16;
+            roomFloorMesh.material.color.setHex(0x0b0e12);
+            roomFloorMesh.material.roughness = 0.45;
             roomFloorMesh.material.needsUpdate = true;
         }
         if (lightMain) { lightMain.color.setHex(0xf4f9ff); lightMain.intensity = 2.05; }
@@ -2360,7 +1821,7 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
         scene.background = new THREE.Color(0x140704);
         if (scene.fog) scene.fog.color.setHex(0x140704);
         if (roomFloorMesh) {
-            roomFloorMesh.material.map = getRealisticKilnBrickTexture();
+            roomFloorMesh.material.color.setHex(0x140704);
             roomFloorMesh.material.roughness = 0.85;
             roomFloorMesh.material.needsUpdate = true;
         }
