@@ -1,4 +1,4 @@
-﻿﻿/**
+﻿/**
  * 华夏器道 · 天青泥火 — 前端综合调度主控制器 (National Award Flagship App Controller)
  * 核心涵盖：
  * 1. 首屏水墨流金粒子动态背景 (#hero-ambient-canvas) 与特展双模展柜切换
@@ -18,40 +18,47 @@ function safeRun(taskName, fn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    safeRun('首屏流金粒子', initHeroAmbientCanvas);
-    safeRun('历史通史', renderHistoryTimeline);
-    safeRun('窑系地理', renderKilnGeographyMap);
-    safeRun('制瓷工序', renderWorkshopGrid);
-    safeRun('传统色谱', renderTraditionalColors);
-    safeRun('釉料化学实验室', initGlazeChemistryLab);
-    safeRun('文人四艺', renderLiteratiArts);
-    safeRun('宋代点茶模拟器', initTeaWhiskingSimulator);
-    safeRun('典藏图录', renderArchiveGrid);
-    safeRun('历代官窑款识', renderImperialReignMarks);
-    safeRun('研考手记', renderScholarNotes);
-    safeRun('博古殿试考卷', initScholarQuiz);
-    safeRun('名瓷对比', initPorcelainComparison);
-    safeRun('五音瓷鸣', renderPentatonicPanel);
-    safeRun('研习笔记', initStudyNotebook);
-    safeRun('显微开片', renderMicroscopeLens);
-    safeRun('全局命令面板', initCommandPalette);
-
-    safeRun('3D展馆', () => { if (typeof initThreeJS === 'function') initThreeJS(); });
-    safeRun('AI识瓷', () => { if (typeof initAiRecognition === 'function') initAiRecognition(); });
-    safeRun('拉坯工坊', () => { if (typeof initPotteryWorkshop === 'function') initPotteryWorkshop(); });
-
+    // 阶段一：首屏秒开核心交互 (16ms 内极速上屏，零丢帧)
     safeRun('导航与滚动', setupNavAndScroll);
     safeRun('移动端菜单', setupMobileMenu);
-    safeRun('视听研学展映', () => {
-        if (typeof initVideoLazyLoader === 'function') {
-            initVideoLazyLoader();
-        }
-    });
+    safeRun('首屏流金粒子', initHeroAmbientCanvas);
+    safeRun('3D展馆', () => { if (typeof initThreeJS === 'function') initThreeJS(); });
 
     const langToggleBtn = document.getElementById('lang-toggle');
     if (langToggleBtn && typeof toggleLanguage === 'function') {
         langToggleBtn.addEventListener('click', toggleLanguage);
     }
+
+    // 阶段二：次屏交互与主画廊 (第二帧平滑渲染)
+    requestAnimationFrame(() => {
+        safeRun('典藏图录', renderArchiveGrid);
+        safeRun('历史通史', renderHistoryTimeline);
+        safeRun('窑系地理', renderKilnGeographyMap);
+        safeRun('拉坯工坊', () => { if (typeof initPotteryWorkshop === 'function') initPotteryWorkshop(); });
+        safeRun('宋代点茶模拟器', initTeaWhiskingSimulator);
+    });
+
+    // 阶段三：长页面深度研学与富交互组件微任务切片 (主线程零卡顿)
+    setTimeout(() => {
+        safeRun('制瓷工序', renderWorkshopGrid);
+        safeRun('传统色谱', renderTraditionalColors);
+        safeRun('釉料化学实验室', initGlazeChemistryLab);
+        safeRun('文人四艺', renderLiteratiArts);
+        safeRun('历代官窑款识', renderImperialReignMarks);
+        safeRun('研考手记', renderScholarNotes);
+        safeRun('博古殿试考卷', initScholarQuiz);
+        safeRun('名瓷对比', initPorcelainComparison);
+        safeRun('五音瓷鸣', renderPentatonicPanel);
+        safeRun('研习笔记', initStudyNotebook);
+        safeRun('显微开片', renderMicroscopeLens);
+        safeRun('全局命令面板', initCommandPalette);
+        safeRun('AI识瓷', () => { if (typeof initAiRecognition === 'function') initAiRecognition(); });
+        safeRun('视听研学展映', () => {
+            if (typeof initVideoLazyLoader === 'function') {
+                initVideoLazyLoader();
+            }
+        });
+    }, 80);
 });
 
 // ================================================================
@@ -834,7 +841,7 @@ function initTeaWhiskingSimulator() {
     teaCanvas = document.getElementById('tea-whisk-canvas');
     if (!teaCanvas) return;
     teaCtx = teaCanvas.getContext('2d');
-    teaFoamLevel = 45; // 默认展示四汤疏星皎月，黑色曜变兔毫与雪白汤花完美交融
+    teaFoamLevel = 55; // 默认展示五汤乳雾成云，黑色曜变兔毫与雪白汤花完美交融
     teaMotif = 'bamboo'; // 默认浮显清风疎竹水丹青
 
     const getCanvasPt = (e) => {
@@ -996,7 +1003,7 @@ function drawTeaBowlCanvas() {
     }
 
     // 4. 茶百戏水丹青图案 (在雪白汤花上显出深色茶汤或翠绿茶纹)
-    if (teaFoamLevel >= 50 && teaMotif !== 'none') {
+    if (teaFoamLevel >= 35 && teaMotif !== 'none') {
         teaCtx.save();
         teaCtx.translate(cx, cy);
         teaCtx.strokeStyle = 'rgba(42, 68, 54, 0.78)';

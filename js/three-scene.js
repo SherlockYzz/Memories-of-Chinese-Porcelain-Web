@@ -440,7 +440,7 @@ const porcelainModelsData = [
  */
 const masterTreasuresMeta = {
     0: {
-        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb',
+        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Master.glb',
         key: 'guanyao_octagonal_vase',
         name: '南宋修内司官窑八方贯耳弦纹瓶',
         scale: 9.35,
@@ -508,13 +508,18 @@ const masterTreasuresMeta = {
 const masterTreasuresCache = {};
 const masterTreasuresLoading = {};
 
-// --- 极致轻量按需加载引擎：单器即点即拉，杜绝首屏并发拥堵 ---
+// --- 极致轻量秒级就绪引擎：带发布订阅回调队列，杜绝吞噬并发请求 ---
+const masterTreasureCallbacks = {};
+
 function loadSingleMasterTreasure(idx, callback) {
     if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
     if (masterTreasuresCache[idx]) {
         if (callback) callback(masterTreasuresCache[idx]);
         return;
     }
+    if (!masterTreasureCallbacks[idx]) masterTreasureCallbacks[idx] = [];
+    if (callback) masterTreasureCallbacks[idx].push(callback);
+
     if (masterTreasuresLoading[idx]) return;
     masterTreasuresLoading[idx] = true;
 
@@ -533,7 +538,9 @@ function loadSingleMasterTreasure(idx, callback) {
                 }
             });
             masterTreasuresCache[idx] = gltf.scene;
-            if (callback) callback(gltf.scene);
+            const cbs = masterTreasureCallbacks[idx] || [];
+            delete masterTreasureCallbacks[idx];
+            cbs.forEach(cb => { try { cb(gltf.scene); } catch(e){} });
             if (currentModelIndex === idx && currentGroup) {
                 loadPorcelainModel(idx, true);
             }
@@ -544,30 +551,16 @@ function loadSingleMasterTreasure(idx, callback) {
     });
 }
 
-// 闲时慢速串行预热（首屏完全加载后每隔3秒预载一个，绝不并发争抢带宽）
-let idlePreloadTimer = null;
-function startIdlePreloadMasterTreasures() {
-    if (idlePreloadTimer) return;
-    const remaining = [1, 2, 3, 4, 5, 6, 7];
-    let curr = 0;
-    function loadNext() {
-        if (curr >= remaining.length) return;
-        const targetIdx = remaining[curr++];
-        if (!masterTreasuresCache[targetIdx]) {
-            loadSingleMasterTreasure(targetIdx, () => {
-                idlePreloadTimer = setTimeout(loadNext, 3000);
-            });
-        } else {
-            idlePreloadTimer = setTimeout(loadNext, 1000);
-        }
-    }
-    idlePreloadTimer = setTimeout(loadNext, 6000);
-}
-
 function preloadMasterTreasures(callback) {
-    // 兼容接口：仅拉取当前首发展品，其余闲时预热
-    loadSingleMasterTreasure(currentModelIndex || 0, callback);
-    startIdlePreloadMasterTreasures();
+    // 华夏传世 8 大国宝高精烘焙资产总计仅 968KB，启动时全量并行预载入内存，彻底杜绝后续切换卡顿与占位体
+    const indices = [0, 1, 2, 3, 4, 5, 6, 7];
+    let loaded = 0;
+    indices.forEach(idx => {
+        loadSingleMasterTreasure(idx, () => {
+            loaded++;
+            if (loaded === indices.length && callback) callback();
+        });
+    });
 }
 
 const glazePalettes = {
@@ -1740,12 +1733,25 @@ function buildGeometry(typeIndex, customGlaze = null) {
                     child.receiveShadow = true;
                     if (child.geometry) child.geometry.computeVertexNormals();
 
-                    // 映射动态 PBR 釉色材质与双面剖切中空胎骨
-                    const mat = glazeMat.clone();
-                    mat.side = THREE.DoubleSide;
-                    mat.clippingPlanes = activePlanes;
-                    mat.clipShadows = true;
-                    child.material = mat;
+                    // 优先保留 GLB 内嵌的 2K 文保级真实纹样贴图（青花龙纹/金丝铁线/窑变斑/粉彩开光）
+                    if (useScannedOriginalTex && child.material && !customGlaze) {
+                        const origMat = child.material.clone();
+                        origMat.side = THREE.DoubleSide;
+                        origMat.clippingPlanes = activePlanes;
+                        origMat.clipShadows = true;
+                        if (typeof envMapTexture !== 'undefined' && envMapTexture) {
+                            origMat.envMap = envMapTexture;
+                        }
+                        origMat.envMapIntensity = 1.35;
+                        child.material = origMat;
+                    } else {
+                        // 仅在用户手动点击左侧釉色盘切换为自选单色釉时，才动态覆盖
+                        const mat = glazeMat.clone();
+                        mat.side = THREE.DoubleSide;
+                        mat.clippingPlanes = activePlanes;
+                        mat.clipShadows = true;
+                        child.material = mat;
+                    }
                 }
             });
             group.add(cloned);
@@ -1782,7 +1788,11 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 group.add(goldRim);
             }
         } else {
-            loadSingleMasterTreasure(typeIndex);
+            loadSingleMasterTreasure(typeIndex, () => {
+                if (currentModelIndex === typeIndex && currentGroup) {
+                    loadPorcelainModel(typeIndex, true);
+                }
+            });
             // 极速占位网格（以防网络首次拉取闪烁）
             const fbPts = [
                 new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
@@ -2390,9 +2400,8 @@ function initThreeJS() {
         scene.add(topSpotLight);
 
         createInspectorStage();
-        loadSingleMasterTreasure(0);
+        preloadMasterTreasures();
         loadPorcelainModel(0);
-        startIdlePreloadMasterTreasures();
         scheduleBackgroundModelPreload();
 
         setupControls(canvas);
