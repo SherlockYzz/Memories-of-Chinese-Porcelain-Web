@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * 华夏器道 · 天青泥火 — 前端综合调度主控制器 (National Award Flagship App Controller)
  * 核心涵盖：
  * 1. 首屏水墨流金粒子动态背景 (#hero-ambient-canvas) 与特展双模展柜切换
@@ -43,8 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     safeRun('导航与滚动', setupNavAndScroll);
     safeRun('移动端菜单', setupMobileMenu);
     safeRun('视听研学展映', () => {
-        if (typeof switchCraftVideo === 'function') {
-            switchCraftVideo(0, false);
+        if (typeof initVideoLazyLoader === 'function') {
             initVideoLazyLoader();
         }
     });
@@ -835,7 +834,8 @@ function initTeaWhiskingSimulator() {
     teaCanvas = document.getElementById('tea-whisk-canvas');
     if (!teaCanvas) return;
     teaCtx = teaCanvas.getContext('2d');
-    teaFoamLevel = 65; // 默认展示四汤至五汤乳雾初成状态，方便直接体验
+    teaFoamLevel = 45; // 默认展示四汤疏星皎月，黑色曜变兔毫与雪白汤花完美交融
+    teaMotif = 'bamboo'; // 默认浮显清风疎竹水丹青
 
     const getCanvasPt = (e) => {
         const rect = teaCanvas.getBoundingClientRect();
@@ -2341,15 +2341,20 @@ function switchCraftVideo(index, autoPlay = true) {
 
 function initVideoLazyLoader() {
     const video = document.getElementById('craft-main-video');
-    if (!video || !('IntersectionObserver' in window)) return;
+    if (!video) return;
+    // 默认元数据仅文字更新，首屏绝对不请求 12MB 视频流
+    switchCraftVideo(0, false);
+
+    if (!('IntersectionObserver' in window)) return;
     const obs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
+        // 严格当视频 50% 真正出现在视口中时才加载流
+        if (entries[0] && entries[0].isIntersecting) {
             if (!video.src && video.dataset.pendingSrc) {
                 video.src = video.dataset.pendingSrc;
             }
             obs.disconnect();
         }
-    }, { rootMargin: '300px' });
+    }, { threshold: 0.3 });
     obs.observe(video);
 }
 

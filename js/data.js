@@ -1,4 +1,4 @@
-﻿﻿﻿/**
+﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 中国古代传统文化与古瓷数字化研鉴空间
  * 学术研考、文博档案、历史通史与非遗工序全景核心数据库
  */
@@ -831,7 +831,7 @@ const archivePorcelains = [
         "kiln": "南宋官窑 · 杭州修内司/郊坛下",
         "level": "国家一级甲等典藏神品",
         "size": "通高 34.0 cm · 口径 8.5 cm · 腹径 21.6 cm",
-        "img": "./images/collection/SongGuanYao_Ultra_Preview.png",
+        "img": "./images/collection/porcelain_01.jpg",
         "tags": [
             "紫口铁足",
             "百极碎冰裂",
@@ -850,7 +850,7 @@ const archivePorcelains = [
         "kiln": "定窑 · 河北曲阳涧磁村",
         "level": "宋韵白瓷极简典范",
         "size": "高 3.2 cm · 口径 16.8 cm · 足径 5.8 cm",
-        "img": "./images/collection/SongDingYao_Master_Preview.png",
+        "img": "./images/collection/porcelain_02.jpg",
         "tags": [
             "覆烧芒口",
             "象牙白暖釉",
@@ -869,7 +869,7 @@ const archivePorcelains = [
         "kiln": "钧窑 · 河南禹州神垕钧台",
         "level": "宋代五大名窑瑰宝",
         "size": "高 6.5 cm · 口径 10.5 cm",
-        "img": "./images/collection/SongJunYao_Preview.png",
+        "img": "./images/collection/porcelain_03.jpg",
         "tags": [
             "天蓝乳浊",
             "蚯蚓走泥",
@@ -888,7 +888,7 @@ const archivePorcelains = [
         "kiln": "龙泉窑 · 浙江龙泉大窑",
         "level": "宋代青瓷极品传世重器",
         "size": "通高 29.7 cm · 口径 5.6 cm · 足径 8.2 cm",
-        "img": "./images/collection/SongRuYao_Master_Preview.png",
+        "img": "./images/collection/porcelain_04.jpg",
         "tags": [
             "粉青如翠",
             "金缮惜物",
@@ -907,7 +907,7 @@ const archivePorcelains = [
         "kiln": "建窑 · 福建建阳水吉芦花坪",
         "level": "宋代茶道第一圣器",
         "size": "高 6.4 cm · 口径 11.7 cm · 足径 4.0 cm",
-        "img": "./images/collection/SongGeYao_Preview.png",
+        "img": "./images/collection/porcelain_05.jpg",
         "tags": [
             "银兔毫",
             "重铁黑胎",
@@ -926,7 +926,7 @@ const archivePorcelains = [
         "kiln": "吉州窑 · 江西吉安永和镇",
         "level": "民间窑变与剪纸巧思之极",
         "size": "高 6.7 cm · 口径 12.7 cm",
-        "img": "./images/collection/YuanQingHua_Preview.png",
+        "img": "./images/collection/porcelain_06.jpg",
         "tags": [
             "剪纸贴花",
             "玳瑁斑",
@@ -945,7 +945,7 @@ const archivePorcelains = [
         "kiln": "磁州窑 · 河北磁县观台镇",
         "level": "北方民窑水墨文人意趣巅峰",
         "size": "高 15.9 cm · 宽 18.7 cm · 长 43.5 cm",
-        "img": "./images/collection/MingXuande_Preview.png",
+        "img": "./images/collection/porcelain_07.jpg",
         "tags": [
             "白地黑花",
             "水墨画风",
@@ -964,7 +964,7 @@ const archivePorcelains = [
         "kiln": "耀州窑 · 陕西铜川黄堡镇",
         "level": "北方刻花青瓷冠绝天下之器",
         "size": "高 6.0 cm · 口径 18.1 cm",
-        "img": "./images/collection/QingQianlong_Preview.png",
+        "img": "./images/collection/porcelain_08.jpg",
         "tags": [
             "橄榄青翠",
             "印花婴戏",

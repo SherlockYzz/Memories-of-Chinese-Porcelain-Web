@@ -1,4 +1,4 @@
-﻿﻿/**
+﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -508,48 +508,66 @@ const masterTreasuresMeta = {
 const masterTreasuresCache = {};
 const masterTreasuresLoading = {};
 
-function preloadMasterTreasures(callback) {
+// --- 极致轻量按需加载引擎：单器即点即拉，杜绝首屏并发拥堵 ---
+function loadSingleMasterTreasure(idx, callback) {
     if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
+    if (masterTreasuresCache[idx]) {
+        if (callback) callback(masterTreasuresCache[idx]);
+        return;
+    }
+    if (masterTreasuresLoading[idx]) return;
+    masterTreasuresLoading[idx] = true;
+
+    const meta = masterTreasuresMeta[idx];
+    if (!meta) return;
+
     const loader = new THREE.GLTFLoader();
-    const indices = [0, 1, 2, 3, 4, 5, 6, 7];
-    let loadedCount = 0;
-
-    indices.forEach(idx => {
-        if (masterTreasuresCache[idx]) {
-            loadedCount++;
-            if (loadedCount === indices.length && callback) callback();
-            return;
-        }
-        if (masterTreasuresLoading[idx]) return;
-        masterTreasuresLoading[idx] = true;
-
-        const meta = masterTreasuresMeta[idx];
-        loader.load(meta.path, (gltf) => {
-            masterTreasuresLoading[idx] = false;
-            if (gltf && gltf.scene) {
-                gltf.scene.traverse(c => {
-                    if (c.isMesh) {
-                        c.castShadow = true;
-                        c.receiveShadow = true;
-                        if (c.geometry) {
-                            c.geometry.computeVertexNormals();
-                        }
-                    }
-                });
-                masterTreasuresCache[idx] = gltf.scene;
-                if (currentModelIndex === idx && currentGroup) {
-                    loadPorcelainModel(idx, true);
+    loader.load(meta.path, (gltf) => {
+        masterTreasuresLoading[idx] = false;
+        if (gltf && gltf.scene) {
+            gltf.scene.traverse(c => {
+                if (c.isMesh) {
+                    c.castShadow = true;
+                    c.receiveShadow = true;
+                    if (c.geometry) c.geometry.computeVertexNormals();
                 }
+            });
+            masterTreasuresCache[idx] = gltf.scene;
+            if (callback) callback(gltf.scene);
+            if (currentModelIndex === idx && currentGroup) {
+                loadPorcelainModel(idx, true);
             }
-            loadedCount++;
-            if (loadedCount === indices.length && callback) callback();
-        }, undefined, (err) => {
-            masterTreasuresLoading[idx] = false;
-            console.warn('[传世国宝模型载入提示] ' + meta.name + ':', err);
-            loadedCount++;
-            if (loadedCount === indices.length && callback) callback();
-        });
+        }
+    }, undefined, (err) => {
+        masterTreasuresLoading[idx] = false;
+        console.warn('[国宝模型载入提示] ' + meta.name + ':', err);
     });
+}
+
+// 闲时慢速串行预热（首屏完全加载后每隔3秒预载一个，绝不并发争抢带宽）
+let idlePreloadTimer = null;
+function startIdlePreloadMasterTreasures() {
+    if (idlePreloadTimer) return;
+    const remaining = [1, 2, 3, 4, 5, 6, 7];
+    let curr = 0;
+    function loadNext() {
+        if (curr >= remaining.length) return;
+        const targetIdx = remaining[curr++];
+        if (!masterTreasuresCache[targetIdx]) {
+            loadSingleMasterTreasure(targetIdx, () => {
+                idlePreloadTimer = setTimeout(loadNext, 3000);
+            });
+        } else {
+            idlePreloadTimer = setTimeout(loadNext, 1000);
+        }
+    }
+    idlePreloadTimer = setTimeout(loadNext, 6000);
+}
+
+function preloadMasterTreasures(callback) {
+    // 兼容接口：仅拉取当前首发展品，其余闲时预热
+    loadSingleMasterTreasure(currentModelIndex || 0, callback);
+    startIdlePreloadMasterTreasures();
 }
 
 const glazePalettes = {
@@ -1680,36 +1698,7 @@ function loadSingleScannedGLTFOnDemand(key, modelIndex) {
  * 闲时后台温和预热其余扫描模型，彻底避免主线程丢帧
  */
 function scheduleBackgroundModelPreload() {
-    const trigger = () => {
-        ensureScannedModelsData(() => {
-            const keys = ['vase_01', 'vase_02', 'vase_03', 'vase_04', 'vase_05'];
-            let idx = 0;
-            function loadNext() {
-                if (idx >= keys.length) return;
-                const key = keys[idx++];
-                if (!scannedModelCache[key] && window.SCANNED_MODELS_DATA && window.SCANNED_MODELS_DATA[key]) {
-                    try {
-                        const loader = new THREE.GLTFLoader();
-                        const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
-                        loader.parse(jsonStr, '', (gltf) => {
-                            if (gltf && gltf.scene) scannedModelCache[key] = gltf.scene;
-                            setTimeout(loadNext, 400);
-                        }, () => { setTimeout(loadNext, 400); });
-                    } catch (e) {
-                        setTimeout(loadNext, 400);
-                    }
-                } else {
-                    setTimeout(loadNext, 120);
-                }
-            }
-            loadNext();
-        });
-    };
-    if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(() => setTimeout(trigger, 3500));
-    } else {
-        setTimeout(trigger, 5000);
-    }
+    // 激光点云数据包 (3.88MB) 严格按需拉取：只有当用户点击 8~12 号实测扫描展柜时才动态加载
 }
 
 /**
@@ -1793,7 +1782,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
                 group.add(goldRim);
             }
         } else {
-            preloadMasterTreasures();
+            loadSingleMasterTreasure(typeIndex);
             // 极速占位网格（以防网络首次拉取闪烁）
             const fbPts = [
                 new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
@@ -2401,8 +2390,9 @@ function initThreeJS() {
         scene.add(topSpotLight);
 
         createInspectorStage();
-        preloadMasterTreasures();
+        loadSingleMasterTreasure(0);
         loadPorcelainModel(0);
+        startIdlePreloadMasterTreasures();
         scheduleBackgroundModelPreload();
 
         setupControls(canvas);
@@ -3362,10 +3352,7 @@ function ensureMuseumAudioData(callback) {
     document.body.appendChild(s);
 }
 
-// 闲时在页面完全就绪交互 5 秒后静默预载原声音频，首屏 0 流量占用
-setTimeout(() => {
-    ensureMuseumAudioData();
-}, 5000);
+// 音频数据包严格按需拉取：只有当用户真正点击【叩瓷听音/馆长导览】时才动态加载，首屏 0 流量占用
 
 function speakVesselCommentary() {
     const m = porcelainModelsData[currentModelIndex] || porcelainModelsData[0];
