@@ -443,7 +443,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb',
         key: 'guanyao_octagonal_vase',
         name: '南宋修内司官窑八方贯耳弦纹瓶',
-        scale: 9.35,
+        scale: 9.25,
         targetHeight: 2.16,
         previewImg: 'images/collection/SongGuanYao_Ultra_Preview.png'
     },
@@ -451,15 +451,15 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/SongRuYao_LotusBowl_Master.glb',
         key: 'ruyao_lotus_bowl',
         name: '北宋汝窑天青釉十瓣莲花式温碗',
-        scale: 8.15,
-        targetHeight: 0.85,
+        scale: 7.50,
+        targetHeight: 0.89,
         previewImg: 'images/collection/SongRuYao_Master_Preview.png'
     },
     2: {
         path: 'models/masterpieces/SongDingYao_PlumVase_Master.glb',
         key: 'dingyao_plum_vase',
         name: '北宋定窑白釉刻花莲纹梅瓶',
-        scale: 7.60,
+        scale: 9.55,
         targetHeight: 2.24,
         previewImg: 'images/collection/SongDingYao_Master_Preview.png'
     },
@@ -467,7 +467,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/SongGeYao_CrackleVase_Master.glb',
         key: 'geyao_crackle_vase',
         name: '宋代哥窑米黄釉百圾碎贯耳扁瓶',
-        scale: 10.12,
+        scale: 9.35,
         targetHeight: 2.12,
         previewImg: 'images/collection/SongGeYao_Preview.png'
     },
@@ -475,7 +475,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/SongJunYao_ChujiZun_Master.glb',
         key: 'junyao_chuji_zun',
         name: '北宋钧窑玫瑰紫釉出戟尊',
-        scale: 8.52,
+        scale: 10.05,
         targetHeight: 2.20,
         previewImg: 'images/collection/SongJunYao_Preview.png'
     },
@@ -483,7 +483,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/YuanQingHua_DragonVase_Master.glb',
         key: 'yuanqinghua_dragon_vase',
         name: '元代青花缠枝牡丹双龙耳大罐',
-        scale: 7.38,
+        scale: 7.40,
         targetHeight: 2.10,
         previewImg: 'images/collection/YuanQingHua_Preview.png'
     },
@@ -491,7 +491,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/MingXuande_MonkCapTeapot_Master.glb',
         key: 'xuande_monkcap_teapot',
         name: '明宣德宝石红霁红釉僧帽壶',
-        scale: 9.00,
+        scale: 8.27,
         targetHeight: 2.15,
         previewImg: 'images/collection/MingXuande_Preview.png'
     },
@@ -499,7 +499,7 @@ const masterTreasuresMeta = {
         path: 'models/masterpieces/QingQianlong_RevolvingVase_Master.glb',
         key: 'qianlong_revolving_vase',
         name: '清乾隆金地开光洋彩转心瓶',
-        scale: 7.30,
+        scale: 9.35,
         targetHeight: 2.28,
         previewImg: 'images/collection/QingQianlong_Preview.png'
     }
@@ -1534,9 +1534,19 @@ function buildGeometry(typeIndex, customGlaze = null) {
                         if (!customGlaze && (child.material.map || child.material.name.includes('True') || child.material.name.includes('Master') || child.material.name.includes('Ultra') || child.material.name.includes('Porcelain') || child.material.name.includes('GuanYao') || child.material.name.includes('RuYao') || child.material.name.includes('JunYao') || child.material.name.includes('Xuande') || child.material.name.includes('Qianlong') || child.material.name.includes('QingHua'))) {
                             child.material.envMap = envMapTexture;
                             child.material.envMapIntensity = 1.15;
-                            child.material.roughness = 0.14;
-                            child.material.metalness = 0.00; // 严格绝缘介电体，彻底杜绝塑料与金属感！
-                            child.material.clearcoat = 1.0;  // 赋予玻璃质透明石灰碱釉面
+                            if (child.material.roughnessMap) {
+                                child.material.roughness = 1.0;
+                            } else {
+                                child.material.roughness = 0.14;
+                            }
+                            if (child.material.normalMap) {
+                                child.material.normalScale.set(1.0, 1.0);
+                            }
+                            const matName = (child.material.name || '').toLowerCase();
+                            if (!matName.includes('gold') && !matName.includes('metal') && !matName.includes('qianlong')) {
+                                child.material.metalness = 0.00;
+                            }
+                            child.material.clearcoat = 1.0;
                             child.material.clearcoatRoughness = 0.03;
                             child.material.clippingPlanes = activePlanes;
                             child.material.clipShadows = true;
