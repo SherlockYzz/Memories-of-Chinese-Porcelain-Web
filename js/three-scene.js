@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -96,111 +96,79 @@ let vesselVibration = 0;
  */
 const bottomConnoisseurshipData = [
     {
-        name: "宋官窑·八方贯耳弦纹瓶",
+        name: "南宋修内司官窑·八方贯耳弦纹瓶",
         footType: "八方折角宽圈足 · 铁足露胎",
         firingCraft: "紫金土垫饼装匣正烧 · 足端刮釉露胎",
-        clayBody: "紫黑坚致铁骨胎 (含铁量约4.8%)",
+        clayBody: "紫黑坚致铁骨胎 (含铁量高达4.8%)",
         reignMark: "宋官窑崇尚素雅，底足无刻款，纯留手工刮胎旋削痕",
         tips: "紫口铁足，釉如堆脂。圈足露胎处经千百载自然氧化，呈现温润的黑褐色铁光与微弱火石红，绝无新仿作旧之燥气。"
     },
     {
-        name: "宋汝窑·天青椭圆四足水仙盆",
-        footType: "平底外撇如意云头四足 · 裹足支烧",
-        firingCraft: "满釉裹足 · 底部整齐排布六个极其细小的芝麻状支钉痕",
-        clayBody: "细腻坚密香灰胎 (微泛青灰，吸水率极低)",
-        reignMark: "传世器底有清宫造办处刻乾隆御题诗及“甲”字千字文殿阁代号",
-        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。芝麻花支钉仅小米粒大，脱落处露出纯净香灰胎，天青釉层紧紧裹住足端，天下宋瓷无出其右。"
+        name: "北宋汝窑·天青釉十瓣莲花式温碗",
+        footType: "高深微敛圆圈足 · 满釉裹足支烧",
+        firingCraft: "支钉架空正烧 · 圈足底面整齐散布五枚如米粒般微小的芝麻状支钉痕",
+        clayBody: "极其纯净细腻的浅灰香灰胎 (微泛青灰，吸水率近于零)",
+        reignMark: "台北故宫传世孤品，底足满釉素面无刻款",
+        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。十瓣莲花温碗圈足修刀挺拔微敛，底足满裹青翠透润的天青厚釉，五枚芝麻支钉脱落处露出纯净香灰胎，天工神品无与伦比。"
     },
     {
-        name: "宋定窑·白釉划花莲纹梅瓶",
+        name: "北宋定窑·白釉刻花莲纹梅瓶",
         footType: "微凹平底 · 浅切隐圈足",
-        firingCraft: "正烧平切垫砂 · 底足露胎不施釉",
+        firingCraft: "正烧平切垫砂 · 底足露胎不施釉 · 口沿覆烧镶金扣",
         clayBody: "洁白坚致糯米胎 (高岭土淘洗极纯，氧化铝含量高)",
         reignMark: "素底无款，局部可见北宋窑工手工轮制竹丝刷痕与跳刀纹",
-        tips: "“白如玉、薄如纸、声如磬”。梅瓶为立件正烧，口沿挂釉而底足露白胎，底心微凹，留有窑砂附着痕与如泪珠般垂流的“泪痕”。"
+        tips: "“白如玉、薄如纸、声如磬”。梅瓶为立件正烧，口沿覆烧覆扣而底足露白胎，底心微凹，留有窑砂附着痕与如泪珠般垂流的“蜡泪痕”。"
     },
     {
-        name: "宋哥窑·金丝铁线胆式瓶",
-        footType: "圆直圈足 · 铁足深沉",
-        firingCraft: "紫金土高钙铁胎 · 泥条垫烧后足端打磨",
-        clayBody: "黑褐色铁胎 (胎壁薄而坚致，俗称泥鳅背)",
-        reignMark: "宋代传世原款无字，底部满布深色大开片与浅黄细碎纹",
-        tips: "“金丝铁线，紫口铁足”。底足圈足打磨圆润呈泥鳅背状，露胎处色如生铁，足内覆釉自然开深黑褐色大裂隙，古意盎然。"
+        name: "宋代哥窑·米黄百圾碎贯耳扁瓶",
+        footType: "椭圆修刀圈足 · 泥鳅背铁足深沉",
+        firingCraft: "紫金土高钙铁胎 · 泥条垫烧后足端精工刮胎",
+        clayBody: "黑褐色坚硬铁胎 (俗称泥鳅背铁足)",
+        reignMark: "宋代原款无字，底部满布深色大开片与浅黄细碎细纹",
+        tips: "“金丝铁线，百圾碎纹”。底足圈足打磨圆润呈泥鳅背状，露胎处色如生铁，足内覆釉自然开深黑褐色大裂隙，古意苍茫。"
     },
     {
-        name: "宋钧窑·玫瑰紫海棠出戟尊",
-        footType: "海棠如意形圈足 · 芝麻酱釉护胎底",
+        name: "北宋钧窑·玫瑰紫釉海棠出戟尊",
+        footType: "海棠形宽圈足 · 芝麻酱护胎底",
         firingCraft: "底部涂刷极薄芝麻酱色氧化铁护胎釉 · 支烧平切",
-        clayBody: "香灰色夹砂胎 (质地坚重，烧结度极高)",
-        reignMark: "底部刻汉字数字编号（如“一”至“十”），表明尊身规制尺寸",
+        clayBody: "香灰色夹砂致密胎 (质地坚重，烧结度极高)",
+        reignMark: "器底刻汉字数字编号（如“一”至“十”），表明尊身规制尺寸",
         tips: "“钧瓷无对，窑变无双”。官钧器底必刷一层薄薄黄褐色芝麻酱釉，底心刻划数字深沉遒劲，乃北宋宫廷御用陈设花器规制。"
     },
     {
-        name: "宋建窑·兔毫曜变天目斗茶盏",
-        footType: "矮浅小圈足 · 粗壮暗褐铁胎",
-        firingCraft: "仰烧高足垫饼 · 厚釉垂流止于足际形成聚釉珠",
-        clayBody: "粗颗粒高铁铁胎 (含铁高达8%以上，手感极为沉实)",
-        reignMark: "部分宋代御贡品底足刀刻“进琖”、“供御”隶楷款识",
-        tips: "“盏色贵青黑，玉毫条达”。建盏底足修刀粗犷坚决，足底露黑褐色铁胎，含砂粒感，吸水极慢，置于茶席之上稳若泰山。"
+        name: "元代青花·缠枝牡丹双龙耳大罐",
+        footType: "大口径宽矮圈足 · 糙底泛微火石红",
+        firingCraft: "正烧平垫砂 · 足端斜削刀法粗犷有力",
+        clayBody: "麻仓土与瓷石二元配方胎 (坚白致密，含微量铁斑杂质)",
+        reignMark: "元代青花大器多素底无款，露胎处自然泛黄褐色火石红",
+        tips: "“苏麻离青，浓烈入骨”。大罐底足宽厚扎实，手工旋削泥条痕与跳刀痕清晰可见，露胎处因麻仓土高铁含量自然泛出火石红，古朴雄浑。"
     },
     {
-        name: "明宣德·青花缠枝莲纹玉壶春瓶",
-        footType: "撇口微敞高圈足 · 极细润滑砂底",
-        firingCraft: "足内施亮青亮白釉 · 底心青花楷书年款",
-        clayBody: "麻仓土与高岭土合调 · 胎白细腻泛微火石红",
-        reignMark: "青花双圈内楷书“大明宣德年制”六字双行款，笔力沉雄苍劲",
-        tips: "“宣德款识满器身，德字心上无一横”。底足胎釉交界处有一线淡红火石红光，足端滚圆如泥鳅背，苏麻离青铁锈斑沉入胎骨。"
+        name: "明宣德·宝石红霁红釉僧帽壶",
+        footType: "玉璧底圈足 · 极其细腻滑润白砂底",
+        firingCraft: "足内微凹施亮青釉 · 圈足精细滚圆打磨",
+        clayBody: "景德镇麻仓高岭土御用精淘胎 (白润致密如糯米粉)",
+        reignMark: "圈足内青花双圈楷书“大明宣德年制”六字双行官款",
+        tips: "“霁红如宝石，白草边绝冠”。圈足修削极其规整圆润，俗称‘泥鳅背’，足底釉色微泛鸭蛋青，胎釉交界处隐现浅浅一线橙黄火石红。"
     },
     {
-        name: "宋景德镇窑·影青撇口净水瓶 [3D实物扫描]",
-        footType: "平底微凹浅圈足 · 垫饼支烧露胎",
-        firingCraft: "耐火土垫饼正烧 · 底部接触面自然氧化",
-        clayBody: "白中泛青高岭白泥 · 细润透光",
-        reignMark: "宋代民窑大器无刻款，底留手拉坯旋纹与垫饼粘砂痕",
-        tips: "真品实测扫描！底足呈天然赭黄色火石红圆晕，拉坯收刀痕自中心向外呈螺旋放射状，尽显宋人手作慢轮拉坯之神韵。"
-    },
-    {
-        name: "宋元金石·铁锈花修身赏瓶 [3D实物扫描]",
-        footType: "宽平厚圈足 · 粗底露砂",
-        firingCraft: "磁州窑快轮拉坯 · 垫砂叠烧",
-        clayBody: "北方大青土灰白胎 · 质地朴拙",
-        reignMark: "底部无款，粗刀平刮，保留原始泥料拉扯气孔",
-        tips: "真品实测扫描！底足厚重大气，重心极其稳定，足底粗糙未修平，带有北方窑口天然古拙之金石风骨。"
-    },
-    {
-        name: "宋元名品·龙泉青瓷双系圆腹罐 [3D实物扫描]",
-        footType: "规整圈足 · 鲜红朱砂底 (火石红)",
-        firingCraft: "足心施青厚釉 · 足圈露胎垫饼装匣高温还原",
-        clayBody: "灰白胎致密坚实 · 露胎处富氧氧化发红",
-        reignMark: "底心满施梅子青釉，圈足露胎呈现极其鲜艳的朱砂红晕",
-        tips: "真品实测扫描！“朱砂铁足，青翠欲滴”。龙泉窑圈足火石红非人工涂抹，乃胎土中铁元素在停火冷却时由内向外析出氧化而成。"
-    },
-    {
-        name: "明宣德·洁白釉修身玉壶春长颈瓶 [3D实物扫描]",
-        footType: "玉璧状修足 · 甜白莹润底",
-        firingCraft: "精细麻仓土水洗淘澄 · 白釉双面包裹",
-        clayBody: "纯净脱脂白瓷胎 · 透光如脂如玉",
-        reignMark: "底心暗刻或双圈宣德青花款，抚之滑如凝脂",
-        tips: "真品实测扫描！在强光穿透下，底足与薄胎处透出极其温润含蓄的肉红色宝光，足墙打磨极其细致，抚摸毫无划手感。"
-    },
-    {
-        name: "汉唐溯源·古拙双耳弦纹汲水陶壶 [3D实物扫描]",
-        footType: "厚重平底 · 细绳勒割线纹",
-        firingCraft: "原始土窑慢烧 · 绳割与陶垫自然粘合",
-        clayBody: "夹砂红陶红褐色胎骨 · 透气吸水",
-        reignMark: "底足保留两千年前陶工手指压捏痕与细绳勒割弧线",
-        tips: "真品实测扫描！底部粗粝厚重，绳割弧线由左向右自然发散，见证华夏先民由陶入瓷的最初造物足音。"
+        name: "清乾隆·金地开光洋彩透雕转心瓶",
+        footType: "双层同心子母圈足 · 精致施松石绿护胎釉",
+        firingCraft: "内外双层多次入窑低温二次烧结 · 榫卯同心旋转合缝",
+        clayBody: "清代督陶官唐英御制极纯高岭胎 (极白极致密，敲击金石长鸣)",
+        reignMark: "器底松石绿地红彩篆书“大清乾隆年制”六字三行方章款",
+        tips: "“巧夺天工，鬼斧神工”。外瓶圈足与内胆旋转轴心采用极精密陶瓷榫卯咬合，圈足足端涂金或露极细白润胎骨，代表中国历代制瓷机械结构最高绝诣。"
     }
 ];
 
 const porcelainModelsData = [
     {
-        "name": "宋官窑·八方贯耳弦纹瓶",
-        "english": "Song Imperial Guan Octagonal Vase with Tubular Handles",
+        "name": "南宋修内司官窑·八方贯耳弦纹瓶",
+        "english": "Southern Song Imperial Xiuneisi Guan Octagonal Vase",
         "period": "南宋 (1127–1279)",
         "kiln": "杭州修内司官窑 / 郊坛下官窑",
         "dimensions": "通高 22.8 cm · 口径 5.4 cm · 足径 7.2 cm",
-        "desc": "仿商周青铜礼器造型，瓶身八方起棱，口颈两侧各设一垂直中空贯耳，腹部饰凸起弦纹。胎骨含铁高达5%，呈现典型“紫口铁足”，釉厚如堆脂，蟹爪纹与金丝铁线纵横交织，尽显南宋宫廷崇尚的穆重典雅。",
+        "desc": "仿商周青铜礼器造型，瓶身八方起棱，口颈两侧各设一垂直中空贯耳，腹部饰凸起弦纹。胎骨含铁高达5%，呈现典型“紫口铁足”。八方立体折角配合深邃冰裂开片，尽显南宋修内司官窑皇室器物的肃穆厚重。",
         "features": [
             "八方折棱折光",
             "双贯耳穿带结构",
@@ -209,553 +177,381 @@ const porcelainModelsData = [
         ],
         "defaultGlaze": "tianqing",
         "hotspots": [
-            {
-                "label": "紫口 · 口沿釉薄透紫褐胎",
-                "pos": [
-                    0.32,
-                    0.96,
-                    0.1
-                ],
-                "view": "top"
-            },
-            {
-                "label": "双贯耳 · 仿古青铜穿系礼制",
-                "pos": [
-                    -0.36,
-                    0.65,
-                    0.08
-                ],
-                "view": "front"
-            },
-            {
-                "label": "蟹爪冰裂 · 厚釉多层热应力纹",
-                "pos": [
-                    0.58,
-                    -0.25,
-                    0.25
-                ],
-                "view": "front"
-            },
-            {
-                "label": "铁足 · 凤凰山紫金土露胎圈足",
-                "pos": [
-                    0.28,
-                    -1.12,
-                    0.15
-                ],
-                "view": "bottom"
-            }
+            { "label": "紫口 · 口沿釉薄微透铁骨", "pos": [0.28, 1.95, 0.08], "view": "top" },
+            { "label": "双贯耳 · 仿古青铜穿系礼制", "pos": [-0.52, 1.45, 0.08], "view": "front" },
+            { "label": "蟹爪冰裂 · 厚釉多层热应力纹", "pos": [0.55, 0.65, 0.22], "view": "front" },
+            { "label": "铁足 · 凤凰山紫金土露胎圈足", "pos": [0.25, 0.05, 0.12], "view": "bottom" }
         ],
         "acousticFreq": 2420
     },
     {
-        "name": "宋汝窑·天青椭圆四足水仙盆",
-        "english": "Northern Song Ru Kiln Sky-Blue Oval Narcissus Basin",
+        "name": "北宋汝窑·天青釉十瓣莲花式温碗",
+        "english": "Northern Song Ru Kiln Sky-Cyan Lotus Warming Bowl",
         "period": "北宋晚期 (徽宗宣和年间)",
         "kiln": "河南宝丰清凉寺汝官窑",
-        "dimensions": "高 6.7 cm · 口横 23.1 cm · 口纵 16.4 cm",
-        "desc": "传世孤品级形制。盆体呈温雅椭圆形，广口卷唇，浅腹平底，下承四只雕琢精妙的如意云头矮足。玛瑙末入釉，通体满施雨过天青色釉，温润如羊脂美玉，底部留有细小如针的芝麻支钉痕。",
+        "dimensions": "高 10.4 cm · 口径 16.2 cm · 足径 8.1 cm",
+        "desc": "台北故宫博物院镇院之宝，世所罕见的汝窑巅峰之作。器身仿若一朵静穆绽放的十瓣青莲，俯视如莲花重叠，仰视似莲瓣亭亭。通体满施玛瑙入釉的天青厚釉，温润如酥玉，底足圈足直立微敛，足底留有五个极细微的芝麻状支钉痕，展现了北宋文人极致的幽玄淡泊与空灵之美。",
         "features": [
+            "十瓣仰莲仿生造型",
             "雨过天青玛瑙釉",
-            "四如意云头短足",
-            "椭圆卷唇广口",
-            "五枚芝麻支钉痕"
+            "底足五枚芝麻支钉",
+            "台北故宫传世孤品"
         ],
         "defaultGlaze": "tianqing",
         "hotspots": [
-            {
-                "label": "卷唇敞口 · 温润凝脂玉质感",
-                "pos": [
-                    0.95,
-                    0.18,
-                    0.2
-                ],
-                "view": "top"
-            },
-            {
-                "label": "如意云头足 · 四足稳承平底",
-                "pos": [
-                    0.68,
-                    -0.32,
-                    0.42
-                ],
-                "view": "bottom"
-            },
-            {
-                "label": "芝麻支钉 · 满釉裹足支烧绝技",
-                "pos": [
-                    0,
-                    -0.28,
-                    0
-                ],
-                "view": "bottom"
-            }
+            { "label": "仰莲花瓣 · 俯视如初绽青莲", "pos": [0.65, 0.78, 0.22], "view": "top" },
+            { "label": "腹壁折棱 · 莲瓣筋脉与微泛粉青", "pos": [0.52, 0.42, 0.22], "view": "front" },
+            { "label": "芝麻支钉 · 满釉裹足五枚支钉", "pos": [0, 0.02, 0], "view": "bottom" }
         ],
         "acousticFreq": 2580
     },
     {
-        "name": "宋定窑·白釉划花莲纹梅瓶",
-        "english": "Northern Song Ding Kiln Carved Lotus White Meiping",
+        "name": "北宋定窑·白釉刻花莲纹梅瓶",
+        "english": "Northern Song Ding Kiln Carved Lotus White Meiping (Gold Rim)",
         "period": "北宋 (960–1127)",
         "kiln": "河北曲阳涧磁村定窑",
-        "dimensions": "通高 31.5 cm · 口径 4.2 cm · 足径 9.8 cm",
-        "desc": "小口翻唇，短颈丰肩，修腹渐收至胫部微扬，线条挺拔俊秀。胎骨洁白坚致，击之声如清磬；釉呈温润象牙白，口沿施鎏金铜扣（芒口镶扣），腹部以竹刀深刻流利缠枝莲纹，积釉处隐现“蜡泪痕”。",
+        "dimensions": "通高 29.5 cm · 口径 4.2 cm · 腹径 16.6 cm · 足径 8.3 cm",
+        "desc": "小口微翻，短颈丰肩，修腹敛胫，线条秀拔刚劲。胎骨白净致密，敲击有清越金石磬音。口沿覆烧无釉，镶饰极尽华美的鎏金铜扣（芒口金扣覆烧巅峰）。器身以竹刀半刀泥深刻舒展翻转的缠枝莲花，积釉深洼处流淌天然暖黄牙白“蜡泪痕”。",
         "features": [
             "芒口镶鎏金铜扣",
             "象牙白温润暖釉",
-            "竹刀深刻缠枝莲",
+            "竹刀半刀泥深刻莲花",
             "丰肩修腹仕女姿"
         ],
         "defaultGlaze": "dingbai",
         "hotspots": [
-            {
-                "label": "芒口金扣 · 覆烧工艺皇家镶金口",
-                "pos": [
-                    0.24,
-                    0.98,
-                    0.1
-                ],
-                "view": "top"
-            },
-            {
-                "label": "丰肩刻花 · 半刀泥深刻莲瓣浮雕",
-                "pos": [
-                    0.64,
-                    0.38,
-                    0.22
-                ],
-                "view": "front"
-            },
-            {
-                "label": "牙白泪痕 · 天然石灰釉垂流聚痕",
-                "pos": [
-                    -0.46,
-                    -0.32,
-                    0.25
-                ],
-                "view": "front"
-            }
+            { "label": "芒口金扣 · 覆烧工艺皇家镶金口", "pos": [0.18, 2.18, 0.08], "view": "top" },
+            { "label": "丰肩刻花 · 半刀泥深刻莲瓣浮雕", "pos": [0.55, 1.55, 0.22], "view": "front" },
+            { "label": "象牙泪痕 · 天然石灰釉垂流泪痕", "pos": [-0.45, 0.68, 0.22], "view": "front" }
         ],
         "acousticFreq": 2850
     },
     {
-        "name": "宋哥窑·金丝铁线胆式瓶",
-        "english": "Song Ge Kiln Pear-Shaped Bottle with Gold-and-Iron Crackles",
+        "name": "宋代哥窑·米黄百圾碎贯耳扁瓶",
+        "english": "Song Ge Kiln Millet-Yellow Flattened Bottle with Crackles",
         "period": "宋代 (960–1279)",
         "kiln": "传世哥窑",
-        "dimensions": "通高 20.3 cm · 口径 3.8 cm · 足径 6.5 cm",
-        "desc": "直口修颈，腹部下垂饱满如悬胆，重心沉稳。釉层肥厚失透如凝脂酥油，通身布满天然开裂的“金丝铁线”——主干粗裂纹呈深铁黑色，次生细密网纹呈金黄色，百极碎纹极富文人苍古画意。",
+        "dimensions": "通高 20.9 cm · 口径 4.5 cm · 腹宽 12.9 cm · 足径 6.8 cm",
+        "desc": "扁圆瓶体，口侧对称设双贯耳。通身满施肥润失透之米黄厚釉，如凝脂酥油。主干裂纹呈铁黑色粗线，次生裂纹呈金黄色细丝，“金丝铁线”纵横交叠，纹如碎冰，密不透风，文人残缺画意之巅峰典范。",
         "features": [
-            "悬胆垂腹优美弧线",
-            "大开片深黑如铁",
-            "细网纹金黄如丝",
-            "酥油光泽温润内敛"
+            "密不透风百圾碎",
+            "金丝铁线交织",
+            "扁腹贯耳古青铜形",
+            "泥鳅背紫黑铁足"
         ],
         "defaultGlaze": "fenqing",
         "hotspots": [
-            {
-                "label": "直口修颈 · 紫口微露铁胎骨",
-                "pos": [
-                    0.22,
-                    1.02,
-                    0.08
-                ],
-                "view": "top"
-            },
-            {
-                "label": "金丝铁线 · 双重染色应力裂网",
-                "pos": [
-                    0.68,
-                    -0.38,
-                    0.2
-                ],
-                "view": "front"
-            },
-            {
-                "label": "铁足圈足 · 垫饼托烧规整修刀",
-                "pos": [
-                    0.32,
-                    -1.08,
-                    0.12
-                ],
-                "view": "bottom"
-            }
+            { "label": "贯耳双系 · 对称管状贯耳穿系", "pos": [-0.48, 1.48, 0.08], "view": "front" },
+            { "label": "铁线开片 · 深黑主脉与浅金裂隙", "pos": [0.48, 0.88, 0.22], "view": "front" },
+            { "label": "泥鳅背足 · 圆润修足露生铁色", "pos": [0.22, 0.05, 0.12], "view": "bottom" }
         ],
         "acousticFreq": 2180
     },
     {
-        "name": "宋钧窑·玫瑰紫海棠出戟尊",
-        "english": "Northern Song Jun Kiln Rose-Purple Four-Flanged Zun",
+        "name": "北宋钧窑·玫瑰紫釉海棠出戟尊",
+        "english": "Song Jun Kiln Rose-Purple Splashed Chuji Zun",
         "period": "北宋晚期至金代",
         "kiln": "河南禹州钧台官窑",
-        "dimensions": "通高 24.5 cm · 口径 18.2 cm · 足径 12.0 cm",
-        "desc": "北宋皇家陈设重器。器身呈四瓣海棠花形，喇叭敞口，颈、腹、足四面各附镂空齿状出戟。釉料含微量氧化铜，经1300℃还原焰窑变，“入窑一色，出窑万彩”，玫瑰紫与海棠红交融绚烂如晚霞。",
+        "dimensions": "通高 25.8 cm · 口横 20.2 cm · 足横 14.5 cm",
+        "desc": "仿商周青铜器“尊”式样，大喇叭口，鼓腹，圈足外撇。颈部、腹部及底足四面各饰一道纵向凸起出戟扉棱。器表施铜红还原乳浊釉，红、蓝、紫多色如晚霞流云窑变交融，口沿出筋处微现黄褐芝麻酱色，雍容华贵。",
         "features": [
-            "四瓣海棠花造型",
-            "四方齿状出戟",
-            "铜还原玫瑰紫窑变",
-            "蚯蚓走泥纹肌理"
+            "四方青铜出戟扉棱",
+            "玫瑰紫铜红还原",
+            "蚯蚓走泥纹",
+            "芝麻酱釉护胎底"
         ],
         "defaultGlaze": "junhong",
         "hotspots": [
-            {
-                "label": "海棠折沿 · 四瓣花式喇叭大敞口",
-                "pos": [
-                    0.72,
-                    0.92,
-                    0.2
-                ],
-                "view": "top"
-            },
-            {
-                "label": "齿状出戟 · 追摹商周青铜礼器威仪",
-                "pos": [
-                    0.68,
-                    -0.1,
-                    0
-                ],
-                "view": "front"
-            },
-            {
-                "label": "玫瑰紫霞 · 氧化铜高温胶体粒子窑变",
-                "pos": [
-                    -0.52,
-                    -0.22,
-                    0.38
-                ],
-                "view": "front"
-            }
+            { "label": "喇叭敞口 · 出筋露白紫褐相映", "pos": [0.72, 1.95, 0.15], "view": "top" },
+            { "label": "四方出戟 · 立体透雕青铜古意出戟", "pos": [0.68, 1.15, 0.18], "view": "front" },
+            { "label": "玫瑰窑变 · 红紫蓝乳光变幻", "pos": [-0.55, 0.72, 0.25], "view": "front" }
         ],
-        "acousticFreq": 2310
+        "acousticFreq": 2350
     },
     {
-        "name": "宋建窑·兔毫曜变天目斗茶盏",
-        "english": "Song Jian Kiln Hare's Fur & Yohen Tenmoku Tea Bowl",
-        "period": "宋代 (960–1279)",
-        "kiln": "福建建阳水吉建窑",
-        "dimensions": "高 7.2 cm · 口径 12.5 cm · 足径 4.0 cm",
-        "desc": "两宋点茶、斗茶之圣器。口沿设束口注汤槽，深腹斜收，下腹垂积釉泪，浅圈足露粗犷黑铁胎。高铁黑釉在窑火中析出金银兔毫结晶与曜变星斑，最宜衬托击拂如雪的白色茶汤。",
+        "name": "元代青花·缠枝牡丹双龙耳大罐",
+        "english": "Yuan Dynasty Blue-and-White Peony Dragon-Handle Jar",
+        "period": "元代 (1271–1368)",
+        "kiln": "景德镇浮梁瓷局",
+        "dimensions": "通高 28.4 cm · 口径 15.6 cm · 腹径 30.0 cm",
+        "desc": "广口短颈，溜肩圆腹，颈肩两侧堆塑灵动双螭龙耳。器身自上而下分层次装饰波涛纹、缠枝牡丹与变形莲瓣纹。采用进口苏麻离青钴料大写意挥洒，青花发色苍翠浓艳，凝聚沉陷处深入胎骨，呈现天然金属锡光黑褐铁锈斑，雄浑磅礴。",
         "features": [
-            "束口防溢注汤槽",
-            "曜变星斑与银兔毫",
-            "下腹垂珠积釉泪",
-            "含铁8%重铁胎底"
-        ],
-        "defaultGlaze": "jianhei",
-        "hotspots": [
-            {
-                "label": "束口暗槽 · 斗茶注汤咬盏定胜负",
-                "pos": [
-                    0.85,
-                    0.35,
-                    0.15
-                ],
-                "view": "top"
-            },
-            {
-                "label": "曜变兔毫 · 铁氧化物微晶干涉光晕",
-                "pos": [
-                    0.15,
-                    -0.15,
-                    0.35
-                ],
-                "view": "top"
-            },
-            {
-                "label": "铁胎浅足 · 建阳水吉高铁红土胎骨",
-                "pos": [
-                    0.28,
-                    -0.72,
-                    0.1
-                ],
-                "view": "bottom"
-            }
-        ],
-        "acousticFreq": 1980
-    },
-    {
-        "name": "明宣德·青花缠枝莲纹玉壶春瓶",
-        "english": "Ming Xuande Blue-and-White Lotus Yuhuchun Vase",
-        "period": "明宣德 (1426–1435)",
-        "kiln": "江西景德镇御器厂",
-        "dimensions": "通高 28.5 cm · 口径 8.2 cm · 足径 10.4 cm",
-        "desc": "撇口细颈，垂腹丰满如水滴，圈足外撇，通体曲线呈柔美S型。釉面肥厚泛鸭蛋青，以进口“苏麻离青”钴料分层绘蕉叶纹、如意云头及缠枝宝相莲纹，浓重处凝聚黑褐色铁锈结晶斑，深沉雄健。",
-        "features": [
-            "曼妙S型水滴曲线",
-            "进口苏麻离青浓艳",
-            "深入胎骨铁锈结晶斑",
-            "五段式皇家官样纹饰"
+            "苏麻离青铁锈斑",
+            "螭龙堆塑双耳",
+            "缠枝大牡丹纹",
+            "元代雄浑阔体"
         ],
         "defaultGlaze": "qinghua",
         "hotspots": [
-            {
-                "label": "撇口蕉叶纹 · 颈部挺拔饰青花蕉叶",
-                "pos": [
-                    0.35,
-                    0.85,
-                    0.15
-                ],
-                "view": "front"
-            },
-            {
-                "label": "苏麻离青 · 高铁低锰进口钴料铁锈斑",
-                "pos": [
-                    0.68,
-                    -0.32,
-                    0.25
-                ],
-                "view": "front"
-            },
-            {
-                "label": "仰莲圈足 · 景德镇麻仓土二元配方白胎",
-                "pos": [
-                    0.38,
-                    -1.08,
-                    0.12
-                ],
-                "view": "bottom"
-            }
+            { "label": "螭龙塑耳 · 生动灵巧螭龙透雕双耳", "pos": [-0.88, 1.62, 0.15], "view": "front" },
+            { "label": "铁锈锡斑 · 苏料深沉下凹金属光斑", "pos": [0.72, 1.05, 0.25], "view": "front" },
+            { "label": "缠枝牡丹 · 笔法洒脱花繁叶茂", "pos": [-0.58, 0.68, 0.35], "view": "front" }
         ],
-        "acousticFreq": 2720
+        "acousticFreq": 2150
     },
     {
-        "name": "宋景德镇窑·影青撇口净水瓶 [3D实物扫描]",
-        "english": "Song Jingdezhen Qingbai Flared Bottle (3D Photogrammetry)",
-        "period": "宋代 (960–1279)",
-        "kiln": "江西景德镇湖田窑 / 湘湖窑",
-        "dimensions": "通高 21.5 cm · 口径 4.8 cm · 足径 6.2 cm",
-        "desc": "基于真实宋代古瓷高精度多视角摄影测量 3D 扫描重构。细长秀丽瓶颈，小巧撇口翻唇，腹下微垂，胎薄如纸，釉白微泛青绿，通体带有古瓷自然使用磨损微痕与岁月温润包浆。",
+        "name": "明宣德·宝石红霁红釉僧帽壶",
+        "english": "Ming Xuande Sacrificial-Red Monk's Cap Ewer",
+        "period": "明宣德 (1426–1435)",
+        "kiln": "景德镇御器厂",
+        "dimensions": "通高 23.9 cm · 宽 20.4 cm · 口径 12.5 cm",
+        "desc": "口沿呈阶梯状高低起伏，前低后高，宛如藏传佛教萨迦派僧帽。前设鸭嘴式流槽，后连扁平宽带形执柄。通体施名贵高温铜红釉（宝石红/霁红），色调深沉凝重，如雨后红霞、纯净鲜红，口沿流口凸棱处显现一圈洁白规整的“灯草边”，明代红釉绝冠之器。",
         "features": [
-            "高精 3D 真实扫描重构",
-            "1K PBR 物理双层微晶釉",
-            "天然老气使用微痕",
-            "薄胎透光影青光泽"
+            "僧帽阶梯花口",
+            "纯净霁红宝石光",
+            "口沿凸棱灯草边",
+            "鸭嘴流执柄结构"
         ],
-        "defaultGlaze": "tianqing",
-        "isScanned": true,
-        "scannedKey": "vase_01",
+        "defaultGlaze": "junhong",
         "hotspots": [
-            {
-                "label": "撇口小沿 · 极薄胎体透光微润",
-                "pos": [
-                    0.18,
-                    0.95,
-                    0.08
-                ],
-                "view": "top"
-            },
-            {
-                "label": "修腹渐敛 · 真实扫描高精曲度",
-                "pos": [
-                    0.38,
-                    -0.15,
-                    0.2
-                ],
-                "view": "front"
-            },
-            {
-                "label": "平削圈足 · 垫饼支烧露纯白胎",
-                "pos": [
-                    0.22,
-                    -0.98,
-                    0.12
-                ],
-                "view": "bottom"
-            }
-        ],
-        "acousticFreq": 2490
-    },
-    {
-        "name": "宋元金石·铁锈花修身赏瓶 [3D实物扫描]",
-        "english": "Song-Yuan Iron-Rust Slender Vase (3D Photogrammetry)",
-        "period": "宋元之交 (13世纪)",
-        "kiln": "磁州窑系 / 山西介休名窑",
-        "dimensions": "通高 23.2 cm · 口径 5.2 cm · 足径 7.0 cm",
-        "desc": "3D 扫描真实古代陶瓷赏瓶。胎质致密坚实，通体施深褐铁红结晶彩釉，表面析出自然风化的铁锈结晶斑点，具有浓厚金石苍古韵味与文人案头清供之风骨。",
-        "features": [
-            "高精 3D 表面几何捕捉",
-            "铁锈红自然结晶斑点",
-            "古法柴窑氧化焰烧造",
-            "深沉内敛金石质感"
-        ],
-        "defaultGlaze": "fenqing",
-        "isScanned": true,
-        "scannedKey": "vase_02",
-        "hotspots": [
-            {
-                "label": "圆唇直口 · 古拙洗练刀工",
-                "pos": [
-                    0.22,
-                    0.98,
-                    0.1
-                ],
-                "view": "top"
-            },
-            {
-                "label": "铁斑结晶 · 铁氧化物自然析出相",
-                "pos": [
-                    0.45,
-                    0.12,
-                    0.25
-                ],
-                "view": "front"
-            },
-            {
-                "label": "敦厚圈足 · 刮釉露胎深褐色底",
-                "pos": [
-                    0.28,
-                    -0.95,
-                    0.15
-                ],
-                "view": "bottom"
-            }
-        ],
-        "acousticFreq": 2360
-    },
-    {
-        "name": "宋元名品·龙泉青瓷双系圆腹罐 [3D实物扫描]",
-        "english": "Song-Yuan Longquan Celadon Two-Lug Jar (3D Photogrammetry)",
-        "period": "南宋至元代 (12–13世纪)",
-        "kiln": "浙江龙泉大窑 / 金村窑",
-        "dimensions": "通高 16.8 cm · 口径 8.5 cm · 腹径 15.2 cm",
-        "desc": "3D 扫描龙泉青瓷经典双系圆腹贮酒茶罐。圆唇直口，丰肩鼓腹，肩部左右各对称附一道泥条形管系，通体施厚润粉青石灰碱釉，釉色青碧如翠玉，肩腹起棱处微露白痕（出筋）。",
-        "features": [
-            "对称双系穿带结构",
-            "圆润饱满丰肩鼓腹",
-            "出筋露白美学细节",
-            "高精法线捕捉微观起伏"
-        ],
-        "defaultGlaze": "fenqing",
-        "isScanned": true,
-        "scannedKey": "vase_03",
-        "hotspots": [
-            {
-                "label": "直口宽口 · 盛装贮藏规整修胎",
-                "pos": [
-                    0.38,
-                    0.65,
-                    0.15
-                ],
-                "view": "top"
-            },
-            {
-                "label": "双系系耳 · 丝绢绳索穿结结构",
-                "pos": [
-                    -0.62,
-                    0.32,
-                    0.1
-                ],
-                "view": "front"
-            },
-            {
-                "label": "出筋露白 · 釉薄处自然显露骨力",
-                "pos": [
-                    0.65,
-                    -0.15,
-                    0.25
-                ],
-                "view": "front"
-            }
-        ],
-        "acousticFreq": 2240
-    },
-    {
-        "name": "明宣德·洁白釉修身玉壶春长颈瓶 [3D实物扫描]",
-        "english": "Ming Xuande Pure White Slender Bottle (3D Photogrammetry)",
-        "period": "明代 (1368–1644)",
-        "kiln": "江西景德镇御窑厂 / 德化窑",
-        "dimensions": "通高 24.5 cm · 口径 4.5 cm · 足径 6.8 cm",
-        "desc": "真实明代经典玉壶春修长造形 3D 摄影测量模型。器身修长拔萃，撇口长颈，垂腹稳重，线条流畅似仕女出尘。通身施肥厚洁白透明釉，微泛象牙暖色，极富明代御用单色白瓷静穆超拔之神髓。",
-        "features": [
-            "修长挺拔S型黄金比例",
-            "纯净洁白失透厚釉",
-            "高精度亚毫米级网格",
-            "宫廷陈设插花雅器"
-        ],
-        "defaultGlaze": "dingbai",
-        "isScanned": true,
-        "scannedKey": "vase_04",
-        "hotspots": [
-            {
-                "label": "细长挺秀瓶颈 · 优美提拉曲线",
-                "pos": [
-                    0.15,
-                    0.82,
-                    0.1
-                ],
-                "view": "front"
-            },
-            {
-                "label": "垂腹温润 · 羊脂凝脂反光质感",
-                "pos": [
-                    0.52,
-                    -0.32,
-                    0.22
-                ],
-                "view": "front"
-            },
-            {
-                "label": "微撇圈足 · 淘洗极细高岭胎骨",
-                "pos": [
-                    0.25,
-                    -1.05,
-                    0.12
-                ],
-                "view": "bottom"
-            }
+            { "label": "僧帽花口 · 阶梯式花瓣帽缘", "pos": [0.32, 1.88, 0.15], "view": "top" },
+            { "label": "鸭嘴流口 · 出水顺畅鸭嘴长流", "pos": [-0.68, 1.55, 0.10], "view": "front" },
+            { "label": "纯净霁红 · 高温铜红宝石晶光", "pos": [0.45, 0.85, 0.22], "view": "front" }
         ],
         "acousticFreq": 2680
     },
     {
-        "name": "汉唐溯源·古拙双耳弦纹汲水陶壶 [3D实物扫描]",
-        "english": "Han-Tang Ancient Pottery Two-Lug Amphora (3D Photogrammetry)",
-        "period": "汉唐之交 · 华夏陶瓷源头",
-        "kiln": "华夏北方古陶窑场",
-        "dimensions": "通高 20.8 cm · 口径 6.0 cm · 足径 7.5 cm",
-        "desc": "高精度扫描华夏古代陶器标准器。胎质含砂坚韧，表面留有泥条盘筑与旋转修削的原始旋纹，两侧设高拱桥形泥条双耳。无釉露素胎，经历千百年岁月地下土壤微矿物置换，展现华夏泥火艺术源头之苍茫拙朴。",
+        "name": "清乾隆·金地开光洋彩透雕转心瓶",
+        "english": "Qing Qianlong Imperial Gilt-Ground Famille-Rose Revolving Vase",
+        "period": "清乾隆盛期 (唐英督陶)",
+        "kiln": "景德镇御窑厂",
+        "dimensions": "通高 31.2 cm · 口径 9.2 cm · 腹径 17.7 cm",
+        "desc": "清宫督陶官唐英敬造之“巧夺天工”机械套瓶。由外瓶、内胆、瓶颈、底座多重榫卯套合而成。外瓶颈肩通施金地洋彩锦上添花，腹部四面开光镂雕四季花鸟；旋转瓶颈即可带动内胆旋转，透过镂空开光可观赏内胆走马灯般的游鱼水草或仙山图景，代表清代制瓷工程与艺术的极限巅峰。",
         "features": [
-            "无釉原始素陶矿物包浆",
-            "古法泥条盘筑手工弦纹",
-            "粗犷苍古汉唐风骨",
-            "真实微观风化粗糙度"
+            "双层同心机械套瓶",
+            "镂雕开光走马内胆",
+            "金地洋彩锦上添花",
+            "唐英督陶巧夺天工"
+        ],
+        "defaultGlaze": "yuebai",
+        "hotspots": [
+            { "label": "金地洋彩 · 御用金地珐琅彩锦地", "pos": [0.35, 1.95, 0.15], "view": "top" },
+            { "label": "镂空开光 · 透雕腹壁窥见内胆", "pos": [0.55, 1.15, 0.22], "view": "front" },
+            { "label": "旋转套榫 · 同心轴转动机械结构", "pos": [0, 0.45, 0], "view": "front" }
+        ],
+        "acousticFreq": 2920
+    },
+    {
+        "name": "宋景德镇窑·影青撇口净水瓶 [3D实物扫描]",
+        "english": "Song Qingbai Flared Water Bottle [3D Scan]",
+        "period": "宋代 (960–1279)",
+        "kiln": "江西景德镇湖田窑 / 湘湖窑",
+        "dimensions": "高 20.8 cm · 口径 6.4 cm · 足径 5.9 cm",
+        "desc": "实测三维激光扫描真品标本。撇口细长颈，丰肩修腹，底承平切圈足。胎薄坚致，釉色青白淡雅，积釉处宛如雨后青天微云，玻璃质感清亮，展现了景德镇湖田窑“白如玉、明如镜、薄如纸、声如磬”的典型特征。",
+        "features": [
+            "1:1 实测文物点云",
+            "影青透影",
+            "温润玻璃质感",
+            "宋人净手水器"
+        ],
+        "defaultGlaze": "tianqing",
+        "hotspots": [
+            { "label": "撇口细颈 · 纤秀出水", "pos": [0.12, 1.85, 0.05], "view": "top" },
+            { "label": "修身折线 · 丰肩弧线", "pos": [0.42, 1.12, 0.15], "view": "front" }
+        ],
+        "acousticFreq": 2720
+    },
+    {
+        "name": "金元磁州窑·铁锈花修身瓶 [3D实物扫描]",
+        "english": "Jin-Yuan Cizhou Kiln Iron-Rust Splashed Bottle [3D Scan]",
+        "period": "金元时期 (1115–1368)",
+        "kiln": "磁州窑系北方民窑",
+        "dimensions": "高 22.4 cm · 口径 4.8 cm · 腹径 11.2 cm",
+        "desc": "实测激光三维扫描标本。小口圆唇，修长身形，腹下微敛。黑褐地釉上以天然氧化铁矿物料挥洒铁锈花纹，笔意豪放苍劲，带有强烈北方游牧与中原民俗交融的雄健之风。",
+        "features": [
+            "1:1 实测文物点云",
+            "铁锈花窑变",
+            "水墨挥洒笔触",
+            "北方民窑健朗"
+        ],
+        "defaultGlaze": "jianhei",
+        "hotspots": [
+            { "label": "铁锈花斑 · 氧化铁结晶", "pos": [0.38, 1.25, 0.18], "view": "front" },
+            { "label": "小口圆唇 · 敛气存香", "pos": [0.10, 1.98, 0.04], "view": "top" }
+        ],
+        "acousticFreq": 2280
+    },
+    {
+        "name": "南宋龙泉窑·粉青双系圆腹罐 [3D实物扫描]",
+        "english": "Southern Song Longquan Celadon Double-Lug Jar [3D Scan]",
+        "period": "南宋 (1127–1279)",
+        "kiln": "浙江龙泉大窑 / 金村窑",
+        "dimensions": "高 16.5 cm · 口径 8.2 cm · 腹径 14.8 cm",
+        "desc": "实测三维扫描真品标本。直口短颈，丰肩鼓腹，肩部置对称双系，底足平切。通体施厚润粉青石灰碱釉，失透如凝脂翠玉，出筋微现白痕（出筋露白），浑厚朴实。",
+        "features": [
+            "1:1 实测文物点云",
+            "粉青厚釉",
+            "出筋露白",
+            "双系穿带"
+        ],
+        "defaultGlaze": "fenqing",
+        "hotspots": [
+            { "label": "双系穿带 · 方便系绳悬挂", "pos": [0.55, 1.25, 0.15], "view": "front" },
+            { "label": "粉青出筋 · 釉薄露白骨", "pos": [0.35, 0.85, 0.22], "view": "front" }
+        ],
+        "acousticFreq": 2480
+    },
+    {
+        "name": "唐邢窑·透影白瓷长颈瓶 [3D实物扫描]",
+        "english": "Tang Xing Kiln Translucent White Porcelain Vase [3D Scan]",
+        "period": "盛唐 (618–907)",
+        "kiln": "河北内丘 / 临城邢窑",
+        "dimensions": "高 21.5 cm · 口径 5.2 cm · 腹径 12.0 cm",
+        "desc": "实测三维扫描唐代白瓷巅峰标本。“南青北白”之北方领袖，器身通施纯白透明釉，胎质细腻胜雪，透光度极高，陆羽《茶经》赞曰“邢瓷类银，邢瓷类雪”，盛唐气象之纯净见证。",
+        "features": [
+            "1:1 实测文物点云",
+            "类银类雪",
+            "大唐类玉气度",
+            "澄泥精细淘洗"
         ],
         "defaultGlaze": "dingbai",
-        "isScanned": true,
-        "scannedKey": "vase_05",
         "hotspots": [
-            {
-                "label": "粗朴盘口 · 早期先民汲水器型",
-                "pos": [
-                    0.22,
-                    0.95,
-                    0.1
-                ],
-                "view": "top"
-            },
-            {
-                "label": "拱形双耳 · 原始系绳汲水受力点",
-                "pos": [
-                    -0.58,
-                    0.42,
-                    0.08
-                ],
-                "view": "front"
-            },
-            {
-                "label": "手工旋纹 · 轮盘旋转留下的远古指印",
-                "pos": [
-                    0.55,
-                    -0.22,
-                    0.28
-                ],
-                "view": "front"
-            }
+            { "label": "纯白胎质 · 极高透光度", "pos": [0.38, 1.15, 0.18], "view": "front" }
         ],
-        "acousticFreq": 1750
+        "acousticFreq": 2880
+    },
+    {
+        "name": "汉代彩绘·双耳弦纹汲水陶壶 [3D实物扫描]",
+        "english": "Han Dynasty Painted Pottery Double-Eared Jar [3D Scan]",
+        "period": "汉代 (公元前202–公元220)",
+        "kiln": "汉代早期陶窑",
+        "dimensions": "高 24.2 cm · 腹宽 18.5 cm",
+        "desc": "实测三维扫描汉代源头标本。喇叭口，深腹圆鼓，腹侧带双系耳，腹壁饰凸弦纹。由陶向瓷过渡期之经典器型，拙朴深沉，展现华夏器道两千年前的泥土初心。",
+        "features": [
+            "1:1 实测高古点云",
+            "弦纹古韵",
+            "泥火初成",
+            "古朴凝重"
+        ],
+        "defaultGlaze": "yuebai",
+        "hotspots": [
+            { "label": "双耳对称 · 汲水穿绳", "pos": [0.65, 1.15, 0.15], "view": "front" }
+        ],
+        "acousticFreq": 1950
     }
 ];
 
 // 经典东方古陶瓷釉色 PBR 参数字典
+
+/**
+ * -------------------------------------------------------------
+ * 华夏传世国宝 1:1 三维高精巅峰资产元数据 (Blender 烘焙高精模型，原点绝对锁定底足接地中心)
+ * -------------------------------------------------------------
+ */
+const masterTreasuresMeta = {
+    0: {
+        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb',
+        key: 'guanyao_octagonal_vase',
+        name: '南宋修内司官窑八方贯耳弦纹瓶',
+        scale: 9.35,
+        targetHeight: 2.16,
+        previewImg: 'images/collection/SongGuanYao_Ultra_Preview.png'
+    },
+    1: {
+        path: 'models/masterpieces/SongRuYao_LotusBowl_Master.glb',
+        key: 'ruyao_lotus_bowl',
+        name: '北宋汝窑天青釉十瓣莲花式温碗',
+        scale: 8.15,
+        targetHeight: 0.85,
+        previewImg: 'images/collection/SongRuYao_Master_Preview.png'
+    },
+    2: {
+        path: 'models/masterpieces/SongDingYao_PlumVase_Master.glb',
+        key: 'dingyao_plum_vase',
+        name: '北宋定窑白釉刻花莲纹梅瓶',
+        scale: 7.60,
+        targetHeight: 2.24,
+        previewImg: 'images/collection/SongDingYao_Master_Preview.png'
+    },
+    3: {
+        path: 'models/masterpieces/SongGeYao_CrackleVase_Master.glb',
+        key: 'geyao_crackle_vase',
+        name: '宋代哥窑米黄釉百圾碎贯耳扁瓶',
+        scale: 10.12,
+        targetHeight: 2.12,
+        previewImg: 'images/collection/SongGeYao_Preview.png'
+    },
+    4: {
+        path: 'models/masterpieces/SongJunYao_ChujiZun_Master.glb',
+        key: 'junyao_chuji_zun',
+        name: '北宋钧窑玫瑰紫釉出戟尊',
+        scale: 8.52,
+        targetHeight: 2.20,
+        previewImg: 'images/collection/SongJunYao_Preview.png'
+    },
+    5: {
+        path: 'models/masterpieces/YuanQingHua_DragonVase_Master.glb',
+        key: 'yuanqinghua_dragon_vase',
+        name: '元代青花缠枝牡丹双龙耳大罐',
+        scale: 7.38,
+        targetHeight: 2.10,
+        previewImg: 'images/collection/YuanQingHua_Preview.png'
+    },
+    6: {
+        path: 'models/masterpieces/MingXuande_MonkCapTeapot_Master.glb',
+        key: 'xuande_monkcap_teapot',
+        name: '明宣德宝石红霁红釉僧帽壶',
+        scale: 9.00,
+        targetHeight: 2.15,
+        previewImg: 'images/collection/MingXuande_Preview.png'
+    },
+    7: {
+        path: 'models/masterpieces/QingQianlong_RevolvingVase_Master.glb',
+        key: 'qianlong_revolving_vase',
+        name: '清乾隆金地开光洋彩转心瓶',
+        scale: 7.30,
+        targetHeight: 2.28,
+        previewImg: 'images/collection/QingQianlong_Preview.png'
+    }
+};
+
+const masterTreasuresCache = {};
+const masterTreasuresLoading = {};
+
+function preloadMasterTreasures(callback) {
+    if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
+    const loader = new THREE.GLTFLoader();
+    const indices = [0, 1, 2, 3, 4, 5, 6, 7];
+    let loadedCount = 0;
+
+    indices.forEach(idx => {
+        if (masterTreasuresCache[idx]) {
+            loadedCount++;
+            if (loadedCount === indices.length && callback) callback();
+            return;
+        }
+        if (masterTreasuresLoading[idx]) return;
+        masterTreasuresLoading[idx] = true;
+
+        const meta = masterTreasuresMeta[idx];
+        loader.load(meta.path, (gltf) => {
+            masterTreasuresLoading[idx] = false;
+            if (gltf && gltf.scene) {
+                gltf.scene.traverse(c => {
+                    if (c.isMesh) {
+                        c.castShadow = true;
+                        c.receiveShadow = true;
+                        if (c.geometry) {
+                            c.geometry.computeVertexNormals();
+                        }
+                    }
+                });
+                masterTreasuresCache[idx] = gltf.scene;
+                if (currentModelIndex === idx && currentGroup) {
+                    loadPorcelainModel(idx, true);
+                }
+            }
+            loadedCount++;
+            if (loadedCount === indices.length && callback) callback();
+        }, undefined, (err) => {
+            masterTreasuresLoading[idx] = false;
+            console.warn('[传世国宝模型载入提示] ' + meta.name + ':', err);
+            loadedCount++;
+            if (loadedCount === indices.length && callback) callback();
+        });
+    });
+}
+
 const glazePalettes = {
     tianqing: {
         name: '雨过天青',
@@ -1939,14 +1735,84 @@ function buildGeometry(typeIndex, customGlaze = null) {
         clippingPlanes: activePlanes
     });
 
-        // 处理第 7 ~ 11 号实测三维扫描 GLTF 文物数字孪生模型
-    if (typeIndex >= 7 && typeIndex <= 11) {
+    // 优先分发处理 0~7 号传世国宝 1:1 三维高精烘焙资产
+    if (typeIndex >= 0 && typeIndex <= 7) {
+        const meta = masterTreasuresMeta[typeIndex];
+        const cachedScene = masterTreasuresCache[typeIndex];
+        if (cachedScene) {
+            const cloned = cachedScene.clone(true);
+            cloned.scale.set(meta.scale, meta.scale, meta.scale);
+            // 原点严格锁定底足接地中心 (0, 0, 0)，直接置于几案 Y=0
+            cloned.position.set(0, 0, 0);
+
+            cloned.traverse(child => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (child.geometry) child.geometry.computeVertexNormals();
+
+                    // 映射动态 PBR 釉色材质与双面剖切中空胎骨
+                    const mat = glazeMat.clone();
+                    mat.side = THREE.DoubleSide;
+                    mat.clippingPlanes = activePlanes;
+                    mat.clipShadows = true;
+                    child.material = mat;
+                }
+            });
+            group.add(cloned);
+
+            // 文博学术精鉴附加构件（露胎铁足 / 满釉芝麻钉 / 芒口金扣）
+            if (typeIndex === 0) {
+                // 南宋官窑：紫金土露胎圈足印迹
+                const footRimGeo = new THREE.TorusGeometry(0.32, 0.016, 16, 64);
+                const footRimMesh = new THREE.Mesh(footRimGeo, tiezuMat);
+                footRimMesh.rotation.x = Math.PI / 2;
+                footRimMesh.position.set(0, 0.006, 0);
+                group.add(footRimMesh);
+            } else if (typeIndex === 1) {
+                // 北宋汝窑温碗：台北故宫传世标准五枚芝麻状支钉痕
+                const spurMat = new THREE.MeshStandardMaterial({
+                    color: 0x9e988e,
+                    roughness: 0.92,
+                    metalness: 0.05,
+                    clippingPlanes: activePlanes
+                });
+                const spurRadius = 0.26;
+                for (let s = 0; s < 5; s++) {
+                    const ang = (s * 2 * Math.PI) / 5;
+                    const spur = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), spurMat);
+                    spur.scale.set(1.4, 0.45, 0.85);
+                    spur.position.set(Math.cos(ang) * spurRadius, 0.005, Math.sin(ang) * spurRadius);
+                    group.add(spur);
+                }
+            } else if (typeIndex === 2) {
+                // 北宋定窑梅瓶：覆烧芒口镶鎏金铜扣
+                const goldRim = new THREE.Mesh(new THREE.TorusGeometry(0.165, 0.012, 16, 48), goldMat);
+                goldRim.rotation.x = Math.PI / 2;
+                goldRim.position.set(0, 2.235, 0);
+                group.add(goldRim);
+            }
+        } else {
+            preloadMasterTreasures();
+            // 极速占位网格（以防网络首次拉取闪烁）
+            const fbPts = [
+                new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
+                new THREE.Vector2(0.48, 0.6), new THREE.Vector2(0.36, 1.5),
+                new THREE.Vector2(0.28, meta.targetHeight || 2.15)
+            ];
+            const fbGeo = createSmoothVesselLathe(fbPts, null, 48);
+            const fbMesh = new THREE.Mesh(fbGeo, glazeMat);
+            fbMesh.castShadow = fbMesh.receiveShadow = true;
+            group.add(fbMesh);
+        }
+    } else if (typeIndex >= 8 && typeIndex <= 12) {
+        // 处理实测激光三维扫描文物数字孪生模型 (平移映射)
         const scanKeyMap = {
-            7: 'vase_01',
-            8: 'vase_02',
-            9: 'vase_03',
-            10: 'vase_04',
-            11: 'vase_05'
+            8: 'vase_01',
+            9: 'vase_02',
+            10: 'vase_03',
+            11: 'vase_04',
+            12: 'vase_05'
         };
         const sKey = scanKeyMap[typeIndex] || 'vase_01';
         const cachedScene = scannedModelCache[sKey];
@@ -1988,273 +1854,15 @@ function buildGeometry(typeIndex, customGlaze = null) {
         } else {
             loadSingleScannedGLTFOnDemand(sKey, typeIndex);
             const fallbackPts = [
-                new THREE.Vector2(0.0, -1.12), new THREE.Vector2(0.32, -1.12),
-                new THREE.Vector2(0.38, -0.82), new THREE.Vector2(0.56, -0.18),
-                new THREE.Vector2(0.52, 0.35), new THREE.Vector2(0.26, 0.72),
-                new THREE.Vector2(0.34, 0.98), new THREE.Vector2(0.30, 1.00)
+                new THREE.Vector2(0.0, 0.0), new THREE.Vector2(0.32, 0.0),
+                new THREE.Vector2(0.38, 0.30), new THREE.Vector2(0.56, 0.94),
+                new THREE.Vector2(0.52, 1.47), new THREE.Vector2(0.26, 1.84),
+                new THREE.Vector2(0.34, 2.10), new THREE.Vector2(0.30, 2.12)
             ];
-            const fbGeo = createSmoothVesselLathe(fallbackPts, null, 64);
+            const fbGeo = createSmoothVesselLathe(fallbackPts, null, 48);
             const fbMesh = new THREE.Mesh(fbGeo, glazeMat);
             fbMesh.castShadow = fbMesh.receiveShadow = true;
             group.add(fbMesh);
-        }
-    } else {
-        switch (typeIndex) {
-            case 0: {
-                // 0. 南宋官窑·八方贯耳弦纹瓶
-                const pts = [
-                    new THREE.Vector2(0.0, -1.14),
-                    new THREE.Vector2(0.26, -1.15),
-                    new THREE.Vector2(0.32, -1.10),
-                    new THREE.Vector2(0.35, -0.90),
-                    new THREE.Vector2(0.54, -0.68),
-                    new THREE.Vector2(0.69, -0.35),
-                    new THREE.Vector2(0.63, -0.05),
-                    new THREE.Vector2(0.42, 0.26),
-                    new THREE.Vector2(0.31, 0.52),
-                    new THREE.Vector2(0.31, 0.84),
-                    new THREE.Vector2(0.35, 0.98),
-                    new THREE.Vector2(0.31, 1.01)
-                ];
-                const octMod = (ang) => 1.0 + 0.028 * Math.cos(8 * ang);
-                const bodyGeo = createSmoothVesselLathe(pts, octMod, 64);
-                const bodyMesh = new THREE.Mesh(bodyGeo, glazeMat);
-                bodyMesh.castShadow = bodyMesh.receiveShadow = true;
-                group.add(bodyMesh);
-
-                for (let side of [-1, 1]) {
-                    const earGroup = new THREE.Group();
-                    const earGeo = new THREE.CylinderGeometry(0.068, 0.068, 0.36, 32, 1, false);
-                    const earMesh = new THREE.Mesh(earGeo, glazeMat);
-                    earGroup.add(earMesh);
-
-                    const holeGeo = new THREE.CylinderGeometry(0.042, 0.042, 0.37, 24);
-                    const holeMesh = new THREE.Mesh(holeGeo, tiezuMat);
-                    earGroup.add(holeMesh);
-
-                    earGroup.position.set(side * 0.355, 0.66, 0);
-                    group.add(earGroup);
-                }
-
-                const ringY = [-0.36, -0.08, 0.48];
-                const ringR = [0.695, 0.638, 0.322];
-                for (let r = 0; r < ringY.length; r++) {
-                    const ringGeo = new THREE.TorusGeometry(ringR[r], 0.016, 20, 64);
-                    const ringMesh = new THREE.Mesh(ringGeo, glazeMat);
-                    ringMesh.rotation.x = Math.PI / 2;
-                    ringMesh.position.y = ringY[r];
-                    group.add(ringMesh);
-                }
-
-                const lipMesh = new THREE.Mesh(new THREE.TorusGeometry(0.325, 0.012, 16, 64), tiezuMat);
-                lipMesh.rotation.x = Math.PI / 2;
-                lipMesh.position.y = 1.00;
-                group.add(lipMesh);
-
-                const footMesh = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.022, 16, 64), tiezuMat);
-                footMesh.rotation.x = Math.PI / 2;
-                footMesh.position.y = -1.15;
-                group.add(footMesh);
-                break;
-            }
-
-            case 1: {
-                // 1. 北宋汝窑·天青椭圆四足水仙盆
-                const pts = [
-                    new THREE.Vector2(0.0, -0.27),
-                    new THREE.Vector2(0.45, -0.27),
-                    new THREE.Vector2(0.72, -0.26),
-                    new THREE.Vector2(0.86, -0.14),
-                    new THREE.Vector2(0.95, 0.04),
-                    new THREE.Vector2(1.02, 0.16),
-                    new THREE.Vector2(0.96, 0.19)
-                ];
-                const basinGeo = createSmoothVesselLathe(pts, null, 64);
-                const basinMesh = new THREE.Mesh(basinGeo, glazeMat);
-                basinMesh.scale.set(1.28, 1.0, 0.88);
-                basinMesh.castShadow = basinMesh.receiveShadow = true;
-                group.add(basinMesh);
-
-                const footPositions = [
-                    { x: 0.68, z: 0.42 }, { x: -0.68, z: 0.42 },
-                    { x: 0.68, z: -0.42 }, { x: -0.68, z: -0.42 }
-                ];
-                for (let pos of footPositions) {
-                    const footGeo = new THREE.CylinderGeometry(0.075, 0.048, 0.12, 24);
-                    const footMesh = new THREE.Mesh(footGeo, glazeMat);
-                    footMesh.scale.set(1.3, 1.0, 0.9);
-                    footMesh.position.set(pos.x, -0.32, pos.z);
-                    group.add(footMesh);
-                }
-
-                const spurMat = new THREE.MeshStandardMaterial({ color: 0xa69f94, roughness: 0.9 });
-                const spurs = [
-                    { x: 0, z: 0 }, { x: 0.42, z: 0.18 }, { x: -0.42, z: 0.18 },
-                    { x: 0.42, z: -0.18 }, { x: -0.42, z: -0.18 }
-                ];
-                for (let s of spurs) {
-                    const spur = new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), spurMat);
-                    spur.scale.set(1.4, 0.35, 0.85);
-                    spur.position.set(s.x, -0.278, s.z);
-                    group.add(spur);
-                }
-                break;
-            }
-
-            case 2: {
-                // 2. 北宋定窑·白釉划花莲纹梅瓶
-                const pts = [
-                    new THREE.Vector2(0.0, -1.14),
-                    new THREE.Vector2(0.26, -1.15),
-                    new THREE.Vector2(0.31, -0.92),
-                    new THREE.Vector2(0.39, -0.50),
-                    new THREE.Vector2(0.56, 0.02),
-                    new THREE.Vector2(0.69, 0.46),
-                    new THREE.Vector2(0.58, 0.70),
-                    new THREE.Vector2(0.21, 0.80),
-                    new THREE.Vector2(0.19, 0.90),
-                    new THREE.Vector2(0.28, 0.96),
-                    new THREE.Vector2(0.24, 0.99)
-                ];
-                const meipingGeo = createSmoothVesselLathe(pts, null, 64);
-                const meipingMesh = new THREE.Mesh(meipingGeo, glazeMat);
-                meipingMesh.castShadow = meipingMesh.receiveShadow = true;
-                group.add(meipingMesh);
-
-                const goldRim = new THREE.Mesh(new THREE.TorusGeometry(0.265, 0.015, 20, 64), goldMat);
-                goldRim.rotation.x = Math.PI / 2;
-                goldRim.position.y = 0.975;
-                group.add(goldRim);
-                break;
-            }
-
-            case 3: {
-                // 3. 宋哥窑·金丝铁线胆式瓶
-                const pts = [
-                    new THREE.Vector2(0.0, -1.09),
-                    new THREE.Vector2(0.30, -1.10),
-                    new THREE.Vector2(0.37, -0.92),
-                    new THREE.Vector2(0.71, -0.46),
-                    new THREE.Vector2(0.67, -0.10),
-                    new THREE.Vector2(0.49, 0.22),
-                    new THREE.Vector2(0.25, 0.55),
-                    new THREE.Vector2(0.21, 0.85),
-                    new THREE.Vector2(0.23, 1.05),
-                    new THREE.Vector2(0.19, 1.06)
-                ];
-                const danGeo = createSmoothVesselLathe(pts, null, 64);
-                const danMesh = new THREE.Mesh(danGeo, glazeMat);
-                danMesh.castShadow = danMesh.receiveShadow = true;
-                group.add(danMesh);
-
-                const lipMesh = new THREE.Mesh(new THREE.TorusGeometry(0.215, 0.013, 16, 48), tiezuMat);
-                lipMesh.rotation.x = Math.PI / 2;
-                lipMesh.position.y = 1.055;
-                group.add(lipMesh);
-
-                const footMesh = new THREE.Mesh(new THREE.TorusGeometry(0.315, 0.022, 16, 48), tiezuMat);
-                footMesh.rotation.x = Math.PI / 2;
-                footMesh.position.y = -1.10;
-                group.add(footMesh);
-                break;
-            }
-
-            case 4: {
-                // 4. 北宋钧窑·玫瑰紫海棠出戟尊
-                const pts = [
-                    new THREE.Vector2(0.0, -1.08),
-                    new THREE.Vector2(0.44, -1.10),
-                    new THREE.Vector2(0.47, -1.02),
-                    new THREE.Vector2(0.37, -0.72),
-                    new THREE.Vector2(0.64, -0.22),
-                    new THREE.Vector2(0.61, 0.06),
-                    new THREE.Vector2(0.39, 0.36),
-                    new THREE.Vector2(0.67, 0.84),
-                    new THREE.Vector2(0.76, 0.95),
-                    new THREE.Vector2(0.70, 0.96)
-                ];
-                const begoniaMod = (ang) => 1.0 + 0.065 * Math.cos(4 * ang);
-                const zunGeo = createSmoothVesselLathe(pts, begoniaMod, 64);
-                const zunMesh = new THREE.Mesh(zunGeo, glazeMat);
-                zunMesh.castShadow = zunMesh.receiveShadow = true;
-                group.add(zunMesh);
-
-                for (let i = 0; i < 4; i++) {
-                    const angle = (i / 4) * Math.PI * 2;
-                    const flangeGroup = new THREE.Group();
-                    flangeGroup.rotation.y = angle;
-
-                    const fTop = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.36, 0.038), glazeMat);
-                    fTop.position.set(0.51, 0.56, 0);
-                    flangeGroup.add(fTop);
-
-                    const fMid = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.34, 0.042), glazeMat);
-                    fMid.position.set(0.67, -0.10, 0);
-                    flangeGroup.add(fMid);
-
-                    const fBot = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.28, 0.038), glazeMat);
-                    fBot.position.set(0.45, -0.88, 0);
-                    flangeGroup.add(fBot);
-
-                    group.add(flangeGroup);
-                }
-                break;
-            }
-
-            case 5: {
-                // 5. 宋建窑·兔毫曜变天目斗茶盏
-                const pts = [
-                    new THREE.Vector2(0.0, -0.72),
-                    new THREE.Vector2(0.26, -0.74),
-                    new THREE.Vector2(0.31, -0.58),
-                    new THREE.Vector2(0.56, -0.26),
-                    new THREE.Vector2(0.79, 0.08),
-                    new THREE.Vector2(0.87, 0.26),
-                    new THREE.Vector2(0.84, 0.33),
-                    new THREE.Vector2(0.89, 0.39),
-                    new THREE.Vector2(0.84, 0.40)
-                ];
-                const bowlGeo = createSmoothVesselLathe(pts, null, 64);
-                const bowlMesh = new THREE.Mesh(bowlGeo, glazeMat);
-                bowlMesh.castShadow = bowlMesh.receiveShadow = true;
-                group.add(bowlMesh);
-
-                for (let k = 0; k < 10; k++) {
-                    const ang = (k / 10) * Math.PI * 2;
-                    const drop = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 14), glazeMat);
-                    drop.scale.set(0.9, 1.45, 0.9);
-                    drop.position.set(Math.cos(ang) * 0.36, -0.52 + (k % 2) * 0.03, Math.sin(ang) * 0.36);
-                    group.add(drop);
-                }
-
-                const footGeo = new THREE.CylinderGeometry(0.28, 0.26, 0.14, 48);
-                const footMesh = new THREE.Mesh(footGeo, tiezuMat);
-                footMesh.position.y = -0.72;
-                group.add(footMesh);
-                break;
-            }
-
-            case 6: {
-                // 6. 明宣德·青花缠枝莲纹玉壶春瓶
-                const pts = [
-                    new THREE.Vector2(0.0, -1.09),
-                    new THREE.Vector2(0.34, -1.10),
-                    new THREE.Vector2(0.41, -1.02),
-                    new THREE.Vector2(0.45, -0.84),
-                    new THREE.Vector2(0.73, -0.36),
-                    new THREE.Vector2(0.66, 0.02),
-                    new THREE.Vector2(0.43, 0.34),
-                    new THREE.Vector2(0.25, 0.66),
-                    new THREE.Vector2(0.31, 0.92),
-                    new THREE.Vector2(0.51, 1.14),
-                    new THREE.Vector2(0.46, 1.15)
-                ];
-                const yuGeo = createSmoothVesselLathe(pts, null, 64);
-                const yuMesh = new THREE.Mesh(yuGeo, glazeMat);
-                yuMesh.castShadow = yuMesh.receiveShadow = true;
-                group.add(yuMesh);
-                break;
-            }
         }
     }
 
@@ -2283,16 +1891,22 @@ function buildGeometry(typeIndex, customGlaze = null) {
         });
     }
 
-    // --- 严谨几何基准面归一化：使器物（0~11）底足最底端绝对位于 y = 0 ---
-    group.updateMatrixWorld(true);
-    const overallBox = new THREE.Box3().setFromObject(group);
-    if (isFinite(overallBox.min.y) && isFinite(overallBox.max.y)) {
-        const bottomY = overallBox.min.y;
-        group.children.forEach(c => {
-            c.position.y -= bottomY;
-        });
-        group.userData.bottomOffset = bottomY;
-        group.userData.vesselHeight = overallBox.max.y - overallBox.min.y;
+    // --- 空间几何基准对齐：0~7号模型原点已锁定在底足接地圈最底面正中心 ---
+    if (typeIndex >= 0 && typeIndex <= 7) {
+        group.userData.bottomOffset = 0;
+        const b = new THREE.Box3().setFromObject(group);
+        group.userData.vesselHeight = (isFinite(b.max.y) && isFinite(b.min.y)) ? (b.max.y - b.min.y) : 2.2;
+    } else {
+        group.updateMatrixWorld(true);
+        const overallBox = new THREE.Box3().setFromObject(group);
+        if (isFinite(overallBox.min.y) && isFinite(overallBox.max.y)) {
+            const bottomY = overallBox.min.y;
+            group.children.forEach(c => {
+                c.position.y -= bottomY;
+            });
+            group.userData.bottomOffset = bottomY;
+            group.userData.vesselHeight = overallBox.max.y - overallBox.min.y;
+        }
     }
 
     return group;
@@ -2787,6 +2401,7 @@ function initThreeJS() {
         scene.add(topSpotLight);
 
         createInspectorStage();
+        preloadMasterTreasures();
         loadPorcelainModel(0);
         scheduleBackgroundModelPreload();
 
@@ -4206,6 +3821,8 @@ function highlightActiveGlazeBtn(glazeKey) {
     });
 }
 
+window.preloadMasterTreasures = preloadMasterTreasures;
+window.masterTreasuresMeta = masterTreasuresMeta;
 window.initThreeJS = initThreeJS;
 window.loadPorcelainModel = loadPorcelainModel;
 window.switchGlaze = switchGlaze;
