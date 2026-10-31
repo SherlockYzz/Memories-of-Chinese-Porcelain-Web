@@ -1,4 +1,4 @@
-﻿﻿﻿/**
+﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -505,9 +505,9 @@ const masterTreasuresMeta = {
     }
 };
 
-// --- 模型队列与加载控制器 (并发上限 2，支持优先调度与超时重试) ---
-const MAX_CONCURRENT_MODELS = 2;
-const MODEL_TIMEOUT_MS = 10000;
+// --- 模型队列与加载控制器 (并发上限 4，支持停滞重置、优先调度与安全看门狗) ---
+const MAX_CONCURRENT_MODELS = 4;
+const MODEL_TIMEOUT_MS = 8000; // 停滞超时：有下载进度即重置，慢速网络不误判中断
 const MAX_MODEL_RETRIES = 2;
 
 const masterTreasuresCache = {};
@@ -517,32 +517,75 @@ const masterTreasureRetries = {};
 
 let activeLoadingCount = 0;
 const modelTaskQueue = []; // [{ idx, isPriority }]
+let stageLoaderWatchdog = null;
 
-function updateThreeStageLoader(text, percent = null) {
-    const stageLoader = document.getElementById('three-stage-loader');
-    if (!stageLoader) return;
-    const textEl = stageLoader.querySelector('.loader-text');
-    if (textEl) {
-        textEl.textContent = percent !== null ? `${text} (${percent}%)` : text;
+/**
+ * 展台浮动状态胶囊提示 (非阻断式微交互)
+ */
+function showStageLoadingToast(show, text = '') {
+    let toast = document.getElementById('three-model-loading-pill');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'three-model-loading-pill';
+        toast.className = 'three-model-loading-pill';
+        const container = document.getElementById('three-stage-container');
+        if (container) container.appendChild(toast);
+    }
+    if (show) {
+        toast.innerHTML = `<span class="pulse-celadon-ring"></span><span>${text}</span>`;
+        toast.style.display = 'flex';
+        toast.style.opacity = '1';
+    } else {
+        toast.style.opacity = '0';
+        setTimeout(() => { if (toast) toast.style.display = 'none'; }, 300);
     }
 }
 
-function hideThreeStageLoader() {
+function updateThreeStageLoader(text, percent = null) {
+    const formatted = percent !== null ? `${text} (${percent}%)` : text;
     const stageLoader = document.getElementById('three-stage-loader');
-    if (!stageLoader || stageLoader.style.display === 'none') return;
-    stageLoader.style.transition = 'opacity 0.45s ease-out';
-    stageLoader.style.opacity = '0';
-    setTimeout(() => {
-        stageLoader.style.display = 'none';
-    }, 450);
+    if (stageLoader) {
+        const textEl = stageLoader.querySelector('.loader-text');
+        if (textEl) {
+            textEl.textContent = formatted;
+        }
+    }
+    showStageLoadingToast(true, formatted);
 }
 
-function showThreeStageLoader(text = '器物三维数据载入中...') {
+function hideThreeStageLoader() {
+    if (stageLoaderWatchdog) {
+        clearTimeout(stageLoaderWatchdog);
+        stageLoaderWatchdog = null;
+    }
     const stageLoader = document.getElementById('three-stage-loader');
-    if (!stageLoader) return;
-    stageLoader.style.display = 'flex';
-    stageLoader.style.opacity = '1';
-    updateThreeStageLoader(text);
+    if (stageLoader && stageLoader.style.display !== 'none') {
+        stageLoader.style.transition = 'opacity 0.35s ease-out';
+        stageLoader.style.opacity = '0';
+        setTimeout(() => {
+            if (stageLoader) stageLoader.style.display = 'none';
+        }, 350);
+    }
+    showStageLoadingToast(false);
+}
+
+function showThreeStageLoader(text = '器物三维数据载入中...', autoHideMs = 2800) {
+    const stageLoader = document.getElementById('three-stage-loader');
+    if (stageLoader) {
+        stageLoader.style.display = 'flex';
+        stageLoader.style.opacity = '1';
+        const textEl = stageLoader.querySelector('.loader-text');
+        if (textEl) {
+            textEl.textContent = text;
+        }
+    }
+    showStageLoadingToast(true, text);
+
+    // 强行安全看门狗：任何网络挂起或异常，最多 2.8s 必须自动解除遮罩，绝不允许锁死展厅视口
+    if (stageLoaderWatchdog) clearTimeout(stageLoaderWatchdog);
+    stageLoaderWatchdog = setTimeout(() => {
+        hideThreeStageLoader();
+    }, autoHideMs);
 }
 
 function processModelQueue() {
@@ -557,7 +600,10 @@ function processModelQueue() {
         // 已有缓存，立即触发回调并继续处理后续队列
         const cbs = masterTreasureCallbacks[idx] || [];
         delete masterTreasureCallbacks[idx];
-        cbs.forEach(cb => { try { cb(masterTreasuresCache[idx]); } catch (e) {} });
+        cbs.forEach(cb => { try { cb(masterTreasuresCache[idx]); } catch (e) { console.error(e); } });
+        if (idx === currentModelIndex) {
+            hideThreeStageLoader();
+        }
         processModelQueue();
         return;
     }
@@ -581,8 +627,8 @@ function processModelQueue() {
     const loader = new THREE.GLTFLoader();
     let isFinished = false;
 
-    // 10秒超时断流控制器
-    const timeoutTimer = setTimeout(() => {
+    // 停滞超时断流控制器（只要仍有下载进度就重置计时）
+    const onModelTimeout = () => {
         if (isFinished) return;
         isFinished = true;
         activeLoadingCount--;
@@ -605,7 +651,8 @@ function processModelQueue() {
             }
         }
         processModelQueue();
-    }, MODEL_TIMEOUT_MS);
+    };
+    let timeoutTimer = setTimeout(onModelTimeout, MODEL_TIMEOUT_MS);
 
     loader.load(
         meta.path,
@@ -621,7 +668,10 @@ function processModelQueue() {
                     if (c.isMesh) {
                         c.castShadow = true;
                         c.receiveShadow = true;
-                        if (c.geometry) c.geometry.computeVertexNormals();
+                        // GLB 已自带高精法线时不再强制重算（避免阻塞主线程及抹平烘焙折痕）
+                        if (c.geometry && !c.geometry.attributes.normal) {
+                            c.geometry.computeVertexNormals();
+                        }
                     }
                 });
                 masterTreasuresCache[idx] = gltf.scene;
@@ -629,18 +679,28 @@ function processModelQueue() {
                 // 执行此模型所有注册的回调
                 const cbs = masterTreasureCallbacks[idx] || [];
                 delete masterTreasureCallbacks[idx];
-                cbs.forEach(cb => { try { cb(gltf.scene); } catch (e) {} });
+                cbs.forEach(cb => { try { cb(gltf.scene); } catch (e) { console.error(e); } });
 
                 // 如果当前选中的正处于本模型且在单器视口中，立刻无缝挂载
-                if (currentModelIndex === idx && currentGroup) {
-                    loadPorcelainModel(idx, true);
+                if (currentModelIndex === idx) {
                     hideThreeStageLoader();
+                    if (currentGroup && exhibitionMode !== 'hall' && cbs.length === 0) {
+                        loadPorcelainModel(idx, true);
+                    }
+                }
+
+                // 如果当前在大展厅模式，自动升级展柜中的器物模型为高精模型
+                if (exhibitionMode === 'hall') {
+                    updateHallVitrineModel(idx);
                 }
             }
             processModelQueue();
         },
         (xhr) => {
             if (isFinished) return;
+            // 只要收到新的下载数据包，立即重置停滞计时
+            clearTimeout(timeoutTimer);
+            timeoutTimer = setTimeout(onModelTimeout, MODEL_TIMEOUT_MS);
             if (xhr.lengthComputable && xhr.total > 0 && idx === currentModelIndex) {
                 const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
                 updateThreeStageLoader('器物模型载入中', percent);
@@ -668,7 +728,12 @@ function processModelQueue() {
 function loadSingleMasterTreasure(idx, callback, isPriority = false) {
     if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
     if (masterTreasuresCache[idx]) {
-        if (callback) callback(masterTreasuresCache[idx]);
+        if (callback) {
+            try { callback(masterTreasuresCache[idx]); } catch (e) { console.error(e); }
+        }
+        if (idx === currentModelIndex) {
+            hideThreeStageLoader();
+        }
         return;
     }
 
@@ -687,7 +752,7 @@ function loadSingleMasterTreasure(idx, callback, isPriority = false) {
 }
 
 function preloadMasterTreasures(callback) {
-    // 纯粹的单器按需拉取：首屏仅优先拉取当前展示的 0 号器物，彻底释放首屏带宽与网络队列
+    // 优先拉取当前展示的 0 号器物
     loadSingleMasterTreasure(0, (scene) => {
         hideThreeStageLoader();
         if (callback) callback(scene);
@@ -1394,8 +1459,61 @@ function loadSingleScannedGLTFOnDemand(key, modelIndex) {
 /**
  * 闲时后台温和预热其余扫描模型，彻底避免主线程丢帧
  */
+/**
+ * 展厅模式下动态无缝升级展柜中的瓷器网格
+ */
+function updateHallVitrineModel(targetIdx) {
+    if (!hallGroup || exhibitionMode !== 'hall') return;
+    hallGroup.children.forEach(booth => {
+        if (booth.userData && booth.userData.vitrineIndex === targetIdx) {
+            const oldMeshGroups = [];
+            booth.children.forEach(c => {
+                if (c.userData && c.userData.vitrineIndex === targetIdx && c !== booth && c.type === 'Group') {
+                    oldMeshGroups.push(c);
+                }
+            });
+            oldMeshGroups.forEach(og => {
+                booth.remove(og);
+                disposeGroup(og);
+            });
+            const mData = porcelainModelsData[targetIdx];
+            const newGroup = buildGeometry(targetIdx, mData ? mData.defaultGlaze : null);
+            newGroup.scale.set(0.50, 0.50, 0.50);
+            newGroup.position.y = 0.12;
+            newGroup.traverse(c => { c.userData = { vitrineIndex: targetIdx }; });
+            booth.add(newGroup);
+        }
+    });
+}
+
+/**
+ * 闲时后台温和预热全部国宝三维资产到缓存，彻底实现点击 0ms 秒切无感知
+ */
 function scheduleBackgroundModelPreload() {
-    // 激光点云数据包 (3.88MB) 严格按需拉取：只有当用户点击 8~12 号实测扫描展柜时才动态加载
+    const preloadList = [1, 2, 3, 4, 5, 6, 7];
+    let pos = 0;
+
+    function preloadStep() {
+        if (pos >= preloadList.length) return;
+        const targetIdx = preloadList[pos++];
+        if (masterTreasuresCache[targetIdx]) {
+            preloadStep();
+            return;
+        }
+        loadSingleMasterTreasure(targetIdx, () => {
+            if (exhibitionMode === 'hall') {
+                updateHallVitrineModel(targetIdx);
+            }
+            setTimeout(preloadStep, 100);
+        }, false);
+    }
+
+    // 延迟 600ms 等待首屏主画面完全渲染并稳定后，空闲时自动排队拉取
+    if (typeof requestIdleCallback === 'function') {
+        requestIdleCallback(() => { setTimeout(preloadStep, 600); });
+    } else {
+        setTimeout(preloadStep, 900);
+    }
 }
 
 /**
@@ -1565,13 +1683,16 @@ function buildGeometry(typeIndex, customGlaze = null) {
             });
             group.add(cloned);
         } else {
-            showThreeStageLoader(`正在载入【${meta.name}】...`);
-            loadSingleMasterTreasure(typeIndex, () => {
-                if (currentModelIndex === typeIndex && currentGroup) {
+            // 严禁在九柜展厅遍历或非当前器物渲染时弹窗阻断！
+            if (typeIndex === currentModelIndex && exhibitionMode !== 'hall') {
+                showThreeStageLoader(`天青载润 · 正在载入【${meta.name}】...`);
+            }
+            loadSingleMasterTreasure(typeIndex, (cachedScene) => {
+                if (currentModelIndex === typeIndex && exhibitionMode !== 'hall') {
                     loadPorcelainModel(typeIndex, true);
                     hideThreeStageLoader();
                 }
-            }, true);
+            }, (typeIndex === currentModelIndex));
             // 几何轮廓占位网格（模型加载期间平滑过渡）
             const fbPts = [
                 new THREE.Vector2(0.0, 0), new THREE.Vector2(0.32, 0),
@@ -2475,6 +2596,11 @@ function loadPorcelainModel(index, keepMode = false) {
     if (porcelainModelsData[index] && porcelainModelsData[index].defaultGlaze && !keepMode) {
         currentGlazeIndex = porcelainModelsData[index].defaultGlaze;
         useScannedOriginalTex = true;
+    }
+
+    // 若目标器物已有三维缓存，立即关闭所有加载遮罩
+    if (masterTreasuresCache[index] || (index >= 8 && index <= 12 && scannedModelCache['vase_0' + (index - 7)])) {
+        hideThreeStageLoader();
     }
 
     if (currentGroup) {

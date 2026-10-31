@@ -104,7 +104,7 @@
     /* 6. 滚动入场 ————————————————————————————————— */
     safe(function reveal() {
         if (!('IntersectionObserver' in window)) return;
-        const targets = document.querySelectorAll('section .feature-card, section > div > h2, section h2, .archive-card, .kiln-spot-card');
+        const targets = document.querySelectorAll('section .feature-card');
         if (!targets.length) return;
         root.classList.add('js-reveal');
         const io = new IntersectionObserver((entries) => {
@@ -122,5 +122,40 @@
             const r = el.getBoundingClientRect();
             if (r.top < window.innerHeight * 1.2) el.classList.add('in-view');
         }), 2500);
+    });
+
+    /* 7. 阅读进度条 + 导航当前章节高亮 ——————————————— */
+    safe(function progressAndScrollSpy() {
+        const bar = document.createElement('div');
+        bar.id = 'read-progress'; bar.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(bar);
+        const links = [...document.querySelectorAll('#navbar a[href^="#"]')];
+        const map = new Map();
+        links.forEach(a => { const s = document.getElementById(a.getAttribute('href').slice(1)); if (s) map.set(s, a); });
+        let ticking = false;
+        const update = () => {
+            ticking = false;
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+            let cur = null; const line = window.innerHeight * 0.35;
+            map.forEach((a, s) => { const r = s.getBoundingClientRect(); if (r.top <= line && r.bottom > line) cur = a; });
+            links.forEach(a => a.classList.toggle('nav-active', a === cur));
+        };
+        window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+        update();
+    });
+
+    /* 8. 意图预取：指针靠近 / 手指按下器型按钮时，立刻把该器物提到下载队列最前 ——— */
+    safe(function intentPrefetch() {
+        const handler = (e) => {
+            const b = e.target.closest && e.target.closest('[onclick*="loadPorcelainModel("]');
+            if (!b) return;
+            const m = /loadPorcelainModel\((\d+)/.exec(b.getAttribute('onclick') || '');
+            if (!m) return;
+            const i = parseInt(m[1], 10);
+            try { if (typeof masterTreasuresMeta !== 'undefined' && masterTreasuresMeta[i] && !masterTreasuresCache[i]) loadSingleMasterTreasure(i, null, true); } catch (_) { }
+        };
+        document.addEventListener('pointerover', handler, { passive: true });
+        document.addEventListener('touchstart', handler, { passive: true });
     });
 })();

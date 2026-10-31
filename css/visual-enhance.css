@@ -47,7 +47,7 @@ body {
     -webkit-text-size-adjust: 100%;
     line-break: strict;
     word-break: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     hanging-punctuation: allow-end;
 }
 .font-serif-cn,
@@ -273,7 +273,12 @@ p, .text-text-body, .feature-card p {
     border-right-color: rgba(229, 200, 136, 0.7) !important;
     box-shadow: 0 0 18px rgba(143, 184, 192, 0.25);
 }
-.three-stage-loader { background: radial-gradient(circle at 50% 45%, rgba(24, 40, 48, 0.94), rgba(7, 12, 16, 0.96)) !important; }
+.three-stage-loader {
+    background: radial-gradient(circle at 50% 45%, rgba(15, 26, 34, 0.65), rgba(6, 12, 16, 0.80)) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    pointer-events: none !important;
+}
 .loader-text { font-family: var(--font-serif-cn); letter-spacing: 0.28em !important; }
 
 /* 提示条：衬线 + 金边 + 自带入场弹性 */
@@ -459,4 +464,97 @@ html.js-reveal .reveal-on-scroll.in-view { opacity: 1; transform: none; filter: 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
     html.js-reveal .reveal-on-scroll { opacity: 1; transform: none; filter: none; }
+}
+
+
+/* ═════════════ v7.1 全站细节打磨 ═════════════ */
+
+/* 导航：链接不换行；金丝下划线渐显；当前章节高亮（由 ui-enhance.js 写入 .nav-active） */
+#navbar a { white-space: nowrap; }
+#navbar .xl\:flex a { position: relative; padding: 6px 1px; letter-spacing: 0.01em; }
+#navbar .xl\:flex a::after {
+    content: ''; position: absolute; left: 50%; bottom: 0; width: 0; height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+    transition: width 0.4s var(--ease-ink), left 0.4s var(--ease-ink);
+}
+#navbar .xl\:flex a:hover::after, #navbar .xl\:flex a.nav-active::after { width: 100%; left: 0; }
+#navbar .xl\:flex a.nav-active { color: var(--tianqing-deep); font-weight: 600; }
+#navbar.scrolled { background: var(--bg-nav); box-shadow: 0 8px 30px rgba(10, 20, 28, 0.14), 0 1px 0 var(--gold-line); }
+
+/* 顶部阅读进度：天青→鎏金 细线 */
+#read-progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 3000;
+    transform-origin: 0 50%; transform: scaleX(0);
+    background: linear-gradient(90deg, var(--tianqing), var(--gold-accent) 70%, var(--cinnabar));
+    box-shadow: 0 0 8px var(--gold-glow); pointer-events: none;
+}
+
+/* 主按钮：渐变玉面 + 悬停流光扫过 */
+.hero-section a[class*="rounded-full"][class*="bg-tianqing-deep"],
+.hero-section a[class*="rounded-full"][class*="bg-amber-700"],
+button[class*="bg-tianqing-deep"][class*="rounded-full"] {
+    position: relative; overflow: hidden; isolation: isolate;
+    box-shadow: 0 8px 22px rgba(34, 78, 89, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transition: transform 0.35s var(--ease-ink), box-shadow 0.35s var(--ease-ink);
+}
+.hero-section a[class*="rounded-full"][class*="bg-tianqing-deep"]::after,
+.hero-section a[class*="rounded-full"][class*="bg-amber-700"]::after {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.35) 50%, transparent 65%);
+    transform: translateX(-120%); transition: transform 0.8s var(--ease-ink);
+}
+.hero-section a[class*="rounded-full"]:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(34, 78, 89, 0.34); }
+.hero-section a[class*="rounded-full"]:hover::after { transform: translateX(120%); }
+
+/* 首屏标题：金色流光缓慢扫过（仅渐变文字，不影响可读性） */
+.hero-title-gradient {
+    background-size: 220% 100%;
+    animation: titleShimmer 9s ease-in-out infinite alternate;
+}
+@keyframes titleShimmer { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
+/* 章节标签胶囊与分隔装饰：金线描边，更像图录题签 */
+section .rounded-full.bg-tianqing-deep[class*="text-xs"],
+section span[class*="rounded-full"][class*="bg-tianqing-deep"] {
+    letter-spacing: 0.16em;
+    box-shadow: 0 0 0 1px rgba(214, 177, 106, 0.55), 0 6px 16px rgba(34, 78, 89, 0.22);
+}
+
+/* 卡片：统一的悬浮高度、金线顶沿与更细的层次阴影 */
+.feature-card {
+    transition: transform 0.5s var(--ease-ink), box-shadow 0.5s var(--ease-ink), border-color 0.4s ease;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, var(--shadow-card);
+}
+@media (hover: hover) {
+    .feature-card:hover { transform: translateY(-5px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, var(--shadow-card-hover); }
+}
+/* 图片占位：加载前显示天青渐变骨架，而不是一块纯黑 */
+.feature-card img, .hero-showcase-stage img {
+    background: linear-gradient(135deg, #20343b, #0f1b21 60%, #1b2a30);
+}
+
+/* 首屏数据卡：悬浮微抬升 + 数字使用衬线等宽 */
+.hero-section [class*="rounded-2xl"][class*="shadow"], .hero-section .grid > div { transition: transform 0.45s var(--ease-ink), box-shadow 0.45s var(--ease-ink); }
+@media (hover: hover) { .hero-section .grid > div:hover { transform: translateY(-4px); } }
+
+/* 筛选 / 朝代胶囊：选中态加金环 */
+.archive-dynasty-btn.active, .history-node-btn.ring-2, .history-node-btn[class*="bg-tianqing-deep"] {
+    box-shadow: 0 0 0 1.5px var(--gold-accent), 0 6px 16px rgba(34, 78, 89, 0.28);
+}
+
+/* 滚动条：改为实色细条，避免在页面右缘形成渐变污迹 */
+::-webkit-scrollbar-thumb { background: rgba(124, 170, 180, 0.55); background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(58, 118, 132, 0.8); background-clip: content-box; }
+
+/* 页脚与分隔线：金线渐隐 */
+hr, .section-divider { border: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-line), transparent); }
+footer { border-top: 1px solid var(--gold-line); }
+
+/* 平板过渡档：1024–1279 隐藏主菜单后，按钮区不拥挤 */
+@media (max-width: 1279px) { #navbar .flex.items-center.gap-2 { gap: 0.4rem; } }
+
+/* 1280–1439 宽屏档：主菜单收紧间距并隐藏图标，右侧功能按钮不再被挤出视口 */
+@media (min-width: 1280px) and (max-width: 1439px) {
+    #navbar .xl\:flex { gap: 0.6rem !important; font-size: 11.5px; }
+    #navbar .xl\:flex a i { display: none; }
 }

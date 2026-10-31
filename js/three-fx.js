@@ -386,8 +386,11 @@
     }
     function updateDust(dt) {
         if (!particleSystem || REDUCED) return;
-        const { base, seed } = particleSystem.geometry.userData;
+        const ud = particleSystem.geometry && particleSystem.geometry.userData;
+        if (!ud || !ud.seed || !ud.base) return;
+        const { base, seed } = ud;
         const pos = particleSystem.geometry.attributes.position;
+        if (!pos) return;
         const t = FX.t, H = 4.4, y0 = -1.2;
         for (let i = 0; i < pos.count; i++) {
             const k = i * 3, ph = seed[k], vy = seed[k + 1], amp = seed[k + 2];
@@ -435,8 +438,11 @@
             s.userData.origin = new THREE.Vector3(c.x, b.max.y - 0.02, c.z);
         }
         const o = s.userData.origin;
-        const { age, sd } = s.geometry.userData;
+        const ud = s.geometry && s.geometry.userData;
+        if (!ud || !ud.age || !ud.sd) return;
+        const { age, sd } = ud;
         const pos = s.geometry.attributes.position, col = s.geometry.attributes.color;
+        if (!pos || !col) return;
         const RISE = 1.25, LIFE = 6.0;
         for (let i = 0; i < pos.count; i++) {
             age[i] += dt / LIFE;
@@ -874,6 +880,130 @@
         return geo;
     };
 
+
+    /* ======================================================================
+     * K. 性能层 (v7.1)：加载 / 切换提速
+     *  1) 后台串行预取其余 7 件国宝（一次只占 1 路，且让位于用户点选的优先任务）
+     *  2) 预取完成后在空闲时把纹理预上传 GPU，首次切换不再卡顿
+     *  3) disposeGroup 不再释放「缓存共享」几何体 / 材质 → 切回器物无需重传、无需重编译着色器
+     *  4) 展厅：已建成且数据未变化时不再整厅重建；展厅内器物关闭投影
+     *  5) loadPorcelainModel 去重：模型加载完成时原逻辑会连续重建 2 次
+     *  6) 接触阴影足印按器型缓存，避免每次切换对高模做 Box3 全顶点遍历
+     * ==================================================================== */
+    const keepGeo = new WeakSet();
+    function registerCachedGeometries() {
+        [masterTreasuresCache, scannedModelCache].forEach((cache) => {
+            Object.keys(cache).forEach((k) => {
+                const sc = cache[k];
+                if (!sc || sc.userData.__fxReg) return;
+                sc.userData.__fxReg = true;
+                sc.traverse((o) => { if (o.isMesh && o.geometry) keepGeo.add(o.geometry); });
+            });
+        });
+    }
+    window.disposeGroup = function disposeGroup(grp) {
+        if (!grp) return;
+        registerCachedGeometries();
+        grp.traverse((child) => {
+            if (!child.isMesh) return;
+            // 几何体：缓存共享的保留（重复 dispose 会让下次渲染再次上传整套顶点缓冲）
+            if (child.geometry && !keepGeo.has(child.geometry)) child.geometry.dispose();
+            // 材质：不立即 dispose —— 立刻释放会令着色器程序引用计数归零，下一件器物要重新编译（单次可卡 100~300ms）
+        });
+    };
+
+    const _buildHall = window.buildVirtualMuseumHall;
+    let hallSig = '';
+    window.buildVirtualMuseumHall = function buildVirtualMuseumHall() {
+        const sig = Object.keys(masterTreasuresCache).length + '|' + Object.keys(scannedModelCache).length;
+        if (hallGroup && sig === hallSig) {                 // 数据未变：复用已建成的展厅
+            hallGroup.visible = (exhibitionMode === 'hall');
+            if (hallGroup.parent !== scene) scene.add(hallGroup);
+            return;
+        }
+        hallSig = sig;
+        const r = _buildHall.apply(this, arguments);
+        if (hallGroup) hallGroup.traverse((o) => { if (o.isMesh) o.castShadow = false; });   // 九器同屏不投影：省一整个阴影 Pass
+        return r;
+    };
+
+    // 连续重复调用去重（模型下载完成时，原逻辑会先后触发两次重建）
+    const _loadModel2 = window.loadPorcelainModel;
+    let lastLoad = { idx: -1, keep: false, t: 0 };
+    window.loadPorcelainModel = function loadPorcelainModel(index, keepMode) {
+        const now = performance.now();
+        if (keepMode === true && index === lastLoad.idx && lastLoad.keep === true && now - lastLoad.t < 80 && currentGroup) return;
+        lastLoad = { idx: index, keep: keepMode === true, t: now };
+        return _loadModel2.apply(this, arguments);
+    };
+
+    // 后台串行预取
+    const conn = navigator.connection || {};
+    const slowNet = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+    function nextToPrefetch() {
+        const n = Object.keys(masterTreasuresMeta).length;
+        for (let d = 1; d < n; d++) {                         // 以当前器物为中心，向两侧由近及远
+            for (const idx of [(currentModelIndex + d) % n, (currentModelIndex - d + n) % n]) {
+                if (!masterTreasuresCache[idx] && !masterTreasuresLoading[idx]) return idx;
+            }
+        }
+        return -1;
+    }
+    FX.prefetchTick = function () {
+        if (slowNet || document.hidden) return;
+        if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;   // 首件未就绪，先不抢带宽
+        if (activeLoadingCount > 0 || modelTaskQueue.length > 0) return;
+        const idx = nextToPrefetch();
+        if (idx < 0) { clearInterval(FX._pf); FX._pf = null; return; }
+        loadSingleMasterTreasure(idx, () => warmTextures(idx), false);
+    };
+    function warmTextures(idx) {
+        const sc = masterTreasuresCache[idx];
+        if (!sc || !renderer || !renderer.initTexture) return;
+        const texs = [];
+        sc.traverse((o) => {
+            if (!o.isMesh || !o.material) return;
+            (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
+                ['map', 'normalMap', 'roughnessMap', 'aoMap'].forEach((k) => { if (m[k] && texs.indexOf(m[k]) < 0) texs.push(m[k]); });
+            });
+        });
+        const maxA = renderer.capabilities.getMaxAnisotropy();
+        const idle = window.requestIdleCallback || ((fn) => setTimeout(() => fn({ timeRemaining: () => 8 }), 60));
+        (function step() {
+            const tx = texs.shift();
+            if (!tx) return;
+            idle(() => { try { tx.anisotropy = maxA; renderer.initTexture(tx); } catch (_) { } step(); });   // 每次空闲只传 1 张，避免掉帧
+        })();
+    }
+    FX.warmTextures = warmTextures;
+
+    // 接触阴影足印缓存（覆盖 C 节逐次 Box3 全顶点遍历）
+    const footprint = {};
+    updateContactShadows = function () {
+        if (!FX.shadows) return;
+        const idxs = [currentModelIndex, (typeof compareRightModelIndex !== 'undefined') ? compareRightModelIndex : -1];
+        const targets = [currentGroup, (typeof compareRightGroup !== 'undefined') ? compareRightGroup : null];
+        FX.shadows.forEach((sm, i) => {
+            const g = targets[i];
+            if (!g || !g.visible || !sm.parent || exhibitionMode === 'hall') { sm.visible = false; return; }
+            if (sm.userData.gid !== g.uuid) {
+                sm.userData.gid = g.uuid;
+                if (footprint[idxs[i]] === undefined) {
+                    const b = new THREE.Box3().setFromObject(g);
+                    const sz = b.getSize(new THREE.Vector3());
+                    footprint[idxs[i]] = clamp(Math.max(sz.x, sz.z) * 1.05, 0.95, 2.1);
+                }
+                sm.userData.size = footprint[idxs[i]];
+            }
+            const lift = (g === currentGroup && typeof vesselLiftCurrentY !== 'undefined') ? vesselLiftCurrentY : 0;
+            const sz = sm.userData.size * (1 + lift * 0.4);
+            sm.scale.set(sz, sz, 1);
+            sm.position.set(g.position.x, TABLE_SURFACE_Y + 0.004, g.position.z);
+            sm.material.opacity = clamp(0.92 - lift * 1.4, 0.2, 0.92);
+            sm.visible = true;
+        });
+    };
+
     /* ======================================================================
      * 函数包装：不改动原函数，只在其前后追加视觉处理
      * ==================================================================== */
@@ -1001,6 +1131,7 @@
 
         FX.ready = true;
         FX.applyEnv(currentRoomEnv || 'studio');
+        FX._pf = setInterval(FX.prefetchTick, 900);   // 后台串行预取其余国宝
     };
 
     /* ======================================================================
@@ -1062,6 +1193,7 @@
                     if (beam) {
                         const on = child.userData.vitrineIndex === currentModelIndex;
                         beam.material.opacity = damp(beam.material.opacity, on ? 0.12 : 0.035, 4, dt);
+                        beam.material.color.setHex(on ? 0xe5c888 : 0x8fb8c0);
                     }
                 }
             });
