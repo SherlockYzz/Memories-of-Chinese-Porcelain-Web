@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    华夏器道 · 天青泥火 — 殿堂级东方宋韵数字博物院视觉系统 (National Award Flagship Edition)
    包含：玄金暗夜博物院(Dark) / 宋韵宣纸雅集(Light) 双主题、完整12列响应式栅格、
    高定流金标题、3D 全息展厅 HUD 控件、化学试烧玉璧、点茶百戏与微交互动画
@@ -136,7 +136,7 @@ html[data-theme="light"] body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background: url('../images/背景.webp') center center / cover no-repeat, url('../images/背景.jpg') center center / cover no-repeat;
+    background: url('../images/背景.webp') center center / cover no-repeat;
     opacity: 0.14;
     pointer-events: none;
     z-index: 0;

@@ -1,4 +1,4 @@
-﻿﻿/**
+﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 前端综合调度主控制器 (National Award Flagship App Controller)
  * 核心涵盖：
  * 1. 首屏水墨流金粒子动态背景 (#hero-ambient-canvas) 与特展双模展柜切换
@@ -249,7 +249,7 @@ function renderHistoryTimeline() {
     displayContainer.innerHTML = `
         <div class="feature-card p-6 sm:p-8 space-y-6">
             <div class="flex flex-col md:flex-row items-center gap-8">
-                <div class="w-full md:w-1/2 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 bg-black relative border border-border-light group">
+                <div class="w-full md:w-1/2 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 porcelain-card-skeleton relative border border-border-light group">
                     <img src="${p.img}" alt="${(p.title && p.title[lang]) || ''}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-3.5 py-1 rounded-full text-amber-200 text-xs font-serif-cn border border-white/10">
                         ${p.year}
@@ -511,7 +511,7 @@ function renderWorkshopGrid() {
     container.innerHTML = workshopSteps.map(step => `
         <div class="feature-card p-5 group cursor-pointer hover-lift flex flex-col justify-between" onclick="openStepDetailModal(${step.id})">
             <div>
-                <div class="aspect-[4/3] rounded-xl overflow-hidden mb-3.5 bg-black relative border border-border-light">
+                <div class="aspect-[4/3] rounded-xl overflow-hidden mb-3.5 porcelain-card-skeleton relative border border-border-light">
                     <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35"></div>
                     <span class="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md text-amber-200 text-[10px] px-2.5 py-1 rounded-full font-serif-cn border border-white/15 shadow-sm">
@@ -1126,8 +1126,12 @@ function renderArchiveGrid() {
         return `
         <div class="feature-card p-5 group cursor-pointer hover-lift relative text-left flex flex-col justify-between" onclick="openArchiveDetailModal(${item.id})">
             <div>
-                <div class="aspect-square rounded-xl overflow-hidden mb-4 bg-black relative border border-border-light">
-                    <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                <div class="aspect-square rounded-xl overflow-hidden mb-4 porcelain-card-skeleton relative border border-border-light/60">
+                    <div class="porcelain-skeleton-icon">
+                        <i class="fa-solid fa-gem opacity-40"></i>
+                        <span class="text-[10px] font-serif-cn mt-1 opacity-50 tracking-wider">天青雅鉴</span>
+                    </div>
+                    <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 opacity-0 relative z-10" onload="this.classList.remove('opacity-0'); const icon = this.previousElementSibling; if(icon) icon.style.opacity='0';" onerror="this.src='./images/13.jpg'; this.classList.remove('opacity-0');">
                     <span class="absolute top-2.5 right-2.5 bg-tianqing-deep text-white text-[10px] px-2.5 py-0.5 rounded-full font-serif-cn shadow-sm">
                         ${item.level}
                     </span>

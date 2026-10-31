@@ -1,4 +1,4 @@
-﻿﻿/**
+﻿﻿﻿/**
  * ============================================================================
  * 天青泥火 · three-fx.js  —— 3D 展馆「画面升华」增强层 (v7.0 Visual Overhaul)
  * ----------------------------------------------------------------------------
@@ -1131,7 +1131,13 @@
 
         FX.ready = true;
         FX.applyEnv(currentRoomEnv || 'studio');
-        FX._pf = setInterval(FX.prefetchTick, 250);   // 后台串行预取其余国宝
+        // 彻底根绝首屏网络风暴与标签页无限转圈：推迟至页面完全加载稳定后，在系统空闲时单线程低频拉取
+        setTimeout(() => {
+            const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1000));
+            idle(() => {
+                if (!FX._pf) FX._pf = setInterval(FX.prefetchTick, 2800);
+            });
+        }, 4000);
     };
 
     /* ======================================================================

@@ -1,4 +1,4 @@
-﻿﻿﻿﻿/**
+﻿﻿﻿﻿﻿/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -2226,7 +2226,8 @@ function initThreeJS() {
         createInspectorStage();
         preloadMasterTreasures();
         loadPorcelainModel(0);
-        scheduleBackgroundModelPreload();
+        // 彻底取消首屏并发争抢：其余模型由鼠标意图悬停与空闲低频调度按需装载
+        // scheduleBackgroundModelPreload();
 
         setupControls(canvas);
         window.addEventListener('resize', handleThreeResize);

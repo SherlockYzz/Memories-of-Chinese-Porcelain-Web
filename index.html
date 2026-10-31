@@ -1,4 +1,4 @@
-﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
 
     <!-- Font Awesome 6 (本地静态加载) -->
+        <!-- 极速首屏预加载：第一时刻并行拉取 0 号国宝三维资产与渲染引擎 -->
+    <link rel="preload" href="models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb" as="fetch" crossorigin>
+    <link rel="preload" href="js/three.min.js" as="script">
     <link rel="stylesheet" href="css/font-awesome.min.css">
 
     <!-- 东方宋韵数字博物院样式系统 -->
@@ -230,19 +233,19 @@
                     <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between gap-2 relative z-10">
                         <div class="flex items-center gap-2">
                             <button onclick="switchHeroShowcase('./images/13.jpg', '特展一号柜 · 南宋官窑冰裂纹盘口瓶', 0, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-amber-400 ring-2 p-0.5 bg-black/50" title="南宋官窑冰裂纹盘口瓶">
-                                <img src="./images/13.jpg" class="w-full h-full object-cover rounded" alt="官窑">
+                                <img src="./images/13.jpg" class="w-full h-full object-cover rounded" alt="官窑" loading="lazy" decoding="async">
                             </button>
                             <button onclick="switchHeroShowcase('./images/10.jpg', '特展二号柜 · 北宋汝官窑天青胆式瓶', 1, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="北宋汝官窑天青胆式瓶">
-                                <img src="./images/10.jpg" class="w-full h-full object-cover rounded" alt="汝窑">
+                                <img src="./images/10.jpg" class="w-full h-full object-cover rounded" alt="汝窑" loading="lazy" decoding="async">
                             </button>
                             <button onclick="switchHeroShowcase('./images/9.jpg', '特展三号柜 · 宋韵粉青镂空玲珑茶器组', 4, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="宋韵粉青镂空玲珑茶器组">
-                                <img src="./images/9.jpg" class="w-full h-full object-cover rounded" alt="粉青玲珑">
+                                <img src="./images/9.jpg" class="w-full h-full object-cover rounded" alt="粉青玲珑" loading="lazy" decoding="async">
                             </button>
                             <button onclick="switchHeroShowcase('./images/15.jpg', '特展四号柜 · 明宣德青花山水云纹赏瓶', 6, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="明宣德青花山水赏瓶">
-                                <img src="./images/15.jpg" class="w-full h-full object-cover rounded" alt="青花">
+                                <img src="./images/15.jpg" class="w-full h-full object-cover rounded" alt="青花" loading="lazy" decoding="async">
                             </button>
                             <button onclick="switchHeroShowcase('./images/1.jpg', '特展五号柜 · 1:1实测三维扫描青瓷标本', 7, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="1:1实测三维扫描青瓷标本">
-                                <img src="./images/1.jpg" class="w-full h-full object-cover rounded" alt="实测扫描">
+                                <img src="./images/1.jpg" class="w-full h-full object-cover rounded" alt="实测扫描" loading="lazy" decoding="async">
                             </button>
                         </div>
                         <a href="#3d-gallery" class="px-3.5 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shrink-0">
@@ -672,7 +675,7 @@
                     <div class="lg:col-span-4 space-y-4">
                         <!-- 视窗 1：原图与激光扫描 -->
                         <div class="rounded-2xl overflow-hidden shadow-md bg-black relative border border-border-light aspect-square">
-                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" class="w-full h-full object-cover">
+                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <div id="ai-scan-animation" class="hidden absolute inset-0 bg-black/45 backdrop-blur-sm flex flex-col items-center justify-center">
                                 <div class="ai-scan-line-laser"></div>
                                 <div class="bg-black/80 px-4 py-2 rounded-full text-white text-xs font-serif-cn flex items-center gap-2 shadow-lg border border-amber-400">
@@ -785,37 +788,37 @@
         <div class="max-w-6xl mx-auto mb-10">
             <div class="seven-crafts-strip">
                 <div class="craft-icon-card" onclick="openStepDetailModal(3)">
-                    <img src="./images/图标/1.jpg" alt="菊花揉泥">
+                    <img src="./images/图标/1.jpg" alt="菊花揉泥" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">① 菊花揉泥</span>
                     <span class="text-[10px] text-text-muted">百炼排气 · 膏腻无泡</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(1)">
-                    <img src="./images/图标/2.jpg" alt="水浸澄泥">
+                    <img src="./images/图标/2.jpg" alt="水浸澄泥" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">② 水浸陈腐</span>
                     <span class="text-[10px] text-text-muted">源泉澄澈 · 润土生香</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(4)">
-                    <img src="./images/图标/3.jpg" alt="轮盘拉坯">
+                    <img src="./images/图标/3.jpg" alt="轮盘拉坯" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">③ 飞轮拉坯</span>
                     <span class="text-[10px] text-text-muted">圆器生形 · 气韵端庄</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(2)">
-                    <img src="./images/图标/4.jpg" alt="淘洗澄浆">
+                    <img src="./images/图标/4.jpg" alt="淘洗澄浆" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">④ 淘洗除铁</span>
                     <span class="text-[10px] text-text-muted">马尾细罗 · 细腻如脂</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(5)">
-                    <img src="./images/图标/5.jpg" alt="利坯修刀">
+                    <img src="./images/图标/5.jpg" alt="利坯修刀" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑤ 利坯刻花</span>
                     <span class="text-[10px] text-text-muted">刀旋薄胎 · 半刀泥法</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(6)">
-                    <img src="./images/图标/6.jpg" alt="素烧定骨">
+                    <img src="./images/图标/6.jpg" alt="素烧定骨" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑥ 八百素烧</span>
                     <span class="text-[10px] text-text-muted">低温定骨 · 坚致待釉</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(8)">
-                    <img src="./images/图标/7.jpg" alt="龙窑柴烧">
+                    <img src="./images/图标/7.jpg" alt="龙窑柴烧" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑦ 龙窑还原</span>
                     <span class="text-[10px] text-text-muted">千三烈焰 · 窑变天成</span>
                 </div>
@@ -1586,19 +1589,19 @@
 </button>
 
 <!-- 核心脚本加载链路 (首屏模块优先加载，音频与点云数据按需调取) -->
-<script src="js/three.min.js"></script>
-<script src="js/GLTFLoader.js"></script>
-<script src="js/oriental-ambient.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/data.js"></script>
-<script src="js/three-scene.js"></script>
+<script src="js/three.min.js" defer></script>
+<script src="js/GLTFLoader.js" defer></script>
+<script src="js/oriental-ambient.js" defer></script>
+<script src="js/i18n.js" defer></script>
+<script src="js/data.js" defer></script>
+<script src="js/three-scene.js" defer></script>
 <!-- v7.0 3D 画面升华层：必须紧跟 three-scene.js，在 app.js 之前 -->
-<script src="js/three-fx.js"></script>
-<script src="js/ai-recognition.js"></script>
-<script src="js/pottery-workshop.js"></script>
-<script src="js/app.js"></script>
+<script src="js/three-fx.js" defer></script>
+<script src="js/ai-recognition.js" defer></script>
+<script src="js/pottery-workshop.js" defer></script>
+<script src="js/app.js" defer></script>
 <!-- v7.0 微交互 / 稳定视口 -->
-<script src="js/ui-enhance.js"></script>
+<script src="js/ui-enhance.js" defer></script>
 
 </body>
 </html>
