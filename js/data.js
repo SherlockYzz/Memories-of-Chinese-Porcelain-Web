@@ -846,7 +846,7 @@ const archivePorcelains = [
     {
         "id": 2,
         "dynastyKey": "song",
-        "modelIdx": 2,
+        "modelIdx": null,
         "name": "北宋 · 定窑牙白划花萱草纹葵口盘",
         "kiln": "定窑 · 河北曲阳涧磁村",
         "level": "宋韵白瓷极简典范",
@@ -866,7 +866,7 @@ const archivePorcelains = [
     {
         "id": 3,
         "dynastyKey": "song",
-        "modelIdx": 4,
+        "modelIdx": null,
         "name": "北宋 · 钧官窑天蓝釉鼓钉三足洗",
         "kiln": "钧窑 · 河南禹州神垕钧台",
         "level": "宋代五大名窑瑰宝",
@@ -886,7 +886,7 @@ const archivePorcelains = [
     {
         "id": 4,
         "dynastyKey": "song",
-        "modelIdx": 10,
+        "modelIdx": null,
         "name": "南宋 · 龙泉窑粉青釉金缮胆瓶",
         "kiln": "龙泉窑 · 浙江龙泉大窑",
         "level": "宋代青瓷极品传世重器",
@@ -906,7 +906,7 @@ const archivePorcelains = [
     {
         "id": 5,
         "dynastyKey": "song",
-        "modelIdx": 1,
+        "modelIdx": null,
         "name": "宋代 · 建窑黑釉兔毫斗茶盏",
         "kiln": "建窑 · 福建建阳水吉芦花坪",
         "level": "宋代茶道第一圣器",
@@ -926,7 +926,7 @@ const archivePorcelains = [
     {
         "id": 6,
         "dynastyKey": "song",
-        "modelIdx": 1,
+        "modelIdx": null,
         "name": "宋代 · 吉州窑剪纸贴花梅花纹天目盏",
         "kiln": "吉州窑 · 江西吉安永和镇",
         "level": "民间窑变与剪纸巧思之极",
@@ -966,7 +966,7 @@ const archivePorcelains = [
     {
         "id": 8,
         "dynastyKey": "song",
-        "modelIdx": 1,
+        "modelIdx": null,
         "name": "北宋 · 耀州窑青釉印花婴戏缠枝纹碗",
         "kiln": "耀州窑 · 陕西铜川黄堡镇",
         "level": "北方刻花青瓷冠绝天下之器",
@@ -1026,7 +1026,7 @@ const archivePorcelains = [
     {
         "id": 11,
         "dynastyKey": "ming",
-        "modelIdx": 5,
+        "modelIdx": null,
         "name": "明崇祯 · 景德镇青花人物故事图观音尊",
         "kiln": "景德镇民窑巅峰 · 文人瓷画",
         "level": "明末清初文人青花代表作",
@@ -1046,7 +1046,7 @@ const archivePorcelains = [
     {
         "id": 12,
         "dynastyKey": "ming",
-        "modelIdx": 7,
+        "modelIdx": null,
         "name": "明成化 · 景德镇御窑斗彩折枝花鸟杯",
         "kiln": "景德镇御器厂 · 成化御制",
         "level": "大明御窑彩瓷极高美学",
@@ -1066,7 +1066,7 @@ const archivePorcelains = [
     {
         "id": 13,
         "dynastyKey": "ming",
-        "modelIdx": 2,
+        "modelIdx": null,
         "name": "明代 · 德化窑白釉达摩坐像 (何朝宗风范)",
         "kiln": "德化窑 · 福建泉州德化",
         "level": "东方艺术瑰宝 · 中国白 (Blanc de Chine)",
@@ -1086,7 +1086,7 @@ const archivePorcelains = [
     {
         "id": 14,
         "dynastyKey": "tang",
-        "modelIdx": 12,
+        "modelIdx": null,
         "name": "唐代 · 盛唐三彩胡人骑马俑",
         "kiln": "巩义窑 / 西安长安南郊窑",
         "level": "大唐万国来朝盛世见证",
@@ -1126,7 +1126,7 @@ const archivePorcelains = [
     {
         "id": 16,
         "dynastyKey": "qing",
-        "modelIdx": 0,
+        "modelIdx": null,
         "name": "清康熙 · 御窑豇豆红釉暗刻蟠螭纹太白尊",
         "kiln": "景德镇御窑 · 康熙藏春书屋文房",
         "level": "清代官窑单色釉最高名品",
@@ -1146,7 +1146,7 @@ const archivePorcelains = [
     {
         "id": 17,
         "dynastyKey": "qing",
-        "modelIdx": 1,
+        "modelIdx": null,
         "name": "清康熙 · 御窑豇豆红釉文房笔洗",
         "kiln": "景德镇御窑厂",
         "level": "八大码文房案头御供重器",
@@ -1166,7 +1166,7 @@ const archivePorcelains = [
     {
         "id": 18,
         "dynastyKey": "qing",
-        "modelIdx": 2,
+        "modelIdx": null,
         "name": "清康熙 · 御窑五彩穿花龙纹大盘",
         "kiln": "景德镇御窑厂",
         "level": "康熙硬彩五彩皇家重器",
@@ -1186,7 +1186,7 @@ const archivePorcelains = [
     {
         "id": 19,
         "dynastyKey": "qing",
-        "modelIdx": 7,
+        "modelIdx": null,
         "name": "清乾隆 · 御制诗文粉彩山水轿瓶",
         "kiln": "景德镇御器厂 · 督陶官唐英承造",
         "level": "乾隆帝御乘随行陈设珍器",
@@ -1206,7 +1206,7 @@ const archivePorcelains = [
     {
         "id": 20,
         "dynastyKey": "qing",
-        "modelIdx": 7,
+        "modelIdx": null,
         "name": "清乾隆 · 御窑柠檬黄釉兽首衔环尊",
         "kiln": "景德镇御窑厂",
         "level": "清代宫廷祭地纯色礼器",
@@ -1226,7 +1226,7 @@ const archivePorcelains = [
     {
         "id": 21,
         "dynastyKey": "qing",
-        "modelIdx": 7,
+        "modelIdx": null,
         "name": "清乾隆 · 御窑粉彩牡丹草虫图折沿盘",
         "kiln": "景德镇御器厂",
         "level": "清宫造办处画样典范",
@@ -1266,7 +1266,7 @@ const archivePorcelains = [
     {
         "id": 23,
         "dynastyKey": "song",
-        "modelIdx": 0,
+        "modelIdx": null,
         "name": "南宋 · 修内司官窑粉青葵瓣口盘",
         "kiln": "南宋官窑 · 杭州凤凰山",
         "level": "南宋行在内廷极品",
@@ -1286,7 +1286,7 @@ const archivePorcelains = [
     {
         "id": 24,
         "dynastyKey": "song",
-        "modelIdx": 4,
+        "modelIdx": null,
         "name": "北宋 · 钧官窑天蓝釉红斑双系扁壶",
         "kiln": "钧窑 · 河南禹州神垕",
         "level": "宋代窑变极品神物",

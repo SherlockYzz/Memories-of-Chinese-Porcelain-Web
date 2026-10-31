@@ -1145,9 +1145,14 @@ function renderArchiveGrid() {
             </div>
             <div class="mt-3.5 pt-2.5 border-t border-border-light text-[11px] text-tianqing-deep flex items-center justify-between">
                 <span class="hover:underline">查阅数字化研考档案</span>
-                <button onclick="event.stopPropagation(); loadComparisonModelTo3D(${item.id})" class="text-amber-400 hover:text-amber-300 hover:underline font-serif-cn font-medium flex items-center gap-1">
-                    <i class="fa-solid fa-cube text-[10px]"></i>3D全息检视 &rarr;
-                </button>
+                ${(typeof item.modelIdx === 'number' && item.modelIdx !== null && item.modelIdx >= 0 && item.modelIdx <= 12)
+                    ? `<button onclick="event.stopPropagation(); loadComparisonModelTo3D(${item.id})" class="text-amber-400 hover:text-amber-300 hover:underline font-serif-cn font-medium flex items-center gap-1">
+                        <i class="fa-solid fa-cube text-[10px]"></i>3D全息检视 &rarr;
+                    </button>`
+                    : `<span class="text-[11px] text-text-muted font-serif-cn opacity-60 flex items-center gap-1 select-none">
+                        <i class="fa-regular fa-file-lines text-[10px]"></i>典藏图录收录
+                    </span>`
+                }
             </div>
         </div>
         `;
@@ -1216,7 +1221,10 @@ function openArchiveDetailModal(id) {
                 此器物造型沉穆端庄，其釉汁层层厚施，微观100倍显微镜下可见特征气泡层与矿物结晶，属两宋至明初皇家御用或数字孪生典范之作。
             </div>
             <div class="pt-2 flex justify-end">
-                <button onclick="closeUniversalModal(); loadComparisonModelTo3D(${item.id});" class="px-5 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-cube"></i>调入 3D 展馆立体观摩</button>
+                ${(typeof item.modelIdx === 'number' && item.modelIdx !== null && item.modelIdx >= 0 && item.modelIdx <= 12)
+    ? `<button onclick="closeUniversalModal(); loadComparisonModelTo3D(${item.id});" class="px-5 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-cube"></i>调入 3D 展馆立体观摩</button>`
+    : `<span class="px-4 py-2 rounded-full bg-stone-100 dark:bg-stone-800 text-text-muted text-xs font-serif-cn border border-border-light flex items-center gap-1"><i class="fa-solid fa-bookmark text-[10px]"></i>典藏图录档案 (未开放3D模型)</span>`
+}
             </div>
         </div>
     `;
@@ -1533,22 +1541,30 @@ function renderPorcelainComparison() {
 }
 
 function loadComparisonModelTo3D(targetId) {
-    let modelIdx = 0;
+    let modelIdx = null;
     let glazeKey = 'tianqing';
     let displayName = '馆藏器物';
 
     if (typeof targetId === 'number' && typeof archivePorcelains !== 'undefined') {
         const item = archivePorcelains.find(a => a.id === targetId);
         if (item) {
-            modelIdx = item.modelIdx !== undefined ? item.modelIdx : 0;
+            if (item.modelIdx === null || item.modelIdx === undefined) {
+                if (typeof showToast === 'function') {
+                    showToast(`📜【${item.name}】属文献图录典藏收录，暂未开放 3D 三维模型。`);
+                }
+                return;
+            }
+            modelIdx = item.modelIdx;
             glazeKey = item.glazeKey || 'tianqing';
             displayName = item.name || displayName;
         } else if (targetId >= 0 && targetId <= 12) {
             modelIdx = targetId;
         }
-    } else if (typeof targetId === 'number') {
+    } else if (typeof targetId === 'number' && targetId >= 0 && targetId <= 12) {
         modelIdx = targetId;
     }
+
+    if (modelIdx === null || modelIdx === undefined) return;
 
     // 1. 确保展台重置为单器 360° 精鉴模式 (防止卡在全景展厅或剖切模式)
     if (typeof switchExhibitionMode === 'function') {

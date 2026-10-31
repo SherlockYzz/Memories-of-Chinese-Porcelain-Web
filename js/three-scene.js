@@ -907,34 +907,34 @@ function getCrackleTextureBundle() {
                 const mx = (nodes[i].x + nodes[j].x) * 0.5 + (rand() - 0.5) * 16;
                 const my = (nodes[i].y + nodes[j].y) * 0.5 + (rand() - 0.5) * 16;
 
-                // 铁线主脉
-                cCtx.strokeStyle = 'rgba(38, 30, 24, 0.58)';
-                cCtx.lineWidth = 1.6;
+                // 金丝细脉 (极淡茶金色微裂，融于厚釉，绝不用死黑粗线)
+                cCtx.strokeStyle = 'rgba(175, 140, 88, 0.12)';
+                cCtx.lineWidth = 0.6;
                 cCtx.beginPath();
                 cCtx.moveTo(nodes[i].x, nodes[i].y);
                 cCtx.quadraticCurveTo(mx, my, nodes[j].x, nodes[j].y);
                 cCtx.stroke();
 
-                bCtx.strokeStyle = 'rgb(55, 55, 55)';
-                bCtx.lineWidth = 2.4;
+                bCtx.strokeStyle = 'rgb(75, 75, 75)';
+                bCtx.lineWidth = 1.8;
                 bCtx.beginPath();
                 bCtx.moveTo(nodes[i].x, nodes[i].y);
                 bCtx.quadraticCurveTo(mx, my, nodes[j].x, nodes[j].y);
                 bCtx.stroke();
 
-                // 金丝次级细网
-                if (rand() > 0.32) {
-                    const bx = mx + (rand() - 0.5) * 58;
-                    const by = my + (rand() - 0.5) * 58;
-                    cCtx.strokeStyle = 'rgba(186, 136, 62, 0.52)';
-                    cCtx.lineWidth = 0.95;
+                // 金丝次级细网 (极微游丝)
+                if (rand() > 0.40) {
+                    const bx = mx + (rand() - 0.5) * 48;
+                    const by = my + (rand() - 0.5) * 48;
+                    cCtx.strokeStyle = 'rgba(186, 150, 92, 0.08)';
+                    cCtx.lineWidth = 0.5;
                     cCtx.beginPath();
                     cCtx.moveTo(mx, my);
                     cCtx.lineTo(bx, by);
                     cCtx.stroke();
 
-                    bCtx.strokeStyle = 'rgb(105, 105, 105)';
-                    bCtx.lineWidth = 1.2;
+                    bCtx.strokeStyle = 'rgb(125, 125, 125)';
+                    bCtx.lineWidth = 1.0;
                     bCtx.beginPath();
                     bCtx.moveTo(mx, my);
                     bCtx.lineTo(bx, by);
@@ -1256,9 +1256,9 @@ function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
 
     if (showCrackle && !['qinghua', 'jianhei'].includes(glazeKey)) {
         const crackle = getCrackleTextureBundle();
-        if (!matOptions.map) matOptions.map = crackle.map;
+        // 单色厚釉以温润玉质与微观开片折射为美，依靠立体 Bump 凹凸呈现开片，杜绝表面黑线贴图！
         matOptions.bumpMap = crackle.bumpMap;
-        matOptions.bumpScale = 0.013;
+        matOptions.bumpScale = (glazeKey === 'geyao') ? 0.024 : 0.012;
     }
 
     return new THREE.MeshPhysicalMaterial(matOptions);
@@ -1677,6 +1677,18 @@ function buildGeometry(typeIndex, customGlaze = null) {
  */
 const envLoader = new THREE.GLTFLoader();
 
+let roomStudioGroup = null; // 宋代雅室专属构件 (紫檀束腰几案 + 青铜博山炉香薰 + 千里江山泥金围屏)
+let roomPalaceGroup = null; // 文博殿堂专属构件 (现代国家级特展微晶展台)
+let roomKilnGroup = null;   // 御窑幽室专属构件 (粗砺青砖古窑原址展台)
+roomFloorMesh = null;
+roomTableMesh = null;
+let roomCenserMesh = null;
+roomScreenMesh = null;
+let roomPalacePedestal = null;
+let roomKilnPedestal = null;
+
+const TABLE_SURFACE_Y = -1.125; // 严格锁定器物底座与几案/展台表面基准线 (绝对杜绝穿模与悬空)
+
 function createRealistic3DEnvironment() {
     if (realisticRoomGroup) {
         scene.remove(realisticRoomGroup);
@@ -1685,73 +1697,118 @@ function createRealistic3DEnvironment() {
     realisticRoomGroup = new THREE.Group();
     realisticRoomGroup.name = 'Realistic3DRoom';
 
-    // 1. 展厅地面 (低开销底衬)
-    const floorGeo = new THREE.PlaneGeometry(16, 16);
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0c1117, roughness: 0.82, metalness: 0.08 });
+    // 0. 展厅地面 (基准地面位于几案脚底 Y = -1.908)
+    const floorGeo = new THREE.PlaneGeometry(24, 24);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x141a1e, roughness: 0.82, metalness: 0.08 });
     roomFloorMesh = new THREE.Mesh(floorGeo, floorMat);
     roomFloorMesh.rotation.x = -Math.PI / 2;
-    roomFloorMesh.position.y = -0.783;
+    roomFloorMesh.position.y = TABLE_SURFACE_Y - 0.783; // -1.908
     roomFloorMesh.receiveShadow = true;
     realisticRoomGroup.add(roomFloorMesh);
 
-    // 2. 载入宋韵紫檀束腰几案 (18KB 单文件真实构件，桌面精准对齐 Y=0)
+    // ========================================================
+    // 场景 A：【宋代雅室】专属构件组 (用户专属：紫檀束腰几案 + 博山炉 + 千里江山屏风)
+    // ========================================================
+    roomStudioGroup = new THREE.Group();
+    roomStudioGroup.name = 'StudioEnvGroup';
+
+    // A1. 载入宋韵紫檀束腰几案 (高度0.783，放置在 -1.908，桌面顶表面绝对精确对齐 Y = -1.125)
     envLoader.load('models/environment/rosewood_table.glb', (gltf) => {
         const table = gltf.scene;
-        table.position.set(0, -0.783, 0);
+        table.position.set(0, TABLE_SURFACE_Y - 0.783, 0); // 桌面顶表面精准在 Y = -1.125！
         table.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
         });
-        realisticRoomGroup.add(table);
+        roomStudioGroup.add(table);
         roomTableMesh = table;
     });
 
-    // 3. 载入汉唐青铜博山炉香薰 (放置于几案左上方)
+    // A2. 载入汉唐青铜博山炉香薰 (底座在0，放置于几案桌面上 Y = -1.125，绝不悬空穿模)
     envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
         const censer = gltf.scene;
-        censer.position.set(-0.55, 0.0, -0.22);
-        censer.scale.set(0.9, 0.9, 0.9);
+        censer.position.set(-0.55, TABLE_SURFACE_Y, -0.22);
+        censer.scale.set(0.85, 0.85, 0.85);
         censer.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
         });
-        realisticRoomGroup.add(censer);
+        roomStudioGroup.add(censer);
+        roomCenserMesh = censer;
     });
 
-    // 4. 载入次世代全息玄武岩展台 (用于全息特展与特展展台)
-    envLoader.load('models/environment/hologram_pedestal.glb', (gltf) => {
-        const pedestal = gltf.scene;
-        pedestal.position.set(0, -0.90, 0);
-        pedestal.traverse((child) => {
-            if (child.isMesh) {
-                child.receiveShadow = true;
-                if (child.material && child.material.name === 'M_PedestalGlow') {
-                    child.material.toneMapped = false;
-                    child.material.emissiveIntensity = 2.5;
-                }
-            }
-        });
-        if (pedestalGroup) pedestalGroup.add(pedestal);
-    });
-
-    // 5. 载入千里江山泥金围屏 (作为展馆背景屏障)
+    // A3. 载入千里江山泥金围屏 (宏伟大屏风，放于后方 Z = -1.85，深色绢本金碧山水衬托前景天青玉光)
     envLoader.load('models/environment/scholar_screen.glb', (gltf) => {
         const screen = gltf.scene;
-        screen.position.set(0, -0.783, -1.45);
+        screen.position.set(0, TABLE_SURFACE_Y - 0.783, -1.85);
+        screen.scale.set(1.22, 1.22, 1.22);
         screen.traverse((child) => {
             if (child.isMesh) {
                 child.receiveShadow = true;
             }
         });
-        realisticRoomGroup.add(screen);
+        roomStudioGroup.add(screen);
         roomScreenMesh = screen;
     });
 
+    realisticRoomGroup.add(roomStudioGroup);
+
+    // ========================================================
+    // 场景 B：【文博殿堂】专属构件组 (现代国家特展高级微晶石八角柱展台，顶端 Y = -1.125)
+    // ========================================================
+    roomPalaceGroup = new THREE.Group();
+    roomPalaceGroup.name = 'PalaceEnvGroup';
+
+    // 现代特展微晶黑石柱展台 (高 0.783，顶表面 Y = -1.125，底 Y = -1.908)
+    const palacePedGeo = new THREE.CylinderGeometry(0.72, 0.76, 0.783, 8);
+    const palacePedMat = new THREE.MeshStandardMaterial({
+        color: 0x12151a,
+        roughness: 0.22,
+        metalness: 0.15
+    });
+    roomPalacePedestal = new THREE.Mesh(palacePedGeo, palacePedMat);
+    roomPalacePedestal.position.set(0, TABLE_SURFACE_Y - 0.783 / 2, 0); // 中心在 -1.5165，顶端在 -1.125
+    roomPalacePedestal.receiveShadow = true;
+    roomPalacePedestal.castShadow = true;
+
+    // 顶部哑光香槟金包边
+    const palaceGoldRim = new THREE.Mesh(
+        new THREE.RingGeometry(0.68, 0.725, 8),
+        new THREE.MeshStandardMaterial({ color: 0xd4af6a, roughness: 0.32, metalness: 0.85 })
+    );
+    palaceGoldRim.rotation.x = -Math.PI / 2;
+    palaceGoldRim.position.set(0, TABLE_SURFACE_Y + 0.001, 0);
+    roomPalaceGroup.add(roomPalacePedestal);
+    roomPalaceGroup.add(palaceGoldRim);
+
+    realisticRoomGroup.add(roomPalaceGroup);
+
+    // ========================================================
+    // 场景 C：【御窑幽室】专属构件组 (粗砺青砖窑台，顶端 Y = -1.125)
+    // ========================================================
+    roomKilnGroup = new THREE.Group();
+    roomKilnGroup.name = 'KilnEnvGroup';
+
+    const kilnPedGeo = new THREE.BoxGeometry(1.35, 0.783, 1.35);
+    const kilnPedMat = new THREE.MeshStandardMaterial({
+        color: 0x1e100b,
+        roughness: 0.88,
+        metalness: 0.05
+    });
+    roomKilnPedestal = new THREE.Mesh(kilnPedGeo, kilnPedMat);
+    roomKilnPedestal.position.set(0, TABLE_SURFACE_Y - 0.783 / 2, 0);
+    roomKilnPedestal.receiveShadow = true;
+    roomKilnPedestal.castShadow = true;
+    roomKilnGroup.add(roomKilnPedestal);
+
+    realisticRoomGroup.add(roomKilnGroup);
+
     scene.add(realisticRoomGroup);
+    switchRealisticSceneEnv(currentRoomEnv, false);
 }
 
 function createInspectorStage() {
@@ -1759,7 +1816,7 @@ function createInspectorStage() {
     scene.add(pedestalGroup);
     createRealistic3DEnvironment();
 
-    const pCount = 150;
+    const pCount = 120;
     const positions = new Float32Array(pCount * 3);
     for (let i = 0; i < pCount; i++) {
         const r = 0.8 + Math.random() * 3.8;
@@ -1774,7 +1831,7 @@ function createInspectorStage() {
         color: 0xe5c888,
         size: 0.03,
         transparent: true,
-        opacity: 0.5,
+        opacity: 0.45,
         blending: THREE.AdditiveBlending,
         depthWrite: false
     });
@@ -1787,12 +1844,18 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
     if (!scene || !realisticRoomGroup) return;
     const lightLabel = document.getElementById('light-preset-name');
 
+    // 核心场景独立隔离：只有【宋代雅室】显示紫檀束腰几案与博山炉，殿堂与御窑切换专属展台，氛围截然不同！
+    if (roomStudioGroup) roomStudioGroup.visible = (envKey === 'studio');
+    if (roomPalaceGroup) roomPalaceGroup.visible = (envKey === 'palace');
+    if (roomKilnGroup) roomKilnGroup.visible = (envKey === 'kiln');
+
     if (envKey === 'studio') {
         scene.background = new THREE.Color(0xF5F2E9);
         if (scene.fog) scene.fog.color.setHex(0x0b1116);
         if (roomFloorMesh) {
             roomFloorMesh.material.color.setHex(0x182126);
             roomFloorMesh.material.roughness = 0.82;
+            roomFloorMesh.material.metalness = 0.08;
             roomFloorMesh.material.needsUpdate = true;
         }
         if (lightMain) { lightMain.color.setHex(0xfff5e6); lightMain.intensity = 1.85; }
@@ -1800,34 +1863,36 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
         if (lightRim) { lightRim.color.setHex(0xffe4b8); lightRim.intensity = 0.95; }
         if (lightLabel) lightLabel.textContent = '宋代雨后雅室';
         if (showNotice && typeof showToast === 'function') {
-            showToast('🌿 已切换至【宋代文人雨后雅室】！千里江山泥金屏风衬托天青玉光');
+            showToast('🌿 已切换至【宋代文人雨后雅室】！紫檀几案与博山青烟衬托天青玉光');
         }
     } else if (envKey === 'palace') {
         scene.background = new THREE.Color(0x070b10);
         if (scene.fog) scene.fog.color.setHex(0x070b10);
         if (roomFloorMesh) {
-            roomFloorMesh.material.color.setHex(0x0b0e12);
-            roomFloorMesh.material.roughness = 0.45;
+            roomFloorMesh.material.color.setHex(0x090c10);
+            roomFloorMesh.material.roughness = 0.16; // 镜面高反光黑色金砖地面
+            roomFloorMesh.material.metalness = 0.22;
             roomFloorMesh.material.needsUpdate = true;
         }
-        if (lightMain) { lightMain.color.setHex(0xf4f9ff); lightMain.intensity = 2.05; }
+        if (lightMain) { lightMain.color.setHex(0xf4f9ff); lightMain.intensity = 2.15; }
         if (lightFill) { lightFill.color.setHex(0x9dc6dc); lightFill.intensity = 1.05; }
-        if (lightRim) { lightRim.color.setHex(0xe8f4ff); lightRim.intensity = 1.05; }
+        if (lightRim) { lightRim.color.setHex(0xe8f4ff); lightRim.intensity = 1.15; }
         if (lightLabel) lightLabel.textContent = '国家文博殿堂';
         if (showNotice && typeof showToast === 'function') {
-            showToast('🏛️ 已切换至【国家文博特展殿堂】！镜面金砖与高显色聚光灯束');
+            showToast('🏛️ 已切换至【国家文博特展殿堂】！镜面金砖地面与高显色聚光灯束');
         }
     } else if (envKey === 'kiln') {
         scene.background = new THREE.Color(0x140704);
         if (scene.fog) scene.fog.color.setHex(0x140704);
         if (roomFloorMesh) {
-            roomFloorMesh.material.color.setHex(0x140704);
-            roomFloorMesh.material.roughness = 0.85;
+            roomFloorMesh.material.color.setHex(0x1a0906);
+            roomFloorMesh.material.roughness = 0.88;
+            roomFloorMesh.material.metalness = 0.04;
             roomFloorMesh.material.needsUpdate = true;
         }
-        if (lightMain) { lightMain.color.setHex(0xff6b2b); lightMain.intensity = 2.25; }
-        if (lightFill) { lightFill.color.setHex(0xc43816); lightFill.intensity = 0.95; }
-        if (lightRim) { lightRim.color.setHex(0xffa834); lightRim.intensity = 1.15; }
+        if (lightMain) { lightMain.color.setHex(0xff6b2b); lightMain.intensity = 2.35; }
+        if (lightFill) { lightFill.color.setHex(0xc43816); lightFill.intensity = 1.05; }
+        if (lightRim) { lightRim.color.setHex(0xffa834); lightRim.intensity = 1.25; }
         if (lightLabel) lightLabel.textContent = '御窑秘境窑火';
         if (showNotice && typeof showToast === 'function') {
             showToast('🔥 已进入【御窑秘境窑火幽室】！1300℃龙窑火曜映照胎釉');
