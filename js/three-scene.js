@@ -440,7 +440,7 @@ const porcelainModelsData = [
  */
 const masterTreasuresMeta = {
     0: {
-        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Master.glb',
+        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb',
         key: 'guanyao_octagonal_vase',
         name: '南宋修内司官窑八方贯耳弦纹瓶',
         scale: 9.35,
@@ -1857,17 +1857,17 @@ function createMuseumMasterpieceMaterial(childMesh, typeIndex, customGlaze, acti
     const pbrOptions = {
         roughness: customPbrOverride.roughness !== null
             ? customPbrOverride.roughness
-            : (typeIndex === 3 ? 0.16 : (typeIndex === 6 ? 0.08 : (typeIndex === 5 ? 0.10 : 0.12))),
-        metalness: 0.0,
+            : (typeIndex === 3 ? 0.16 : (typeIndex === 6 ? 0.08 : (typeIndex === 5 ? 0.10 : 0.14))),
+        metalness: 0.0, // 严格绝缘介电体，彻底杜绝塑料与金属感
         clearcoat: customPbrOverride.clearcoat !== null ? customPbrOverride.clearcoat : 1.0,
-        clearcoatRoughness: 0.045,
+        clearcoatRoughness: 0.03,
         ior: customPbrOverride.ior !== null ? customPbrOverride.ior : 1.54,
-        reflectivity: 0.62,
-        transmission: (typeIndex === 0 || typeIndex === 1) ? 0.04 : 0.02,
+        reflectivity: 0.65,
+        transmission: 0.0, // 彻底关闭透射，杜绝黑色背景折射穿透与塑料玩具感
         envMap: envMapTexture,
-        envMapIntensity: 1.55,
+        envMapIntensity: 1.15,
         wireframe: isWireframe,
-        side: isCutaway ? THREE.DoubleSide : THREE.FrontSide,
+        side: THREE.DoubleSide,
         shadowSide: THREE.FrontSide,
         clippingPlanes: activePlanes,
         clipShadows: isCutaway
@@ -1959,42 +1959,32 @@ function buildGeometry(typeIndex, customGlaze = null) {
                     if (!child.geometry || !child.geometry.attributes.normal) {
                         if (child.geometry) child.geometry.computeVertexNormals();
                     }
-                    child.material = createMuseumMasterpieceMaterial(child, typeIndex, customGlaze, activePlanes, getGlazeMat);
+
+                    if (child.material) {
+                        // 优先保护并使用 GLB 内嵌的 2K 考古真彩烘焙贴图与高岭土参数
+                        if (!customGlaze && (child.material.map || child.material.name.includes('True') || child.material.name.includes('Master') || child.material.name.includes('Ultra') || child.material.name.includes('Porcelain') || child.material.name.includes('GuanYao') || child.material.name.includes('RuYao') || child.material.name.includes('JunYao') || child.material.name.includes('Xuande') || child.material.name.includes('Qianlong') || child.material.name.includes('QingHua'))) {
+                            child.material.envMap = envMapTexture;
+                            child.material.envMapIntensity = 1.15;
+                            child.material.roughness = 0.14;
+                            child.material.metalness = 0.00; // 严格绝缘介电体，彻底杜绝塑料与金属感！
+                            child.material.clearcoat = 1.0;  // 赋予玻璃质透明石灰碱釉面
+                            child.material.clearcoatRoughness = 0.03;
+                            child.material.clippingPlanes = activePlanes;
+                            child.material.clipShadows = true;
+                            child.material.side = THREE.DoubleSide;
+                            child.material.needsUpdate = true;
+                        } else {
+                            // 仅在用户手动切换釉色实验时，才套用动态纯色釉
+                            const mat = getGlazeMat().clone();
+                            mat.side = THREE.DoubleSide;
+                            mat.clippingPlanes = activePlanes;
+                            mat.clipShadows = true;
+                            child.material = mat;
+                        }
+                    }
                 }
             });
             group.add(cloned);
-
-            // 文博学术精鉴附加构件（露胎铁足 / 满釉芝麻钉 / 芒口金扣）
-            if (typeIndex === 0) {
-                // 南宋官窑：紫金土露胎圈足印迹
-                const footRimGeo = new THREE.TorusGeometry(0.32, 0.016, 16, 64);
-                const footRimMesh = new THREE.Mesh(footRimGeo, getTiezuMat());
-                footRimMesh.rotation.x = Math.PI / 2;
-                footRimMesh.position.set(0, 0.006, 0);
-                group.add(footRimMesh);
-            } else if (typeIndex === 1) {
-                // 北宋汝窑温碗：台北故宫传世标准五枚芝麻状支钉痕
-                const spurMat = new THREE.MeshStandardMaterial({
-                    color: 0x9e988e,
-                    roughness: 0.92,
-                    metalness: 0.05,
-                    clippingPlanes: activePlanes
-                });
-                const spurRadius = 0.26;
-                for (let s = 0; s < 5; s++) {
-                    const ang = (s * 2 * Math.PI) / 5;
-                    const spur = new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), spurMat);
-                    spur.scale.set(1.4, 0.45, 0.85);
-                    spur.position.set(Math.cos(ang) * spurRadius, 0.005, Math.sin(ang) * spurRadius);
-                    group.add(spur);
-                }
-            } else if (typeIndex === 2) {
-                // 北宋定窑梅瓶：覆烧芒口镶鎏金铜扣
-                const goldRim = new THREE.Mesh(new THREE.TorusGeometry(0.165, 0.012, 16, 48), goldMat);
-                goldRim.rotation.x = Math.PI / 2;
-                goldRim.position.set(0, 2.235, 0);
-                group.add(goldRim);
-            }
         } else {
             showThreeStageLoader(`正在载入【${meta.name}】...`);
             loadSingleMasterTreasure(typeIndex, () => {

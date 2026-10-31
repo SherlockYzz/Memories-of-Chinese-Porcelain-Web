@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * 华夏器道 · 天青泥火 — 前端综合调度主控制器 (National Award Flagship App Controller)
  * 核心涵盖：
  * 1. 首屏水墨流金粒子动态背景 (#hero-ambient-canvas) 与特展双模展柜切换
@@ -884,6 +884,19 @@ function initTeaWhiskingSimulator() {
 
     drawTeaBowlCanvas();
     updateTeaStageBadge();
+
+    // 视口感知重绘：进入视野时自动补绘建盏乌金兔毫与水丹青
+    if (typeof window !== 'undefined' && 'IntersectionObserver' in window && teaCanvas) {
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(ent => {
+                if (ent.isIntersecting) {
+                    drawTeaBowlCanvas();
+                    updateTeaStageBadge();
+                }
+            });
+        }, { threshold: 0.1 });
+        obs.observe(teaCanvas);
+    }
 }
 
 function whiskTeaStep() {
