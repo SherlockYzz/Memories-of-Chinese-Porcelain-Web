@@ -1062,9 +1062,9 @@
             <!-- 左侧 8列：高清视频沉浸放映舱与学术考据 -->
             <div class="lg:col-span-8">
                 <div class="feature-card p-5 sm:p-6 space-y-4">
-                    <!-- 视频主视窗 -->
+                    <!-- 视频主视窗 (性能优化：移除自动预载，滚动至展映舱或点击工序时按需流式加载) -->
                     <div class="relative rounded-2xl overflow-hidden bg-black shadow-xl aspect-video border border-border-light group">
-                        <video id="craft-main-video" src="videos/ceramic_making.webm" controls autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+                        <video id="craft-main-video" data-src="videos/ceramic_making.webm" controls loop muted playsinline preload="none" class="w-full h-full object-cover"></video>
                         <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-1.5 border border-white/10 pointer-events-none">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span id="craft-video-duration">00:24 · 高清实景循环</span>
@@ -1535,7 +1535,7 @@
     <i class="fa-solid fa-chevron-up text-sm"></i>
 </button>
 
-<!-- 核心脚本加载链路 (轻量引擎优先秒开，8.5MB大数据包 defer 异步非阻塞载入) -->
+<!-- 核心脚本加载链路 (轻量引擎优先秒开，8.5MB大数据包由底层调度器按需/闲时流式装载) -->
 <script src="js/three.min.js"></script>
 <script src="js/GLTFLoader.js"></script>
 <script src="js/oriental-ambient.js"></script>
@@ -1545,9 +1545,6 @@
 <script src="js/ai-recognition.js"></script>
 <script src="js/pottery-workshop.js"></script>
 <script src="js/app.js"></script>
-<!-- 纯离线真品点云与全量语音解说数据包（defer 异步加载，首屏零阻塞秒开） -->
-<script src="js/scanned-models-data.js" defer></script>
-<script src="js/museum-audio-data.js" defer></script>
 
 </body>
 </html>

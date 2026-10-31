@@ -136,7 +136,7 @@ html[data-theme="light"] body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background: url('../images/背景.png') center center / cover no-repeat;
+    background: url('../images/背景.webp') center center / cover no-repeat, url('../images/背景.jpg') center center / cover no-repeat;
     opacity: 0.14;
     pointer-events: none;
     z-index: 0;

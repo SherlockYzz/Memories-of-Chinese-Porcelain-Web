@@ -42,7 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     safeRun('导航与滚动', setupNavAndScroll);
     safeRun('移动端菜单', setupMobileMenu);
-    safeRun('视听研学展映', () => { if (typeof switchCraftVideo === 'function') switchCraftVideo(0); });
+    safeRun('视听研学展映', () => {
+        if (typeof switchCraftVideo === 'function') {
+            switchCraftVideo(0, false);
+            initVideoLazyLoader();
+        }
+    });
 
     const langToggleBtn = document.getElementById('lang-toggle');
     if (langToggleBtn && typeof toggleLanguage === 'function') {
@@ -2293,7 +2298,7 @@ const craftVideos = [
 
 let currentCraftVideoIndex = 0;
 
-function switchCraftVideo(index) {
+function switchCraftVideo(index, autoPlay = true) {
     currentCraftVideoIndex = index;
     const v = craftVideos[index];
     if (!v) return;
@@ -2307,8 +2312,12 @@ function switchCraftVideo(index) {
     const durationEl = document.getElementById('craft-video-duration');
 
     if (videoEl) {
-        videoEl.src = v.sourceUrl;
-        videoEl.play().catch(() => {});
+        if (autoPlay) {
+            videoEl.src = v.sourceUrl;
+            videoEl.play().catch(() => {});
+        } else {
+            videoEl.dataset.pendingSrc = v.sourceUrl;
+        }
     }
     if (titleEl) titleEl.textContent = v.title;
     if (subtitleEl) subtitleEl.textContent = v.subtitle;
@@ -2325,9 +2334,23 @@ function switchCraftVideo(index) {
         }
     });
 
-    if (typeof showToast === 'function') {
+    if (autoPlay && typeof showToast === 'function') {
         showToast('🎬 已载入研学展映：' + v.title);
     }
+}
+
+function initVideoLazyLoader() {
+    const video = document.getElementById('craft-main-video');
+    if (!video || !('IntersectionObserver' in window)) return;
+    const obs = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            if (!video.src && video.dataset.pendingSrc) {
+                video.src = video.dataset.pendingSrc;
+            }
+            obs.disconnect();
+        }
+    }, { rootMargin: '300px' });
+    obs.observe(video);
 }
 
 // ================================================================

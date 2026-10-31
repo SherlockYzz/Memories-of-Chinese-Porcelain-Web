@@ -1813,69 +1813,106 @@ function showStageLoadingToast(show, text = '') {
 }
 
 /**
+ * 按需流式装载实测三维扫描 GLTF 数据包 (3.88MB 彻底移出首屏，秒级秒开)
+ */
+let isScannedScriptLoading = false;
+function ensureScannedModelsData(callback) {
+    if (window.SCANNED_MODELS_DATA) {
+        if (callback) callback();
+        return;
+    }
+    if (isScannedScriptLoading) {
+        window.addEventListener('scanned-models-ready', () => { if (callback) callback(); }, { once: true });
+        return;
+    }
+    isScannedScriptLoading = true;
+    showStageLoadingToast(true, '正在装载古瓷三维激光扫描点云数据...');
+    const script = document.createElement('script');
+    script.src = 'js/scanned-models-data.js';
+    script.onload = () => {
+        isScannedScriptLoading = false;
+        showStageLoadingToast(false);
+        window.dispatchEvent(new CustomEvent('scanned-models-ready'));
+        if (callback) callback();
+    };
+    script.onerror = () => {
+        isScannedScriptLoading = false;
+        showStageLoadingToast(false);
+    };
+    document.body.appendChild(script);
+}
+
+/**
  * 按需单件解析实测三维扫描 GLTF 文物孪生模型 (0 阻塞秒开)
  */
 function loadSingleScannedGLTFOnDemand(key, modelIndex) {
     if (scannedModelCache[key] || isScanningLoading) return;
-    if (!window.SCANNED_MODELS_DATA || !window.SCANNED_MODELS_DATA[key]) return;
+    ensureScannedModelsData(() => {
+        if (!window.SCANNED_MODELS_DATA || !window.SCANNED_MODELS_DATA[key]) return;
 
-    isScanningLoading = true;
-    showStageLoadingToast(true, '正在装载古瓷三维激光扫描高精度点云孪生体...');
+        isScanningLoading = true;
+        showStageLoadingToast(true, '正在装载古瓷三维激光扫描高精度点云孪生体...');
 
-    setTimeout(() => {
-        try {
-            const loader = new THREE.GLTFLoader();
-            const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
-            loader.parse(jsonStr, '', (gltf) => {
-                isScanningLoading = false;
-                showStageLoadingToast(false);
-                if (gltf && gltf.scene) {
-                    scannedModelCache[key] = gltf.scene;
-                    if (currentModelIndex === modelIndex) {
-                        loadPorcelainModel(currentModelIndex, true);
+        setTimeout(() => {
+            try {
+                const loader = new THREE.GLTFLoader();
+                const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
+                loader.parse(jsonStr, '', (gltf) => {
+                    isScanningLoading = false;
+                    showStageLoadingToast(false);
+                    if (gltf && gltf.scene) {
+                        scannedModelCache[key] = gltf.scene;
+                        if (currentModelIndex === modelIndex) {
+                            loadPorcelainModel(currentModelIndex, true);
+                        }
                     }
-                }
-            }, (err) => {
+                }, (err) => {
+                    isScanningLoading = false;
+                    showStageLoadingToast(false);
+                    console.warn(`[3D扫描模型解析提示] ${key}:`, err);
+                });
+            } catch (e) {
                 isScanningLoading = false;
                 showStageLoadingToast(false);
-                console.warn(`[3D扫描模型解析提示] ${key}:`, err);
-            });
-        } catch (e) {
-            isScanningLoading = false;
-            showStageLoadingToast(false);
-            console.warn(`[3D扫描模型加载异常] ${key}:`, e);
-        }
-    }, 40);
+                console.warn(`[3D扫描模型加载异常] ${key}:`, e);
+            }
+        }, 30);
+    });
 }
 
 /**
  * 闲时后台温和预热其余扫描模型，彻底避免主线程丢帧
  */
 function scheduleBackgroundModelPreload() {
-    const keys = ['vase_01', 'vase_02', 'vase_03', 'vase_04', 'vase_05'];
-    let idx = 0;
-    function loadNext() {
-        if (idx >= keys.length) return;
-        const key = keys[idx++];
-        if (!scannedModelCache[key] && window.SCANNED_MODELS_DATA && window.SCANNED_MODELS_DATA[key]) {
-            try {
-                const loader = new THREE.GLTFLoader();
-                const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
-                loader.parse(jsonStr, '', (gltf) => {
-                    if (gltf && gltf.scene) scannedModelCache[key] = gltf.scene;
-                    setTimeout(loadNext, 400);
-                }, () => { setTimeout(loadNext, 400); });
-            } catch (e) {
-                setTimeout(loadNext, 400);
+    const trigger = () => {
+        ensureScannedModelsData(() => {
+            const keys = ['vase_01', 'vase_02', 'vase_03', 'vase_04', 'vase_05'];
+            let idx = 0;
+            function loadNext() {
+                if (idx >= keys.length) return;
+                const key = keys[idx++];
+                if (!scannedModelCache[key] && window.SCANNED_MODELS_DATA && window.SCANNED_MODELS_DATA[key]) {
+                    try {
+                        const loader = new THREE.GLTFLoader();
+                        const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
+                        loader.parse(jsonStr, '', (gltf) => {
+                            if (gltf && gltf.scene) scannedModelCache[key] = gltf.scene;
+                            setTimeout(loadNext, 400);
+                        }, () => { setTimeout(loadNext, 400); });
+                    } catch (e) {
+                        setTimeout(loadNext, 400);
+                    }
+                } else {
+                    setTimeout(loadNext, 120);
+                }
             }
-        } else {
-            setTimeout(loadNext, 120);
-        }
-    }
+            loadNext();
+        });
+    };
     if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(() => setTimeout(loadNext, 1600));
+        requestIdleCallback(() => setTimeout(trigger, 3500));
     } else {
-        setTimeout(loadNext, 2500);
+        setTimeout(trigger, 5000);
     }
 }
 
@@ -3692,6 +3729,29 @@ function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
     }
 }
 
+let isAudioScriptLoading = false;
+function ensureMuseumAudioData(callback) {
+    if (window.MUSEUM_AUDIO_DATA) {
+        if (callback) callback();
+        return;
+    }
+    if (isAudioScriptLoading) return;
+    isAudioScriptLoading = true;
+    const s = document.createElement('script');
+    s.src = 'js/museum-audio-data.js';
+    s.onload = () => {
+        isAudioScriptLoading = false;
+        if (callback) callback();
+    };
+    s.onerror = () => { isAudioScriptLoading = false; };
+    document.body.appendChild(s);
+}
+
+// 闲时在页面完全就绪交互 5 秒后静默预载原声音频，首屏 0 流量占用
+setTimeout(() => {
+    ensureMuseumAudioData();
+}, 5000);
+
 function speakVesselCommentary() {
     const m = porcelainModelsData[currentModelIndex] || porcelainModelsData[0];
     const text = `${m.name}。断代：${m.period}，所属窑口：${m.kiln}。实测规制：${m.dimensions}。${m.desc}`;
@@ -3707,6 +3767,9 @@ function speakVesselCommentary() {
     stopCuratorAudio();
 
     // 优先读取 100% 离线内嵌的小米 MiMo 预合成高保真馆长原声
+    if (!window.MUSEUM_AUDIO_DATA) {
+        ensureMuseumAudioData();
+    }
     const prebaked = (window.MUSEUM_AUDIO_DATA && (window.MUSEUM_AUDIO_DATA[m.name] || window.MUSEUM_AUDIO_DATA[m.name.split(' ')[0]])) || null;
 
     if (prebaked && (prebaked.dataUri || prebaked.file)) {
