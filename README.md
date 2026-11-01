@@ -4,6 +4,7 @@
 > *An Interactive WebGL 3D Heritage & Digital Connoisseurship Space for Ancient Chinese Ceramics*
 
 [![Online Preview](https://img.shields.io/badge/Online_Preview-GitHub_Pages-E5C888.svg?style=flat-square)](https://sherlockyzz.github.io/Memories-of-Chinese-Porcelain-Web/)
+[![XERJ Corpus Hub](https://img.shields.io/badge/XERJ_Corpus_Hub-Selected_Reference-6366F1.svg?style=flat-square&logo=github)](https://hub.xerj.org/contributors/SherlockYzz)
 [![Voice AI](https://img.shields.io/badge/Voice_AI-Xiaomi_MiMo_TTS-D68B35.svg?style=flat-square)](https://api.xiaomimimo.com)
 [![Three.js](https://img.shields.io/badge/Three.js-r128_WebGL-5A9CA8.svg?style=flat-square)](https://threejs.org/)
 [![PBR Assets](https://img.shields.io/badge/3D_Assets-Blender_5.2_PBR-568A94.svg?style=flat-square)](https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web)
@@ -24,6 +25,15 @@
   * 完整包含 8 尊 Blender 5.2 高精 PBR 传世国宝模型、实测激光扫描孪生体、12 件小米 MiMo 馆长原声音频、非遗实录视频与全站离线资产：  
     👉 `天青泥火_V7.0_Release.zip`  
   * **启动方式**：解压后直接双击 `index.html` 即可畅爽体验，无跨域报错，零外部服务器依赖。
+
+---
+
+## 🏆 权威收录与开源技术标杆 (Official Recognition)
+
+* 🌐 **入选全球 AI 原生代码语料库 (XERJ Corpus Hub)**：  
+  本项目纯原生前端三维研鉴架构、100x 景深微距着色器算法与双器同台对比矩阵获评为全球高质量开源技术范例，已由开源 AI 搜索引擎 [XERJ](https://github.com/xerj-org/xerj) 官方正式索引收录：  
+  👉 **[SherlockYzz Contributor Profile @ XERJ Corpus Hub](https://hub.xerj.org/contributors/SherlockYzz)**  
+  *(作为全球开发者与 Coding Agent 解决同类复杂 WebGL 渲染、物理级景深与微观图形学难题的标准参考实现 Worked Reference)*
 
 ---
 
