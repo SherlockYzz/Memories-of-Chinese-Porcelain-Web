@@ -2316,9 +2316,9 @@ function loadComparisonVessels() {
         scene.add(compareRightPedestal);
     }
 
-    // 设置对比广角视角
-    camPosTarget = { x: 0, y: 0.85, z: 4.85 };
-    camLookTarget = { x: 0, y: -0.1, z: 0 };
+    // 设置对比广角透视视角：抬升仰角，使双器完整显露于视窗中上部，器底与底座彻底避开下方控制卡片
+    camPosTarget = { x: 0, y: 1.15, z: 5.35 };
+    camLookTarget = { x: 0, y: 0.35, z: 0 };
 
     renderComparisonPanelDOM();
 }
@@ -2337,6 +2337,13 @@ function strikeComparisonVesselSound(side) {
     if (typeof showToast === 'function') {
         showToast(`🔔 叩击【${m.name.split('·')[1] || m.name}】：声学共振基频 ${freq} Hz`);
     }
+}
+
+let isComparisonDockCollapsed = false;
+
+function toggleComparisonDockCollapse(forceState) {
+    isComparisonDockCollapsed = (forceState !== undefined) ? forceState : !isComparisonDockCollapsed;
+    renderComparisonPanelDOM();
 }
 
 /**
@@ -2358,67 +2365,111 @@ function renderComparisonPanelDOM() {
 
     if (!leftData || !rightData) return;
 
-    panel.innerHTML = `
-        <div class="flex items-center justify-between pb-2 border-b border-border-light text-xs font-serif-cn">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-code-compare text-amber-400"></i>
-                <span class="text-text-title font-semibold">双器并列文博学术同台鉴赏</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1">
-                    <i class="fa-solid fa-right-left text-amber-400"></i>
-                    <span>互换左右</span>
-                </button>
-                <button onclick="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
-                    返回单器精鉴
-                </button>
-            </div>
-        </div>
+    const leftModel = porcelainModelsData[currentModelIndex] || porcelainModelsData[0];
+    const rightModel = porcelainModelsData[compareRightModelIndex] || porcelainModelsData[1];
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2.5 text-xs font-serif-cn">
-            <!-- 左侧器物学术规格卡 -->
-            <div class="p-3 rounded-xl bg-bg-main/80 border border-tianqing/30 space-y-1.5">
-                <div class="flex items-center justify-between pb-1 border-b border-border-light">
-                    <div class="flex items-center gap-1.5 font-medium text-text-title">
-                        <span class="w-2 h-2 rounded-full bg-tianqing"></span>
-                        <span>左展位 ·</span>
-                        <select onchange="loadPorcelainModel(parseInt(this.value, 10)); loadComparisonVessels();" class="bg-transparent font-medium text-text-title outline-none cursor-pointer border-b border-dashed border-border-light pb-0.5">
+    panel.classList.toggle('dock-collapsed', isComparisonDockCollapsed);
+
+    if (isComparisonDockCollapsed) {
+        panel.innerHTML = `
+            <div class="flex items-center justify-between gap-2 text-xs font-serif-cn">
+                <div class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
+                    <i class="fa-solid fa-code-compare text-amber-400 shrink-0"></i>
+                    <span class="text-text-title font-semibold shrink-0 hidden sm:inline">双器同台</span>
+                    <span class="text-tianqing truncate font-medium max-w-[130px] sm:max-w-[200px]" title="${leftModel.name}">左: ${leftModel.name.split('·')[1] || leftModel.name}</span>
+                    <span class="text-text-muted shrink-0">vs</span>
+                    <span class="text-amber-400 truncate font-medium max-w-[130px] sm:max-w-[200px]" title="${rightModel.name}">右: ${rightModel.name.split('·')[1] || rightModel.name}</span>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
+                        <i class="fa-solid fa-right-left text-amber-400"></i>
+                        <span class="hidden sm:inline">互换</span>
+                    </button>
+                    <button onclick="toggleComparisonDockCollapse(false)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-amber-400/50 text-[11px] font-serif-cn text-amber-300 hover:border-amber-400 transition-colors flex items-center gap-1" title="展开学术档案与器物参数">
+                        <i class="fa-solid fa-chevron-up text-amber-400"></i>
+                        <span>展开参数</span>
+                    </button>
+                    <button onclick="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors" title="退出对比，返回单器精鉴台">
+                        返回单器
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        panel.innerHTML = `
+            <div class="flex items-center justify-between pb-2 border-b border-border-light text-xs font-serif-cn gap-2">
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <i class="fa-solid fa-code-compare text-amber-400 shrink-0"></i>
+                    <span class="text-text-title font-semibold truncate">双器并列文博学术同台鉴赏</span>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
+                        <i class="fa-solid fa-right-left text-amber-400"></i>
+                        <span class="hidden sm:inline">互换左右</span>
+                    </button>
+                    <button onclick="toggleComparisonDockCollapse(true)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-amber-400 transition-colors flex items-center gap-1 text-text-title" title="收起面板，获得无遮挡全景视野">
+                        <i class="fa-solid fa-chevron-down text-amber-400"></i>
+                        <span>收起面板避让</span>
+                    </button>
+                    <button onclick="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
+                        返回单器精鉴
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs font-serif-cn">
+                <!-- 左侧器物学术规格卡 -->
+                <div class="p-2.5 rounded-xl bg-bg-main/90 border border-tianqing/30 space-y-1.5 shadow-sm">
+                    <div class="flex items-center justify-between gap-1">
+                        <div class="flex items-center gap-1.5 font-medium text-text-title">
+                            <span class="w-2 h-2 rounded-full bg-tianqing shrink-0"></span>
+                            <span class="text-[11px] text-tianqing font-semibold">左展位器物</span>
+                        </div>
+                        <button onclick="strikeComparisonVesselSound('left')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听左器声学泛音">
+                            <i class="fa-solid fa-bell text-amber-400"></i>
+                            <span>叩瓷 ${leftData.soundFrequency || 2420}Hz</span>
+                        </button>
+                    </div>
+                    <div>
+                        <select onchange="loadPorcelainModel(parseInt(this.value, 10)); loadComparisonVessels();" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
                             ${porcelainModelsData.map((m, i) => `<option value="${i}" ${i === currentModelIndex ? 'selected' : ''}>${m.name}</option>`).join('')}
                         </select>
                     </div>
-                    <button onclick="strikeComparisonVesselSound('left')" class="px-2 py-0.5 rounded bg-yuebai hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1" title="叩击听左器声学泛音">
-                        <i class="fa-solid fa-bell text-amber-400"></i>
-                        <span>${leftData.soundFrequency || 2420}Hz</span>
-                    </button>
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] pt-0.5">
+                        <p class="text-text-muted truncate" title="${leftData.dynasty} · ${leftData.kiln}"><strong>窑代：</strong>${leftData.dynasty}·${leftData.kiln}</p>
+                        <p class="text-text-body truncate" title="${leftData.bodyType}"><strong>胎骨：</strong>${leftData.bodyType}</p>
+                        <p class="text-text-body truncate" title="${leftData.firingMethod}"><strong>装烧：</strong>${leftData.firingMethod}</p>
+                        <p class="text-text-body truncate" title="${leftData.glazeType} · ${leftData.crackle}"><strong>釉相：</strong>${leftData.glazeType}</p>
+                    </div>
                 </div>
-                <p class="text-[11px] text-text-muted"><strong>窑系年代：</strong>${leftData.dynasty} · ${leftData.kiln}</p>
-                <p class="text-[11px] text-text-body"><strong>胎骨化学：</strong>${leftData.bodyType}</p>
-                <p class="text-[11px] text-text-body"><strong>烧造装烧：</strong>${leftData.firingMethod}</p>
-                <p class="text-[11px] text-text-body"><strong>釉色开片：</strong>${leftData.glazeType} · ${leftData.crackle}</p>
-            </div>
 
-            <!-- 右侧器物学术规格卡 -->
-            <div class="p-3 rounded-xl bg-bg-main/80 border border-amber-400/30 space-y-1.5">
-                <div class="flex items-center justify-between pb-1 border-b border-border-light">
-                    <div class="flex items-center gap-1.5 font-medium text-text-title">
-                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span>右展位 ·</span>
-                        <select onchange="setCompareRightModel(this.value)" class="bg-transparent font-medium text-text-title outline-none cursor-pointer border-b border-dashed border-border-light pb-0.5">
+                <!-- 右侧器物学术规格卡 -->
+                <div class="p-2.5 rounded-xl bg-bg-main/90 border border-amber-400/30 space-y-1.5 shadow-sm">
+                    <div class="flex items-center justify-between gap-1">
+                        <div class="flex items-center gap-1.5 font-medium text-text-title">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                            <span class="text-[11px] text-amber-400 font-semibold">右展位器物</span>
+                        </div>
+                        <button onclick="strikeComparisonVesselSound('right')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听右器声学泛音">
+                            <i class="fa-solid fa-bell text-amber-400"></i>
+                            <span>叩瓷 ${rightData.soundFrequency || 2580}Hz</span>
+                        </button>
+                    </div>
+                    <div>
+                        <select onchange="setCompareRightModel(this.value)" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
                             ${porcelainModelsData.map((m, i) => `<option value="${i}" ${i === compareRightModelIndex ? 'selected' : ''}>${m.name}</option>`).join('')}
                         </select>
                     </div>
-                    <button onclick="strikeComparisonVesselSound('right')" class="px-2 py-0.5 rounded bg-yuebai hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1" title="叩击听右器声学泛音">
-                        <i class="fa-solid fa-bell text-amber-400"></i>
-                        <span>${rightData.soundFrequency || 2580}Hz</span>
-                    </button>
+                    <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] pt-0.5">
+                        <p class="text-text-muted truncate" title="${rightData.dynasty} · ${rightData.kiln}"><strong>窑代：</strong>${rightData.dynasty}·${rightData.kiln}</p>
+                        <p class="text-text-body truncate" title="${rightData.bodyType}"><strong>胎骨：</strong>${rightData.bodyType}</p>
+                        <p class="text-text-body truncate" title="${rightData.firingMethod}"><strong>装烧：</strong>${rightData.firingMethod}</p>
+                        <p class="text-text-body truncate" title="${rightData.glazeType} · ${rightData.crackle}"><strong>釉相：</strong>${rightData.glazeType}</p>
+                    </div>
                 </div>
-                <p class="text-[11px] text-text-muted"><strong>窑系年代：</strong>${rightData.dynasty} · ${rightData.kiln}</p>
-                <p class="text-[11px] text-text-body"><strong>胎骨化学：</strong>${rightData.bodyType}</p>
-                <p class="text-[11px] text-text-body"><strong>烧造装烧：</strong>${rightData.firingMethod}</p>
-                <p class="text-[11px] text-text-body"><strong>釉色开片：</strong>${rightData.glazeType} · ${rightData.crackle}</p>
             </div>
-        </div>
-    `;
+        `;
+    }
     panel.classList.remove('hidden');
 }
 
@@ -2430,6 +2481,15 @@ function switchExhibitionMode(mode) {
         const btn = document.getElementById(`mode-btn-${m}`);
         if (btn) btn.classList.toggle('active', m === mode);
     });
+
+    const stage = document.getElementById('three-stage-container');
+    if (stage) {
+        stage.classList.toggle('comparison-mode-active', mode === 'comparison');
+    }
+
+    if (isBottomInspectionMode) {
+        toggleBottomView(false);
+    }
 
     const compPanel = document.getElementById('vessel-comparison-panel');
     if (compPanel && mode !== 'comparison') {
@@ -2446,6 +2506,17 @@ function switchExhibitionMode(mode) {
         if (currentGroup) currentGroup.visible = false;
         if (pedestalGroup) pedestalGroup.visible = false;
         if (realisticRoomGroup) realisticRoomGroup.visible = false;
+        if (compareRightGroup) {
+            disposeGroup(compareRightGroup);
+            scene.remove(compareRightGroup);
+            compareRightGroup = null;
+        }
+        if (compareRightPedestal) {
+            scene.remove(compareRightPedestal);
+            compareRightPedestal = null;
+        }
+        if (pedestalGroup) pedestalGroup.position.x = 0;
+        if (currentGroup) currentGroup.position.x = 0;
         buildVirtualMuseumHall();
         if (hallGroup) hallGroup.visible = true;
         focusVitrineInHall(currentModelIndex);
@@ -2459,7 +2530,7 @@ function switchExhibitionMode(mode) {
         if (realisticRoomGroup) realisticRoomGroup.visible = showRealisticScene;
         loadComparisonVessels();
         if (typeof showToast === 'function') {
-            showToast('⚖️ 已开启【双器同台并列比对】：可自由切换左右两尊国宝，同屏审视造型尺度与釉色肌理');
+            showToast('⚖️ 已开启【双器同台并列比对】：两尊国宝清朗并列，可自由旋转、对比造型与釉色');
         }
     } else if (mode === 'cutaway') {
         renderer.localClippingEnabled = true;
@@ -2492,6 +2563,17 @@ function switchExhibitionMode(mode) {
         if (hallGroup) hallGroup.visible = false;
         if (pedestalGroup) pedestalGroup.visible = true;
         if (realisticRoomGroup) realisticRoomGroup.visible = showRealisticScene;
+        if (compareRightGroup) {
+            disposeGroup(compareRightGroup);
+            scene.remove(compareRightGroup);
+            compareRightGroup = null;
+        }
+        if (compareRightPedestal) {
+            scene.remove(compareRightPedestal);
+            compareRightPedestal = null;
+        }
+        if (pedestalGroup) pedestalGroup.position.x = 0;
+        if (currentGroup) currentGroup.position.x = 0;
         loadPorcelainModel(currentModelIndex, true);
         camPosTarget = { x: 0, y: 0.95, z: 3.55 };
         camLookTarget = { x: 0, y: -0.05, z: 0 };
@@ -2631,6 +2713,10 @@ function loadPorcelainModel(index, keepMode = false) {
     if (exhibitionMode === 'hall') {
         buildVirtualMuseumHall();
         focusVitrineInHall(index);
+    } else if (exhibitionMode === 'comparison') {
+        if (!keepMode) {
+            loadComparisonVessels();
+        }
     } else if (!keepMode) {
         userOrbitAngles = { theta: 0, phi: 0.26, radius: 3.55 };
         camPosTarget = { x: 0, y: 0.95, z: 3.55 };
@@ -2647,7 +2733,7 @@ function render3DHotspotsDOM() {
     const layer = document.getElementById('three-hotspots-layer');
     if (!layer) return;
 
-    if (!showHotspots || exhibitionMode === 'hall') {
+    if (!showHotspots || exhibitionMode === 'hall' || exhibitionMode === 'comparison') {
         layer.innerHTML = '';
         return;
     }
@@ -2688,7 +2774,7 @@ function toggle3DHotspots() {
 }
 
 function updateHotspotsScreenProjection() {
-    if (!showHotspots || exhibitionMode === 'hall' || !currentGroup || !camera) return;
+    if (!showHotspots || exhibitionMode === 'hall' || exhibitionMode === 'comparison' || !currentGroup || !camera) return;
     const canvas = document.getElementById('three-canvas');
     if (!canvas) return;
     const m = porcelainModelsData[currentModelIndex];
@@ -3003,6 +3089,16 @@ function resetCamera() {
     if (exhibitionMode === 'hall') {
         camPosTarget = { x: 0, y: 1.8, z: 5.2 };
         camLookTarget = { x: 0, y: 0.2, z: -2.5 };
+        return;
+    }
+    if (exhibitionMode === 'comparison') {
+        camPosTarget = { x: 0, y: 1.15, z: 5.35 };
+        camLookTarget = { x: 0, y: 0.35, z: 0 };
+        if (currentGroup) currentGroup.rotation.set(0, 0, 0);
+        if (compareRightGroup) compareRightGroup.rotation.set(0, 0, 0);
+        autoRotate = true;
+        const btn = document.getElementById('btn-rotate-toggle');
+        if (btn) btn.classList.add('active');
         return;
     }
     camPosTarget = { x: 0, y: 0.95, z: 3.55 };
@@ -3353,9 +3449,15 @@ function setupControls(canvas) {
         if (exhibitionMode === 'hall') {
             camLookTarget.x -= deltaX * 0.015;
             camLookTarget.y = Math.max(-0.8, Math.min(1.8, camLookTarget.y + deltaY * 0.01));
-        } else if (currentGroup) {
-            currentGroup.rotation.y += deltaX * 0.0085;
-            currentGroup.rotation.x = Math.max(-Math.PI / 2.6, Math.min(Math.PI / 2.6, currentGroup.rotation.x + deltaY * 0.0085));
+        } else {
+            if (currentGroup) {
+                currentGroup.rotation.y += deltaX * 0.0085;
+                currentGroup.rotation.x = Math.max(-Math.PI / 2.6, Math.min(Math.PI / 2.6, currentGroup.rotation.x + deltaY * 0.0085));
+            }
+            if (exhibitionMode === 'comparison' && compareRightGroup) {
+                compareRightGroup.rotation.y += deltaX * 0.0085;
+                compareRightGroup.rotation.x = Math.max(-Math.PI / 2.6, Math.min(Math.PI / 2.6, compareRightGroup.rotation.x + deltaY * 0.0085));
+            }
         }
     });
 
@@ -3465,11 +3567,12 @@ function animate(now) {
         currentGroup.rotation.x = vesselTiltCurrentX;
         currentGroup.position.y = -1.125 + vesselLiftCurrentY;
 
+        const baseX = (exhibitionMode === 'comparison') ? -1.35 : 0;
         if (vesselVibration > 0.01) {
-            currentGroup.position.x = Math.sin(Date.now() * 0.08) * 0.012 * vesselVibration;
+            currentGroup.position.x = baseX + Math.sin(Date.now() * 0.08) * 0.012 * vesselVibration;
             vesselVibration *= 0.90;
         } else {
-            currentGroup.position.x = 0;
+            currentGroup.position.x = baseX;
         }
     }
     if (hallGroup && exhibitionMode === 'hall') {

@@ -1790,18 +1790,38 @@ html[data-theme="dark"] #btn-floating-theme {
 /* ==================== 双器并列文博学术同台鉴赏与纯净沉浸模式 ==================== */
 .vessel-comparison-dock {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
+    bottom: 12px;
+    left: 14px;
+    right: 14px;
+    max-width: 860px;
+    margin: 0 auto;
     z-index: 25;
-    background: rgba(12, 18, 24, 0.92);
+    background: rgba(12, 18, 24, 0.94);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(229, 200, 136, 0.45);
     border-radius: 1rem;
-    padding: 1rem;
+    padding: 0.75rem 0.95rem;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     animation: comparisonDockSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.vessel-comparison-dock.dock-collapsed {
+    padding: 0.4rem 0.85rem;
+    background: rgba(12, 18, 24, 0.88);
+    border-radius: 9999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    bottom: 10px;
+    max-width: 680px;
+}
+
+/* 对比模式下隐藏单器悬浮部件，杜绝视线遮挡与重叠 */
+#three-stage-container.comparison-mode-active .lighting-lab-overlay,
+#three-stage-container.comparison-mode-active #three-hotspots-layer {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    display: none !important;
 }
 
 @keyframes comparisonDockSlideUp {

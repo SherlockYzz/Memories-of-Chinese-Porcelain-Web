@@ -1163,6 +1163,7 @@
                 if (exhibitionMode === 'comparison' && compareRightGroup) compareRightGroup.rotation.y += w;
             } else if (!isUserDragging && Math.abs(cam.spinVel) > 0.01) {
                 currentGroup.rotation.y += cam.spinVel * dt;            // 拖拽惯性
+                if (exhibitionMode === 'comparison' && compareRightGroup) compareRightGroup.rotation.y += cam.spinVel * dt;
                 cam.spinVel *= Math.exp(-dt * 3.2);
             }
             vesselTiltCurrentX = damp(vesselTiltCurrentX, vesselTiltTargetX, 5.0, dt);
@@ -1171,13 +1172,14 @@
             currentGroup.position.y = -1.125 + vesselLiftCurrentY;
 
             // 叩击微震：衰减正弦，x 位移 + 微小绕 z 轴颤动（瓷体"嗡鸣"）
+            const baseX = (typeof exhibitionMode !== 'undefined' && exhibitionMode === 'comparison') ? -1.35 : 0;
             if (vesselVibration > 0.01) {
                 const s = Math.sin(now * 0.075) * vesselVibration;
-                currentGroup.position.x = s * 0.011;
+                currentGroup.position.x = baseX + s * 0.011;
                 currentGroup.rotation.z = Math.sin(now * 0.062 + 1.3) * vesselVibration * 0.004;
                 vesselVibration *= Math.exp(-dt * 5.8);
             } else {
-                currentGroup.position.x = 0; currentGroup.rotation.z = 0;
+                currentGroup.position.x = baseX; currentGroup.rotation.z = 0;
             }
 
             // 器物"落定"弹性缩放
