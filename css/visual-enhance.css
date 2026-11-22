@@ -1,4 +1,4 @@
-﻿﻿/**
+/**
  * ============================================================================
  * 天青泥火 · visual-enhance.css  (v7.0 宋韵文博视觉重塑层)
  * ----------------------------------------------------------------------------
@@ -618,3 +618,186 @@ footer { border-top: 1px solid var(--gold-line); }
     font-size: 11px !important;
     color: #e5c888 !important;
 }
+
+/* ═════════════ v7.2 性能隔离、无障碍与交互精细化 ═════════════ */
+
+/* 1. 长页面首屏外章节延迟渲染（严禁作用于 #hero 和 #3d-gallery） */
+#archive,
+#ai-recognition,
+#history,
+#kiln-map-section,
+#workshop,
+#pottery-studio,
+#colors,
+#four-arts,
+#video-theatre,
+#notes {
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 780px;
+}
+
+/* 2. 模态框底层页面滚动隔离（避免操作 html/body overflow 引发布局偏移） */
+.modal-backdrop {
+    overflow: hidden;
+    overscroll-behavior: contain;
+}
+.modal-content-lg {
+    overscroll-behavior: contain;
+}
+
+/* 3. 跳过导航链接（仅键盘聚焦可见） */
+.skip-link:not(:focus):not(:focus-within) {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
+.skip-link:focus-visible {
+    position: fixed;
+    top: 12px;
+    left: 16px;
+    z-index: 4000;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    background: linear-gradient(145deg, #255460, #163740);
+    color: #fbeed4;
+    border: 1px solid rgba(214, 177, 106, 0.85);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    font-family: var(--font-serif-cn);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    outline: 2.5px solid var(--gold-accent);
+    outline-offset: 3px;
+}
+
+/* 4. 键盘焦点高对比度环（兼顾 Forced Colors Mode） */
+:where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2.5px solid var(--gold-accent);
+    outline-offset: 3px;
+}
+@media (forced-colors: active) {
+    :where(a:any-link, button, input, select, textarea, [tabindex]):focus-visible {
+        outline: 2px solid Highlight;
+    }
+}
+
+/* 5. 触屏设备最小点击热区增强 */
+@media (pointer: coarse) {
+    .canvas-tool-btn,
+    #navbar button.w-8.h-8 {
+        min-width: 36px;
+        min-height: 36px;
+    }
+}
+
+/* 6. 命令面板键盘选中态与匹配词高亮 */
+.cmd-result-item.cmd-item-active {
+    background: var(--yuebai) !important;
+    border-color: var(--gold-accent) !important;
+    box-shadow: 0 0 0 1px rgba(214, 177, 106, 0.45), 0 4px 12px rgba(34, 78, 89, 0.14);
+}
+mark.cmd-highlight {
+    background: rgba(214, 177, 106, 0.3);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+/* 7. 浅色宣纸主题下琥珀金文字对比度微调（保留深色展柜内的璀璨亮金） */
+html[data-theme="light"] :not(.hero-showcase-stage):not(.three-canvas-container):not(.mobile-menu):not(footer) .text-amber-400 {
+    color: #A86F16;
+}
+html[data-theme="light"] .hero-showcase-stage .text-amber-400,
+html[data-theme="light"] .three-canvas-container .text-amber-400,
+html[data-theme="light"] .mobile-menu .text-amber-400,
+html[data-theme="light"] footer .text-amber-400,
+html[data-theme="light"] .bg-black .text-amber-400 {
+    color: #fbbf24;
+}
+
+/* 8. WebGL 上下文丢失降级提示条 */
+.webgl-lost-banner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    background: rgba(12, 20, 26, 0.92);
+    border: 1px solid rgba(214, 177, 106, 0.55);
+    color: #f2f6f9;
+    font-family: var(--font-serif-cn);
+    font-size: 13px;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+.webgl-lost-banner button {
+    padding: 6px 16px;
+    border-radius: 9999px;
+    background: #255460;
+    color: #fbeed4;
+    border: 1px solid rgba(214, 177, 106, 0.5);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* ═════════════ v8.0 WebGL 3D 动态背景与可读性透纱层 ═════════════ */
+#webgl-ambient-bg {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+main#main-content,
+footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* 章节背景采用柔雅透纱，令 3D 东方江山与浑天星轨透景而不掩字 */
+html[data-theme="light"] main#main-content > section.bg-white {
+    background-color: rgba(251, 248, 243, 0.80);
+}
+html[data-theme="light"] main#main-content > section.bg-bg-main {
+    background-color: rgba(244, 239, 230, 0.76);
+}
+html[data-theme="dark"] main#main-content > section.bg-white {
+    background-color: rgba(13, 20, 27, 0.74);
+}
+html[data-theme="dark"] main#main-content > section.bg-bg-main {
+    background-color: rgba(8, 12, 16, 0.70);
+}
+
+/* 卡片自身保持高可读衬底与轻度毛玻璃，严保正文对比度 >= 4.5:1 */
+html[data-theme="light"] .feature-card {
+    background-color: rgba(255, 253, 250, 0.92);
+}
+html[data-theme="dark"] .feature-card {
+    background-color: rgba(17, 25, 34, 0.88);
+}
+
+/* 导航栏在 1280px–1440px 下英文模式防换行挤压 */
+@media (min-width: 1280px) and (max-width: 1500px) {
+    html[data-lang="en"] #navbar .xl\:flex {
+        gap: 0.55rem !important;
+        font-size: 11px;
+    }
+    html[data-lang="en"] #navbar .xl\:flex a i {
+        display: none;
+    }
+}
+
+

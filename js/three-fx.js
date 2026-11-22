@@ -1,4 +1,4 @@
-﻿﻿﻿/**
+/**
  * ============================================================================
  * 天青泥火 · three-fx.js  —— 3D 展馆「画面升华」增强层 (v7.0 Visual Overhaul)
  * ----------------------------------------------------------------------------
@@ -941,9 +941,12 @@
     const conn = navigator.connection || {};
     const slowNet = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
     function nextToPrefetch() {
-        const n = Object.keys(masterTreasuresMeta).length;
-        for (let d = 1; d < n; d++) {                         // 以当前器物为中心，向两侧由近及远
-            for (const idx of [(currentModelIndex + d) % n, (currentModelIndex - d + n) % n]) {
+        const keys = Object.keys(masterTreasuresMeta).map(Number);
+        const n = keys.length;
+        if (!n) return -1;
+        const pos = Math.max(0, keys.indexOf(currentModelIndex));
+        for (let d = 1; d < n; d++) {
+            for (const idx of [keys[(pos + d) % n], keys[(pos - d + n) % n]]) {
                 if (!masterTreasuresCache[idx] && !masterTreasuresLoading[idx]) return idx;
             }
         }
@@ -1145,7 +1148,7 @@
      * ==================================================================== */
     let lastNow = performance.now();
     window.animate = function animate(now) {
-        if (!isCanvasVisible) { lastNow = performance.now(); return; }
+        if (!isCanvasVisible || document.hidden) { lastNow = performance.now(); return; }
         requestAnimationFrame(animate);
         now = now || performance.now();
         const dt = clamp((now - lastNow) / 1000, 0.001, 0.05);

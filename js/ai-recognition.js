@@ -1,4 +1,4 @@
-﻿
+
 let aiVisualMode = 'edge'; // 'edge' | 'heatmap'
 let cachedEdgeCanvas = null;
 let cachedHeatCanvas = null;
@@ -199,6 +199,8 @@ let currentStream = null;
 let lastAnalyzedState = null;
 
 function initAiRecognition() {
+    if (window._aiRecognitionInitialized) return;
+    window._aiRecognitionInitialized = true;
     renderPresetVessels();
     bindUploadEvents();
     // 页面初次加载即刻预绘制标本初态图，彻底杜绝任何黑框与白屏延迟
@@ -310,6 +312,7 @@ async function startCameraScan() {
         video.srcObject = currentStream;
         await video.play();
         cameraModal.classList.add('active');
+        if (typeof window.manageModalOpen === 'function') window.manageModalOpen(cameraModal);
         if (typeof showToast === 'function') showToast('已启动摄像头取景框，请将瓷器居中对齐！');
     } catch (err) {
         if (typeof showToast === 'function') showToast('当前环境无可用摄像头，已为您聚焦下方传世馆藏标本库一键体验！');
@@ -340,7 +343,10 @@ function stopCameraScan() {
         currentStream = null;
     }
     const cameraModal = document.getElementById('camera-modal');
-    if (cameraModal) cameraModal.classList.remove('active');
+    if (cameraModal) {
+        cameraModal.classList.remove('active');
+        if (typeof window.manageModalClose === 'function') window.manageModalClose(cameraModal);
+    }
 }
 
 /**

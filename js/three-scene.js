@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿/**
+/**
  * 华夏器道 · 天青泥火 — 华夏古瓷三维数字文博展馆与 PBR 物理研鉴引擎 (Three.js WebGL National Award Flagship Engine)
  * 核心升级：
  * 1. 九大传世馆藏：7尊128段高精度双壁程序化标准器 + 2尊1:1实测结构光三维扫描真品 (GLTF 1K PBR 贴图)
@@ -158,6 +158,62 @@ const bottomConnoisseurshipData = [
         clayBody: "清代督陶官唐英御制极纯高岭胎 (极白极致密，敲击金石长鸣)",
         reignMark: "器底松石绿地红彩篆书“大清乾隆年制”六字三行方章款",
         tips: "“巧夺天工，鬼斧神工”。外瓶圈足与内胆旋转轴心采用极精密陶瓷榫卯咬合，圈足足端涂金或露极细白润胎骨，代表中国历代制瓷机械结构最高绝诣。"
+    },
+    {
+        name: "宋景德镇窑·影青撇口净水瓶",
+        footType: "平切圈足 · 露胎洁白如糯米",
+        firingCraft: "匣钵垫饼正烧 · 湖田窑精淘瓷石胎",
+        clayBody: "高纯度景德镇瓷石白胎 (致密透光)",
+        reignMark: "素底无款，圈足修刀工整",
+        tips: "影青釉积釉处呈现水青色，薄釉处白净透光，足底旋削利落。"
+    },
+    {
+        name: "金元磁州窑·铁锈花修身瓶",
+        footType: "宽矮圈足 · 粗糙砂底",
+        firingCraft: "叠烧或垫砂正烧 · 施化妆土护胎",
+        clayBody: "北方含铁粗质灰黄缸胎",
+        reignMark: "民窑无款，足端留有明显窑砂与拉坯旋痕",
+        tips: "磁州窑铁锈花在黑釉上结晶出赤褐色金属斑，底足粗犷豪放，极具北方风骨。"
+    },
+    {
+        name: "南宋龙泉窑·粉青双系圆腹罐",
+        footType: "平切厚圈足 · 朱砂火石红",
+        firingCraft: "垫饼正烧 · 足端刮釉露胎呈现“朱砂底”",
+        clayBody: "龙泉紫金土参瓷石灰白胎",
+        reignMark: "素底无款，底足外缘泛橘红火石红环",
+        tips: "南宋龙泉厚釉出筋露白，底足平切厚实，胎釉交界一线微呈橘红。"
+    },
+    {
+        name: "唐邢窑·透影白瓷长颈瓶",
+        footType: "玉璧形实底足 · 露雪白胎骨",
+        firingCraft: "垫饼正烧 · 精细淘洗高岭土",
+        clayBody: "盛唐邢窑类雪类银细白胎",
+        reignMark: "部分传世器底刻“盈”字或“官”字款，此品素底",
+        tips: "“邢瓷类银，邢瓷类雪”，胎骨洁白如雪且半透明，足心微凹。"
+    },
+    {
+        name: "汉代彩绘·双耳弦纹汲水陶壶",
+        footType: "宽平底 · 素胎古朴",
+        firingCraft: "低温陶窑慢轮修坯",
+        clayBody: "天然含铁粘土灰陶胎",
+        reignMark: "早古素底，可见手捏按压指纹与垫印痕",
+        tips: "由陶向瓷过渡之源头重器，圈足尚未定型而呈稳重平底。"
+    },
+    {
+        name: "南宋建窑·曜变天目黑釉束口茶盏",
+        footType: "深黑铁胎矮圈足 · 釉泪止于足际",
+        firingCraft: "仰烧垫饼入匣钵 · 窑变高温自然垂流",
+        clayBody: "福建建阳水吉富含氧化铁粗糙黑褐铁胎",
+        reignMark: "传世建盏素底或偶见“供御”“进琖”刻铭，本器为 Blender 5.2 PBR 孪生重器",
+        tips: "建盏典型特征为“聚釉止于足际，凝成肥厚釉泪”，露胎圈足坚硬如生铁，毫无人工修整娇气。"
+    },
+    {
+        name: "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
+        footType: "外撇规整薄圈足 · 火石红朱砂底",
+        firingCraft: "垫圈支烧 · 足端刮釉露白胎呈橘红线",
+        clayBody: "浙江龙泉大窑高硅低铁灰白胎",
+        reignMark: "素底无款，圈足微撇修刀如削，底心施满粉青厚釉",
+        tips: "南宋龙泉仿纸槌器型典范，颈侧双凤首耳精雕细琢，圈足刮釉露胎处微泛自然火石红。"
     }
 ];
 
@@ -428,6 +484,50 @@ const porcelainModelsData = [
             { "label": "双耳对称 · 汲水穿绳", "pos": [0.65, 1.15, 0.15], "view": "front" }
         ],
         "acousticFreq": 1950
+    },
+    {
+        "name": "南宋建窑·曜变天目黑釉束口茶盏",
+        "english": "Southern Song Jian Kiln Yaobian Tenmoku Tea Bowl",
+        "period": "南宋 (1127–1279)",
+        "kiln": "福建建阳水吉窑",
+        "dimensions": "通高 6.8 cm · 口径 12.2 cm · 足径 4.1 cm",
+        "wallThickness": "口薄腹厚 · 重铁稳心",
+        "desc": "由 Blender 5.2 物理级建模与烘焙之宋代点茶第一圣器。口沿微撇并向内束出一道精巧凹槽（束口止汤），深斜腹下收承矮实黑铁圈足。乌金黑釉在 1310℃ 窑变降温瞬间析出散落星斑，周匝萦绕钴蓝、紫罗兰与金辉虹彩光晕，宛若仰望宇宙星辰。",
+        "features": [
+            "束口注汤防溢凹槽",
+            "宇宙星斑曜变光晕",
+            "聚釉垂流止于足际",
+            "Blender 5.2 PBR 孪生"
+        ],
+        "defaultGlaze": "jianhei",
+        "hotspots": [
+            { "label": "束口凹槽 · 宋代斗茶定汤线", "pos": [0.58, 0.72, 0.12], "view": "top" },
+            { "label": "曜变星斑 · 蓝紫鎏金薄膜干涉", "pos": [0.42, 0.48, 0.25], "view": "front" },
+            { "label": "铁胎圈足 · 肥厚釉泪止于足际", "pos": [0.22, 0.08, 0.10], "view": "bottom" }
+        ],
+        "acousticFreq": 2360
+    },
+    {
+        "name": "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
+        "english": "Southern Song Longquan Celadon Phoenix-Ear Kinuta Vase",
+        "period": "南宋 (1127–1279)",
+        "kiln": "浙江龙泉大窑",
+        "dimensions": "通高 25.5 cm · 口径 9.2 cm · 足径 9.6 cm",
+        "wallThickness": "厚釉凝脂 · 1.6 mm 石灰碱釉",
+        "desc": "东亚文博界奉为“青瓷第一名品”之纸槌瓶式。盘口敞阔，长直颈饰立体双凤耳，折肩刚劲挺拔，直筒长腹微敛。通体多次厚施粉青石灰碱釉，经强还原烧成后如翠玉冰肌，出筋棱角微露淡白胎骨，尽显南宋皇家风范。",
+        "features": [
+            "立体雕塑双凤首耳",
+            "粉青翠玉石灰碱厚釉",
+            "折肩直腹纸槌仪轨",
+            "Blender 5.2 PBR 孪生"
+        ],
+        "defaultGlaze": "fenqing",
+        "hotspots": [
+            { "label": "敞阔盘口 · 釉汁流润微白", "pos": [0.28, 1.98, 0.08], "view": "top" },
+            { "label": "双凤首耳 · 模印贴塑灵动双耳", "pos": [-0.56, 1.52, 0.08], "view": "front" },
+            { "label": "折肩出筋 · 厚釉微透淡白胎骨", "pos": [0.52, 1.05, 0.18], "view": "front" }
+        ],
+        "acousticFreq": 2610
     }
 ];
 
@@ -445,7 +545,7 @@ const masterTreasuresMeta = {
         name: '南宋修内司官窑八方贯耳弦纹瓶',
         scale: 9.25,
         targetHeight: 2.16,
-        previewImg: 'images/collection/SongGuanYao_Ultra_Preview.png'
+        previewImg: 'images/collection/SongGuanYao_Ultra_Preview.webp'
     },
     1: {
         path: 'models/masterpieces/SongRuYao_LotusBowl_Master.glb',
@@ -453,7 +553,7 @@ const masterTreasuresMeta = {
         name: '北宋汝窑天青釉十瓣莲花式温碗',
         scale: 7.50,
         targetHeight: 0.89,
-        previewImg: 'images/collection/SongRuYao_Master_Preview.png'
+        previewImg: 'images/collection/SongRuYao_Master_Preview.webp'
     },
     2: {
         path: 'models/masterpieces/SongDingYao_PlumVase_Master.glb',
@@ -461,7 +561,7 @@ const masterTreasuresMeta = {
         name: '北宋定窑白釉刻花莲纹梅瓶',
         scale: 9.55,
         targetHeight: 2.24,
-        previewImg: 'images/collection/SongDingYao_Master_Preview.png'
+        previewImg: 'images/collection/SongDingYao_Master_Preview.webp'
     },
     3: {
         path: 'models/masterpieces/SongGeYao_CrackleVase_Master.glb',
@@ -469,7 +569,7 @@ const masterTreasuresMeta = {
         name: '宋代哥窑米黄釉百圾碎贯耳扁瓶',
         scale: 9.35,
         targetHeight: 2.12,
-        previewImg: 'images/collection/SongGeYao_Preview.png'
+        previewImg: 'images/collection/SongGeYao_Preview.webp'
     },
     4: {
         path: 'models/masterpieces/SongJunYao_ChujiZun_Master.glb',
@@ -477,7 +577,7 @@ const masterTreasuresMeta = {
         name: '北宋钧窑玫瑰紫釉出戟尊',
         scale: 10.05,
         targetHeight: 2.20,
-        previewImg: 'images/collection/SongJunYao_Preview.png'
+        previewImg: 'images/collection/SongJunYao_Preview.webp'
     },
     5: {
         path: 'models/masterpieces/YuanQingHua_DragonVase_Master.glb',
@@ -485,7 +585,7 @@ const masterTreasuresMeta = {
         name: '元代青花缠枝牡丹双龙耳大罐',
         scale: 7.40,
         targetHeight: 2.10,
-        previewImg: 'images/collection/YuanQingHua_Preview.png'
+        previewImg: 'images/collection/YuanQingHua_Preview.webp'
     },
     6: {
         path: 'models/masterpieces/MingXuande_MonkCapTeapot_Master.glb',
@@ -493,7 +593,7 @@ const masterTreasuresMeta = {
         name: '明宣德宝石红霁红釉僧帽壶',
         scale: 8.27,
         targetHeight: 2.15,
-        previewImg: 'images/collection/MingXuande_Preview.png'
+        previewImg: 'images/collection/MingXuande_Preview.webp'
     },
     7: {
         path: 'models/masterpieces/QingQianlong_RevolvingVase_Master.glb',
@@ -501,7 +601,23 @@ const masterTreasuresMeta = {
         name: '清乾隆金地开光洋彩转心瓶',
         scale: 9.35,
         targetHeight: 2.28,
-        previewImg: 'images/collection/QingQianlong_Preview.png'
+        previewImg: 'images/collection/QingQianlong_Preview.webp'
+    },
+    13: {
+        path: 'models/masterpieces/SongJianYao_YaobianTeaBowl_Master.glb',
+        key: 'jianyao_yaobian_bowl',
+        name: '南宋建窑·曜变天目黑釉束口茶盏',
+        scale: 6.80,
+        targetHeight: 0.85,
+        previewImg: 'images/collection/SongJianYao_Yaobian_Preview.webp'
+    },
+    14: {
+        path: 'models/masterpieces/SongLongquan_PhoenixVase_Master.glb',
+        key: 'longquan_phoenix_vase',
+        name: '南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶',
+        scale: 9.10,
+        targetHeight: 2.15,
+        previewImg: 'images/collection/SongLongquan_Phoenix_Preview.webp'
     }
 };
 
@@ -1628,8 +1744,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
         clippingPlanes: activePlanes
     });
 
-    // 优先分发处理 0~7 号传世国宝 1:1 三维高精烘焙资产
-    if (typeIndex >= 0 && typeIndex <= 7) {
+    // 优先分发处理传世国宝 1:1 三维高精烘焙资产 (0~7 与 13~14)
+    if (masterTreasuresMeta[typeIndex]) {
         const meta = masterTreasuresMeta[typeIndex];
         const cachedScene = masterTreasuresCache[typeIndex];
         if (cachedScene) {
@@ -1648,8 +1764,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
                     }
 
                     if (child.material) {
-                        // 优先保护并使用 GLB 内嵌的 2K 考古真彩烘焙贴图与高岭土参数
-                        if (!customGlaze && (child.material.map || child.material.name.includes('True') || child.material.name.includes('Master') || child.material.name.includes('Ultra') || child.material.name.includes('Porcelain') || child.material.name.includes('GuanYao') || child.material.name.includes('RuYao') || child.material.name.includes('JunYao') || child.material.name.includes('Xuande') || child.material.name.includes('Qianlong') || child.material.name.includes('QingHua'))) {
+                        // 优先保护并使用 GLB 内嵌的考古真彩烘焙贴图与高岭土参数
+                        if (!customGlaze && (child.material.map || child.material.name.includes('M_') || child.material.name.includes('True') || child.material.name.includes('Master') || child.material.name.includes('Ultra') || child.material.name.includes('Porcelain') || child.material.name.includes('GuanYao') || child.material.name.includes('RuYao') || child.material.name.includes('JunYao') || child.material.name.includes('Xuande') || child.material.name.includes('Qianlong') || child.material.name.includes('QingHua') || child.material.name.includes('JianYao') || child.material.name.includes('Longquan'))) {
                             child.material.envMap = envMapTexture;
                             child.material.envMapIntensity = 1.15;
                             if (child.material.roughnessMap) {
@@ -1693,7 +1809,7 @@ function buildGeometry(typeIndex, customGlaze = null) {
 
             // 根据器物特征生成对应的程序化温润骨架
             let fbPts;
-            if (typeIndex === 1) { // 莲花碗
+            if (typeIndex === 1 || typeIndex === 13) { // 莲花碗 / 建盏茶碗
                 fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.42, 0), new THREE.Vector2(0.72, 0.45), new THREE.Vector2(0.95, 0.95)];
             } else if (typeIndex === 2) { // 梅瓶
                 fbPts = [new THREE.Vector2(0, 0), new THREE.Vector2(0.35, 0), new THREE.Vector2(0.55, 1.2), new THREE.Vector2(0.68, 1.8), new THREE.Vector2(0.30, 2.2), new THREE.Vector2(0.20, 2.35)];
@@ -1791,8 +1907,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
         });
     }
 
-    // --- 空间几何基准对齐：0~7号模型原点已锁定在底足接地圈最底面正中心 ---
-    if (typeIndex >= 0 && typeIndex <= 7) {
+    // --- 空间几何基准对齐：GLB 大师资产模型原点已锁定在底足接地圈最底面正中心 ---
+    if (masterTreasuresMeta[typeIndex]) {
         group.userData.bottomOffset = 0;
         const b = new THREE.Box3().setFromObject(group);
         group.userData.vesselHeight = (isFinite(b.max.y) && isFinite(b.min.y)) ? (b.max.y - b.min.y) : 2.2;
@@ -2241,6 +2357,30 @@ function initThreeJS() {
         setupControls(canvas);
         window.addEventListener('resize', handleThreeResize);
         setupVisibilityObserver(canvas);
+
+        canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            isCanvasVisible = false;
+            const stage = document.getElementById('three-stage-container');
+            if (stage && !stage.querySelector('.webgl-lost-banner')) {
+                const banner = document.createElement('div');
+                banner.className = 'webgl-lost-banner';
+                banner.setAttribute('role', 'status');
+                banner.innerHTML = '<span>WebGL 三维图形上下文已暂停，正在等待恢复…</span>' +
+                    '<button type="button" onclick="location.reload()">重新加载展台</button>';
+                stage.appendChild(banner);
+            }
+        });
+
+        canvas.addEventListener('webglcontextrestored', () => {
+            const stage = document.getElementById('three-stage-container');
+            const banner = stage && stage.querySelector('.webgl-lost-banner');
+            if (banner) banner.remove();
+            isCanvasVisible = !document.hidden;
+            if (isCanvasVisible) {
+                requestAnimationFrame(typeof window.animate === 'function' ? window.animate : animate);
+            }
+        });
 
         const stageLoader = document.getElementById('three-stage-loader');
         if (stageLoader) {
@@ -2724,6 +2864,8 @@ function loadPorcelainModel(index, keepMode = false) {
     }
 
     updateModelInfoCard(index);
+    if (window.AppStore) window.AppStore.set('modelIndex', index);
+    if (window.AppBus) window.AppBus.emit('model:selected', { index: index });
     highlightActiveModelBtn(index);
     highlightActiveGlazeBtn(currentGlazeIndex);
     render3DHotspotsDOM();
@@ -2842,6 +2984,7 @@ function toggle3DFullscreen() {
     if (icon) {
         icon.className = isFull ? 'fa-solid fa-compress text-amber-400' : 'fa-solid fa-expand text-tianqing-light';
     }
+    if (window.AppBus) window.AppBus.emit('stage:fullscreen', { active: isFull });
     setTimeout(handleThreeResize, 60);
     if (typeof showToast === 'function') {
         showToast(isFull ? '已进入【全屏沉浸式 3D 展馆】，再次点击右上角按钮可退出' : '已退出全屏展览模式');
@@ -3152,13 +3295,19 @@ function createDimensionLines() {
 
 function openMicroscopeView() {
     const modal = document.getElementById('microscope-modal');
-    if (modal) modal.classList.add('active');
+    if (modal) {
+        modal.classList.add('active');
+        if (typeof window.manageModalOpen === 'function') window.manageModalOpen(modal);
+    }
     if (typeof playCrackleSound === 'function') playCrackleSound();
 }
 
 function closeMicroscopeView() {
     const modal = document.getElementById('microscope-modal');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+        modal.classList.remove('active');
+        if (typeof window.manageModalClose === 'function') window.manageModalClose(modal);
+    }
 }
 
 /**
@@ -3519,31 +3668,96 @@ function setupControls(canvas) {
 
 function disposeGroup(grp) {
     if (!grp) return;
+    const sharedGeos = new Set();
+    const sharedMats = new Set();
+    const sharedTexs = new Set();
+    if (typeof envMapTexture !== 'undefined' && envMapTexture) sharedTexs.add(envMapTexture);
+    if (typeof textureCache !== 'undefined') {
+        Object.values(textureCache).forEach((entry) => {
+            if (!entry) return;
+            if (entry.isTexture) sharedTexs.add(entry);
+            else Object.values(entry).forEach(v => { if (v && v.isTexture) sharedTexs.add(v); });
+        });
+    }
+    const collectCache = (cacheObj) => {
+        if (!cacheObj) return;
+        Object.values(cacheObj).forEach((root) => {
+            if (!root || !root.traverse) return;
+            root.traverse((o) => {
+                if (!o.isMesh) return;
+                if (o.geometry) sharedGeos.add(o.geometry);
+                if (o.material) {
+                    const mats = Array.isArray(o.material) ? o.material : [o.material];
+                    mats.forEach((m) => {
+                        sharedMats.add(m);
+                        ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'bumpMap', 'emissiveMap', 'alphaMap'].forEach((k) => {
+                            if (m[k] && m[k].isTexture) sharedTexs.add(m[k]);
+                        });
+                    });
+                }
+            });
+        });
+    };
+    collectCache(masterTreasuresCache);
+    collectCache(scannedModelCache);
+
+    const disposeMat = (m) => {
+        if (!m || sharedMats.has(m)) return;
+        ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'bumpMap', 'emissiveMap', 'alphaMap'].forEach((k) => {
+            const tex = m[k];
+            if (tex && tex.isTexture && !sharedTexs.has(tex)) {
+                tex.dispose();
+            }
+        });
+        m.dispose();
+    };
+
     grp.traverse((child) => {
         if (child.isMesh) {
-            if (child.geometry) child.geometry.dispose();
+            if (child.geometry && !sharedGeos.has(child.geometry)) child.geometry.dispose();
             if (child.material) {
-                if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
-                else child.material.dispose();
+                if (Array.isArray(child.material)) child.material.forEach(disposeMat);
+                else disposeMat(child.material);
             }
         }
     });
 }
 
 let isCanvasVisible = true;
+let isViewportVisible = true;
+let isContentSkipped = false;
 function setupVisibilityObserver(canvas) {
-    if (!canvas || !('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver((entries) => {
-        const wasVisible = isCanvasVisible;
-        isCanvasVisible = entries[0].isIntersecting;
-        if (!wasVisible && isCanvasVisible) requestAnimationFrame(animate);
-    }, { threshold: 0.04 });
-    observer.observe(canvas);
+    if (!canvas) return;
+    const syncVisibilityAndResume = () => {
+        const wasActive = isCanvasVisible;
+        isCanvasVisible = isViewportVisible && !isContentSkipped && !document.hidden;
+        if (!wasActive && isCanvasVisible) {
+            requestAnimationFrame(typeof window.animate === 'function' ? window.animate : animate);
+        }
+    };
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            isViewportVisible = entries[0].isIntersecting;
+            syncVisibilityAndResume();
+        }, { threshold: 0.04 });
+        observer.observe(canvas);
+    }
+
+    const gallerySection = document.getElementById('3d-gallery');
+    if (gallerySection) {
+        gallerySection.addEventListener('contentvisibilityautostatechange', (e) => {
+            isContentSkipped = !!e.skipped;
+            syncVisibilityAndResume();
+        });
+    }
+
+    document.addEventListener('visibilitychange', syncVisibilityAndResume);
 }
 
 let lastFrameTime = 0;
 function animate(now) {
-    if (!isCanvasVisible) return;
+    if (!isCanvasVisible || document.hidden) return;
     requestAnimationFrame(animate);
 
     camera.position.x += (camPosTarget.x - camera.position.x) * 0.08;
@@ -3739,7 +3953,9 @@ function updateModelInfoCard(index) {
 
 function highlightActiveModelBtn(index) {
     document.querySelectorAll('.model-btn').forEach((btn, i) => {
-        if (i === index) {
+        const m = /loadPorcelainModel\((\d+)/.exec(btn.getAttribute('onclick') || '');
+        const btnIdx = m ? parseInt(m[1], 10) : i;
+        if (btnIdx === index) {
             btn.classList.add('bg-tianqing-deep', 'text-white', 'ring-2');
             btn.classList.remove('bg-yuebai', 'text-text-body');
         } else {
@@ -3796,4 +4012,17 @@ window.toggleZenMode = toggleZenMode;
 
 window.toggleTransilluminationTorch = toggleTransilluminationTorch;
 window.bottomConnoisseurshipData = bottomConnoisseurshipData;
+
+if (typeof window !== 'undefined' && window.AppBus) {
+    window.AppBus.on('lang:changed', () => {
+        if (typeof updateModelInfoCard === 'function') {
+            updateModelInfoCard(typeof currentModelIndex === 'number' ? currentModelIndex : 0);
+        }
+        const card = document.getElementById('vessel-bottom-connoisseur-card');
+        if (card && !card.classList.contains('hidden') && typeof isBottomFlipped !== 'undefined' && isBottomFlipped) {
+            toggleBottomView(true);
+        }
+    });
+}
+
 

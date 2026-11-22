@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 华夏器道 · 天青泥火 — 东方浑天璇玑仪与千里江山三维空间动力学引擎 (Flagship 3D Oriental Engine)
  * 核心技术：
  * 1. 纯数学 3D 透视几何投影 (Pure Math 3D Perspective Projection + Smooth Camera Orbit)
@@ -14,6 +14,9 @@
     let width = 0, height = 0, dpr = 1;
     let isDark = false;
     let animationId = null;
+    let isPausedByOverlay = false;
+    let resizeTimer = null;
+    const isReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
     // 相机与鼠标遥测动力学
     let rotX = 0.18, rotY = 0.28;
@@ -64,22 +67,51 @@
         initSpaceParticles();
 
         // 绑定事件
-        window.addEventListener('resize', resize, { passive: true });
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resize, 120);
+        }, { passive: true });
         window.addEventListener('mousemove', onMouseMove, { passive: true });
         window.addEventListener('mousedown', onMouseDown, { passive: true });
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                if (animationId) cancelAnimationFrame(animationId);
+                stopLoop();
             } else {
-                render(performance.now());
+                startLoop();
             }
         });
 
-        render(performance.now());
+        window.setOrientalAmbientPaused = function (paused) {
+            isPausedByOverlay = !!paused;
+            if (isPausedByOverlay) {
+                stopLoop();
+            } else {
+                startLoop();
+            }
+        };
+
+        if (isReducedMotion) {
+            renderFrame(performance.now());
+        } else {
+            startLoop();
+        }
+    }
+
+    function stopLoop() {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    }
+
+    function startLoop() {
+        if (animationId || document.hidden || isReducedMotion || isPausedByOverlay) return;
+        animationId = requestAnimationFrame(render);
     }
 
     function checkTheme() {
         isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isReducedMotion && ctx) renderFrame(performance.now());
     }
 
     function resize() {
@@ -89,7 +121,8 @@
         dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = width * dpr;
         canvas.height = height * dpr;
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        if (isReducedMotion) renderFrame(performance.now());
     }
 
     function onMouseMove(e) {
@@ -230,7 +263,7 @@
     // ================= 主动力学渲染管线 (Main 60FPS Pipeline) =================
     let startTime = performance.now();
 
-    function render(now) {
+    function renderFrame(now) {
         const t = (now - startTime) * 0.001;
 
         // 平滑相机惯性阻尼跟踪
@@ -270,7 +303,14 @@
         drawShockwave();
 
         ctx.restore();
+    }
 
+    function render(now) {
+        if (document.hidden || isReducedMotion || isPausedByOverlay) {
+            animationId = null;
+            return;
+        }
+        renderFrame(now);
         animationId = requestAnimationFrame(render);
     }
 
@@ -468,9 +508,6 @@
         ctx.restore();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initEngine);
-    } else {
-        initEngine();
-    }
+    // 仅作为无 WebGL 环境下的优雅降级备选引擎按需调用
+    globalThis.initOrientalFallbackAmbient = initEngine;
 })();

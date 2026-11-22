@@ -1,4 +1,4 @@
-﻿﻿/**
+/**
  * 华夏器道 · 天青泥火 — 3D光影指尖拉坯、自由青花手绘、底款篆刻与1300℃龙窑温控曲线仿真引擎
  * 核心升级：
  * 1. 48层高密度曲面切片 + Blinn-Phong 3D法线高光 + 实时计算器高(cm)、口径(cm)、腹径(cm)、容积(mL)与宋韵美学评分
@@ -256,21 +256,38 @@ const vesselPresets = {
 
 let isPotteryVisible = true;
 function setupPotteryVisibilityObserver() {
-    if (!potCanvas || !('IntersectionObserver' in window)) return;
-    const observer = new IntersectionObserver((entries) => {
-        const wasVisible = isPotteryVisible;
-        isPotteryVisible = entries[0].isIntersecting;
-        if (!wasVisible && isPotteryVisible) {
+    if (!potCanvas) return;
+    const resumeIfReady = () => {
+        if (isPotteryVisible && !document.hidden) {
             if (potAnimId) cancelAnimationFrame(potAnimId);
+            potAnimId = null;
             potAnimLoop();
         }
-    }, { threshold: 0.05 });
-    observer.observe(potCanvas);
+    };
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            const wasVisible = isPotteryVisible;
+            isPotteryVisible = entries[0].isIntersecting;
+            if (!wasVisible && isPotteryVisible) resumeIfReady();
+        }, { threshold: 0.05 });
+        observer.observe(potCanvas);
+    }
+    if (!potCanvas.dataset.potVisBound) {
+        potCanvas.dataset.potVisBound = '1';
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (potAnimId) { cancelAnimationFrame(potAnimId); potAnimId = null; }
+            } else {
+                resumeIfReady();
+            }
+        });
+    }
 }
 
 function initPotteryWorkshop() {
     potCanvas = document.getElementById('pottery-canvas');
-    if (!potCanvas) return;
+    if (!potCanvas || potCanvas.dataset.potInit === '1') return;
+    potCanvas.dataset.potInit = '1';
     potCtx = potCanvas.getContext('2d');
 
     const kilnOverlay = document.getElementById('kiln-fire-overlay');
@@ -632,7 +649,10 @@ function setPotTool(mode) {
 
 let lastPotTick = 0;
 function potAnimLoop(now) {
-    if (!isPotteryVisible) return;
+    if (!isPotteryVisible || document.hidden) {
+        potAnimId = null;
+        return;
+    }
     potAnimId = requestAnimationFrame(potAnimLoop);
     if (!potCtx || !potCanvas) return;
 

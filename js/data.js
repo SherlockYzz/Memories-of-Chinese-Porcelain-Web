@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿/**
+/**
  * 华夏器道 · 天青泥火 — 中国古代传统文化与古瓷数字化研鉴空间
  * 学术研考、文博档案、历史通史与非遗工序全景核心数据库
  */
@@ -1302,6 +1302,46 @@ const archivePorcelains = [
         "museum": "大都会艺术博物馆 (The Met)",
         "accessionNo": "14.60.9",
         "glazeKey": "junhong"
+    },
+    {
+        "id": 25,
+        "dynastyKey": "song",
+        "modelIdx": 13,
+        "name": "南宋 · 建窑曜变天目黑釉束口茶盏 [Blender 5.2孪生]",
+        "kiln": "建窑 · 福建建阳水吉窑",
+        "level": "宋代点茶至高圣器",
+        "size": "高 6.8 cm · 口径 12.2 cm · 足径 4.1 cm",
+        "img": "./images/collection/SongJianYao_Yaobian_Preview.webp",
+        "tags": [
+            "曜变星斑",
+            "束口注汤",
+            "重铁黑胎",
+            "Blender孪生"
+        ],
+        "desc": "口沿微撇束口，深腹下收。通体施高温黑釉，降温结晶期析出群星般的蓝紫金辉虹彩光晕，聚釉止于黑铁圈足，堪称宋代斗茶神品。",
+        "museum": "天青泥火 Blender 5.2 馆藏孪生",
+        "accessionNo": "TY-BL-13",
+        "glazeKey": "jianhei"
+    },
+    {
+        "id": 26,
+        "dynastyKey": "song",
+        "modelIdx": 14,
+        "name": "南宋 · 龙泉窑粉青釉凤耳纸槌瓶 [Blender 5.2孪生]",
+        "kiln": "龙泉窑 · 浙江龙泉大窑",
+        "level": "宋代青瓷第一名品",
+        "size": "高 25.5 cm · 口径 9.2 cm · 足径 9.6 cm",
+        "img": "./images/collection/SongLongquan_Phoenix_Preview.webp",
+        "tags": [
+            "粉青翠玉",
+            "双凤耳饰",
+            "折肩纸槌",
+            "Blender孪生"
+        ],
+        "desc": "盘口直颈，折肩筒腹，颈侧对称饰立体雕塑凤首衔环双耳。通体多次厚施粉青石灰碱釉，温润如翠玉冰肌，足底圈足刮釉泛微火石红。",
+        "museum": "天青泥火 Blender 5.2 馆藏孪生",
+        "accessionNo": "TY-BL-14",
+        "glazeKey": "fenqing"
     }
 ];
 

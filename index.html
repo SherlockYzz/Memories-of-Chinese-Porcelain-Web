@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" data-lang="zh" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,21 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
 
     <!-- Font Awesome 6 (本地静态加载) -->
+    <link rel="preload" href="webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="./images/13.jpg" as="image" fetchpriority="high">
     <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- 首帧主题恢复脚本，避免浅/暗主题切换闪烁 (FOUC) -->
+    <script>
+        try {
+            var t = localStorage.getItem('huaxia_theme');
+            if (t === 'dark' || t === 'light') {
+                document.documentElement.setAttribute('data-theme', t);
+                var m = document.querySelector('meta[name="theme-color"]');
+                if (m) m.setAttribute('content', t === 'dark' ? '#080C10' : '#F4EFE6');
+            }
+        } catch (e) {}
+    </script>
 
     <!-- 东方宋韵数字博物院样式系统 -->
     <link rel="stylesheet" href="css/style.css">
@@ -20,8 +34,10 @@
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">跳至主内容</a>
+
 <!-- ==================== 顶部导航栏 (高定流体毛玻璃) ==================== -->
-<nav id="navbar" class="fixed top-0 left-0 right-0 z-50">
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50" aria-label="主导航">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <!-- 品牌标识 -->
@@ -61,35 +77,40 @@
                 </button>
 
                 <!-- 博古快捷键指南按钮 (按 ? 亦可唤出) -->
-                <button onclick="openShortcutsHelpModal()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="博古鉴瓷键盘快捷键总览 (按键盘 ? 或 H 呼出)">
-                    <i class="fa-solid fa-keyboard text-tianqing-deep text-xs"></i>
+                <button onclick="openShortcutsHelpModal()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="博古鉴瓷键盘快捷键总览 (按键盘 ? 或 H 呼出)" aria-label="博古鉴瓷快捷键总览">
+                    <i class="fa-solid fa-keyboard text-tianqing-deep text-xs" aria-hidden="true"></i>
                 </button>
 
                 <!-- 宋韵古琴与瓷磬背景雅乐开关 -->
-                <button id="ambient-music-btn" onclick="toggleAmbientGuqin()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="开启/关闭宋代古琴与瓷磬背景雅乐">
-                    <i id="ambient-music-icon" class="fa-solid fa-music text-amber-400 text-xs"></i>
+                <button id="ambient-music-btn" onclick="toggleAmbientGuqin()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="开启/关闭宋代古琴与瓷磬背景雅乐" aria-label="开启或关闭宋代古琴背景雅乐" aria-pressed="false">
+                    <i id="ambient-music-icon" class="fa-solid fa-music text-amber-400 text-xs" aria-hidden="true"></i>
+                </button>
+
+                <!-- 3D WebGL 动态流光背景开关 (WCAG 2.2.2) -->
+                <button id="bg-motion-toggle" onclick="toggleWebGLBackgroundMotion()" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:border-tianqing transition-all shadow-sm" title="开启/暂停 3D 动态交互背景 (低端机或省电时可随时暂停)" aria-label="开启或暂停 3D 动态交互背景" aria-pressed="true">
+                    <i id="bg-motion-icon" class="fa-solid fa-wand-magic-sparkles text-tianqing-deep text-xs" aria-hidden="true"></i>
                 </button>
 
                 <!-- 昼夜展厅主题切换 -->
                 <button id="theme-toggle-btn" onclick="toggleMuseumTheme()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-all flex items-center gap-1.5 shadow-sm" title="切换玄夜博物院 / 宋韵宣纸雅集主题">
-                    <i id="theme-toggle-icon" class="fa-solid fa-moon text-tianqing-deep text-xs"></i>
+                    <i id="theme-toggle-icon" class="fa-solid fa-moon text-tianqing-deep text-xs" aria-hidden="true"></i>
                     <span id="theme-toggle-label" class="hidden sm:inline">夜宴观瓷</span>
                 </button>
 
                 <!-- 研学手记收藏夹 -->
                 <button onclick="openStudyNotebook()" class="px-3 py-1.5 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-all flex items-center gap-1.5 shadow-sm" title="查阅已收录名瓷与个人研考手记">
-                    <i class="fa-solid fa-bookmark text-tianqing-deep text-[11px]"></i>
+                    <i class="fa-solid fa-bookmark text-tianqing-deep text-[11px]" aria-hidden="true"></i>
                     <span class="hidden sm:inline">典藏集</span>
                     <span id="bookmark-count-badge" class="bg-tianqing-deep text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-mono">2</span>
                 </button>
 
                 <!-- 中英切换 -->
                 <button id="lang-toggle" class="px-3 py-1.5 text-xs font-serif-cn rounded-full border border-border-light text-text-title bg-yuebai hover:border-tianqing transition-colors whitespace-nowrap flex items-center shrink-0">
-                    <i class="fa-solid fa-language text-amber-400 mr-1"></i>中 / EN
+                    <i class="fa-solid fa-language text-amber-400 mr-1" aria-hidden="true"></i>中 / EN
                 </button>
 
                 <!-- 移动端菜单按钮 -->
-                <button id="hamburger" class="xl:hidden w-9 h-9 rounded-full bg-yuebai border border-border-light flex flex-col items-center justify-center gap-1" aria-label="展开导航菜单">
+                <button id="hamburger" class="xl:hidden w-9 h-9 rounded-full bg-yuebai border border-border-light flex flex-col items-center justify-center gap-1" aria-label="展开导航菜单" aria-expanded="false" aria-controls="mobile-menu">
                     <span class="w-4 h-0.5 bg-text-title rounded"></span>
                     <span class="w-4 h-0.5 bg-text-title rounded"></span>
                     <span class="w-3 h-0.5 bg-text-title rounded"></span>
@@ -101,18 +122,18 @@
 
 <!-- 移动端侧滑遮罩与抽屉菜单 -->
 <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
-<div id="mobile-menu" class="mobile-menu">
+<div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="移动端展馆导览">
     <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-3">
         <div class="flex items-center gap-2">
             <span class="hero-seal-stamp">器道</span>
             <span class="font-serif-cn text-white font-medium text-base">华夏器道 · 展馆导览</span>
         </div>
         <button id="mobile-close" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white" aria-label="关闭菜单">
-            <i class="fa-solid fa-xmark"></i>
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
         </button>
     </div>
     <a href="#hero" data-i18n="nav.home">首页 · 器道序厅</a>
-    <a href="#3d-gallery" data-i18n="nav.3d">3D名瓷全景研鉴馆 (12尊)</a>
+    <a href="#3d-gallery" data-i18n="nav.3d">3D名瓷全景研鉴馆 (15尊)</a>
     <a href="#ai-recognition" data-i18n="nav.ai">AI视觉识瓷与光谱工作站</a>
     <a href="#history" data-i18n="nav.history">陶瓷通史八千年长卷</a>
     <a href="#kiln-map-section">九州名窑山川地理与贡道图</a>
@@ -125,6 +146,7 @@
     <a href="#notes" data-i18n="nav.notes">学术札记与博古殿试考卷</a>
 </div>
 
+<main id="main-content" tabindex="-1">
 <!-- ==================== 序厅首屏：高定东方数字文博巨幕 (Hero) ==================== -->
 <section id="hero" class="hero-section">
     <!-- 全屏实时水墨流金粒子环境画布 -->
@@ -172,9 +194,9 @@
                 <!-- 博物馆四大硬核技术指标卡 -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                     <div class="hero-stat-card">
-                        <div class="text-xl font-bold font-serif-cn text-tianqing-deep">12 尊</div>
-                        <div class="text-xs text-text-title font-medium font-serif-cn">全息3D馆藏重器 (7标准+5实测)</div>
-                        <div class="text-[10px] text-text-muted">含2尊1K实测扫描真品</div>
+                        <div class="text-xl font-bold font-serif-cn text-tianqing-deep">15 尊</div>
+                        <div class="text-xs text-text-title font-medium font-serif-cn">全息3D馆藏重器 (10传世+5实测)</div>
+                        <div class="text-[10px] text-text-muted">含Blender 5.2孪生与实测扫描</div>
                     </div>
                     <div class="hero-stat-card">
                         <div class="text-xl font-bold font-serif-cn text-amber-400">Sobel + RGB</div>
@@ -207,7 +229,7 @@
 
                     <!-- 馆藏名器高清主视觉与可交互热点标定 -->
                     <div class="relative rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-white/15" style="background: radial-gradient(circle at 50% 45%, #1c2a34 0%, #070b0f 100%);">
-                        <img id="hero-featured-img" src="./images/13.jpg" alt="宋代官窑天青冰裂纹盘口瓶" class="w-full h-full object-cover transition-all duration-300">
+                        <img id="hero-featured-img" src="./images/13.jpg" alt="宋代官窑天青冰裂纹盘口瓶" width="800" height="600" fetchpriority="high" decoding="async" class="w-full h-full object-cover transition-all duration-300">
 
                         <!-- 悬浮文物解剖热点 1 -->
                         <a href="#3d-gallery" onclick="loadPorcelainModel(0)" class="hero-hotspot-tag" style="top: 14%; left: 6%;">
@@ -229,20 +251,20 @@
                     <!-- 橱窗底部快速切换珍品缩略栏 -->
                     <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between gap-2 relative z-10">
                         <div class="flex items-center gap-2">
-                            <button onclick="switchHeroShowcase('./images/13.jpg', '特展一号柜 · 南宋官窑冰裂纹盘口瓶', 0, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-amber-400 ring-2 p-0.5 bg-black/50" title="南宋官窑冰裂纹盘口瓶">
-                                <img src="./images/13.jpg" class="w-full h-full object-cover rounded" alt="官窑" loading="lazy" decoding="async">
+                            <button onclick="switchHeroShowcase('./images/13.jpg', '特展一号柜 · 南宋官窑冰裂纹盘口瓶', 0, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-amber-400 ring-2 p-0.5 bg-black/50" title="南宋官窑冰裂纹盘口瓶" aria-label="切换特展一号柜：南宋官窑冰裂纹盘口瓶">
+                                <img src="./images/13.jpg" width="44" height="44" class="w-full h-full object-cover rounded" alt="官窑" decoding="async">
                             </button>
-                            <button onclick="switchHeroShowcase('./images/10.jpg', '特展二号柜 · 北宋汝官窑天青胆式瓶', 1, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="北宋汝官窑天青胆式瓶">
-                                <img src="./images/10.jpg" class="w-full h-full object-cover rounded" alt="汝窑" loading="lazy" decoding="async">
+                            <button onclick="switchHeroShowcase('./images/10.jpg', '特展二号柜 · 北宋汝官窑天青胆式瓶', 1, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="北宋汝官窑天青胆式瓶" aria-label="切换特展二号柜：北宋汝官窑天青胆式瓶">
+                                <img src="./images/10.jpg" width="44" height="44" class="w-full h-full object-cover rounded" alt="汝窑" decoding="async">
                             </button>
-                            <button onclick="switchHeroShowcase('./images/9.jpg', '特展三号柜 · 宋韵粉青镂空玲珑茶器组', 4, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="宋韵粉青镂空玲珑茶器组">
-                                <img src="./images/9.jpg" class="w-full h-full object-cover rounded" alt="粉青玲珑" loading="lazy" decoding="async">
+                            <button onclick="switchHeroShowcase('./images/9.jpg', '特展三号柜 · 宋韵粉青镂空玲珑茶器组', 4, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="宋韵粉青镂空玲珑茶器组" aria-label="切换特展三号柜：宋韵粉青镂空玲珑茶器组">
+                                <img src="./images/9.jpg" width="44" height="44" class="w-full h-full object-cover rounded" alt="粉青玲珑" decoding="async">
                             </button>
-                            <button onclick="switchHeroShowcase('./images/15.jpg', '特展四号柜 · 明宣德青花山水云纹赏瓶', 6, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="明宣德青花山水赏瓶">
-                                <img src="./images/15.jpg" class="w-full h-full object-cover rounded" alt="青花" loading="lazy" decoding="async">
+                            <button onclick="switchHeroShowcase('./images/15.jpg', '特展四号柜 · 明宣德青花山水云纹赏瓶', 6, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="明宣德青花山水赏瓶" aria-label="切换特展四号柜：明宣德青花山水云纹赏瓶">
+                                <img src="./images/15.jpg" width="44" height="44" class="w-full h-full object-cover rounded" alt="青花" decoding="async">
                             </button>
-                            <button onclick="switchHeroShowcase('./images/1.jpg', '特展五号柜 · 1:1实测三维扫描青瓷标本', 7, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="1:1实测三维扫描青瓷标本">
-                                <img src="./images/1.jpg" class="w-full h-full object-cover rounded" alt="实测扫描" loading="lazy" decoding="async">
+                            <button onclick="switchHeroShowcase('./images/1.jpg', '特展五号柜 · 1:1实测三维扫描青瓷标本', 7, this)" class="hero-thumb-btn w-11 h-11 rounded-lg overflow-hidden border border-white/10 p-0.5 bg-black/50" title="1:1实测三维扫描青瓷标本" aria-label="切换特展五号柜：1:1实测三维扫描青瓷标本">
+                                <img src="./images/1.jpg" width="44" height="44" class="w-full h-full object-cover rounded" alt="实测扫描" decoding="async">
                             </button>
                         </div>
                         <a href="#3d-gallery" class="px-3.5 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shrink-0">
@@ -361,7 +383,7 @@
                     <!-- X光剖面深度可调滑块条 (仅在X光模式下显示) -->
                     <div id="cutaway-slider-bar" class="hidden absolute top-14 left-4 z-20 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400 flex items-center gap-3 text-xs text-white font-serif-cn">
                         <span><i class="fa-solid fa-scissors text-amber-400 mr-1"></i>X光剖切面深度：</span>
-                        <input type="range" min="-0.65" max="0.65" step="0.02" value="0" oninput="setCutawayOffset(this.value)" class="w-28">
+                        <input id="cutaway-offset-slider" name="cutaway-offset" type="range" min="-0.65" max="0.65" step="0.02" value="0" aria-label="X光剖切面深度" oninput="setCutawayOffset(this.value)" class="w-28">
                         <span id="cutaway-offset-val" class="font-mono text-amber-200">0%</span>
                     </div>
 
@@ -385,8 +407,8 @@
                         <div class="flex items-center justify-between pt-1 border-t border-white/10 gap-1 text-[10px] text-white/70">
                             <button onclick="setStudioLighting('candle')" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors">夜宴烛火</button>
                             <div class="flex items-center gap-1 flex-1 justify-end">
-                                <span>主光角度</span>
-                                <input type="range" min="0" max="360" value="45" oninput="rotateMainLight(this.value)" class="w-16">
+                                <label for="main-light-angle-slider">主光角度</label>
+                                <input id="main-light-angle-slider" name="main-light-angle" type="range" min="0" max="360" value="45" aria-label="主光源角度" oninput="rotateMainLight(this.value)" class="w-16">
                             </div>
                         </div>
                     </div>
@@ -398,48 +420,54 @@
                     <div id="curator-subtitle-bar" class="hidden"></div>
 
                     <!-- 底部悬浮快捷交互工具条 -->
-                    <div class="canvas-quick-toolbar">
-                        <button class="canvas-tool-btn active" id="btn-room-scene-toggle" onclick="toggleRealisticScene()" title="开启/隐藏 3D 真实室内环境场景">
-                            <i class="fa-solid fa-landmark"></i>
+                    <div class="canvas-quick-toolbar" role="toolbar" aria-label="3D展台交互工具栏">
+                        <button class="canvas-tool-btn active" id="btn-room-scene-toggle" onclick="toggleRealisticScene()" title="开启/隐藏 3D 真实室内环境场景" aria-label="切换 3D 真实室内环境场景">
+                            <i class="fa-solid fa-landmark" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn active" id="btn-rotate-toggle" onclick="toggleAutoRotate()" title="自动缓动旋转">
-                            <i class="fa-solid fa-rotate"></i>
+                        <button class="canvas-tool-btn active" id="btn-rotate-toggle" onclick="toggleAutoRotate()" title="自动缓动旋转" aria-label="切换自动缓动旋转">
+                            <i class="fa-solid fa-rotate" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" id="btn-wireframe-toggle" onclick="toggleWireframe()" title="三维拓扑网格力学透视">
-                            <i class="fa-solid fa-border-none"></i>
+                        <button class="canvas-tool-btn" id="btn-wireframe-toggle" onclick="toggleWireframe()" title="三维拓扑网格力学透视" aria-label="切换三维拓扑网格透视">
+                            <i class="fa-solid fa-border-none" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" id="btn-dimensions-toggle" onclick="toggleDimensionLines()" title="器物考古测绘标定线">
-                            <i class="fa-solid fa-ruler-combined"></i>
+                        <button class="canvas-tool-btn" id="btn-dimensions-toggle" onclick="toggleDimensionLines()" title="器物考古测绘标定线" aria-label="切换器物考古测绘标定线">
+                            <i class="fa-solid fa-ruler-combined" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn active" id="btn-crackle-toggle" onclick="toggleCrackle()" title="开片冰裂/金丝铁线凹凸法线开关">
-                            <i class="fa-solid fa-braille"></i>
+                        <button class="canvas-tool-btn active" id="btn-crackle-toggle" onclick="toggleCrackle()" title="开片冰裂/金丝铁线凹凸法线开关" aria-label="切换开片冰裂纹凹凸法线">
+                            <i class="fa-solid fa-braille" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" onclick="openMicroscopeView()" title="100x显微镜微观聚沫攒珠观察">
-                            <i class="fa-solid fa-microscope"></i>
+                        <button class="canvas-tool-btn" onclick="openMicroscopeView()" title="100x显微镜微观聚沫攒珠观察" aria-label="打开 100 倍光学显微镜观察窗">
+                            <i class="fa-solid fa-microscope" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" onclick="setCameraView('top')" title="俯视内膛与口沿">
-                            <i class="fa-regular fa-circle-dot"></i>
+                        <button class="canvas-tool-btn" onclick="setCameraView('top')" title="俯视内膛与口沿" aria-label="俯视器物内膛与口沿">
+                            <i class="fa-regular fa-circle-dot" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" id="btn-bottom-inspect-toggle" onclick="toggleBottomView()" title="双手托起翻转底足鉴赏 (查看芝麻钉/铁足露胎/官窑款识)">
-                            <i class="fa-solid fa-shoe-prints"></i>
+                        <button class="canvas-tool-btn" id="btn-bottom-inspect-toggle" onclick="toggleBottomView()" title="双手托起翻转底足鉴赏 (查看芝麻钉/铁足露胎/官窑款识)" aria-label="双手托起翻转鉴底">
+                            <i class="fa-solid fa-shoe-prints" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" id="btn-torch-inspect-toggle" onclick="toggleTransilluminationTorch()" title="专家强光手电照胎骨 (透光检视/玉质微晶通透感)">
-                            <i class="fa-solid fa-flashlight"></i>
+                        <button class="canvas-tool-btn" id="btn-torch-inspect-toggle" onclick="toggleTransilluminationTorch()" title="专家强光手电照胎骨 (透光检视/玉质微晶通透感)" aria-label="切换专家强光手电照胎">
+                            <i class="fa-solid fa-flashlight" aria-hidden="true"></i>
                         </button>
-                        <button class="canvas-tool-btn" onclick="resetCamera()" title="复位标准展位视角">
-                            <i class="fa-solid fa-arrows-to-dot"></i>
+                        <button class="canvas-tool-btn" onclick="openScaleRulerModal()" title="1:1 真实体量厘米标尺对比台" aria-label="打开 1:1 真实体量标尺对比台">
+                            <i class="fa-solid fa-ruler-vertical" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="generateCollectorCard()" title="生成宋韵数字藏品明信片 (PNG)" aria-label="生成宋韵数字藏品明信片">
+                            <i class="fa-solid fa-stamp" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" onclick="resetCamera()" title="复位标准展位视角" aria-label="复位标准展位视角">
+                            <i class="fa-solid fa-arrows-to-dot" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- 器型切换标签栏 (全量 13 款器型一目了然：8 尊历代名瓷三维复原 + 5 尊激光实测数据) -->
+                <!-- 器型切换标签栏 (全量 15 款器型一目了然：10 尊历代名瓷三维复原 + 5 尊激光实测数据) -->
                 <div class="mt-4 p-4 sm:p-5 rounded-2xl feature-card space-y-3.5">
-                    <!-- 第一组：华夏传世八大国宝 -->
+                    <!-- 第一组：华夏传世十大国宝 -->
                     <div>
                         <div class="text-xs text-text-muted font-serif-cn mb-2 flex flex-wrap items-center justify-between gap-2">
                             <span class="flex items-center gap-1.5 font-medium text-amber-500">
                                 <i class="fa-solid fa-crown text-amber-400"></i>
-                                <span>【华夏历代传世名瓷 · 三维数字典藏】</span>
+                                <span>【华夏历代传世名瓷 · 三维数字典藏 (含 Blender 5.2 PBR 孪生)】</span>
                             </span>
                             <span class="text-[11px] text-text-muted">宋元明清 2K 真实纹样 · 双层 PBR 微晶清漆</span>
                         </div>
@@ -467,6 +495,12 @@
                             </button>
                             <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" onclick="loadPorcelainModel(7)">
                                 <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>⑧ 洋彩透雕转心瓶 (清代乾隆)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" onclick="loadPorcelainModel(13)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>⑭ 曜变天目束口盏 (南宋建窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" onclick="loadPorcelainModel(14)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>⑮ 粉青凤耳纸槌瓶 (南宋龙泉)
                             </button>
                         </div>
                     </div>
@@ -672,7 +706,7 @@
                     <div class="lg:col-span-4 space-y-4">
                         <!-- 视窗 1：原图与激光扫描 -->
                         <div class="rounded-2xl overflow-hidden shadow-md bg-black relative border border-border-light aspect-square">
-                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" width="600" height="600" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             <div id="ai-scan-animation" class="hidden absolute inset-0 bg-black/45 backdrop-blur-sm flex flex-col items-center justify-center">
                                 <div class="ai-scan-line-laser"></div>
                                 <div class="bg-black/80 px-4 py-2 rounded-full text-white text-xs font-serif-cn flex items-center gap-2 shadow-lg border border-amber-400">
@@ -785,37 +819,37 @@
         <div class="max-w-6xl mx-auto mb-10">
             <div class="seven-crafts-strip">
                 <div class="craft-icon-card" onclick="openStepDetailModal(3)">
-                    <img src="./images/图标/1.jpg" alt="菊花揉泥" loading="lazy" decoding="async">
+                    <img src="./images/图标/1.jpg" alt="菊花揉泥" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">① 菊花揉泥</span>
                     <span class="text-[10px] text-text-muted">百炼排气 · 膏腻无泡</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(1)">
-                    <img src="./images/图标/2.jpg" alt="水浸澄泥" loading="lazy" decoding="async">
+                    <img src="./images/图标/2.jpg" alt="水浸澄泥" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">② 水浸陈腐</span>
                     <span class="text-[10px] text-text-muted">源泉澄澈 · 润土生香</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(4)">
-                    <img src="./images/图标/3.jpg" alt="轮盘拉坯" loading="lazy" decoding="async">
+                    <img src="./images/图标/3.jpg" alt="轮盘拉坯" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">③ 飞轮拉坯</span>
                     <span class="text-[10px] text-text-muted">圆器生形 · 气韵端庄</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(2)">
-                    <img src="./images/图标/4.jpg" alt="淘洗澄浆" loading="lazy" decoding="async">
+                    <img src="./images/图标/4.jpg" alt="淘洗澄浆" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">④ 淘洗除铁</span>
                     <span class="text-[10px] text-text-muted">马尾细罗 · 细腻如脂</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(5)">
-                    <img src="./images/图标/5.jpg" alt="利坯修刀" loading="lazy" decoding="async">
+                    <img src="./images/图标/5.jpg" alt="利坯修刀" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑤ 利坯刻花</span>
                     <span class="text-[10px] text-text-muted">刀旋薄胎 · 半刀泥法</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(6)">
-                    <img src="./images/图标/6.jpg" alt="素烧定骨" loading="lazy" decoding="async">
+                    <img src="./images/图标/6.jpg" alt="素烧定骨" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑥ 八百素烧</span>
                     <span class="text-[10px] text-text-muted">低温定骨 · 坚致待釉</span>
                 </div>
                 <div class="craft-icon-card" onclick="openStepDetailModal(8)">
-                    <img src="./images/图标/7.jpg" alt="龙窑柴烧" loading="lazy" decoding="async">
+                    <img src="./images/图标/7.jpg" alt="龙窑柴烧" width="160" height="120" loading="lazy" decoding="async">
                     <span class="text-xs font-serif-cn font-semibold text-text-title">⑦ 龙窑还原</span>
                     <span class="text-[10px] text-text-muted">千三烈焰 · 窑变天成</span>
                 </div>
@@ -1313,8 +1347,7 @@
         </div>
     </div>
 </section>
-
-
+</main>
 
 <!-- ==================== 页脚 (Footer) ==================== -->
 <footer class="bg-text-title text-white/70 pt-16 pb-12 border-t border-white/10 relative z-10">
@@ -1331,7 +1364,7 @@
             <div>
                 <h4 class="text-white font-serif-cn font-medium mb-4 text-sm tracking-wider">核心数字展厅</h4>
                 <ul class="space-y-2.5 text-xs font-light text-white/60">
-                    <li><a href="#3d-gallery" class="hover:text-tianqing transition-colors" data-i18n="nav.3d">3D名瓷全景研鉴馆 (9尊)</a></li>
+                    <li><a href="#3d-gallery" class="hover:text-tianqing transition-colors" data-i18n="nav.3d">3D名瓷全景研鉴馆 (15尊)</a></li>
                     <li><a href="#ai-recognition" class="hover:text-tianqing transition-colors" data-i18n="nav.ai">AI视觉识瓷与光谱中心</a></li>
                     <li><a href="#history" class="hover:text-tianqing transition-colors" data-i18n="nav.history">陶瓷通史八千年长卷</a></li>
                     <li><a href="#pottery-studio" class="hover:text-tianqing transition-colors">3D指尖拉坯与青花工坊</a></li>
@@ -1359,32 +1392,32 @@
 </footer>
 
 <!-- ==================== 全局快速检索命令面板模态框 (Ctrl/Cmd + K) ==================== -->
-<div id="command-palette-modal" class="modal-backdrop" onclick="if(event.target===this)closeCommandPalette()">
+<div id="command-palette-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="command-palette-title" onclick="if(event.target===this)closeCommandPalette()">
     <div class="modal-content-lg">
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
-            <div class="flex items-center gap-2 text-text-title font-serif-cn font-semibold">
-                <i class="fa-solid fa-magnifying-glass text-tianqing-deep"></i>
+            <h3 id="command-palette-title" class="flex items-center gap-2 text-text-title font-serif-cn font-semibold text-sm sm:text-base">
+                <i class="fa-solid fa-magnifying-glass text-tianqing-deep" aria-hidden="true"></i>
                 <span>博古通今 · 全站器物 / 窑口 / 釉色 / 工序快速检索引擎</span>
-            </div>
-            <button onclick="closeCommandPalette()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center">
-                <i class="fa-solid fa-xmark text-text-body"></i>
+            </h3>
+            <button onclick="closeCommandPalette()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center" aria-label="关闭检索面板">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
             </button>
         </div>
-        <input id="command-search-input" type="text" oninput="renderCommandResults(this.value)" placeholder="输入关键词检索（如：汝窑、官窑、苏麻离青、水仙盆、梅瓶、实测扫描...）" class="w-full px-4 py-3 rounded-xl bg-bg-main border border-border-light text-xs sm:text-sm text-text-title outline-none mb-4 font-serif-cn">
-        <div id="command-results-list" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1"></div>
+        <input id="command-search-input" type="text" oninput="debouncedRenderCommandResults(this.value)" placeholder="输入关键词检索（如：汝窑、官窑、苏麻离青、水仙盆、梅瓶、实测扫描...）" aria-label="检索古瓷器物、窑口、釉色或工序" class="w-full px-4 py-3 rounded-xl bg-bg-main border border-border-light text-xs sm:text-sm text-text-title outline-none mb-4 font-serif-cn">
+        <div id="command-results-list" role="listbox" aria-label="检索结果" class="space-y-2 max-h-[52vh] overflow-y-auto pr-1"></div>
     </div>
 </div>
 
 <!-- ==================== 摄像头实时扫一扫模态框 ==================== -->
-<div id="camera-modal" class="modal-backdrop" onclick="if(event.target===this)stopCameraScan()">
+<div id="camera-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="camera-modal-title" onclick="if(event.target===this)stopCameraScan()">
     <div class="modal-content-lg text-center">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
-                <i class="fa-solid fa-camera text-tianqing-deep"></i>
+            <h3 id="camera-modal-title" class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-camera text-tianqing-deep" aria-hidden="true"></i>
                 <span>实时摄像头取景识瓷</span>
             </h3>
-            <button onclick="stopCameraScan()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
-                <i class="fa-solid fa-xmark text-text-body"></i>
+            <button onclick="stopCameraScan()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭摄像头识瓷">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
             </button>
         </div>
         <div class="relative rounded-2xl overflow-hidden bg-black mb-4">
@@ -1396,7 +1429,7 @@
         </div>
         <div class="flex items-center justify-center gap-4">
             <button onclick="captureAndIdentify()" class="px-6 py-2.5 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md">
-                <i class="fa-solid fa-circle-dot mr-1.5"></i>定格拍照并送检
+                <i class="fa-solid fa-circle-dot mr-1.5" aria-hidden="true"></i>定格拍照并送检
             </button>
             <button onclick="stopCameraScan()" class="px-5 py-2.5 border border-border-light text-text-body rounded-full text-xs font-serif-cn hover:bg-yuebai transition-colors">
                 取消
@@ -1406,22 +1439,22 @@
 </div>
 
 <!-- ==================== 宋明御瓷 100x 光学显微镜微观晶相研考观察窗 ==================== -->
-<div id="microscope-modal" class="modal-backdrop" onclick="if(event.target===this)closeMicroscopeView()">
+<div id="microscope-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="microscope-modal-title" onclick="if(event.target===this)closeMicroscopeView()">
     <div class="modal-content-lg text-center max-w-2xl">
         <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-microscope text-tianqing-deep text-lg"></i>
-                <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title">宋明御瓷 100x 光学显微晶相研考观察窗</h3>
+                <i class="fa-solid fa-microscope text-tianqing-deep text-lg" aria-hidden="true"></i>
+                <h3 id="microscope-modal-title" class="font-serif-cn text-base sm:text-lg font-medium text-text-title">宋明御瓷 100x 光学显微晶相研考观察窗</h3>
             </div>
             <div class="flex items-center gap-2">
                 <button id="btn-micro-light-mode" onclick="toggleMicroscopeLightMode()" class="px-2.5 py-1 rounded-full bg-yuebai border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-all flex items-center">
-                    <i class="fa-solid fa-sun text-amber-400 mr-1"></i>明场透射
+                    <i class="fa-solid fa-sun text-amber-400 mr-1" aria-hidden="true"></i>明场透射
                 </button>
                 <button id="btn-micro-reticle" onclick="toggleMicrometerReticle()" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn transition-all flex items-center" title="显示/隐藏 100μm 测微目镜十字刻度线">
-                    <i class="fa-solid fa-crosshairs mr-1"></i>测微十字标尺
+                    <i class="fa-solid fa-crosshairs mr-1" aria-hidden="true"></i>测微十字标尺
                 </button>
-                <button onclick="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
-                    <i class="fa-solid fa-xmark text-text-body"></i>
+                <button onclick="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭光学显微镜窗口">
+                    <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -1437,12 +1470,12 @@
 
         <div class="flex flex-wrap items-center justify-center gap-3 my-2.5 max-w-md mx-auto text-xs text-text-muted font-serif-cn">
             <div class="flex items-center gap-2 bg-yuebai/60 px-3 py-1.5 rounded-full border border-border-light">
-                <i class="fa-solid fa-sliders text-tianqing-deep"></i>
-                <span>目镜焦深：</span>
-                <input type="range" min="60" max="140" value="100" oninput="adjustMicroscopeFocus(this.value)" class="w-24 sm:w-32 cursor-pointer">
+                <i class="fa-solid fa-sliders text-tianqing-deep" aria-hidden="true"></i>
+                <label for="microscope-focus-range">目镜焦深：</label>
+                <input id="microscope-focus-range" type="range" min="60" max="140" value="100" oninput="adjustMicroscopeFocus(this.value)" class="w-24 sm:w-32 cursor-pointer">
                 <span id="microscope-focus-value" class="font-mono text-text-title w-9 text-right font-medium">100%</span>
             </div>
-            <span class="text-[11px] text-text-muted"><i class="fa-regular fa-hand-pointer mr-1 text-amber-400"></i>按住目镜可平移视场 · 滚轮微调焦深</span>
+            <span class="text-[11px] text-text-muted"><i class="fa-regular fa-hand-pointer mr-1 text-amber-400" aria-hidden="true"></i>按住目镜可平移视场 · 滚轮微调焦深</span>
         </div>
 
         <!-- 显微镜学术考据与真伪辨识卡片 -->
@@ -1455,15 +1488,15 @@
 </div>
 
 <!-- ==================== 博古鉴瓷键盘快捷键典籍模态框 ==================== -->
-<div id="shortcuts-help-modal" class="modal-backdrop" onclick="if(event.target===this)closeShortcutsHelpModal()">
+<div id="shortcuts-help-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="shortcuts-modal-title" onclick="if(event.target===this)closeShortcutsHelpModal()">
     <div class="modal-content-lg max-w-xl text-left">
         <div class="flex items-center justify-between pb-3 border-b border-border-light mb-4">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-keyboard text-tianqing-deep text-lg"></i>
-                <h3 class="font-serif-cn text-base sm:text-lg font-medium text-text-title">博古鉴瓷 · 全局交互快捷键典籍</h3>
+                <i class="fa-solid fa-keyboard text-tianqing-deep text-lg" aria-hidden="true"></i>
+                <h3 id="shortcuts-modal-title" class="font-serif-cn text-base sm:text-lg font-medium text-text-title">博古鉴瓷 · 全局交互快捷键典籍</h3>
             </div>
-            <button onclick="closeShortcutsHelpModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
-                <i class="fa-solid fa-xmark text-text-body"></i>
+            <button onclick="closeShortcutsHelpModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭快捷键典籍">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
             </button>
         </div>
 
@@ -1501,7 +1534,7 @@
                 <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Z 键</kbd>
             </div>
             <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
-                <span>切换 12 尊馆藏名瓷</span>
+                <span>切换 15 尊馆藏名瓷</span>
                 <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">数字 1 ~ 9</kbd>
             </div>
             <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
@@ -1525,15 +1558,15 @@
 </div>
 
 <!-- ==================== 个人古瓷研学手记与收藏夹模态框 ==================== -->
-<div id="study-notebook-modal" class="modal-backdrop" onclick="if(event.target===this)closeStudyNotebook()">
+<div id="study-notebook-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="study-notebook-title" onclick="if(event.target===this)closeStudyNotebook()">
     <div class="modal-content-lg">
         <div class="flex items-center justify-between mb-4 pb-3 border-b border-border-light">
-            <h3 class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
-                <i class="fa-solid fa-bookmark text-tianqing-deep"></i>
+            <h3 id="study-notebook-title" class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-bookmark text-tianqing-deep" aria-hidden="true"></i>
                 <span>个人古瓷研学手记 · 典藏集</span>
             </h3>
-            <button onclick="closeStudyNotebook()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors">
-                <i class="fa-solid fa-xmark text-text-body"></i>
+            <button onclick="closeStudyNotebook()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭研学手记">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
             </button>
         </div>
 
@@ -1548,15 +1581,15 @@
 
             <div class="pt-3 border-t border-border-light">
                 <h4 class="text-xs font-serif-cn font-medium text-text-title mb-2">【个人考据随笔与灵感手记】</h4>
-                <textarea id="study-notebook-textarea" oninput="saveStudyNotes()" rows="4" placeholder="在此随时记录您的古瓷鉴赏心得、窑口考证灵感、胎釉比对备忘（浏览器本地自动持久化保存）..." class="w-full bg-yuebai/50 border border-border-light rounded-xl p-3 text-xs text-text-title outline-none font-light resize-none leading-relaxed"></textarea>
+                <textarea id="study-notebook-textarea" oninput="saveStudyNotes()" rows="4" aria-label="个人考据随笔与灵感手记" placeholder="在此随时记录您的古瓷鉴赏心得、窑口考证灵感、胎釉比对备忘（浏览器本地自动持久化保存）..." class="w-full bg-yuebai/50 border border-border-light rounded-xl p-3 text-xs text-text-title outline-none font-light resize-none leading-relaxed"></textarea>
             </div>
         </div>
 
         <div class="mt-4 pt-3 border-t border-border-light flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span class="text-[11px] text-text-muted font-light"><i class="fa-solid fa-database mr-1 text-tianqing"></i>本地持久化存储</span>
+            <span class="text-[11px] text-text-muted font-light"><i class="fa-solid fa-database mr-1 text-tianqing" aria-hidden="true"></i>本地持久化存储</span>
             <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <button onclick="exportStudyNotes()" class="px-4 py-2 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-file-export text-[10px]"></i>
+                    <i class="fa-solid fa-file-export text-[10px]" aria-hidden="true"></i>
                     <span>导出 Markdown 研学手记</span>
                 </button>
                 <button onclick="closeStudyNotebook()" class="px-4 py-2 bg-yuebai text-text-body rounded-full text-xs font-serif-cn">
@@ -1568,12 +1601,12 @@
 </div>
 
 <!-- ==================== 传世文物、工序与学术专论通用模态框 ==================== -->
-<div id="universal-modal" class="modal-backdrop" onclick="if(event.target===this)closeUniversalModal()">
+<div id="universal-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="if(event.target===this)closeUniversalModal()">
     <div class="modal-content-lg">
         <div class="flex items-center justify-between mb-5 pb-3 border-b border-border-light">
             <h3 id="modal-title" class="font-serif-cn text-lg font-semibold text-text-title"></h3>
-            <button onclick="closeUniversalModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭">
-                <i class="fa-solid fa-xmark text-text-body"></i>
+            <button onclick="closeUniversalModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭详情弹窗">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
             </button>
         </div>
         <div id="modal-body"></div>
@@ -1582,24 +1615,96 @@
 
 <!-- 回到顶部按钮 -->
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">
-    <i class="fa-solid fa-chevron-up text-sm"></i>
+    <i class="fa-solid fa-chevron-up text-sm" aria-hidden="true"></i>
 </button>
 
 <!-- 全站极速自包含运行核心 (首屏高聚合核心包，彻底消灭零散请求与排队卡顿) -->
 <script src="js/bundle-core.js"></script>
-<!-- 非首屏扩展大模块按需延后装载 (首屏网络带宽独享) -->
+<!-- 非首屏扩展大模块按需懒加载 + 交互透明代理桩 (首屏带宽零争抢，点击即刻触发高优装载) -->
 <script>
-    function loadAsyncScript(src, cb) {
-        if (document.querySelector('script[src="' + src + '"]')) { if (cb) cb(); return; }
-        var s = document.createElement('script');
-        s.src = src;
-        s.onload = cb;
-        document.body.appendChild(s);
-    }
-    setTimeout(function() {
-        loadAsyncScript('js/pottery-workshop.js', function() { if (typeof initPotteryWorkshop === 'function') initPotteryWorkshop(); });
-        loadAsyncScript('js/ai-recognition.js', function() { if (typeof initAiRecognition === 'function') initAiRecognition(); });
-    }, 1200);
+    (function () {
+        var loadingMap = {};
+        function loadAsyncScript(src, cb, priority) {
+            var state = loadingMap[src];
+            if (state && state.done) { if (cb) cb(); return; }
+            if (state) { if (cb) state.cbs.push(cb); return; }
+            state = loadingMap[src] = { done: false, cbs: cb ? [cb] : [] };
+            var s = document.createElement('script');
+            s.src = src;
+            s.async = true;
+            try { s.fetchPriority = priority || 'low'; } catch (e) {}
+            s.onload = function () {
+                state.done = true;
+                var list = state.cbs.slice();
+                state.cbs.length = 0;
+                for (var i = 0; i < list.length; i++) {
+                    try { list[i](); } catch (err) { console.warn('[lazy-module]', err); }
+                }
+            };
+            document.body.appendChild(s);
+        }
+        window.loadAsyncScript = loadAsyncScript;
+
+        function registerLazyModule(opts) {
+            var loaded = false;
+            function ensureReady(priority, afterInit) {
+                loadAsyncScript(opts.src, function () {
+                    if (!loaded) {
+                        loaded = true;
+                        var initFn = window[opts.initName];
+                        if (typeof initFn === 'function') initFn();
+                    }
+                    if (afterInit) afterInit();
+                }, priority);
+            }
+
+            opts.fns.forEach(function (fnName) {
+                var stub = function () {
+                    var args = arguments;
+                    ensureReady('high', function () {
+                        var realFn = window[fnName];
+                        if (typeof realFn === 'function' && realFn !== stub) {
+                            realFn.apply(window, args);
+                        }
+                    });
+                };
+                window[fnName] = stub;
+            });
+
+            var targetEl = document.getElementById(opts.sectionId);
+            if (targetEl && 'IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function (entries) {
+                    if (entries[0] && entries[0].isIntersecting) {
+                        io.disconnect();
+                        ensureReady('low');
+                    }
+                }, { rootMargin: '600px 0px' });
+                io.observe(targetEl);
+            } else {
+                setTimeout(function () { ensureReady('low'); }, 3000);
+            }
+        }
+
+        registerLazyModule({
+            src: 'js/pottery-workshop.js',
+            sectionId: 'pottery-studio',
+            initName: 'initPotteryWorkshop',
+            fns: [
+                'resetClay', 'applyPresetVessel', 'setPotPattern', 'selectPotGlaze',
+                'selectPotSeal', 'firePotInKiln', 'setPotTool', 'downloadPotteryArtwork',
+                'undoPotteryAction', 'setBrushStyle', 'toggleAmbientGuqin'
+            ]
+        });
+
+        registerLazyModule({
+            src: 'js/ai-recognition.js',
+            sectionId: 'ai-recognition',
+            initName: 'initAiRecognition',
+            fns: [
+                'setAiVisualMode', 'startCameraScan', 'stopCameraScan', 'captureAndIdentify'
+            ]
+        });
+    })();
 </script>
 
 </body>
