@@ -1,0 +1,92 @@
+name: Build and Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要发布的版本标签 (例如 v9.1.0)'
+        required: true
+        default: 'v9.1.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run static engineering checks
+        run: npm run check
+
+      - name: Build production dist
+        run: npm run build
+
+      - name: Package release archive and checksums
+        shell: bash
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_NAME="${{ github.event.inputs.tag }}"
+          fi
+          echo "TAG_NAME=${TAG_NAME}" >> "$GITHUB_ENV"
+
+          rm -f TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt
+          (cd dist && zip -r -q ../TianQingNiHuo.zip .)
+          cp TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip"
+          sha256sum TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" > SHA256SUMS.txt
+          ls -lh TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt
+
+      - name: Generate release notes
+        shell: bash
+        run: |
+          sed 's/^          //' > release-notes.md <<'EOF'
+          ## 天青泥火 — 华夏古瓷三维研学空间
+
+          > **从泥到火，从器到鉴——数字化复原中国古瓷的一生**
+          > 在线体验：https://sherlockyzz.github.io/Memories-of-Chinese-Porcelain-Web/
+
+          ### 核心更新亮点
+          - **360° 柱面 UV 手绘青花与永宣甜白釉工坊**：全新 512×256 双层柱面 UV + 32 扇条透视重投影引擎，支持勾线、分水、点斑（苏麻离青铁锈斑）、刮料四种笔法，毫锋细/中/粗切换、转盘定格、`1300℃` 生坯至釉下宝蓝蜕变与 `Ctrl+Z` 泥坯/笔触双撤销，并新增无开片洁净「景德镇永宣甜白釉」。
+          - **首屏秒开与全量并发预热**：优化首屏关键加载路径、修复 Service Worker 缓存隔离、保障图录全量图片可见性与 3D 模型超时自动重试。
+          - **3D 水墨山川自动律动背景**：背景山川具备自主呼吸微震律动，并与鼠标/滚动视差丝滑叠加。
+          - **完整学术致谢与典藏体系**：保留权威学术专著与古籍文献引述、Poly Haven CC0 对照模型与小米 MiMo 语音致谢（版权制作：折木柯南）。
+
+          ### 附件说明
+          - `TianQingNiHuo.zip`：完整 `dist/` 纯静态构建包（可直接部署至任意静态托管服务或本地 HTTP Server 解压运行）。
+          - `SHA256SUMS.txt`：发布包 SHA-256 校验文件。
+
+          ### 本地离线运行
+          ```bash
+          unzip TianQingNiHuo.zip -d tianqing-nihuo && cd tianqing-nihuo
+          npx serve .
+          # 或 python3 -m http.server 4173
+          ```
+          EOF
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TITLE="🏺 天青泥火 ${TAG_NAME} · 360° 柱面青花工坊 / 首屏秒开预热 / 3D 自动律动背景"
+          if gh release view "${TAG_NAME}" >/dev/null 2>&1; then
+            gh release edit "${TAG_NAME}" --title "${TITLE}" --notes-file release-notes.md --latest
+            gh release upload "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt --clobber
+          else
+            gh release create "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt --title "${TITLE}" --notes-file release-notes.md --latest
+          fi
