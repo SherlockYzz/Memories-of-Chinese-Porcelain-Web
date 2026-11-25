@@ -1,0 +1,170 @@
+[
+  {
+    "id": 1,
+    "category": "土之篇 · 采土选料",
+    "icon": "fa-mountain-sun",
+    "title": {
+      "zh": "深山穿石 · 采土选料",
+      "en": "Mining Kaolin & Stone"
+    },
+    "desc": {
+      "zh": "深入深山矿脉采撷上乘高岭土与瓷石，严格甄选二氧化硅与氧化铝比例适宜的原矿，这是瓷器筋骨之根本。",
+      "en": "Mining premium kaolin and petuntse to ensure optimal silica and alumina mineral balance."
+    },
+    "img": "./images/5.jpg"
+  },
+  {
+    "id": 2,
+    "category": "水之篇 · 水车舂粉",
+    "icon": "fa-gears",
+    "title": {
+      "zh": "水碓舂粉 · 碎石成面",
+      "en": "Water-Powered Pulverizing"
+    },
+    "desc": {
+      "zh": "引清冽溪水驱动巨型木水碓，日夜不停舂砸坚硬瓷石成极细石粉，不耗人力而力透千钧。",
+      "en": "Harnessing mountain water flow to drive wooden stamp mills, pulverizing stones into powder."
+    },
+    "img": "./images/3.jpg"
+  },
+  {
+    "id": 3,
+    "category": "水之篇 · 淘洗澄淀",
+    "icon": "fa-water",
+    "title": {
+      "zh": "淘洗澄淀 · 阴窖陈腐",
+      "en": "Purification & Aging"
+    },
+    "desc": {
+      "zh": "多次经水池淘洗澄淀去杂质，随后将泥料置于避光阴湿窑窖中陈腐数月乃至数年，使泥性柔韧如膏。",
+      "en": "Multiple elutriation baths followed by cellar aging to enhance clay plasticity."
+    },
+    "img": "./images/4.jpg"
+  },
+  {
+    "id": 4,
+    "category": "土之篇 · 百炼成泥",
+    "icon": "fa-hand",
+    "title": {
+      "zh": "菊花推揉 · 彻底排气",
+      "en": "Clay Kneading"
+    },
+    "desc": {
+      "zh": "运用“菊花揉”与“羊角揉”手法，经数百次手工推揉折叠，彻底排出微小气泡，确保受热不炸裂。",
+      "en": "Manual kneading in chrysanthemum patterns to eliminate microscopic air bubbles."
+    },
+    "img": "./images/8.jpg"
+  },
+  {
+    "id": 5,
+    "category": "器之篇 · 旋转生形",
+    "icon": "fa-circle-notch",
+    "title": {
+      "zh": "轮盘拉坯 · 指尖乾坤",
+      "en": "Wheel Throwing"
+    },
+    "desc": {
+      "zh": "在飞速旋转的陶轮上，匠人以十指感知泥料厚薄，一呼一吸间提拉出瓶、尊、盘、碗之曼妙曲线。",
+      "en": "Master potters shape vessels on spinning wheels by fingertip intuition."
+    },
+    "img": "./images/9.jpg"
+  },
+  {
+    "id": 6,
+    "category": "器之篇 · 阴干定骨",
+    "icon": "fa-temperature-low",
+    "title": {
+      "zh": "自然阴干 · 稳固定型",
+      "en": "Gentle Shade Drying"
+    },
+    "desc": {
+      "zh": "成形生坯不可曝晒，须置于阴凉通风木架上缓缓自然阴干，待水分匀速蒸发至半干革质状态。",
+      "en": "Gradual shaded drying to avoid structural warping and prepare for trimming."
+    },
+    "img": "./images/10.jpg"
+  },
+  {
+    "id": 7,
+    "category": "器之篇 · 削骨雕琢",
+    "icon": "fa-pen-nib",
+    "title": {
+      "zh": "修光利坯 · 削泥如玉",
+      "en": "Trimming & Smoothing"
+    },
+    "desc": {
+      "zh": "以锋利刀具修削内外壁、挖削底足，使器物薄厚如一、重心极稳，口沿锐利规整。",
+      "en": "Precision trimming of leather-hard bodies to achieve uniform walls and calibrated balance."
+    },
+    "img": "./images/11.jpg"
+  },
+  {
+    "id": 8,
+    "category": "器之篇 · 半刀刻画",
+    "icon": "fa-paintbrush",
+    "title": {
+      "zh": "刻划剔花 · 半刀泥韵",
+      "en": "Carving & Sgraffito"
+    },
+    "desc": {
+      "zh": "以斜锋竹刀在坯体上深刻牡丹、莲瓣、婴戏纹，深浅有致，施釉后积釉处青翠立体如水墨。",
+      "en": "Carving and incising lotus petals and motifs, creating depth under translucent glazes."
+    },
+    "img": "./images/13.jpg"
+  },
+  {
+    "id": 9,
+    "category": "器之篇 · 翠色成衣",
+    "icon": "fa-brush",
+    "title": {
+      "zh": "荡釉浸釉 · 矿浆成衣",
+      "en": "Glaze Application"
+    },
+    "desc": {
+      "zh": "以松木灰配合长石、玛瑙末调配天然矿物釉，采用荡釉、浸釉、吹釉多道工序，确保釉层厚如凝脂。",
+      "en": "Applying mineral and agate glazes through dipping, swirling, and blowing."
+    },
+    "img": "./images/15.jpg"
+  },
+  {
+    "id": 10,
+    "category": "火之篇 · 入匣封窑",
+    "icon": "fa-box-archive",
+    "title": {
+      "zh": "入匣叠装 · 隔烟保洁",
+      "en": "Sagger Stacking"
+    },
+    "desc": {
+      "zh": "将施釉坯体装入特制耐火泥匣钵中，一器一钵密封叠放，隔绝松柴飞灰烟火，保证釉面光洁无瑕。",
+      "en": "Sealing glazed wares into individual refractory saggers to prevent ash contamination."
+    },
+    "img": "./images/2.jpg"
+  },
+  {
+    "id": 11,
+    "category": "火之篇 · 烈焰涅槃",
+    "icon": "fa-fire-flame-curved",
+    "title": {
+      "zh": "龙窑柴烧 · 还原千度",
+      "en": "Dragon Kiln Firing"
+    },
+    "desc": {
+      "zh": "依山构筑数十米龙窑，投松柴经1300℃高温还原焰烧造三日三夜，铁元素在缺氧气氛中化为幽雅青翠。",
+      "en": "Wood-firing at 1300°C reduction flame inside dragon kilns for days and nights."
+    },
+    "img": "./images/7.jpg"
+  },
+  {
+    "id": 12,
+    "category": "火之篇 · 出窑开片",
+    "icon": "fa-gem",
+    "title": {
+      "zh": "退温出窑 · 冰裂惊绝",
+      "en": "Cooling & Crackle Formation"
+    },
+    "desc": {
+      "zh": "窑门微开降温时，胎釉膨胀应力激烈交织，釉层在静夜中传来清脆冰裂声，金丝铁线自然天成。",
+      "en": "Sudden temperature drop triggers thermal stress, producing celestial crackle sounds and patterns."
+    },
+    "img": "./images/1.jpg"
+  }
+]

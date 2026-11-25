@@ -88,538 +88,9 @@ let userOrbitAngles = { theta: 0, phi: 0.26, radius: 3.55 };
 let isUserDragging = false;
 let vesselVibration = 0;
 
-// 九大馆藏古瓷器物数据字典与 3D 空间解剖锚点 (7尊程序化 + 2尊实测3D扫描)
-
-/**
- * 华夏古陶瓷 12 尊标准器 底足与款识学术考据大辞典
- * 文博专家鉴赏法门：看瓷先看底，辨真识假、断代定窑的核心依据
- */
-const bottomConnoisseurshipData = [
-    {
-        name: "南宋修内司官窑·八方贯耳弦纹瓶",
-        footType: "八方折角宽圈足 · 铁足露胎",
-        firingCraft: "紫金土垫饼装匣正烧 · 足端刮釉露胎",
-        clayBody: "紫黑坚致铁骨胎 (含铁量高达4.8%)",
-        reignMark: "宋官窑崇尚素雅，底足无刻款，纯留手工刮胎旋削痕",
-        tips: "紫口铁足，釉如堆脂。圈足露胎处经千百载自然氧化，呈现温润的黑褐色铁光与微弱火石红，绝无新仿作旧之燥气。"
-    },
-    {
-        name: "北宋汝窑·天青釉十瓣莲花式温碗",
-        footType: "高深微敛圆圈足 · 满釉裹足支烧",
-        firingCraft: "支钉架空正烧 · 圈足底面整齐散布五枚如米粒般微小的芝麻状支钉痕",
-        clayBody: "极其纯净细腻的浅灰香灰胎 (微泛青灰，吸水率近于零)",
-        reignMark: "台北故宫传世孤品，底足满釉素面无刻款",
-        tips: "“似玉非玉胜于玉，满釉支烧芝麻钉”。十瓣莲花温碗圈足修刀挺拔微敛，底足满裹青翠透润的天青厚釉，五枚芝麻支钉脱落处露出纯净香灰胎，工艺端凝典雅。"
-    },
-    {
-        name: "北宋定窑·白釉刻花莲纹梅瓶",
-        footType: "微凹平底 · 浅切隐圈足",
-        firingCraft: "正烧平切垫砂 · 底足露胎不施釉 · 口沿覆烧镶金扣",
-        clayBody: "洁白坚致糯米胎 (高岭土淘洗极纯，氧化铝含量高)",
-        reignMark: "素底无款，局部可见北宋窑工手工轮制竹丝刷痕与跳刀纹",
-        tips: "“白如玉、薄如纸、声如磬”。梅瓶为立件正烧，口沿覆烧覆扣而底足露白胎，底心微凹，留有窑砂附着痕与如泪珠般垂流的“蜡泪痕”。"
-    },
-    {
-        name: "宋代哥窑·米黄百圾碎贯耳扁瓶",
-        footType: "椭圆修刀圈足 · 泥鳅背铁足深沉",
-        firingCraft: "紫金土高钙铁胎 · 泥条垫烧后足端精工刮胎",
-        clayBody: "黑褐色坚硬铁胎 (俗称泥鳅背铁足)",
-        reignMark: "宋代原款无字，底部满布深色大开片与浅黄细碎细纹",
-        tips: "“金丝铁线，百圾碎纹”。底足圈足打磨圆润呈泥鳅背状，露胎处色如生铁，足内覆釉自然开深黑褐色大裂隙，古意苍茫。"
-    },
-    {
-        name: "北宋钧窑·玫瑰紫釉海棠出戟尊",
-        footType: "海棠形宽圈足 · 芝麻酱护胎底",
-        firingCraft: "底部涂刷极薄芝麻酱色氧化铁护胎釉 · 支烧平切",
-        clayBody: "香灰色夹砂致密胎 (质地坚重，烧结度极高)",
-        reignMark: "器底刻汉字数字编号（如“一”至“十”），表明尊身规制尺寸",
-        tips: "“钧瓷无对，窑变无双”。官钧器底必刷一层薄薄黄褐色芝麻酱釉，底心刻划数字深沉遒劲，乃北宋宫廷御用陈设花器规制。"
-    },
-    {
-        name: "元代青花·缠枝牡丹双龙耳大罐",
-        footType: "大口径宽矮圈足 · 糙底泛微火石红",
-        firingCraft: "正烧平垫砂 · 足端斜削刀法粗犷有力",
-        clayBody: "麻仓土与瓷石二元配方胎 (坚白致密，含微量铁斑杂质)",
-        reignMark: "元代青花大器多素底无款，露胎处自然泛黄褐色火石红",
-        tips: "“苏麻离青，浓烈入骨”。大罐底足宽厚扎实，手工旋削泥条痕与跳刀痕清晰可见，露胎处因麻仓土高铁含量自然泛出火石红，古朴雄浑。"
-    },
-    {
-        name: "明宣德·宝石红霁红釉僧帽壶",
-        footType: "玉璧底圈足 · 极其细腻滑润白砂底",
-        firingCraft: "足内微凹施亮青釉 · 圈足精细滚圆打磨",
-        clayBody: "景德镇麻仓高岭土御用精淘胎 (白润致密如糯米粉)",
-        reignMark: "圈足内青花双圈楷书“大明宣德年制”六字双行官款",
-        tips: "“霁红如宝石，白草边绝冠”。圈足修削极其规整圆润，俗称‘泥鳅背’，足底釉色微泛鸭蛋青，胎釉交界处隐现浅浅一线橙黄火石红。"
-    },
-    {
-        name: "清乾隆·金地开光洋彩透雕转心瓶",
-        footType: "双层同心子母圈足 · 精致施松石绿护胎釉",
-        firingCraft: "内外双层多次入窑低温二次烧结 · 榫卯同心旋转合缝",
-        clayBody: "清代督陶官唐英御制极纯高岭胎 (极白极致密，敲击金石长鸣)",
-        reignMark: "器底松石绿地红彩篆书“大清乾隆年制”六字三行方章款",
-        tips: "“巧夺天工，鬼斧神工”。外瓶圈足与内胆旋转轴心采用极精密陶瓷榫卯咬合，圈足足端涂金或露极细白润胎骨，代表中国历代制瓷机械结构最高绝诣。"
-    },
-    {
-        name: "宋景德镇窑·影青撇口净水瓶",
-        footType: "平切圈足 · 露胎洁白如糯米",
-        firingCraft: "匣钵垫饼正烧 · 湖田窑精淘瓷石胎",
-        clayBody: "高纯度景德镇瓷石白胎 (致密透光)",
-        reignMark: "素底无款，圈足修刀工整",
-        tips: "影青釉积釉处呈现水青色，薄釉处白净透光，足底旋削利落。"
-    },
-    {
-        name: "金元磁州窑·铁锈花修身瓶",
-        footType: "宽矮圈足 · 粗糙砂底",
-        firingCraft: "叠烧或垫砂正烧 · 施化妆土护胎",
-        clayBody: "北方含铁粗质灰黄缸胎",
-        reignMark: "民窑无款，足端留有明显窑砂与拉坯旋痕",
-        tips: "磁州窑铁锈花在黑釉上结晶出赤褐色金属斑，底足粗犷豪放，极具北方风骨。"
-    },
-    {
-        name: "南宋龙泉窑·粉青双系圆腹罐",
-        footType: "平切厚圈足 · 朱砂火石红",
-        firingCraft: "垫饼正烧 · 足端刮釉露胎呈现“朱砂底”",
-        clayBody: "龙泉紫金土参瓷石灰白胎",
-        reignMark: "素底无款，底足外缘泛橘红火石红环",
-        tips: "南宋龙泉厚釉出筋露白，底足平切厚实，胎釉交界一线微呈橘红。"
-    },
-    {
-        name: "唐邢窑·透影白瓷长颈瓶",
-        footType: "玉璧形实底足 · 露雪白胎骨",
-        firingCraft: "垫饼正烧 · 精细淘洗高岭土",
-        clayBody: "盛唐邢窑类雪类银细白胎",
-        reignMark: "部分传世器底刻“盈”字或“官”字款，此品素底",
-        tips: "“邢瓷类银，邢瓷类雪”，胎骨洁白如雪且半透明，足心微凹。"
-    },
-    {
-        name: "汉代彩绘·双耳弦纹汲水陶壶",
-        footType: "宽平底 · 素胎古朴",
-        firingCraft: "低温陶窑慢轮修坯",
-        clayBody: "天然含铁粘土灰陶胎",
-        reignMark: "早古素底，可见手捏按压指纹与垫印痕",
-        tips: "由陶向瓷过渡之源头重器，圈足尚未定型而呈稳重平底。"
-    },
-    {
-        name: "南宋建窑·曜变天目黑釉束口茶盏",
-        footType: "深黑铁胎矮圈足 · 釉泪止于足际",
-        firingCraft: "仰烧垫饼入匣钵 · 窑变高温自然垂流",
-        clayBody: "福建建阳水吉富含氧化铁粗糙黑褐铁胎",
-        reignMark: "传世建盏素底或偶见“供御”“进琖”刻铭，本器为 Blender 5.2 PBR 孪生重器",
-        tips: "建盏典型特征为“聚釉止于足际，凝成肥厚釉泪”，露胎圈足坚硬如生铁，毫无人工修整娇气。"
-    },
-    {
-        name: "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
-        footType: "外撇规整薄圈足 · 火石红朱砂底",
-        firingCraft: "垫圈支烧 · 足端刮釉露白胎呈橘红线",
-        clayBody: "浙江龙泉大窑高硅低铁灰白胎",
-        reignMark: "素底无款，圈足微撇修刀如削，底心施满粉青厚釉",
-        tips: "南宋龙泉仿纸槌器型典范，颈侧双凤首耳精雕细琢，圈足刮釉露胎处微泛自然火石红。"
-    }
-];
-
-const porcelainModelsData = [
-    {
-        "name": "南宋修内司官窑·八方贯耳弦纹瓶",
-        "english": "Southern Song Imperial Xiuneisi Guan Octagonal Vase",
-        "period": "南宋 (1127–1279)",
-        "kiln": "杭州修内司官窑 / 郊坛下官窑",
-        "dimensions": "通高 22.8 cm · 口径 5.4 cm · 足径 7.2 cm",
-        "desc": "仿商周青铜礼器造型，瓶身八方起棱，口颈两侧各设一垂直中空贯耳，腹部饰凸起弦纹。胎骨含铁高达5%，呈现典型“紫口铁足”。八方立体折角配合深邃冰裂开片，尽显南宋修内司官窑皇室器物的肃穆厚重。",
-        "features": [
-            "八方折棱折光",
-            "双贯耳穿带结构",
-            "三道凸起弦纹",
-            "紫口铁足露胎"
-        ],
-        "defaultGlaze": "tianqing",
-        "hotspots": [
-            { "label": "紫口 · 口沿釉薄微透铁骨", "pos": [0.28, 1.95, 0.08], "view": "top" },
-            { "label": "双贯耳 · 仿古青铜穿系礼制", "pos": [-0.52, 1.45, 0.08], "view": "front" },
-            { "label": "蟹爪冰裂 · 厚釉多层热应力纹", "pos": [0.55, 0.65, 0.22], "view": "front" },
-            { "label": "铁足 · 凤凰山紫金土露胎圈足", "pos": [0.25, 0.05, 0.12], "view": "bottom" }
-        ],
-        "acousticFreq": 2420
-    },
-    {
-        "name": "北宋汝窑·天青釉十瓣莲花式温碗",
-        "english": "Northern Song Ru Kiln Sky-Cyan Lotus Warming Bowl",
-        "period": "北宋晚期 (徽宗宣和年间)",
-        "kiln": "河南宝丰清凉寺汝官窑",
-        "dimensions": "高 10.4 cm · 口径 16.2 cm · 足径 8.1 cm",
-        "desc": "台北故宫博物院镇院之宝，传世汝窑之代表作。器身仿若一朵静穆绽放的十瓣青莲，俯视如莲花重叠，仰视似莲瓣亭亭。通体满施玛瑙入釉的天青厚釉，温润如酥玉，底足圈足直立微敛，足底留有五个极细微的芝麻状支钉痕，展现了北宋文人极致的幽玄淡泊与空灵之美。",
-        "features": [
-            "十瓣仰莲仿生造型",
-            "雨过天青玛瑙釉",
-            "底足五枚芝麻支钉",
-            "台北故宫传世孤品"
-        ],
-        "defaultGlaze": "tianqing",
-        "hotspots": [
-            { "label": "仰莲花瓣 · 俯视如初绽青莲", "pos": [0.65, 0.78, 0.22], "view": "top" },
-            { "label": "腹壁折棱 · 莲瓣筋脉与微泛粉青", "pos": [0.52, 0.42, 0.22], "view": "front" },
-            { "label": "芝麻支钉 · 满釉裹足五枚支钉", "pos": [0, 0.02, 0], "view": "bottom" }
-        ],
-        "acousticFreq": 2580
-    },
-    {
-        "name": "北宋定窑·白釉刻花莲纹梅瓶",
-        "english": "Northern Song Ding Kiln Carved Lotus White Meiping (Gold Rim)",
-        "period": "北宋 (960–1127)",
-        "kiln": "河北曲阳涧磁村定窑",
-        "dimensions": "通高 29.5 cm · 口径 4.2 cm · 腹径 16.6 cm · 足径 8.3 cm",
-        "desc": "小口微翻，短颈丰肩，修腹敛胫，线条秀拔刚劲。胎骨白净致密，敲击有清越金石磬音。口沿覆烧无釉，镶饰极尽华美的鎏金铜扣（芒口金扣覆烧工艺代表）。器身以竹刀半刀泥深刻舒展翻转的缠枝莲花，积釉深洼处流淌天然暖黄牙白“蜡泪痕”。",
-        "features": [
-            "芒口镶鎏金铜扣",
-            "象牙白温润暖釉",
-            "竹刀半刀泥深刻莲花",
-            "丰肩修腹仕女姿"
-        ],
-        "defaultGlaze": "dingbai",
-        "hotspots": [
-            { "label": "芒口金扣 · 覆烧工艺皇家镶金口", "pos": [0.18, 2.18, 0.08], "view": "top" },
-            { "label": "丰肩刻花 · 半刀泥深刻莲瓣浮雕", "pos": [0.55, 1.55, 0.22], "view": "front" },
-            { "label": "象牙泪痕 · 天然石灰釉垂流泪痕", "pos": [-0.45, 0.68, 0.22], "view": "front" }
-        ],
-        "acousticFreq": 2850
-    },
-    {
-        "name": "宋代哥窑·米黄百圾碎贯耳扁瓶",
-        "english": "Song Ge Kiln Millet-Yellow Flattened Bottle with Crackles",
-        "period": "宋代 (960–1279)",
-        "kiln": "传世哥窑",
-        "dimensions": "通高 20.9 cm · 口径 4.5 cm · 腹宽 12.9 cm · 足径 6.8 cm",
-        "desc": "扁圆瓶体，口侧对称设双贯耳。通身满施肥润失透之米黄厚釉，如凝脂酥油。主干裂纹呈铁黑色粗线，次生裂纹呈金黄色细丝，“金丝铁线”纵横交叠，纹如碎冰，密不透风，宋代开片美学的典型代表。",
-        "features": [
-            "密不透风百圾碎",
-            "金丝铁线交织",
-            "扁腹贯耳古青铜形",
-            "泥鳅背紫黑铁足"
-        ],
-        "defaultGlaze": "fenqing",
-        "hotspots": [
-            { "label": "贯耳双系 · 对称管状贯耳穿系", "pos": [-0.48, 1.48, 0.08], "view": "front" },
-            { "label": "铁线开片 · 深黑主脉与浅金裂隙", "pos": [0.48, 0.88, 0.22], "view": "front" },
-            { "label": "泥鳅背足 · 圆润修足露生铁色", "pos": [0.22, 0.05, 0.12], "view": "bottom" }
-        ],
-        "acousticFreq": 2180
-    },
-    {
-        "name": "北宋钧窑·玫瑰紫釉海棠出戟尊",
-        "english": "Song Jun Kiln Rose-Purple Splashed Chuji Zun",
-        "period": "北宋晚期至金代",
-        "kiln": "河南禹州钧台官窑",
-        "dimensions": "通高 25.8 cm · 口横 20.2 cm · 足横 14.5 cm",
-        "desc": "仿商周青铜器“尊”式样，大喇叭口，鼓腹，圈足外撇。颈部、腹部及底足四面各饰一道纵向凸起出戟扉棱。器表施铜红还原乳浊釉，红、蓝、紫多色如晚霞流云窑变交融，口沿出筋处微现黄褐芝麻酱色，雍容华贵。",
-        "features": [
-            "四方青铜出戟扉棱",
-            "玫瑰紫铜红还原",
-            "蚯蚓走泥纹",
-            "芝麻酱釉护胎底"
-        ],
-        "defaultGlaze": "junhong",
-        "hotspots": [
-            { "label": "喇叭敞口 · 出筋露白紫褐相映", "pos": [0.72, 1.95, 0.15], "view": "top" },
-            { "label": "四方出戟 · 立体透雕青铜古意出戟", "pos": [0.68, 1.15, 0.18], "view": "front" },
-            { "label": "玫瑰窑变 · 红紫蓝乳光变幻", "pos": [-0.55, 0.72, 0.25], "view": "front" }
-        ],
-        "acousticFreq": 2350
-    },
-    {
-        "name": "元代青花·缠枝牡丹双龙耳大罐",
-        "english": "Yuan Dynasty Blue-and-White Peony Dragon-Handle Jar",
-        "period": "元代 (1271–1368)",
-        "kiln": "景德镇浮梁瓷局",
-        "dimensions": "通高 28.4 cm · 口径 15.6 cm · 腹径 30.0 cm",
-        "desc": "广口短颈，溜肩圆腹，颈肩两侧堆塑灵动双螭龙耳。器身自上而下分层次装饰波涛纹、缠枝牡丹与变形莲瓣纹。采用进口苏麻离青钴料大写意挥洒，青花发色苍翠浓艳，凝聚沉陷处深入胎骨，呈现天然金属锡光黑褐铁锈斑，雄浑磅礴。",
-        "features": [
-            "苏麻离青铁锈斑",
-            "螭龙堆塑双耳",
-            "缠枝大牡丹纹",
-            "元代雄浑阔体"
-        ],
-        "defaultGlaze": "qinghua",
-        "hotspots": [
-            { "label": "螭龙塑耳 · 生动灵巧螭龙透雕双耳", "pos": [-0.88, 1.62, 0.15], "view": "front" },
-            { "label": "铁锈锡斑 · 苏料深沉下凹金属光斑", "pos": [0.72, 1.05, 0.25], "view": "front" },
-            { "label": "缠枝牡丹 · 笔法洒脱花繁叶茂", "pos": [-0.58, 0.68, 0.35], "view": "front" }
-        ],
-        "acousticFreq": 2150
-    },
-    {
-        "name": "明宣德·宝石红霁红釉僧帽壶",
-        "english": "Ming Xuande Sacrificial-Red Monk's Cap Ewer",
-        "period": "明宣德 (1426–1435)",
-        "kiln": "景德镇御器厂",
-        "dimensions": "通高 23.9 cm · 宽 20.4 cm · 口径 12.5 cm",
-        "desc": "口沿呈阶梯状高低起伏，前低后高，宛如藏传佛教萨迦派僧帽。前设鸭嘴式流槽，后连扁平宽带形执柄。通体施名贵高温铜红釉（宝石红/霁红），色调深沉凝重，如雨后红霞、纯净鲜红，口沿流口凸棱处显现一圈洁白规整的“灯草边”，明代红釉绝冠之器。",
-        "features": [
-            "僧帽阶梯花口",
-            "纯净霁红宝石光",
-            "口沿凸棱灯草边",
-            "鸭嘴流执柄结构"
-        ],
-        "defaultGlaze": "junhong",
-        "hotspots": [
-            { "label": "僧帽花口 · 阶梯式花瓣帽缘", "pos": [0.32, 1.88, 0.15], "view": "top" },
-            { "label": "鸭嘴流口 · 出水顺畅鸭嘴长流", "pos": [-0.68, 1.55, 0.10], "view": "front" },
-            { "label": "纯净霁红 · 高温铜红宝石晶光", "pos": [0.45, 0.85, 0.22], "view": "front" }
-        ],
-        "acousticFreq": 2680
-    },
-    {
-        "name": "清乾隆·金地开光洋彩透雕转心瓶",
-        "english": "Qing Qianlong Imperial Gilt-Ground Famille-Rose Revolving Vase",
-        "period": "清乾隆盛期 (唐英督陶)",
-        "kiln": "景德镇御窑厂",
-        "dimensions": "通高 31.2 cm · 口径 9.2 cm · 腹径 17.7 cm",
-        "desc": "清宫督陶官唐英敬造之“巧夺天工”机械套瓶。由外瓶、内胆、瓶颈、底座多重榫卯套合而成。外瓶颈肩通施金地洋彩锦上添花，腹部四面开光镂雕四季花鸟；旋转瓶颈即可带动内胆旋转，透过镂空开光可观赏内胆走马灯般的游鱼水草或仙山图景，代表清代制瓷工程与艺术的极限巅峰。",
-        "features": [
-            "双层同心机械套瓶",
-            "镂雕开光走马内胆",
-            "金地洋彩锦上添花",
-            "唐英督陶巧夺天工"
-        ],
-        "defaultGlaze": "yuebai",
-        "hotspots": [
-            { "label": "金地洋彩 · 御用金地珐琅彩锦地", "pos": [0.35, 1.95, 0.15], "view": "top" },
-            { "label": "镂空开光 · 透雕腹壁窥见内胆", "pos": [0.55, 1.15, 0.22], "view": "front" },
-            { "label": "旋转套榫 · 同心轴转动机械结构", "pos": [0, 0.45, 0], "view": "front" }
-        ],
-        "acousticFreq": 2920
-    },
-    {
-        "name": "宋景德镇窑·影青撇口净水瓶 [3D实物扫描]",
-        "english": "Song Qingbai Flared Water Bottle [3D Scan]",
-        "period": "宋代 (960–1279)",
-        "kiln": "江西景德镇湖田窑 / 湘湖窑",
-        "dimensions": "高 20.8 cm · 口径 6.4 cm · 足径 5.9 cm",
-        "desc": "实测三维激光扫描真品标本。撇口细长颈，丰肩修腹，底承平切圈足。胎薄坚致，釉色青白淡雅，积釉处宛如雨后青天微云，玻璃质感清亮，展现了景德镇湖田窑“白如玉、明如镜、薄如纸、声如磬”的典型特征。",
-        "features": [
-            "1:1 实测文物点云",
-            "影青透影",
-            "温润玻璃质感",
-            "宋人净手水器"
-        ],
-        "defaultGlaze": "tianqing",
-        "hotspots": [
-            { "label": "撇口细颈 · 纤秀出水", "pos": [0.12, 1.85, 0.05], "view": "top" },
-            { "label": "修身折线 · 丰肩弧线", "pos": [0.42, 1.12, 0.15], "view": "front" }
-        ],
-        "acousticFreq": 2720
-    },
-    {
-        "name": "金元磁州窑·铁锈花修身瓶 [3D实物扫描]",
-        "english": "Jin-Yuan Cizhou Kiln Iron-Rust Splashed Bottle [3D Scan]",
-        "period": "金元时期 (1115–1368)",
-        "kiln": "磁州窑系北方民窑",
-        "dimensions": "高 22.4 cm · 口径 4.8 cm · 腹径 11.2 cm",
-        "desc": "实测激光三维扫描标本。小口圆唇，修长身形，腹下微敛。黑褐地釉上以天然氧化铁矿物料挥洒铁锈花纹，笔意豪放苍劲，带有强烈北方游牧与中原民俗交融的雄健之风。",
-        "features": [
-            "1:1 实测文物点云",
-            "铁锈花窑变",
-            "水墨挥洒笔触",
-            "北方民窑健朗"
-        ],
-        "defaultGlaze": "jianhei",
-        "hotspots": [
-            { "label": "铁锈花斑 · 氧化铁结晶", "pos": [0.38, 1.25, 0.18], "view": "front" },
-            { "label": "小口圆唇 · 敛气存香", "pos": [0.10, 1.98, 0.04], "view": "top" }
-        ],
-        "acousticFreq": 2280
-    },
-    {
-        "name": "南宋龙泉窑·粉青双系圆腹罐 [3D实物扫描]",
-        "english": "Southern Song Longquan Celadon Double-Lug Jar [3D Scan]",
-        "period": "南宋 (1127–1279)",
-        "kiln": "浙江龙泉大窑 / 金村窑",
-        "dimensions": "高 16.5 cm · 口径 8.2 cm · 腹径 14.8 cm",
-        "desc": "实测三维扫描真品标本。直口短颈，丰肩鼓腹，肩部置对称双系，底足平切。通体施厚润粉青石灰碱釉，失透如凝脂翠玉，出筋微现白痕（出筋露白），浑厚朴实。",
-        "features": [
-            "1:1 实测文物点云",
-            "粉青厚釉",
-            "出筋露白",
-            "双系穿带"
-        ],
-        "defaultGlaze": "fenqing",
-        "hotspots": [
-            { "label": "双系穿带 · 方便系绳悬挂", "pos": [0.55, 1.25, 0.15], "view": "front" },
-            { "label": "粉青出筋 · 釉薄露白骨", "pos": [0.35, 0.85, 0.22], "view": "front" }
-        ],
-        "acousticFreq": 2480
-    },
-    {
-        "name": "唐邢窑·透影白瓷长颈瓶 [3D实物扫描]",
-        "english": "Tang Xing Kiln Translucent White Porcelain Vase [3D Scan]",
-        "period": "盛唐 (618–907)",
-        "kiln": "河北内丘 / 临城邢窑",
-        "dimensions": "高 21.5 cm · 口径 5.2 cm · 腹径 12.0 cm",
-        "desc": "唐代邢窑白瓷标准标本。“南青北白”之北方领袖，器身通施纯白透明釉，胎质细腻胜雪，透光度极高，陆羽《茶经》赞曰“邢瓷类银，邢瓷类雪”，盛唐气象之纯净见证。",
-        "features": [
-            "1:1 实测文物点云",
-            "类银类雪",
-            "大唐类玉气度",
-            "澄泥精细淘洗"
-        ],
-        "defaultGlaze": "dingbai",
-        "hotspots": [
-            { "label": "纯白胎质 · 极高透光度", "pos": [0.38, 1.15, 0.18], "view": "front" }
-        ],
-        "acousticFreq": 2880
-    },
-    {
-        "name": "汉代彩绘·双耳弦纹汲水陶壶 [3D实物扫描]",
-        "english": "Han Dynasty Painted Pottery Double-Eared Jar [3D Scan]",
-        "period": "汉代 (公元前202–公元220)",
-        "kiln": "汉代早期陶窑",
-        "dimensions": "高 24.2 cm · 腹宽 18.5 cm",
-        "desc": "实测三维扫描汉代源头标本。喇叭口，深腹圆鼓，腹侧带双系耳，腹壁饰凸弦纹。由陶向瓷过渡期之经典器型，拙朴深沉，展现华夏器道两千年前的泥土初心。",
-        "features": [
-            "1:1 实测高古点云",
-            "弦纹古韵",
-            "泥火初成",
-            "古朴凝重"
-        ],
-        "defaultGlaze": "yuebai",
-        "hotspots": [
-            { "label": "双耳对称 · 汲水穿绳", "pos": [0.65, 1.15, 0.15], "view": "front" }
-        ],
-        "acousticFreq": 1950
-    },
-    {
-        "name": "南宋建窑·曜变天目黑釉束口茶盏",
-        "english": "Southern Song Jian Kiln Yaobian Tenmoku Tea Bowl",
-        "period": "南宋 (1127–1279)",
-        "kiln": "福建建阳水吉窑",
-        "dimensions": "通高 6.8 cm · 口径 12.2 cm · 足径 4.1 cm",
-        "wallThickness": "口薄腹厚 · 重铁稳心",
-        "desc": "由 Blender 5.2 物理级建模与烘焙之宋代点茶第一圣器。口沿微撇并向内束出一道精巧凹槽（束口止汤），深斜腹下收承矮实黑铁圈足。乌金黑釉在 1310℃ 窑变降温瞬间析出散落星斑，周匝萦绕钴蓝、紫罗兰与金辉虹彩光晕，宛若仰望宇宙星辰。",
-        "features": [
-            "束口注汤防溢凹槽",
-            "宇宙星斑曜变光晕",
-            "聚釉垂流止于足际",
-            "Blender 5.2 PBR 孪生"
-        ],
-        "defaultGlaze": "jianhei",
-        "hotspots": [
-            { "label": "束口凹槽 · 宋代斗茶定汤线", "pos": [0.58, 0.72, 0.12], "view": "top" },
-            { "label": "曜变星斑 · 蓝紫鎏金薄膜干涉", "pos": [0.42, 0.48, 0.25], "view": "front" },
-            { "label": "铁胎圈足 · 肥厚釉泪止于足际", "pos": [0.22, 0.08, 0.10], "view": "bottom" }
-        ],
-        "acousticFreq": 2360
-    },
-    {
-        "name": "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
-        "english": "Southern Song Longquan Celadon Phoenix-Ear Kinuta Vase",
-        "period": "南宋 (1127–1279)",
-        "kiln": "浙江龙泉大窑",
-        "dimensions": "通高 25.5 cm · 口径 9.2 cm · 足径 9.6 cm",
-        "wallThickness": "厚釉凝脂 · 1.6 mm 石灰碱釉",
-        "desc": "东亚文博界奉为“青瓷第一名品”之纸槌瓶式。盘口敞阔，长直颈饰立体双凤耳，折肩刚劲挺拔，直筒长腹微敛。通体多次厚施粉青石灰碱釉，经强还原烧成后如翠玉冰肌，出筋棱角微露淡白胎骨，尽显南宋皇家风范。",
-        "features": [
-            "立体雕塑双凤首耳",
-            "粉青翠玉石灰碱厚釉",
-            "折肩直腹纸槌仪轨",
-            "Blender 5.2 PBR 孪生"
-        ],
-        "defaultGlaze": "fenqing",
-        "hotspots": [
-            { "label": "敞阔盘口 · 釉汁流润微白", "pos": [0.28, 1.98, 0.08], "view": "top" },
-            { "label": "双凤首耳 · 模印贴塑灵动双耳", "pos": [-0.56, 1.52, 0.08], "view": "front" },
-            { "label": "折肩出筋 · 厚釉微透淡白胎骨", "pos": [0.52, 1.05, 0.18], "view": "front" }
-        ],
-        "acousticFreq": 2610
-    }
-];
-
-// 经典东方古陶瓷釉色 PBR 参数字典
-
-/**
- * -------------------------------------------------------------
- * 传世名瓷三维模型元数据
- * -------------------------------------------------------------
- */
-const masterTreasuresMeta = {
-    0: {
-        path: 'models/masterpieces/SongGuanYao_OctagonalVase_Ultra.glb',
-        key: 'guanyao_octagonal_vase',
-        name: '南宋修内司官窑八方贯耳弦纹瓶',
-        scale: 9.25,
-        targetHeight: 2.16,
-        previewImg: 'images/collection/SongGuanYao_Ultra_Preview.webp'
-    },
-    1: {
-        path: 'models/masterpieces/SongRuYao_LotusBowl_Master.glb',
-        key: 'ruyao_lotus_bowl',
-        name: '北宋汝窑天青釉十瓣莲花式温碗',
-        scale: 7.50,
-        targetHeight: 0.89,
-        previewImg: 'images/collection/SongRuYao_Master_Preview.webp'
-    },
-    2: {
-        path: 'models/masterpieces/SongDingYao_PlumVase_Master.glb',
-        key: 'dingyao_plum_vase',
-        name: '北宋定窑白釉刻花莲纹梅瓶',
-        scale: 9.55,
-        targetHeight: 2.24,
-        previewImg: 'images/collection/SongDingYao_Master_Preview.webp'
-    },
-    3: {
-        path: 'models/masterpieces/SongGeYao_CrackleVase_Master.glb',
-        key: 'geyao_crackle_vase',
-        name: '宋代哥窑米黄釉百圾碎贯耳扁瓶',
-        scale: 9.35,
-        targetHeight: 2.12,
-        previewImg: 'images/collection/SongGeYao_Preview.webp'
-    },
-    4: {
-        path: 'models/masterpieces/SongJunYao_ChujiZun_Master.glb',
-        key: 'junyao_chuji_zun',
-        name: '北宋钧窑玫瑰紫釉出戟尊',
-        scale: 10.05,
-        targetHeight: 2.20,
-        previewImg: 'images/collection/SongJunYao_Preview.webp'
-    },
-    5: {
-        path: 'models/masterpieces/YuanQingHua_DragonVase_Master.glb',
-        key: 'yuanqinghua_dragon_vase',
-        name: '元代青花缠枝牡丹双龙耳大罐',
-        scale: 7.40,
-        targetHeight: 2.10,
-        previewImg: 'images/collection/YuanQingHua_Preview.webp'
-    },
-    6: {
-        path: 'models/masterpieces/MingXuande_MonkCapTeapot_Master.glb',
-        key: 'xuande_monkcap_teapot',
-        name: '明宣德宝石红霁红釉僧帽壶',
-        scale: 8.27,
-        targetHeight: 2.15,
-        previewImg: 'images/collection/MingXuande_Preview.webp'
-    },
-    7: {
-        path: 'models/masterpieces/QingQianlong_RevolvingVase_Master.glb',
-        key: 'qianlong_revolving_vase',
-        name: '清乾隆金地开光洋彩转心瓶',
-        scale: 9.35,
-        targetHeight: 2.28,
-        previewImg: 'images/collection/QingQianlong_Preview.webp'
-    },
-    13: {
-        path: 'models/masterpieces/SongJianYao_YaobianTeaBowl_Master.glb',
-        key: 'jianyao_yaobian_bowl',
-        name: '南宋建窑·曜变天目黑釉束口茶盏',
-        scale: 6.80,
-        targetHeight: 0.85,
-        previewImg: 'images/collection/SongJianYao_Yaobian_Preview.webp'
-    },
-    14: {
-        path: 'models/masterpieces/SongLongquan_PhoenixVase_Master.glb',
-        key: 'longquan_phoenix_vase',
-        name: '南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶',
-        scale: 9.10,
-        targetHeight: 2.15,
-        previewImg: 'images/collection/SongLongquan_Phoenix_Preview.webp'
-    }
-};
+// 器物资料、底足考据、模型元数据与釉色参数已迁至 content/vessels.json 与 content/glazes.json，
+// 经 src/legacy/data-shims.js 以同名常量提供（porcelainModelsData / bottomConnoisseurshipData /
+// masterTreasuresMeta / scannedModelsMeta / glazePalettes）。本文件不再内嵌内容数据。
 
 // --- 模型队列与加载控制器 (并发上限 4，支持停滞重置、优先调度与安全看门狗) ---
 const MAX_CONCURRENT_MODELS = 4;
@@ -874,93 +345,6 @@ function preloadMasterTreasures(callback) {
         if (callback) callback(scene);
     }, true);
 }
-
-const glazePalettes = {
-    tianqing: {
-        name: '雨过天青',
-        desc: '汝官窑典型色，玛瑙入釉，温润如羊脂美玉',
-        color: 0x8bb6be,
-        emissive: 0x051316,
-        roughness: 0.14,
-        metalness: 0.04,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.06,
-        ior: 1.54,
-        reflectivity: 0.75
-    },
-    fenqing: {
-        name: '粉青如玉',
-        desc: '南宋龙泉与修内司官窑代表，青翠柔和，丰润如脂',
-        color: 0x7cb099,
-        emissive: 0x04120b,
-        roughness: 0.16,
-        metalness: 0.03,
-        clearcoat: 0.96,
-        clearcoatRoughness: 0.07,
-        ior: 1.53,
-        reflectivity: 0.70
-    },
-    yuebai: {
-        name: '月白莹霜',
-        desc: '月白微泛冷青，如皓月寒霜，冰清玉洁',
-        color: 0xd0e0e5,
-        emissive: 0x0a1114,
-        roughness: 0.12,
-        metalness: 0.02,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.05,
-        ior: 1.55,
-        reflectivity: 0.78
-    },
-    dingbai: {
-        name: '定窑牙白',
-        desc: '北宋曲阳定窑象牙白，泛暖玉微黄之光，内敛温雅',
-        color: 0xefe7d6,
-        emissive: 0x120f0a,
-        roughness: 0.19,
-        metalness: 0.02,
-        clearcoat: 0.88,
-        clearcoatRoughness: 0.10,
-        ior: 1.50,
-        reflectivity: 0.62
-    },
-    junhong: {
-        name: '玫瑰紫变',
-        desc: '禹州钧官窑铜还原窑变，红紫蓝交融如晚霞流云',
-        color: 0xb85a88,
-        emissive: 0x180511,
-        roughness: 0.15,
-        metalness: 0.08,
-        clearcoat: 0.98,
-        clearcoatRoughness: 0.06,
-        ior: 1.58,
-        reflectivity: 0.76
-    },
-    jianhei: {
-        name: '建盏乌金',
-        desc: '建阳水吉窑高铁黑釉，析出金银兔毫与曜变星斑',
-        color: 0x262223,
-        emissive: 0x050406,
-        roughness: 0.22,
-        metalness: 0.38,
-        clearcoat: 0.94,
-        clearcoatRoughness: 0.10,
-        ior: 1.65,
-        reflectivity: 0.85
-    },
-    qinghua: {
-        name: '幽菁青花',
-        desc: '明宣德鸭蛋青白釉底，苏麻离青浓艳深沉带铁锈斑',
-        color: 0xedf4f7,
-        emissive: 0x070d12,
-        roughness: 0.12,
-        metalness: 0.03,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.05,
-        ior: 1.54,
-        reflectivity: 0.75
-    }
-};
 
 const textureCache = {};
 
@@ -1484,7 +868,6 @@ function createSmoothVesselLathe(outerPts, RadialModFn = null, radialSegments = 
 /**
  * 展馆加载与点云装载微提示
  */
-let isScanningLoading = false;
 function showStageLoadingToast(show, text = '') {
     let toast = document.getElementById('three-model-loading-pill');
     if (!toast) {
@@ -1505,70 +888,26 @@ function showStageLoadingToast(show, text = '') {
 }
 
 /**
- * 按需装载实测三维扫描数据包
+ * 按需加载对照标本模型（Poly Haven CC0 glTF，独立文件，按需请求）
  */
-let isScannedScriptLoading = false;
-function ensureScannedModelsData(callback) {
-    if (window.SCANNED_MODELS_DATA) {
-        if (callback) callback();
-        return;
-    }
-    if (isScannedScriptLoading) {
-        window.addEventListener('scanned-models-ready', () => { if (callback) callback(); }, { once: true });
-        return;
-    }
-    isScannedScriptLoading = true;
-    showStageLoadingToast(true, '正在装载古瓷三维激光扫描点云数据...');
-    const script = document.createElement('script');
-    script.src = window.__TQ_ASSETS__['legacy-scanned-data'];
-    script.onload = () => {
-        isScannedScriptLoading = false;
-        showStageLoadingToast(false);
-        window.dispatchEvent(new CustomEvent('scanned-models-ready'));
-        if (callback) callback();
-    };
-    script.onerror = () => {
-        isScannedScriptLoading = false;
-        showStageLoadingToast(false);
-    };
-    document.body.appendChild(script);
-}
-
-/**
- * 按需解析实测三维扫描模型
- */
+const scannedModelLoading = {};
 function loadSingleScannedGLTFOnDemand(key, modelIndex) {
-    if (scannedModelCache[key] || isScanningLoading) return;
-    ensureScannedModelsData(() => {
-        if (!window.SCANNED_MODELS_DATA || !window.SCANNED_MODELS_DATA[key]) return;
-
-        isScanningLoading = true;
-        showStageLoadingToast(true, '正在装载古瓷三维激光扫描高精度点云孪生体...');
-
-        setTimeout(() => {
-            try {
-                const loader = new THREE.GLTFLoader();
-                const jsonStr = JSON.stringify(window.SCANNED_MODELS_DATA[key]);
-                loader.parse(jsonStr, '', (gltf) => {
-                    isScanningLoading = false;
-                    showStageLoadingToast(false);
-                    if (gltf && gltf.scene) {
-                        scannedModelCache[key] = gltf.scene;
-                        if (currentModelIndex === modelIndex) {
-                            loadPorcelainModel(currentModelIndex, true);
-                        }
-                    }
-                }, (err) => {
-                    isScanningLoading = false;
-                    showStageLoadingToast(false);
-                    console.warn(`[3D扫描模型解析提示] ${key}:`, err);
-                });
-            } catch (e) {
-                isScanningLoading = false;
-                showStageLoadingToast(false);
-                console.warn(`[3D扫描模型加载异常] ${key}:`, e);
-            }
-        }, 30);
+    const meta = scannedModelsMeta[modelIndex];
+    if (!meta || scannedModelCache[key] || scannedModelLoading[key]) return;
+    scannedModelLoading[key] = true;
+    showStageLoadingToast(true, '正在载入对照标本模型…');
+    const loader = new THREE.GLTFLoader();
+    loader.load(meta.path, (gltf) => {
+        scannedModelLoading[key] = false;
+        showStageLoadingToast(false);
+        if (gltf && gltf.scene) {
+            scannedModelCache[key] = gltf.scene;
+            if (currentModelIndex === modelIndex) loadPorcelainModel(currentModelIndex, true);
+        }
+    }, undefined, (err) => {
+        scannedModelLoading[key] = false;
+        showStageLoadingToast(false);
+        console.warn('[对照标本模型加载失败] ' + key + ':', err);
     });
 }
 
@@ -1830,15 +1169,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
             group.add(fbMesh);
         }
     } else if (typeIndex >= 8 && typeIndex <= 12) {
-        // 处理实测激光三维扫描文物数字孪生模型 (平移映射)
-        const scanKeyMap = {
-            8: 'vase_01',
-            9: 'vase_02',
-            10: 'vase_03',
-            11: 'vase_04',
-            12: 'vase_05'
-        };
-        const sKey = scanKeyMap[typeIndex] || 'vase_01';
+        // 对照标本：第三方 CC0 glTF 模型（归一化尺寸并落在展台上）
+        const sKey = (scannedModelsMeta[typeIndex] || {}).key;
         const cachedScene = scannedModelCache[sKey];
         if (cachedScene) {
             const cloned = cachedScene.clone(true);
@@ -2831,7 +2163,7 @@ function loadPorcelainModel(index, keepMode = false) {
     }
 
     // 若目标器物已有三维缓存，立即关闭所有加载遮罩
-    if (masterTreasuresCache[index] || (index >= 8 && index <= 12 && scannedModelCache['vase_0' + (index - 7)])) {
+    if (masterTreasuresCache[index] || (index >= 8 && index <= 12 && scannedModelCache[(scannedModelsMeta[index] || {}).key])) {
         hideThreeStageLoader();
     }
 
@@ -3396,7 +2728,7 @@ function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
     const subtitleEl = document.getElementById('curator-subtitle-bar');
     if (btn) {
         if (playing) {
-            btn.innerHTML = `<span class="inline-flex items-center gap-0.5 mr-1 h-3"><span class="w-0.5 h-3 bg-amber-400 animate-pulse"></span><span class="w-0.5 h-2 bg-amber-400 animate-pulse" style="animation-delay: 0.15s"></span><span class="w-0.5 h-3.5 bg-amber-400 animate-pulse" style="animation-delay: 0.3s"></span></span> ⏹️ 停止解说`;
+            btn.innerHTML = `<span class="inline-flex items-center gap-0.5 mr-1 h-3"><span class="w-0.5 h-3 bg-amber-400 animate-pulse"></span><span class="w-0.5 h-2 bg-amber-400 animate-pulse" style="animation-delay: 0.15s"></span><span class="w-0.5 h-3.5 bg-amber-400 animate-pulse" style="animation-delay: 0.3s"></span></span> 停止解说`;
             btn.classList.add('border-amber-400', 'bg-amber-400/10', 'text-amber-500');
         } else {
             btn.innerHTML = `<i class="fa-solid fa-volume-high text-amber-400 mr-1"></i>语音解说`;
@@ -3409,7 +2741,7 @@ function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
                 <div class="flex items-center justify-between gap-3 max-w-5xl mx-auto px-4 py-2">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-bold font-serif-cn shrink-0 shadow-sm">
-                            <i class="fa-solid fa-microphone mr-1"></i>小米 MiMo 馆长原声
+                            <i class="fa-solid fa-microphone mr-1"></i>AI 合成语音
                         </span>
                         <span class="text-xs text-text-title font-serif-cn truncate font-medium">
                             《${title}》${subtitleText}
@@ -3427,49 +2759,26 @@ function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
     }
 }
 
-let isAudioScriptLoading = false;
-function ensureMuseumAudioData(callback) {
-    if (window.MUSEUM_AUDIO_DATA) {
-        if (callback) callback();
-        return;
-    }
-    if (isAudioScriptLoading) return;
-    isAudioScriptLoading = true;
-    const s = document.createElement('script');
-    s.src = window.__TQ_ASSETS__['legacy-audio-data'];
-    s.onload = () => {
-        isAudioScriptLoading = false;
-        if (callback) callback();
-    };
-    s.onerror = () => { isAudioScriptLoading = false; };
-    document.body.appendChild(s);
-}
-
-// 音频数据包严格按需拉取：只有当用户真正点击【叩瓷听音/馆长导览】时才动态加载，首屏 0 流量占用
-
 function speakVesselCommentary() {
     const m = porcelainModelsData[currentModelIndex] || porcelainModelsData[0];
-    const text = `${m.name}。断代：${m.period}，所属窑口：${m.kiln}。实测规制：${m.dimensions}。${m.desc}`;
+    const text = `${m.name}。年代：${m.period}，窑口：${m.kiln}。尺寸：${m.dimensions}。${m.desc}`;
 
     // 如果当前正在播放同一件器物，点击则优雅停止
     if (isCuratorAudioPlaying && currentPlayingVesselName === m.name) {
         stopCuratorAudio();
-        if (typeof showToast === 'function') showToast('⏹️ 已停止策展导览播报');
+        if (typeof showToast === 'function') showToast('已停止语音讲解');
         return;
     }
 
     // 先彻底停止上一段音频
     stopCuratorAudio();
 
-    // 优先读取 100% 离线内嵌的小米 MiMo 预合成高保真馆长原声
-    if (!window.MUSEUM_AUDIO_DATA) {
-        ensureMuseumAudioData();
-    }
-    const prebaked = (window.MUSEUM_AUDIO_DATA && (window.MUSEUM_AUDIO_DATA[m.name] || window.MUSEUM_AUDIO_DATA[m.name.split(' ')[0]])) || null;
+    // 有预先合成的讲解音频（content/vessels.json 的 audio 字段）时直接播放原文件，否则用浏览器语音合成。
+    const prebaked = m.audio && m.audio.file ? m.audio : null;
 
-    if (prebaked && (prebaked.dataUri || prebaked.file)) {
+    if (prebaked) {
         try {
-            const audioSrc = prebaked.dataUri || prebaked.file;
+            const audioSrc = prebaked.file;
             const audio = new Audio(audioSrc);
             currentCuratorAudio = audio;
             isCuratorAudioPlaying = true;
@@ -3490,7 +2799,7 @@ function speakVesselCommentary() {
             });
 
             if (typeof showToast === 'function') {
-                showToast(`🎙️ 【小米 MiMo 资深讲解员】正在为您声情并茂解读《${m.name}》`);
+                showToast(`正在播放《${m.name}》的 AI 合成语音讲解`);
             }
             return;
         } catch (err) {
@@ -3515,7 +2824,7 @@ function fallbackSpeechSynthesis(text, name) {
         updateCuratorAudioUI(true, name, text);
         window.speechSynthesis.speak(utter);
         if (typeof showToast === 'function') {
-            showToast(`🎙️ 正在为您语音播报【${name}】数字策展解说`);
+            showToast(`正在用浏览器语音合成播报《${name}》`);
         }
     }
 }
@@ -3850,11 +3159,11 @@ function updateModelInfoCard(index) {
     const m = porcelainModelsData[index];
     if (!m) return;
 
-    const scannedBadge = m.isScannedGLTF ? `
+    const scannedBadge = m.group === 'reference' ? `
         <div class="p-2.5 rounded-xl bg-amber-900/20 border border-amber-500/30 flex items-center justify-between text-xs">
-            <span class="text-amber-200 font-serif-cn"><i class="fa-solid fa-satellite-dish mr-1.5"></i>1:1 实测三维扫描点云模型</span>
+            <span class="text-amber-200 font-serif-cn"><i class="fa-solid fa-circle-info mr-1.5"></i>第三方 CC0 模型 · 现代器物对照标本</span>
             <button onclick="restoreScannedTexture()" class="px-2.5 py-1 rounded-full bg-amber-700 text-white text-[11px] hover:bg-tianqing transition-colors">
-                恢复原始扫描贴图
+                恢复模型原贴图
             </button>
         </div>
     ` : '';

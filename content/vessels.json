@@ -1,0 +1,1115 @@
+[
+  {
+    "id": "guan-octagonal-vase",
+    "order": 0,
+    "name": "南宋官窑·八方贯耳弦纹瓶",
+    "english": "Southern Song Guan Ware Octagonal Vase with Tubular Handles",
+    "period": "南宋 (1127–1279)",
+    "kiln": "杭州南宋官窑（修内司 / 郊坛下）",
+    "dimensions": "通高 22.8 cm · 口径 5.4 cm · 足径 7.2 cm",
+    "desc": "仿商周青铜礼器造型，瓶身八方起棱，口颈两侧各设一垂直中空贯耳，腹部饰凸起弦纹。胎土含铁量较高，口沿釉薄处透出胎色、足端露胎呈深褐，即所谓“紫口铁足”。八方折角配合层层开片，是南宋官窑陈设器的典型面貌。",
+    "features": [
+      "八方折棱折光",
+      "双贯耳穿带结构",
+      "三道凸起弦纹",
+      "紫口铁足露胎"
+    ],
+    "defaultGlaze": "tianqing",
+    "hotspots": [
+      {
+        "label": "紫口 · 口沿釉薄微透铁骨",
+        "pos": [
+          0.28,
+          1.95,
+          0.08
+        ],
+        "view": "top"
+      },
+      {
+        "label": "双贯耳 · 仿古青铜穿系礼制",
+        "pos": [
+          -0.52,
+          1.45,
+          0.08
+        ],
+        "view": "front"
+      },
+      {
+        "label": "蟹爪冰裂 · 厚釉多层热应力纹",
+        "pos": [
+          0.55,
+          0.65,
+          0.22
+        ],
+        "view": "front"
+      },
+      {
+        "label": "铁足 · 凤凰山紫金土露胎圈足",
+        "pos": [
+          0.25,
+          0.05,
+          0.12
+        ],
+        "view": "bottom"
+      }
+    ],
+    "acousticFreq": 2420,
+    "bottom": {
+      "footType": "八方折角宽圈足 · 铁足露胎",
+      "firingCraft": "紫金土垫饼装匣正烧 · 足端刮釉露胎",
+      "clayBody": "紫黑色坚致胎（紫金土，含铁量较高）",
+      "reignMark": "宋官窑崇尚素雅，底足无刻款，纯留手工刮胎旋削痕",
+      "tips": "紫口铁足，釉如堆脂。圈足露胎处经千百载自然氧化，呈现温润的黑褐色铁光与微弱火石红，绝无新仿作旧之燥气。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongGuanYao_OctagonalVase_Master.glb",
+      "key": "guanyao_octagonal_vase",
+      "scale": 9.25,
+      "targetHeight": 2.16,
+      "previewImg": "images/collection/SongGuanYao_Ultra_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "南宋官窑贯耳瓶类器（八方、弦纹、贯耳为官窑仿青铜礼器的常见造型元素）",
+      "institution": "",
+      "status": "type-reference"
+    },
+    "audio": {
+      "file": "audio/vessel_01.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
+    }
+  },
+  {
+    "id": "ru-lotus-bowl",
+    "order": 1,
+    "name": "北宋汝窑·天青釉十瓣莲花式温碗",
+    "english": "Northern Song Ru Kiln Sky-Cyan Lotus Warming Bowl",
+    "period": "北宋晚期 (徽宗宣和年间)",
+    "kiln": "河南宝丰清凉寺汝官窑",
+    "dimensions": "高 10.4 cm · 口径 16.2 cm · 足径 8.1 cm",
+    "desc": "器型参考台北故宫博物院藏北宋汝窑青瓷莲花式温碗。器身作十瓣莲花形，通体满釉，釉色天青，温润少光；圈足直立微敛，足底留有五枚细小的芝麻状支钉痕，是满釉支烧工艺的直接证据。",
+    "features": [
+      "十瓣莲花式造型",
+      "天青色乳浊釉",
+      "足底五枚支钉痕",
+      "参考器藏台北故宫博物院"
+    ],
+    "defaultGlaze": "tianqing",
+    "hotspots": [
+      {
+        "label": "仰莲花瓣 · 俯视如初绽青莲",
+        "pos": [
+          0.65,
+          0.78,
+          0.22
+        ],
+        "view": "top"
+      },
+      {
+        "label": "腹壁折棱 · 莲瓣筋脉与微泛粉青",
+        "pos": [
+          0.52,
+          0.42,
+          0.22
+        ],
+        "view": "front"
+      },
+      {
+        "label": "芝麻支钉 · 满釉裹足五枚支钉",
+        "pos": [
+          0,
+          0.02,
+          0
+        ],
+        "view": "bottom"
+      }
+    ],
+    "acousticFreq": 2580,
+    "bottom": {
+      "footType": "高深微敛圆圈足 · 满釉裹足支烧",
+      "firingCraft": "支钉架空正烧 · 圈足底面整齐散布五枚如米粒般微小的芝麻状支钉痕",
+      "clayBody": "极其纯净细腻的浅灰香灰胎 (微泛青灰，吸水率近于零)",
+      "reignMark": "参考器底足满釉、素面无款",
+      "tips": "“似玉非玉胜于玉，满釉支烧芝麻钉”。十瓣莲花温碗圈足修刀挺拔微敛，底足满裹青翠透润的天青厚釉，五枚芝麻支钉脱落处露出纯净香灰胎，工艺端凝典雅。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "reference-object",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongRuYao_LotusBowl_Master.glb",
+      "key": "ruyao_lotus_bowl",
+      "scale": 7.5,
+      "targetHeight": 0.89,
+      "previewImg": "images/collection/SongRuYao_Master_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "北宋汝窑青瓷莲花式温碗",
+      "institution": "台北故宫博物院",
+      "status": "named-object",
+      "note": "尺寸取自该器公开著录的常见数值，引用前请以馆方数据为准。"
+    }
+  },
+  {
+    "id": "ding-meiping",
+    "order": 2,
+    "name": "北宋定窑·白釉刻花莲纹梅瓶",
+    "english": "Northern Song Ding Kiln Carved Lotus White Meiping (Gold Rim)",
+    "period": "北宋 (960–1127)",
+    "kiln": "河北曲阳涧磁村定窑",
+    "dimensions": "通高 29.5 cm · 口径 4.2 cm · 腹径 16.6 cm · 足径 8.3 cm",
+    "desc": "小口微翻，短颈丰肩，修腹敛胫，线条秀拔刚劲。胎骨白净致密，敲击有清越金石磬音。口沿覆烧无釉，镶饰极尽华美的鎏金铜扣（芒口金扣覆烧工艺代表）。器身以竹刀半刀泥深刻舒展翻转的缠枝莲花，积釉深洼处流淌天然暖黄牙白“蜡泪痕”。",
+    "features": [
+      "芒口镶鎏金铜扣",
+      "象牙白温润暖釉",
+      "竹刀半刀泥深刻莲花",
+      "丰肩修腹仕女姿"
+    ],
+    "defaultGlaze": "dingbai",
+    "hotspots": [
+      {
+        "label": "芒口金扣 · 覆烧工艺皇家镶金口",
+        "pos": [
+          0.18,
+          2.18,
+          0.08
+        ],
+        "view": "top"
+      },
+      {
+        "label": "丰肩刻花 · 半刀泥深刻莲瓣浮雕",
+        "pos": [
+          0.55,
+          1.55,
+          0.22
+        ],
+        "view": "front"
+      },
+      {
+        "label": "象牙泪痕 · 天然石灰釉垂流泪痕",
+        "pos": [
+          -0.45,
+          0.68,
+          0.22
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2850,
+    "bottom": {
+      "footType": "微凹平底 · 浅切隐圈足",
+      "firingCraft": "正烧平切垫砂 · 底足露胎不施釉 · 口沿覆烧镶金扣",
+      "clayBody": "洁白坚致糯米胎 (高岭土淘洗极纯，氧化铝含量高)",
+      "reignMark": "素底无款，局部可见北宋窑工手工轮制竹丝刷痕与跳刀纹",
+      "tips": "“白如玉、薄如纸、声如磬”。梅瓶为立件正烧，口沿覆烧覆扣而底足露白胎，底心微凹，留有窑砂附着痕与如泪珠般垂流的“蜡泪痕”。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongDingYao_PlumVase_Master.glb",
+      "key": "dingyao_plum_vase",
+      "scale": 9.55,
+      "targetHeight": 2.24,
+      "previewImg": "images/collection/SongDingYao_Master_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "北宋定窑白釉刻花梅瓶类器",
+      "institution": "",
+      "status": "type-reference"
+    },
+    "audio": {
+      "file": "audio/vessel_03.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
+    }
+  },
+  {
+    "id": "ge-flat-vase",
+    "order": 3,
+    "name": "宋代哥窑·米黄百圾碎贯耳扁瓶",
+    "english": "Song Ge Kiln Millet-Yellow Flattened Bottle with Crackles",
+    "period": "宋代 (960–1279)",
+    "kiln": "传世哥窑",
+    "dimensions": "通高 20.9 cm · 口径 4.5 cm · 腹宽 12.9 cm · 足径 6.8 cm",
+    "desc": "扁圆瓶体，口侧对称设双贯耳。通身满施肥润失透之米黄厚釉，如凝脂酥油。主干裂纹呈铁黑色粗线，次生裂纹呈金黄色细丝，“金丝铁线”纵横交叠，纹如碎冰，密不透风，宋代开片美学的典型代表。",
+    "features": [
+      "密不透风百圾碎",
+      "金丝铁线交织",
+      "扁腹贯耳古青铜形",
+      "泥鳅背紫黑铁足"
+    ],
+    "defaultGlaze": "fenqing",
+    "hotspots": [
+      {
+        "label": "贯耳双系 · 对称管状贯耳穿系",
+        "pos": [
+          -0.48,
+          1.48,
+          0.08
+        ],
+        "view": "front"
+      },
+      {
+        "label": "铁线开片 · 深黑主脉与浅金裂隙",
+        "pos": [
+          0.48,
+          0.88,
+          0.22
+        ],
+        "view": "front"
+      },
+      {
+        "label": "泥鳅背足 · 圆润修足露生铁色",
+        "pos": [
+          0.22,
+          0.05,
+          0.12
+        ],
+        "view": "bottom"
+      }
+    ],
+    "acousticFreq": 2180,
+    "bottom": {
+      "footType": "椭圆修刀圈足 · 泥鳅背铁足深沉",
+      "firingCraft": "紫金土高钙铁胎 · 泥条垫烧后足端精工刮胎",
+      "clayBody": "黑褐色坚硬铁胎 (俗称泥鳅背铁足)",
+      "reignMark": "宋代原款无字，底部满布深色大开片与浅黄细碎细纹",
+      "tips": "“金丝铁线，百圾碎纹”。底足圈足打磨圆润呈泥鳅背状，露胎处色如生铁，足内覆釉自然开深黑褐色大裂隙，古意苍茫。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongGeYao_CrackleVase_Master.glb",
+      "key": "geyao_crackle_vase",
+      "scale": 9.35,
+      "targetHeight": 2.12,
+      "previewImg": "images/collection/SongGeYao_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "传世哥窑贯耳瓶类器（“金丝铁线”开片）",
+      "institution": "",
+      "status": "type-reference"
+    }
+  },
+  {
+    "id": "jun-chuji-zun",
+    "order": 4,
+    "name": "北宋钧窑·玫瑰紫釉海棠出戟尊",
+    "english": "Song Jun Kiln Rose-Purple Splashed Chuji Zun",
+    "period": "北宋晚期至金代",
+    "kiln": "河南禹州钧台官窑",
+    "dimensions": "通高 25.8 cm · 口横 20.2 cm · 足横 14.5 cm",
+    "desc": "仿商周青铜器“尊”式样，大喇叭口，鼓腹，圈足外撇。颈部、腹部及底足四面各饰一道纵向凸起出戟扉棱。器表施铜红还原乳浊釉，红、蓝、紫多色如晚霞流云窑变交融，口沿出筋处微现黄褐芝麻酱色，雍容华贵。",
+    "features": [
+      "四方青铜出戟扉棱",
+      "玫瑰紫铜红还原",
+      "蚯蚓走泥纹",
+      "芝麻酱釉护胎底"
+    ],
+    "defaultGlaze": "junhong",
+    "hotspots": [
+      {
+        "label": "喇叭敞口 · 出筋露白紫褐相映",
+        "pos": [
+          0.72,
+          1.95,
+          0.15
+        ],
+        "view": "top"
+      },
+      {
+        "label": "四方出戟 · 立体透雕青铜古意出戟",
+        "pos": [
+          0.68,
+          1.15,
+          0.18
+        ],
+        "view": "front"
+      },
+      {
+        "label": "玫瑰窑变 · 红紫蓝乳光变幻",
+        "pos": [
+          -0.55,
+          0.72,
+          0.25
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2350,
+    "bottom": {
+      "footType": "海棠形宽圈足 · 芝麻酱护胎底",
+      "firingCraft": "底部涂刷极薄芝麻酱色氧化铁护胎釉 · 支烧平切",
+      "clayBody": "香灰色夹砂致密胎 (质地坚重，烧结度极高)",
+      "reignMark": "器底刻汉字数字编号（如“一”至“十”），表明尊身规制尺寸",
+      "tips": "“钧瓷无对，窑变无双”。官钧器底必刷一层薄薄黄褐色芝麻酱釉，底心刻划数字深沉遒劲，乃北宋宫廷御用陈设花器规制。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongJunYao_ChujiZun_Master.glb",
+      "key": "junyao_chuji_zun",
+      "scale": 10.05,
+      "targetHeight": 2.2,
+      "previewImg": "images/collection/SongJunYao_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "钧窑出戟尊类器",
+      "institution": "",
+      "status": "type-reference",
+      "note": "传世“官钧”陈设器的年代，学界有北宋说与明初说两种意见，本站按传统说法标注并在此说明存在争议。"
+    },
+    "audio": {
+      "file": "audio/vessel_05.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
+    }
+  },
+  {
+    "id": "yuan-qinghua-jar",
+    "order": 5,
+    "name": "元代青花·缠枝牡丹双龙耳大罐",
+    "english": "Yuan Dynasty Blue-and-White Peony Dragon-Handle Jar",
+    "period": "元代 (1271–1368)",
+    "kiln": "景德镇浮梁瓷局",
+    "dimensions": "通高 28.4 cm · 口径 15.6 cm · 腹径 30.0 cm",
+    "desc": "广口短颈，溜肩圆腹，颈肩两侧堆塑灵动双螭龙耳。器身自上而下分层次装饰波涛纹、缠枝牡丹与变形莲瓣纹。采用进口苏麻离青钴料大写意挥洒，青花发色苍翠浓艳，凝聚沉陷处深入胎骨，呈现天然金属锡光黑褐铁锈斑，雄浑磅礴。",
+    "features": [
+      "苏麻离青铁锈斑",
+      "螭龙堆塑双耳",
+      "缠枝大牡丹纹",
+      "元代雄浑阔体"
+    ],
+    "defaultGlaze": "qinghua",
+    "hotspots": [
+      {
+        "label": "螭龙塑耳 · 生动灵巧螭龙透雕双耳",
+        "pos": [
+          -0.88,
+          1.62,
+          0.15
+        ],
+        "view": "front"
+      },
+      {
+        "label": "铁锈锡斑 · 苏料深沉下凹金属光斑",
+        "pos": [
+          0.72,
+          1.05,
+          0.25
+        ],
+        "view": "front"
+      },
+      {
+        "label": "缠枝牡丹 · 笔法洒脱花繁叶茂",
+        "pos": [
+          -0.58,
+          0.68,
+          0.35
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2150,
+    "bottom": {
+      "footType": "大口径宽矮圈足 · 糙底泛微火石红",
+      "firingCraft": "正烧平垫砂 · 足端斜削刀法粗犷有力",
+      "clayBody": "麻仓土与瓷石二元配方胎 (坚白致密，含微量铁斑杂质)",
+      "reignMark": "元代青花大器多素底无款，露胎处自然泛黄褐色火石红",
+      "tips": "“苏麻离青，浓烈入骨”。大罐底足宽厚扎实，手工旋削泥条痕与跳刀痕清晰可见，露胎处因麻仓土高铁含量自然泛出火石红，古朴雄浑。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/YuanQingHua_DragonVase_Master.glb",
+      "key": "yuanqinghua_dragon_vase",
+      "scale": 7.4,
+      "targetHeight": 2.1,
+      "previewImg": "images/collection/YuanQingHua_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "元代景德镇青花缠枝牡丹纹罐类器",
+      "institution": "",
+      "status": "type-reference"
+    }
+  },
+  {
+    "id": "xuande-monk-cap-ewer",
+    "order": 6,
+    "name": "明宣德·宝石红霁红釉僧帽壶",
+    "english": "Ming Xuande Sacrificial-Red Monk's Cap Ewer",
+    "period": "明宣德 (1426–1435)",
+    "kiln": "景德镇御器厂",
+    "dimensions": "通高 23.9 cm · 宽 20.4 cm · 口径 12.5 cm",
+    "desc": "口沿呈阶梯状高低起伏，前低后高，宛如藏传佛教萨迦派僧帽。前设鸭嘴式流槽，后连扁平宽带形执柄。通体施名贵高温铜红釉（宝石红/霁红），色调深沉凝重，如雨后红霞、纯净鲜红，口沿流口凸棱处显现一圈洁白规整的“灯草边”，明代红釉绝冠之器。",
+    "features": [
+      "僧帽阶梯花口",
+      "纯净霁红宝石光",
+      "口沿凸棱灯草边",
+      "鸭嘴流执柄结构"
+    ],
+    "defaultGlaze": "junhong",
+    "hotspots": [
+      {
+        "label": "僧帽花口 · 阶梯式花瓣帽缘",
+        "pos": [
+          0.32,
+          1.88,
+          0.15
+        ],
+        "view": "top"
+      },
+      {
+        "label": "鸭嘴流口 · 出水顺畅鸭嘴长流",
+        "pos": [
+          -0.68,
+          1.55,
+          0.1
+        ],
+        "view": "front"
+      },
+      {
+        "label": "纯净霁红 · 高温铜红宝石晶光",
+        "pos": [
+          0.45,
+          0.85,
+          0.22
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2680,
+    "bottom": {
+      "footType": "玉璧底圈足 · 极其细腻滑润白砂底",
+      "firingCraft": "足内微凹施亮青釉 · 圈足精细滚圆打磨",
+      "clayBody": "景德镇麻仓高岭土御用精淘胎 (白润致密如糯米粉)",
+      "reignMark": "圈足内青花双圈楷书“大明宣德年制”六字双行官款",
+      "tips": "“霁红如宝石，白草边绝冠”。圈足修削极其规整圆润，俗称‘泥鳅背’，足底釉色微泛鸭蛋青，胎釉交界处隐现浅浅一线橙黄火石红。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/MingXuande_MonkCapTeapot_Master.glb",
+      "key": "xuande_monkcap_teapot",
+      "scale": 8.27,
+      "targetHeight": 2.15,
+      "previewImg": "images/collection/MingXuande_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "明宣德红釉僧帽壶类器",
+      "institution": "",
+      "status": "type-reference"
+    }
+  },
+  {
+    "id": "qianlong-revolving-vase",
+    "order": 7,
+    "name": "清乾隆·金地开光洋彩透雕转心瓶",
+    "english": "Qing Qianlong Imperial Gilt-Ground Famille-Rose Revolving Vase",
+    "period": "清乾隆盛期 (唐英督陶)",
+    "kiln": "景德镇御窑厂",
+    "dimensions": "通高 31.2 cm · 口径 9.2 cm · 腹径 17.7 cm",
+    "desc": "转心瓶由外瓶、内胆、瓶颈、底座多重套合而成。外瓶颈肩施金地洋彩，腹部四面开光镂空；转动瓶颈可带动内胆旋转，透过镂空处可见内胆上的画面。这类器物集中出现在乾隆朝唐英督陶时期，是清代御窑成型与彩绘工艺复杂度的代表。",
+    "features": [
+      "内外双层套瓶",
+      "镂雕开光可见内胆",
+      "金地洋彩",
+      "乾隆朝唐英督陶时期"
+    ],
+    "defaultGlaze": "yuebai",
+    "hotspots": [
+      {
+        "label": "金地洋彩 · 御用金地珐琅彩锦地",
+        "pos": [
+          0.35,
+          1.95,
+          0.15
+        ],
+        "view": "top"
+      },
+      {
+        "label": "镂空开光 · 透雕腹壁窥见内胆",
+        "pos": [
+          0.55,
+          1.15,
+          0.22
+        ],
+        "view": "front"
+      },
+      {
+        "label": "旋转套榫 · 同心轴转动机械结构",
+        "pos": [
+          0,
+          0.45,
+          0
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2920,
+    "bottom": {
+      "footType": "双层同心子母圈足 · 精致施松石绿护胎釉",
+      "firingCraft": "内外双层多次入窑低温二次烧结 · 榫卯同心旋转合缝",
+      "clayBody": "清代督陶官唐英御制极纯高岭胎 (极白极致密，敲击金石长鸣)",
+      "reignMark": "器底松石绿地红彩篆书“大清乾隆年制”六字三行方章款",
+      "tips": "“巧夺天工，鬼斧神工”。外瓶圈足与内胆旋转轴心采用极精密陶瓷榫卯咬合，圈足足端涂金或露极细白润胎骨，代表中国历代制瓷机械结构最高绝诣。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/QingQianlong_RevolvingVase_Master.glb",
+      "key": "qianlong_revolving_vase",
+      "scale": 9.35,
+      "targetHeight": 2.28,
+      "previewImg": "images/collection/QingQianlong_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "清乾隆洋彩镂空转心瓶类器",
+      "institution": "",
+      "status": "type-reference"
+    }
+  },
+  {
+    "id": "ph-ceramic-vase-01",
+    "order": 8,
+    "name": "对照标本·现代白釉花口长瓶",
+    "english": "Reference Specimen: Modern Glossy White Vase (Poly Haven CC0)",
+    "period": "现代（数字资产，2021 年发布）",
+    "kiln": "不适用（现代器物）",
+    "dimensions": "资产标称 高 40.1 cm · 最大径 20.6 cm",
+    "desc": "现代亮白釉高身瓶，口沿作花口。放在这里是作为对照标本：可与宋代青白瓷、定窑白瓷的器型比例与釉面光泽相比较，观察现代工业釉与古代釉面在光泽、积釉上的差别。",
+    "features": [
+      "现代陶瓷 · 非文物",
+      "Poly Haven CC0 资产",
+      "花口高身",
+      "亮白釉面"
+    ],
+    "defaultGlaze": "tianqing",
+    "hotspots": [
+      {
+        "label": "花口口沿",
+        "pos": [
+          0.12,
+          1.85,
+          0.05
+        ],
+        "view": "top"
+      },
+      {
+        "label": "肩腹转折",
+        "pos": [
+          0.42,
+          1.12,
+          0.15
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2720,
+    "bottom": {
+      "footType": "现代器物平底",
+      "firingCraft": "资产未提供烧成工艺信息",
+      "clayBody": "资产未提供胎质信息",
+      "reignMark": "无款识",
+      "tips": "本件为 Poly Haven CC0 现代陶瓷模型，仅作器型与釉面对照，不代表任何古代窑口，也不能用于断代示例。"
+    },
+    "dimensionsBasis": "asset-nominal",
+    "group": "reference",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "gltf",
+      "path": "models/ceramic_vase_01/scene.gltf",
+      "targetHeight": 2.25
+    },
+    "provenance": {
+      "method": "third-party-cc0",
+      "label": "第三方 CC0 模型（Poly Haven）",
+      "detail": "Poly Haven《Ceramic Vase 01》，作者 James Ray Cock，CC0 1.0。原始描述为一件带花口的现代高身亮白釉瓶。 本站使用其 1K 贴图版本。这是现代陶瓷器物的数字资产，不是古代文物，也不是本项目的实测扫描。",
+      "license": "CC0 1.0 Universal",
+      "sourceUrl": "https://polyhaven.com/a/ceramic_vase_01",
+      "author": "James Ray Cock",
+      "assetHeightCm": 40.1,
+      "assetWidthCm": 20.6
+    },
+    "reference": {
+      "typeRef": "无（现代器物对照标本）",
+      "institution": "Poly Haven",
+      "status": "third-party-asset"
+    }
+  },
+  {
+    "id": "ph-ceramic-vase-02",
+    "order": 9,
+    "name": "对照标本·现代彩绘陶瓶",
+    "english": "Reference Specimen: Modern Painted Ceramic Vase (Poly Haven CC0)",
+    "period": "现代（数字资产，2021 年发布）",
+    "kiln": "不适用（现代器物）",
+    "dimensions": "资产标称 高 30.9 cm · 最大径 22.1 cm",
+    "desc": "现代彩绘陶瓶，器表保留陶土肌理，口沿有使用磨损。作为对照标本，可与磁州窑等北方民窑的粗胎与彩绘效果相比较。",
+    "features": [
+      "现代陶瓷 · 非文物",
+      "Poly Haven CC0 资产",
+      "陶土肌理",
+      "口沿磨损"
+    ],
+    "defaultGlaze": "jianhei",
+    "hotspots": [
+      {
+        "label": "器表肌理",
+        "pos": [
+          0.38,
+          1.25,
+          0.18
+        ],
+        "view": "front"
+      },
+      {
+        "label": "口沿磨损",
+        "pos": [
+          0.1,
+          1.98,
+          0.04
+        ],
+        "view": "top"
+      }
+    ],
+    "acousticFreq": 2280,
+    "bottom": {
+      "footType": "现代器物平底",
+      "firingCraft": "资产未提供烧成工艺信息",
+      "clayBody": "资产未提供胎质信息",
+      "reignMark": "无款识",
+      "tips": "本件为 Poly Haven CC0 现代陶瓷模型，仅作器型与釉面对照，不代表任何古代窑口，也不能用于断代示例。"
+    },
+    "dimensionsBasis": "asset-nominal",
+    "group": "reference",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "gltf",
+      "path": "models/ceramic_vase_02/scene.gltf",
+      "targetHeight": 2.25
+    },
+    "provenance": {
+      "method": "third-party-cc0",
+      "label": "第三方 CC0 模型（Poly Haven）",
+      "detail": "Poly Haven《Ceramic Vase 02》，作者 James Ray Cock，CC0 1.0。原始描述为一件带陶土肌理、口沿有磨损的现代彩绘陶瓶。 本站使用其 1K 贴图版本。这是现代陶瓷器物的数字资产，不是古代文物，也不是本项目的实测扫描。",
+      "license": "CC0 1.0 Universal",
+      "sourceUrl": "https://polyhaven.com/a/ceramic_vase_02",
+      "author": "James Ray Cock",
+      "assetHeightCm": 30.9,
+      "assetWidthCm": 22.1
+    },
+    "reference": {
+      "typeRef": "无（现代器物对照标本）",
+      "institution": "Poly Haven",
+      "status": "third-party-asset"
+    }
+  },
+  {
+    "id": "ph-ceramic-vase-03",
+    "order": 10,
+    "name": "对照标本·现代方形高瓶",
+    "english": "Reference Specimen: Modern Tall Rectangular Vase (Poly Haven CC0)",
+    "period": "现代（数字资产，2021 年发布）",
+    "kiln": "不适用（现代器物）",
+    "dimensions": "资产标称 高 41.4 cm · 最大径 11.2 cm",
+    "desc": "现代方形截面高瓶，表面有细微肌理。方形器在古代多以模制或镶接成型，可借此对照旋转体拉坯器与非旋转体器物在成型方法上的不同。",
+    "features": [
+      "现代陶瓷 · 非文物",
+      "Poly Haven CC0 资产",
+      "方形截面",
+      "细微表面肌理"
+    ],
+    "defaultGlaze": "fenqing",
+    "hotspots": [
+      {
+        "label": "棱角转折",
+        "pos": [
+          0.55,
+          1.25,
+          0.15
+        ],
+        "view": "front"
+      },
+      {
+        "label": "器表肌理",
+        "pos": [
+          0.35,
+          0.85,
+          0.22
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2480,
+    "bottom": {
+      "footType": "现代器物平底",
+      "firingCraft": "资产未提供烧成工艺信息",
+      "clayBody": "资产未提供胎质信息",
+      "reignMark": "无款识",
+      "tips": "本件为 Poly Haven CC0 现代陶瓷模型，仅作器型与釉面对照，不代表任何古代窑口，也不能用于断代示例。"
+    },
+    "dimensionsBasis": "asset-nominal",
+    "group": "reference",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "gltf",
+      "path": "models/ceramic_vase_03/scene.gltf",
+      "targetHeight": 2.25
+    },
+    "provenance": {
+      "method": "third-party-cc0",
+      "label": "第三方 CC0 模型（Poly Haven）",
+      "detail": "Poly Haven《Ceramic Vase 03》，作者 James Ray Cock，CC0 1.0。原始描述为一件方形截面的现代彩绘高瓶。 本站使用其 1K 贴图版本。这是现代陶瓷器物的数字资产，不是古代文物，也不是本项目的实测扫描。",
+      "license": "CC0 1.0 Universal",
+      "sourceUrl": "https://polyhaven.com/a/ceramic_vase_03",
+      "author": "James Ray Cock",
+      "assetHeightCm": 41.4,
+      "assetWidthCm": 11.2
+    },
+    "reference": {
+      "typeRef": "无（现代器物对照标本）",
+      "institution": "Poly Haven",
+      "status": "third-party-asset"
+    }
+  },
+  {
+    "id": "ph-ceramic-vase-04",
+    "order": 11,
+    "name": "对照标本·现代单柄陶壶",
+    "english": "Reference Specimen: Modern Single-Handled Jug (Poly Haven CC0)",
+    "period": "现代（数字资产，2021 年发布）",
+    "kiln": "不适用（现代器物）",
+    "dimensions": "资产标称 高 34.2 cm · 最大径 18.3 cm",
+    "desc": "现代单柄壶形陶瓶。可借此观察执柄与器身的接合方式，并与僧帽壶等古代带柄器物的粘接、修整工艺相对照。",
+    "features": [
+      "现代陶瓷 · 非文物",
+      "Poly Haven CC0 资产",
+      "单柄壶形",
+      "柄身粘接"
+    ],
+    "defaultGlaze": "dingbai",
+    "hotspots": [
+      {
+        "label": "执柄接合处",
+        "pos": [
+          0.38,
+          1.15,
+          0.18
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2880,
+    "bottom": {
+      "footType": "现代器物平底",
+      "firingCraft": "资产未提供烧成工艺信息",
+      "clayBody": "资产未提供胎质信息",
+      "reignMark": "无款识",
+      "tips": "本件为 Poly Haven CC0 现代陶瓷模型，仅作器型与釉面对照，不代表任何古代窑口，也不能用于断代示例。"
+    },
+    "dimensionsBasis": "asset-nominal",
+    "group": "reference",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "gltf",
+      "path": "models/ceramic_vase_04/scene.gltf",
+      "targetHeight": 2.25
+    },
+    "provenance": {
+      "method": "third-party-cc0",
+      "label": "第三方 CC0 模型（Poly Haven）",
+      "detail": "Poly Haven《Ceramic Vase 04》，作者 James Ray Cock，CC0 1.0。原始描述为一件带单柄、壶形轮廓的现代彩绘陶瓶。 本站使用其 1K 贴图版本。这是现代陶瓷器物的数字资产，不是古代文物，也不是本项目的实测扫描。",
+      "license": "CC0 1.0 Universal",
+      "sourceUrl": "https://polyhaven.com/a/ceramic_vase_04",
+      "author": "James Ray Cock",
+      "assetHeightCm": 34.2,
+      "assetWidthCm": 18.3
+    },
+    "reference": {
+      "typeRef": "无（现代器物对照标本）",
+      "institution": "Poly Haven",
+      "status": "third-party-asset"
+    }
+  },
+  {
+    "id": "ph-antique-vase-01",
+    "order": 12,
+    "name": "对照标本·蓝花转印开片瓶",
+    "english": "Reference Specimen: Antique-Style Blue Transfer-Printed Vase (Poly Haven CC0)",
+    "period": "现代（数字资产，2021 年发布）",
+    "kiln": "不适用（现代器物）",
+    "dimensions": "资产标称 高 44 cm · 最大径 25.5 cm",
+    "desc": "旧式蓝花转印纹陶瓷瓶，釉面有开片与使用痕迹。转印花纹与手绘青花在线条、晕散上差别明显，可与元青花罐对照观察；釉面开片也可与官窑、哥窑的开片形态比较。",
+    "features": [
+      "非中国古代文物",
+      "Poly Haven CC0 资产",
+      "蓝花转印纹样",
+      "釉面开片"
+    ],
+    "defaultGlaze": "yuebai",
+    "hotspots": [
+      {
+        "label": "转印花纹",
+        "pos": [
+          0.65,
+          1.15,
+          0.15
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 1950,
+    "bottom": {
+      "footType": "现代器物平底",
+      "firingCraft": "资产未提供烧成工艺信息",
+      "clayBody": "资产未提供胎质信息",
+      "reignMark": "无款识",
+      "tips": "本件为 Poly Haven CC0 现代陶瓷模型，仅作器型与釉面对照，不代表任何古代窑口，也不能用于断代示例。"
+    },
+    "dimensionsBasis": "asset-nominal",
+    "group": "reference",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "gltf",
+      "path": "models/antique_ceramic_vase_01/scene.gltf",
+      "targetHeight": 2.25
+    },
+    "provenance": {
+      "method": "third-party-cc0",
+      "label": "第三方 CC0 模型（Poly Haven）",
+      "detail": "Poly Haven《Antique Ceramic Vase 01》，作者 James Ray Cock，CC0 1.0。原始描述为一件带蓝色花卉转印纹样、开片釉面和轻微使用痕迹的旧式陶瓷瓶。 本站使用其 1K 贴图版本。这是现代陶瓷器物的数字资产，不是古代文物，也不是本项目的实测扫描。",
+      "license": "CC0 1.0 Universal",
+      "sourceUrl": "https://polyhaven.com/a/antique_ceramic_vase_01",
+      "author": "James Ray Cock",
+      "assetHeightCm": 44,
+      "assetWidthCm": 25.5
+    },
+    "reference": {
+      "typeRef": "无（现代器物对照标本）",
+      "institution": "Poly Haven",
+      "status": "third-party-asset"
+    }
+  },
+  {
+    "id": "jian-yaobian-bowl",
+    "order": 13,
+    "name": "南宋建窑·曜变天目黑釉束口茶盏",
+    "english": "Southern Song Jian Kiln Yaobian Tenmoku Tea Bowl",
+    "period": "南宋 (1127–1279)",
+    "kiln": "福建建阳水吉窑",
+    "dimensions": "通高 6.8 cm · 口径 12.2 cm · 足径 4.1 cm",
+    "desc": "束口盏口沿下内收一道浅凹槽，深斜腹，矮圈足，胎色黑褐。黑釉面上散布斑点，斑点周围有随视角变化的蓝紫色光晕，即“曜变”。存世公认的完整曜变天目仅数件，均藏于日本。本模型的虹彩为着色器示意，并非对某一件实物的光学测量。",
+    "features": [
+      "束口凹槽",
+      "曜变斑点与虹彩光晕",
+      "釉泪止于足际",
+      "Blender 建模复原"
+    ],
+    "defaultGlaze": "jianhei",
+    "hotspots": [
+      {
+        "label": "束口凹槽 · 宋代斗茶定汤线",
+        "pos": [
+          0.58,
+          0.72,
+          0.12
+        ],
+        "view": "top"
+      },
+      {
+        "label": "曜变星斑 · 蓝紫鎏金薄膜干涉",
+        "pos": [
+          0.42,
+          0.48,
+          0.25
+        ],
+        "view": "front"
+      },
+      {
+        "label": "铁胎圈足 · 肥厚釉泪止于足际",
+        "pos": [
+          0.22,
+          0.08,
+          0.1
+        ],
+        "view": "bottom"
+      }
+    ],
+    "acousticFreq": 2360,
+    "wallThickness": "口薄腹厚 · 重铁稳心",
+    "bottom": {
+      "footType": "深黑铁胎矮圈足 · 釉泪止于足际",
+      "firingCraft": "仰烧垫饼入匣钵 · 窑变高温自然垂流",
+      "clayBody": "福建建阳水吉富含氧化铁粗糙黑褐铁胎",
+      "reignMark": "传世建盏素底或偶见“供御”“进琖”刻铭",
+      "tips": "建盏典型特征为“聚釉止于足际，凝成肥厚釉泪”，露胎圈足坚硬如生铁，毫无人工修整娇气。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongJianYao_YaobianTeaBowl_Master.glb",
+      "key": "jianyao_yaobian_bowl",
+      "scale": 6.8,
+      "targetHeight": 0.85,
+      "previewImg": "images/collection/SongJianYao_Yaobian_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "南宋建窑曜变天目茶盏（存世公认完整器均藏于日本）",
+      "institution": "",
+      "status": "type-reference"
+    }
+  },
+  {
+    "id": "longquan-phoenix-vase",
+    "order": 14,
+    "name": "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
+    "english": "Southern Song Longquan Celadon Phoenix-Ear Kinuta Vase",
+    "period": "南宋 (1127–1279)",
+    "kiln": "浙江龙泉大窑",
+    "dimensions": "通高 25.5 cm · 口径 9.2 cm · 足径 9.6 cm",
+    "desc": "器型参考传世南宋龙泉窑凤耳瓶：盘口，长直颈两侧贴塑凤首形耳，折肩，直筒腹微敛。通体施多层粉青色石灰碱釉，釉层肥厚失透，棱线处釉薄透出胎色，即“出筋”。",
+    "features": [
+      "贴塑双凤耳",
+      "粉青厚釉",
+      "折肩直腹纸槌式",
+      "Blender 建模复原"
+    ],
+    "defaultGlaze": "fenqing",
+    "hotspots": [
+      {
+        "label": "敞阔盘口 · 釉汁流润微白",
+        "pos": [
+          0.28,
+          1.98,
+          0.08
+        ],
+        "view": "top"
+      },
+      {
+        "label": "双凤首耳 · 模印贴塑灵动双耳",
+        "pos": [
+          -0.56,
+          1.52,
+          0.08
+        ],
+        "view": "front"
+      },
+      {
+        "label": "折肩出筋 · 厚釉微透淡白胎骨",
+        "pos": [
+          0.52,
+          1.05,
+          0.18
+        ],
+        "view": "front"
+      }
+    ],
+    "acousticFreq": 2610,
+    "wallThickness": "厚釉凝脂 · 1.6 mm 石灰碱釉",
+    "bottom": {
+      "footType": "外撇规整薄圈足 · 火石红朱砂底",
+      "firingCraft": "垫圈支烧 · 足端刮釉露白胎呈橘红线",
+      "clayBody": "浙江龙泉大窑高硅低铁灰白胎",
+      "reignMark": "素底无款，圈足微撇修刀如削，底心施满粉青厚釉",
+      "tips": "南宋龙泉仿纸槌器型典范，颈侧双凤首耳精雕细琢，圈足刮釉露胎处微泛自然火石红。"
+    },
+    "group": "reconstruction",
+    "dimensionsBasis": "illustrative",
+    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "model": {
+      "kind": "glb",
+      "path": "models/masterpieces/SongLongquan_PhoenixVase_Master.glb",
+      "key": "longquan_phoenix_vase",
+      "scale": 9.1,
+      "targetHeight": 2.15,
+      "previewImg": "images/collection/SongLongquan_Phoenix_Preview.webp"
+    },
+    "provenance": {
+      "method": "blender-parametric",
+      "label": "Blender 参数化建模复原",
+      "detail": "由 Blender 5.2 Python 脚本按器型参数生成几何，贴图为 1024px 程序化烘焙（WebP）。不是实物扫描，也不含馆藏实测点云。",
+      "license": "本项目原创模型（随项目协议发布）"
+    },
+    "reference": {
+      "typeRef": "南宋龙泉窑青釉凤耳瓶（日本称“砧青瓷”）",
+      "institution": "",
+      "status": "type-reference"
+    }
+  }
+]

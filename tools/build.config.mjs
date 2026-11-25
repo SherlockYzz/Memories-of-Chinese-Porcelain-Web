@@ -40,15 +40,8 @@ export default {
             name: 'legacy',
             out: 'assets/legacy.js',
             files: [
-                'src/legacy/core/event-bus.js',
-                'src/legacy/core/store.js',
-                'src/legacy/core/module-registry.js',
-                'src/legacy/core/modal-manager.js',
-                'src/legacy/core/toast.js',
+                'src/legacy/data-shims.js',
                 'src/legacy/oriental-ambient.js',
-                'src/legacy/i18n-en-pack.js',
-                'src/legacy/i18n.js',
-                'src/legacy/data.js',
                 'src/legacy/three-scene.js',
                 'src/legacy/three-fx.js',
                 'src/legacy/modules/theme-manager.js',
@@ -71,14 +64,14 @@ export default {
                 'src/legacy/modules/kiln-diorama.js',
                 'src/legacy/modules/scale-ruler-modal.js',
                 'src/legacy/modules/collector-card.js',
-                'src/legacy/app.js',
                 'src/legacy/ui-enhance.js'
             ]
         },
         { name: 'legacy-pottery', out: 'assets/legacy-pottery.js', lazy: true, files: ['src/legacy/pottery-workshop.js'] },
-        { name: 'legacy-ai', out: 'assets/legacy-ai.js', lazy: true, files: ['src/legacy/ai-recognition.js'] },
-        { name: 'legacy-audio-data', out: 'assets/legacy-audio-data.js', lazy: true, minify: false, files: ['src/legacy/museum-audio-data.js'] },
-        { name: 'legacy-scanned-data', out: 'assets/legacy-scanned-data.js', lazy: true, minify: false, files: ['src/legacy/scanned-models-data.js'] }
+        { name: 'legacy-ai', out: 'assets/legacy-ai.js', lazy: true, files: ['src/legacy/ai-recognition.js'] }
     ],
-    esm: []
+    esm: [
+        { name: 'app', out: 'assets/app.js', entry: 'src/main.js', core: 'src/core/index.js' },
+        { name: 'i18n-en', out: 'assets/i18n-en.js', entry: 'src/lazy/i18n-en.js', core: 'src/core/global-shim.js', lazy: true }
+    ]
 };

@@ -1,0 +1,186 @@
+[
+  {
+    "id": "ancient",
+    "year": "新石器时代 (约前6000–前2000)",
+    "temp": "750℃ – 950℃",
+    "porosity": "12% – 18% (陶胎多孔)",
+    "glazeSystem": "无釉素胎 · 天然赤铁矿/锰矿彩绘",
+    "kilnType": "横穴窑 / 竖穴窑 (氧化焰)",
+    "label": {
+      "zh": "远古曙光",
+      "en": "Neolithic Era"
+    },
+    "title": {
+      "zh": "泥与火的初鸣 · 仰韶彩陶与龙山黑陶",
+      "en": "Dawn of Clay & Fire: Yangshao & Longshan"
+    },
+    "desc": {
+      "zh": "中华先民在黄河与长江流域发明了陶器。从中原仰韶文化的人面鱼纹彩陶盆、马家窑文化的旋涡纹彩陶瓮，到山东龙山文化“黑如漆、亮如镜、薄如蛋壳、硬如瓷”的蛋壳黑陶高柄杯，先民掌握了淘洗澄泥、慢轮修整与封窑渗碳还原技术，奠定了华夏硅酸盐热工文明的万年基石。",
+      "en": "Neolithic potters mastered clay levigation, wheel-finishing, and carburization reduction, creating Yangshao painted pottery and paper-thin Longshan blackware."
+    },
+    "quote": "“神农耕而作陶，埏埴以为器，当其无，有器之用。” ——《周书》/《老子》",
+    "img": "./images/4.jpg",
+    "modelIdx": 0
+  },
+  {
+    "id": "shangzhou",
+    "year": "商周秦汉 (前1600–公元220)",
+    "temp": "1150℃ – 1260℃",
+    "porosity": "0.8% – 3.0% (胎质致密玻化)",
+    "glazeSystem": "草木灰高温钙质青釉 (Fe₂O₃ 呈色)",
+    "kilnType": "江南依山龙窑 (高温还原焰)",
+    "label": {
+      "zh": "商周秦汉",
+      "en": "Shang, Zhou & Han"
+    },
+    "title": {
+      "zh": "原始青瓷肇始 · 越窑成熟青瓷的历史飞跃",
+      "en": "Proto-Celadon to Mature Yue Ware"
+    },
+    "desc": {
+      "zh": "商周时期中国率先使用瓷石（高硅低铝矿物）并施以草木灰高温石灰釉，烧制出“原始青瓷”。至东汉晚期（公元2世纪），浙江上虞曹娥江流域的越窑借助依山而建的长条形“龙窑”，将窑温推升至1260℃以上，胎体完全烧结致密、釉面莹润不开裂，标志着人类历史上真正意义上的成熟瓷器正式诞生。",
+      "en": "During the Eastern Han, Yue Kiln in Zhejiang utilized climbing dragon kilns to reach 1260°C, birthing the world's first fully vitrified mature celadon."
+    },
+    "quote": "“南山烈火煅青膏，百炼始成千峰翠。” —— 东汉越窑青瓷铭考",
+    "img": "./images/7.jpg",
+    "modelIdx": 7
+  },
+  {
+    "id": "tang",
+    "year": "隋唐五代 (581–960)",
+    "temp": "1230℃ – 1300℃",
+    "porosity": "< 0.6% (高玻化度)",
+    "glazeSystem": "南青(石灰釉) · 北白(高铝低铁透明釉)",
+    "kilnType": "南方龙窑 / 北方马蹄形馒头窑",
+    "label": {
+      "zh": "隋唐盛世",
+      "en": "Sui, Tang & Five Dynasties"
+    },
+    "title": {
+      "zh": "南青北白 · 法门寺秘色瓷与邢窑盈雪",
+      "en": "Southern Celadon & Northern White"
+    },
+    "desc": {
+      "zh": "唐代制瓷业形成陆羽《茶经》所载“南青北白”双峰并峙格局：南方越窑青瓷“类玉类冰”，五代吴越国钱氏进贡的“秘色瓷”采用瓷质匣钵加釉封口精烧，呈现“千峰翠色、如天青落水”之绝境；北方邢窑白瓷“类银类雪”，无色透明釉下胎白如玉，更有长沙窑釉下彩绘与唐三彩辉映丝绸之路。",
+      "en": "Tang ceramics established the \"Southern Celadon, Northern White\" duality: Yue mise celadon rivaled jade and ice, while Xing white porcelain gleamed like silver and snow."
+    },
+    "quote": "“九秋风露越窑开，夺得千峰翠色来。” —— 唐 · 陆龟蒙《秘色越器》",
+    "img": "./images/8.jpg",
+    "modelIdx": 2
+  },
+  {
+    "id": "song",
+    "year": "两宋盛世 (960–1279)",
+    "temp": "1220℃ – 1310℃",
+    "porosity": "< 0.3% (玉质感微晶釉)",
+    "glazeSystem": "石灰碱釉 / 分相乳浊釉 (玛瑙与钙磷微晶)",
+    "kilnType": "官窑匣钵精烧 / 阶梯覆烧 / 龙窑",
+    "label": {
+      "zh": "两宋之巅",
+      "en": "Song Dynasty Zenith"
+    },
+    "title": {
+      "zh": "五大名窑 · 极简主义美学与理学造物巅峰",
+      "en": "Five Great Kilns & Minimalist Aesthetics"
+    },
+    "desc": {
+      "zh": "中国器物美学的至高巅峰。宋人尚理重道，追求“天人合一、大巧若拙”，摒弃繁复雕饰而专注于单色釉的玉质光泽与曼妙弧线。汝窑天青如梦、玛瑙入釉；官窑紫口铁足、蟹爪冰裂；哥窑金丝铁线、残缺天成；钧窑铜红窑变、万彩流霞；定窑牙白划花、声如清磬；建窑曜变兔毫，独步点茶雅集。",
+      "en": "Song Dynasty represents the zenith of Chinese aesthetics: Ru, Guan, Ge, Jun, and Ding kilns elevated monochrome glazes, subtle curves, and natural crackles to philosophical art."
+    },
+    "quote": "“雨过天青云破处，这般颜色做将来。” —— 相传北宋徽宗赵佶御批",
+    "img": "./images/13.jpg",
+    "modelIdx": 0
+  },
+  {
+    "id": "yuan",
+    "year": "元代 (1271–1368)",
+    "temp": "1280℃ – 1320℃",
+    "porosity": "< 0.25% (二元配方坚致大器)",
+    "glazeSystem": "苏麻离青钴料釉下彩 · 枢府卵白釉",
+    "kilnType": "景德镇葫芦形窑 (柴烧还原)",
+    "label": {
+      "zh": "元代宏阔",
+      "en": "Yuan Dynasty"
+    },
+    "title": {
+      "zh": "二元配方革命 · 元青花与海上丝路远航",
+      "en": "Binary Formula & Yuan Blue-and-White"
+    },
+    "desc": {
+      "zh": "元代景德镇匠人首创“高岭土 + 瓷石”二元配方，将胎体中氧化铝（Al₂O₃）含量提高至20%以上，使大型器物在1300℃高温下挺立不塌，并设立“浮梁瓷局”。波斯进口“苏麻离青”高铁低锰钴料与景德镇影青白胎结合，诞生了气势磅礴的元代青花瓷，随泉州港远销亚欧非四十余国。",
+      "en": "Yuan Jingdezhen pioneered the Kaolin-Petuntse binary clay formula, enabling monumental blue-and-white vessels painted with imported Persian cobalt."
+    },
+    "quote": "“白釉青花一火成，花从釉里透分明。” —— 景德镇古窑歌诀",
+    "img": "./images/10.jpg",
+    "modelIdx": 6
+  },
+  {
+    "id": "ming",
+    "year": "明代 (1368–1644)",
+    "temp": "1290℃ – 1330℃",
+    "porosity": "< 0.15% (御器厂甜白与宣青)",
+    "glazeSystem": "永宣苏麻离青 · 成化斗彩 · 德化象牙白",
+    "kilnType": "景德镇珠山御器厂 · 德化阶级窑",
+    "label": {
+      "zh": "大明御窑",
+      "en": "Ming Imperial"
+    },
+    "title": {
+      "zh": "珠山御器厂定鼎 · 永宣青花与成化斗彩",
+      "en": "Ming Imperial Kilns: Xuande & Chenghua"
+    },
+    "desc": {
+      "zh": "明洪武二年于景德镇珠山设立御器厂，实行“官搭民烧、百选一二”之严苛御贡规制。永乐甜白温润如脂，宣德青花苍翠欲滴、铁锈斑深入胎骨，成化斗彩鸡缸杯轻灵隽永，嘉万五彩热烈奔放，福建德化白瓷更以“中国白（Blanc de Chine）”倾倒欧洲王室。",
+      "en": "Ming Imperial Workshops at Zhushan perfected sweet-white glazes, Xuande blue-and-white with iron crystalline spots, Chenghua doucai, and Dehua Blanc de Chine."
+    },
+    "quote": "“宣德年制青花色，浓淡分水若墨禅。” ——《陶雅》",
+    "img": "./images/15.jpg",
+    "modelIdx": 6
+  },
+  {
+    "id": "qing",
+    "year": "清代 (1644–1912)",
+    "temp": "1300℃ – 1350℃ (兼备750℃釉上彩炉)",
+    "porosity": "< 0.10% (极致致密精胎)",
+    "glazeSystem": "郎窑红/豇豆红 · 珐琅彩/粉彩 · 仿宋名釉",
+    "kilnType": "景德镇镇窑 (蛋形柴窑，一窑万器)",
+    "label": {
+      "zh": "清代华章",
+      "en": "Qing Zenith"
+    },
+    "title": {
+      "zh": "集历代之大成 · 唐英督陶与转心镂空绝技",
+      "en": "Kangxi, Yongzheng & Qianlong Perfection"
+    },
+    "desc": {
+      "zh": "清代康雍乾三朝在臧应选、郎廷极、年希尧、唐英等督陶官主持下，制瓷技术登峰造极。不仅全面复烧汝、官、哥、钧、定宋代五大名窑单色釉，更创烧郎窑红、珊瑚红、茶叶末、粉彩与宫廷造办处珐琅彩；乾隆朝镂空转心瓶集拉坯、利坯、镂雕、套烧于一身，巧夺天工。",
+      "en": "Under supervisor Tang Ying, Qing imperial kilns mastered monochrome reproductions, famille rose, falangcai, and revolving reticulated vases."
+    },
+    "quote": "“汇千古名窑之神魂，极鬼斧天工之巧思。” —— 清 · 唐英《陶人心语》",
+    "img": "./images/11.jpg",
+    "modelIdx": 8
+  },
+  {
+    "id": "modern",
+    "year": "当代 (1912–2026)",
+    "temp": "数字化全域光谱与热力学仿真",
+    "porosity": "三维亚毫米级点云与双层微晶 PBR",
+    "glazeSystem": "WebGL 着色器 · 高光谱成像 · 非遗数字孪生",
+    "kilnType": "智能温控还原窑 / 数字文博云空间",
+    "label": {
+      "zh": "数字新篇",
+      "en": "Digital Renaissance"
+    },
+    "title": {
+      "zh": "文脉长青 · 三维数字孪生与智能研鉴传承",
+      "en": "3D Digital Twin & AI Heritage Preservation"
+    },
+    "desc": {
+      "zh": "迈入数字文明时代，古陶瓷保护与传播迎来范式跃迁。通过激光结构光三维扫描、WebGL 双层微晶物理渲染（PBR）、X射线断层剖面透视与计算机视觉开片应力算子，千年名瓷突破博物馆玻璃展柜的物理阻隔，化作人人可触、可听、可造、可鉴的活态数字文化基因。",
+      "en": "Integrating 3D photogrammetry, WebGL PBR clearcoat rendering, and computer vision, ancient ceramic heritage transcends museum glass into living digital culture."
+    },
+    "quote": "“器以载道，借数字之光，照见华夏文明不灭薪火。” —— 华夏器道·天青泥火",
+    "img": "./images/6.jpg",
+    "modelIdx": 0
+  }
+]

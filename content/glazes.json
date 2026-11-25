@@ -1,0 +1,114 @@
+[
+  {
+    "id": "tianqing",
+    "name": "雨过天青",
+    "desc": "汝官窑典型色，玛瑙入釉，温润如羊脂美玉",
+    "material": {
+      "color": "#8bb6be",
+      "emissive": "#051316",
+      "roughness": 0.14,
+      "metalness": 0.04,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.06,
+      "ior": 1.54,
+      "reflectivity": 0.75
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "fenqing",
+    "name": "粉青如玉",
+    "desc": "南宋龙泉与修内司官窑代表，青翠柔和，丰润如脂",
+    "material": {
+      "color": "#7cb099",
+      "emissive": "#04120b",
+      "roughness": 0.16,
+      "metalness": 0.03,
+      "clearcoat": 0.96,
+      "clearcoatRoughness": 0.07,
+      "ior": 1.53,
+      "reflectivity": 0.7
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "yuebai",
+    "name": "月白莹霜",
+    "desc": "月白微泛冷青，如皓月寒霜，冰清玉洁",
+    "material": {
+      "color": "#d0e0e5",
+      "emissive": "#0a1114",
+      "roughness": 0.12,
+      "metalness": 0.02,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.05,
+      "ior": 1.55,
+      "reflectivity": 0.78
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "dingbai",
+    "name": "定窑牙白",
+    "desc": "北宋曲阳定窑象牙白，泛暖玉微黄之光，内敛温雅",
+    "material": {
+      "color": "#efe7d6",
+      "emissive": "#120f0a",
+      "roughness": 0.19,
+      "metalness": 0.02,
+      "clearcoat": 0.88,
+      "clearcoatRoughness": 0.1,
+      "ior": 1.5,
+      "reflectivity": 0.62
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "junhong",
+    "name": "玫瑰紫变",
+    "desc": "禹州钧官窑铜还原窑变，红紫蓝交融如晚霞流云",
+    "material": {
+      "color": "#b85a88",
+      "emissive": "#180511",
+      "roughness": 0.15,
+      "metalness": 0.08,
+      "clearcoat": 0.98,
+      "clearcoatRoughness": 0.06,
+      "ior": 1.58,
+      "reflectivity": 0.76
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "jianhei",
+    "name": "建盏乌金",
+    "desc": "建阳水吉窑高铁黑釉，析出金银兔毫与曜变星斑",
+    "material": {
+      "color": "#262223",
+      "emissive": "#050406",
+      "roughness": 0.22,
+      "metalness": 0.38,
+      "clearcoat": 0.94,
+      "clearcoatRoughness": 0.1,
+      "ior": 1.65,
+      "reflectivity": 0.85
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  },
+  {
+    "id": "qinghua",
+    "name": "幽菁青花",
+    "desc": "明宣德鸭蛋青白釉底，苏麻离青浓艳深沉带铁锈斑",
+    "material": {
+      "color": "#edf4f7",
+      "emissive": "#070d12",
+      "roughness": 0.12,
+      "metalness": 0.03,
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.05,
+      "ior": 1.54,
+      "reflectivity": 0.75
+    },
+    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+  }
+]

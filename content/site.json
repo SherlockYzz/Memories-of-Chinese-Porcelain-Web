@@ -1,0 +1,41 @@
+{
+  "version": "9.0",
+  "brand": { "zh": "华夏器道", "en": "Vessels of China" },
+  "seal": { "zh": "天青泥火", "en": "Tianqing Nihuo" },
+  "tagline": { "zh": "华夏古瓷三维研学空间", "en": "A 3D Study Space for Ancient Chinese Ceramics" },
+  "title": {
+    "zh": "天青泥火 · 华夏古瓷三维研学空间",
+    "en": "Tianqing Nihuo · A 3D Study Space for Ancient Chinese Ceramics"
+  },
+  "description": {
+    "zh": "天青泥火：从泥到火，从器到鉴。用三维建模复原、工序互动与釉料实验，讲宋代名窑瓷器的一生。",
+    "en": "Tianqing Nihuo: from clay to fire, from vessel to connoisseurship. 3D reconstructions, hands-on process labs and glaze experiments that tell the life of a Song-dynasty ceramic."
+  },
+  "storyline": {
+    "zh": "从泥到火，从器到鉴——数字化复原宋瓷的一生",
+    "en": "From clay to fire, from vessel to connoisseurship — the life of a Song ceramic, digitally reconstructed"
+  },
+  "hero": {
+    "eyebrow": "SONG CERAMICS · DIGITAL RECONSTRUCTION",
+    "title": { "zh": "器以载道 · 格物致知", "en": "Vessels Carry the Way" },
+    "lead": {
+      "zh": "雨过天青云破处，这般颜色做将来。这里用三维建模复原十件宋元明清名窑器型，带你看清一件瓷器，亲手造一件瓷器，再回到它所在的时代。",
+      "en": "Ten ceramic forms from the Song to Qing dynasties, reconstructed in 3D: look closely at a vessel, shape one yourself, then step back into its time."
+    },
+    "featuredVesselId": "guan-octagonal-vase",
+    "featuredCaption": { "zh": "南宋官窑·八方贯耳弦纹瓶（Blender 建模复原，实时渲染）", "en": "Southern Song Guan ware octagonal vase (Blender reconstruction, real-time)" },
+    "stats": [
+      { "value": "10 + 5", "label": { "zh": "三维器物", "en": "3D vessels" }, "note": { "zh": "10 件建模复原 · 5 件 CC0 对照标本", "en": "10 reconstructions · 5 CC0 reference specimens" } },
+      { "value": "12", "label": { "zh": "制瓷工序", "en": "making steps" }, "note": { "zh": "可互动的工序图解", "en": "interactive process diagrams" } },
+      { "value": "1300 ℃", "label": { "zh": "烧成模拟", "en": "firing simulation" }, "note": { "zh": "拉坯、施釉到出窑", "en": "throwing, glazing, firing" } },
+      { "value": "16", "label": { "zh": "窑口", "en": "kiln sites" }, "note": { "zh": "窑系地图与年表", "en": "map and timeline" } }
+    ]
+  },
+  "honesty": {
+    "zh": "本站器物为教学用途的三维建模复原与第三方 CC0 模型，不是文物的实测扫描；涉及数值的结论均标注为文献范围值或教学示意。",
+    "en": "The vessels here are educational 3D reconstructions and third-party CC0 models, not measured scans of artefacts. Numerical claims are marked as literature ranges or teaching illustrations."
+  },
+  "author": { "zh": "网页开发 · 折木柯南", "en": "Web development · Zhemu Kenan" },
+  "repository": "https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web",
+  "license": "CC BY-NC-SA 4.0"
+}

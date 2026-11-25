@@ -58,7 +58,8 @@ function copyPublic(srcDir, outDir) {
             const s = fs.statSync(from);
             if (fs.existsSync(to)) {
                 const d = fs.statSync(to);
-                if (d.size === s.size && d.mtimeMs >= s.mtimeMs) continue;
+                // 目标文件 mtime 精度可能低于源文件，留 2 秒容差。
+                if (d.size === s.size && d.mtimeMs + 2000 >= s.mtimeMs) continue;
             }
             ensureDir(to);
             fs.copyFileSync(from, to);
@@ -99,6 +100,7 @@ async function minifyViaFile(name, code) {
         minify: true,
         write: false,
         legalComments: 'none',
+        charset: 'utf8',
         target: name.endsWith('.css') ? undefined : 'es2019',
         logLevel: 'warning'
     });
@@ -163,10 +165,11 @@ async function buildOnce() {
             sourcemap: DEV ? 'inline' : false,
             write: false,
             legalComments: 'none',
+            charset: 'utf8',
             logLevel: 'warning',
             loader: { '.json': 'json', '.html': 'text', '.svg': 'text', '.glsl': 'text' },
             define: { __DEV__: String(DEV) },
-            alias: entry.alias || {}
+            alias: { '@core': abs(entry.core || 'src/core/index.js') }
         });
         const r = emit(outDir, entry.out, Buffer.from(result.outputFiles[0].contents), emitted);
         assets[entry.name] = r.rel;

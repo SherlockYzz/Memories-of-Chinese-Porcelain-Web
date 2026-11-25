@@ -1,0 +1,66 @@
+{
+  "acts": [
+    {
+      "id": "know",
+      "seal": "识",
+      "title": { "zh": "识器", "en": "Look" },
+      "desc": { "zh": "看清一件瓷器", "en": "Read a vessel closely" },
+      "sections": [
+        { "id": "3d-gallery", "icon": "fa-cube", "title": { "zh": "三维展馆", "en": "3D Gallery" }, "desc": { "zh": "十件建模复原器物，可旋转、剖切、比对", "en": "Ten reconstructed vessels to rotate, section and compare" } },
+        { "id": "archive", "icon": "fa-book-open", "title": { "zh": "典藏图录", "en": "Catalogue" }, "desc": { "zh": "历代名窑器物卡片与款识", "en": "Object cards and reign marks" } },
+        { "id": "ai-recognition", "icon": "fa-wave-square", "title": { "zh": "纹理与釉色分析", "en": "Texture & Glaze Analysis" }, "desc": { "zh": "开片纹理与釉色的图像特征可视化", "en": "Image-feature visualisation of crackle and glaze colour" } }
+      ]
+    },
+    {
+      "id": "make",
+      "seal": "造",
+      "title": { "zh": "造物", "en": "Make" },
+      "desc": { "zh": "亲手走一遍工序", "en": "Walk through the craft" },
+      "sections": [
+        { "id": "workshop", "icon": "fa-list-ol", "title": { "zh": "制瓷工序", "en": "Making Steps" }, "desc": { "zh": "从取土到出窑的十二道工序", "en": "Twelve steps from clay to kiln" } },
+        { "id": "pottery-studio", "icon": "fa-hands", "title": { "zh": "拉坯工坊", "en": "Throwing Studio" }, "desc": { "zh": "拉坯、青花手绘、入窑烧成", "en": "Throw, paint, fire" } },
+        { "id": "colors", "icon": "fa-flask", "title": { "zh": "釉料实验室", "en": "Glaze Lab" }, "desc": { "zh": "釉色色谱与呈色实验", "en": "Glaze palette and colour experiments" } },
+        { "id": "crackle-lab", "icon": "fa-snowflake", "title": { "zh": "开片模拟器", "en": "Crackle Simulator" }, "desc": { "zh": "调参数，看冰裂纹生成", "en": "Tune parameters and watch crackle grow" } },
+        { "id": "kintsugi", "icon": "fa-puzzle-piece", "title": { "zh": "金缮修复", "en": "Kintsugi Repair" }, "desc": { "zh": "拼合碎片，描金修复", "en": "Reassemble shards and trace gold" } }
+      ]
+    },
+    {
+      "id": "context",
+      "seal": "境",
+      "title": { "zh": "入境", "en": "Context" },
+      "desc": { "zh": "回到它的时代", "en": "Return to its time" },
+      "sections": [
+        { "id": "history", "icon": "fa-timeline", "title": { "zh": "陶瓷通史", "en": "History" }, "desc": { "zh": "八个时期的工艺演进", "en": "Eight periods of craft" } },
+        { "id": "kiln-map-section", "icon": "fa-map-location-dot", "title": { "zh": "窑口地图", "en": "Kiln Map" }, "desc": { "zh": "十六处窑口的地理分布", "en": "Sixteen kiln sites" } },
+        { "id": "four-arts", "icon": "fa-mug-hot", "title": { "zh": "点茶与四艺", "en": "Tea & Four Arts" }, "desc": { "zh": "宋人点茶与文人生活", "en": "Song-dynasty whisked tea" } },
+        { "id": "video-theatre", "icon": "fa-film", "title": { "zh": "视听", "en": "Films" }, "desc": { "zh": "制瓷实录与环境音", "en": "Craft films and soundscapes" } }
+      ]
+    },
+    {
+      "id": "finale",
+      "seal": "问",
+      "title": { "zh": "问学", "en": "Study" },
+      "desc": { "zh": "札记、殿试与研学护照", "en": "Essays, quiz and passport" },
+      "sections": [
+        { "id": "notes", "icon": "fa-feather-pointed", "title": { "zh": "札记与殿试", "en": "Essays & Quiz" }, "desc": { "zh": "三篇学术短札与十二道题", "en": "Three essays and a twelve-question quiz" } },
+        { "id": "passport", "icon": "fa-stamp", "title": { "zh": "研学护照", "en": "Study Passport" }, "desc": { "zh": "集章、进度与研学证书", "en": "Stamps, progress and certificate" } },
+        { "id": "credits", "icon": "fa-scroll", "title": { "zh": "素材与致谢", "en": "Credits" }, "desc": { "zh": "模型、图片、音视频与开源库的来源", "en": "Sources and licences" } }
+      ]
+    }
+  ],
+  "tour": {
+    "title": { "zh": "3 分钟导览", "en": "3-minute tour" },
+    "steps": [
+      { "section": "hero", "seconds": 14, "caption": { "zh": "序｜从泥到火，从器到鉴：这是一件宋瓷的一生。", "en": "Prologue: the life of a Song ceramic, from clay to connoisseurship." } },
+      { "section": "3d-gallery", "seconds": 24, "action": "loadPorcelainModel(0)", "caption": { "zh": "识｜三维展馆：十件建模复原的名窑器型，可旋转、翻底、剖切。", "en": "Look: ten reconstructed vessels you can rotate, flip and section." } },
+      { "section": "3d-gallery", "seconds": 18, "action": "switchExhibitionMode('cutaway')", "caption": { "zh": "识｜剖面模式：看胎与釉的厚薄关系。", "en": "Look: section view shows body and glaze thickness." } },
+      { "section": "archive", "seconds": 14, "action": "switchExhibitionMode('inspector')", "caption": { "zh": "识｜典藏图录：每张卡片都标注了出处核验状态。", "en": "Look: every catalogue card states how its source was verified." } },
+      { "section": "workshop", "seconds": 14, "caption": { "zh": "造｜制瓷工序：从取土到出窑。", "en": "Make: the steps from clay to kiln." } },
+      { "section": "pottery-studio", "seconds": 22, "caption": { "zh": "造｜拉坯工坊：拖动泥坯塑形，画青花，再入窑。", "en": "Make: shape the clay, paint, then fire." } },
+      { "section": "crackle-lab", "seconds": 22, "caption": { "zh": "造｜开片模拟器：调膨胀系数差与釉厚，看冰裂纹怎样长出来。", "en": "Make: tune expansion mismatch and glaze thickness to grow crackle." } },
+      { "section": "kiln-map-section", "seconds": 14, "caption": { "zh": "境｜窑口地图：十六处窑口与它们的原料。", "en": "Context: sixteen kiln sites and their materials." } },
+      { "section": "notes", "seconds": 18, "caption": { "zh": "问｜三篇短札讲清开片与紫口铁足的成因，殿试十二题检验所学。", "en": "Study: three essays and a twelve-question quiz." } },
+      { "section": "credits", "seconds": 12, "caption": { "zh": "终｜所有模型、图片、音视频与开源库的来源都列在这里。", "en": "Finale: every source and licence is listed here." } }
+    ]
+  }
+}
