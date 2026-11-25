@@ -167,18 +167,55 @@ let potCanvas, potCtx;
 let potAnimId = null;
 let isInteractingPot = false;
 let potToolMode = 'push'; // 'push' | 'pull' | 'smooth' | 'brush'
-let brushStyle = 'outline'; // 'outline' | 'wash' | 'erase'
+let brushStyle = 'outline'; // 'outline' | 'wash' | 'iron' | 'erase'
+let brushSize = 'md'; // 'sm' | 'md' | 'lg'
+let wheelPaused = false;
 let currentPotPattern = 'none'; // 'none' | 'lotus' | 'qinghua' | 'goldring'
 let currentPotSeal = '大宋宣和';
+
+const UV_W = 512;
+const UV_H = 256;
+const HEMI_W = 256;
+const HEMI_H = 256;
+const HEMI_STRIPS = 32;
+
+const paintUVCanvas = document.createElement('canvas');
+paintUVCanvas.width = UV_W;
+paintUVCanvas.height = UV_H;
+const paintUVCtx = paintUVCanvas.getContext('2d');
+
+const presetUVCanvas = document.createElement('canvas');
+presetUVCanvas.width = UV_W;
+presetUVCanvas.height = UV_H;
+const presetUVCtx = presetUVCanvas.getContext('2d');
+
+const uvTiledCanvas = document.createElement('canvas');
+uvTiledCanvas.width = UV_W * 2;
+uvTiledCanvas.height = UV_H;
+const uvTiledCtx = uvTiledCanvas.getContext('2d');
+
+const hemiCanvas = document.createElement('canvas');
+hemiCanvas.width = HEMI_W;
+hemiCanvas.height = HEMI_H;
+const hemiCtx = hemiCanvas.getContext('2d');
+
+let uvDirty = true;
+let lastBrushUV = null;
 
 const potteryHistory = [];
 const MAX_POT_HISTORY = 30;
 
 function savePotterySnapshot() {
     if (!targetRadii || !targetRadii.length) return;
+    let paintData = null;
+    try {
+        paintData = paintUVCtx.getImageData(0, 0, UV_W, UV_H);
+    } catch (_) {
+        paintData = null;
+    }
     potteryHistory.push({
         radii: [...targetRadii],
-        brush: [...(customBrushRings || [])],
+        paintData,
         pattern: currentPotPattern,
         glaze: currentClayGlaze,
         fired: isFired
@@ -195,12 +232,19 @@ function undoPotteryAction() {
     if (prev) {
         targetRadii = [...prev.radii];
         clayRadii = [...prev.radii];
-        customBrushRings = [...prev.brush];
+        if (prev.paintData) {
+            paintUVCtx.putImageData(prev.paintData, 0, 0);
+        } else {
+            paintUVCtx.clearRect(0, 0, UV_W, UV_H);
+        }
         currentPotPattern = prev.pattern || 'none';
         currentClayGlaze = prev.glaze || 'tianqing';
         isFired = !!prev.fired;
+        renderPresetPatternUV();
+        uvDirty = true;
         updatePotteryLiveMetrics();
-        if (typeof showToast === 'function') showToast('↶ 已撤销上一步塑形操作');
+        ensurePotteryRender();
+        if (typeof showToast === 'function') showToast('↶ 已撤销上一步塑形与青花笔触');
     }
 }
 
@@ -217,10 +261,57 @@ function setBrushStyle(style) {
     });
 }
 
+function setBrushSize(size) {
+    brushSize = size;
+    document.querySelectorAll('.brush-size-btn').forEach(btn => {
+        if (btn.dataset.size === size) {
+            btn.classList.add('bg-tianqing-deep', 'text-white');
+            btn.classList.remove('bg-yuebai', 'text-text-body');
+        } else {
+            btn.classList.remove('bg-tianqing-deep', 'text-white');
+            btn.classList.add('bg-yuebai', 'text-text-body');
+        }
+    });
+}
+
+function updateWheelSpeedLabel() {
+    const el = document.getElementById('pottery-metrics-label');
+    if (!el) return;
+    if (wheelPaused) el.textContent = '已定格 · 0 RPM';
+    else if (potToolMode === 'brush') el.textContent = '转速 32 RPM · 慢速绘青花';
+    else el.textContent = '转速 120 RPM';
+}
+
+function toggleWheelPause() {
+    wheelPaused = !wheelPaused;
+    const btn = document.getElementById('pot-wheel-pause-btn');
+    if (btn) {
+        btn.textContent = wheelPaused ? '恢复转盘' : '暂停转盘';
+        btn.classList.toggle('bg-tianqing-deep', wheelPaused);
+        btn.classList.toggle('text-white', wheelPaused);
+        btn.classList.toggle('bg-yuebai', !wheelPaused);
+        btn.classList.toggle('text-text-body', !wheelPaused);
+    }
+    updateWheelSpeedLabel();
+    ensurePotteryRender();
+    if (typeof showToast === 'function') {
+        showToast(wheelPaused ? '已定格陶轮，适合精细勾画缠枝花叶与题款' : '陶轮已恢复匀速旋转，适合拉圈绘带');
+    }
+}
+
+function clearQinghuaPaint() {
+    savePotterySnapshot();
+    paintUVCtx.clearRect(0, 0, UV_W, UV_H);
+    uvDirty = true;
+    ensurePotteryRender();
+    if (typeof showToast === 'function') {
+        showToast('已清空坯体手绘青花料迹');
+    }
+}
+
 const SLICE_COUNT = 44;
 let clayRadii = [];
 let targetRadii = [];
-let customBrushRings = []; // 记录用户在每个切片高度手绘的青花/鎏金浓度 [0~1]
 let clayRotationAngle = 0;
 let isFired = false;
 let currentClayGlaze = 'tianqing';
@@ -255,6 +346,12 @@ const vesselPresets = {
 };
 
 let isPotteryVisible = true;
+function ensurePotteryRender() {
+    if (!potCanvas || document.hidden) return;
+    isPotteryVisible = true;
+    if (!potAnimId) potAnimLoop();
+}
+
 function setupPotteryVisibilityObserver() {
     if (!potCanvas) return;
     const resumeIfReady = () => {
@@ -269,7 +366,7 @@ function setupPotteryVisibilityObserver() {
             const wasVisible = isPotteryVisible;
             isPotteryVisible = entries[0].isIntersecting;
             if (!wasVisible && isPotteryVisible) resumeIfReady();
-        }, { threshold: 0.05 });
+        }, { threshold: 0.01, rootMargin: '240px 0px' });
         observer.observe(potCanvas);
     }
     if (!potCanvas.dataset.potVisBound) {
@@ -305,7 +402,9 @@ function resetClay(silent = false) {
     savePotterySnapshot();
     clayRadii = [];
     targetRadii = [];
-    customBrushRings = new Array(SLICE_COUNT).fill(0);
+    paintUVCtx.clearRect(0, 0, UV_W, UV_H);
+    renderPresetPatternUV();
+    uvDirty = true;
     isFired = false;
     for (let i = 0; i < SLICE_COUNT; i++) {
         const t = i / (SLICE_COUNT - 1);
@@ -315,6 +414,7 @@ function resetClay(silent = false) {
     }
     updateFiringBadge('高岭土湿坯 · 旋转塑形中');
     updatePotteryLiveMetrics();
+    if (!silent) ensurePotteryRender();
     if (!silent && typeof showToast === 'function') {
         showToast('已重置为标准高岭土泥料，可自由向内收束或向外拉伸！');
     }
@@ -368,6 +468,7 @@ function applyPresetVessel(presetName) {
     const names = { meiping: '宋定窑梅瓶', vase: '明青花玉壶春瓶', gourd: '大吉葫芦瓶', bowl: '建窑斗茶盏' };
     updateFiringBadge(`经典器型 · ${names[presetName] || '生坯'}塑形`);
     updatePotteryLiveMetrics();
+    ensurePotteryRender();
     playPorcelainChime(1720);
     if (typeof showToast === 'function') {
         showToast(`✨ 已辅助拉出【${names[presetName]}】黄金比例胎骨曲线！`);
@@ -385,6 +486,9 @@ function setPotPattern(patternKey) {
             btn.classList.add('bg-yuebai', 'text-text-body');
         }
     });
+    renderPresetPatternUV();
+    uvDirty = true;
+    ensurePotteryRender();
     playPorcelainChime(2150);
     const pNames = {
         none: '素面玉肌 (极简无纹)',
@@ -397,6 +501,263 @@ function setPotPattern(patternKey) {
     }
 }
 
+/** 绘制景德镇青花预设柱面 UV 贴图（口沿双弦 + 如意云肩 + 缠枝宝相莲 + 仰莲足纹） */
+function renderPresetQinghuaUV(ctx, W, H) {
+    const drawBand = (yRatio, lw = 1.7, alpha = 0.88) => {
+        ctx.save();
+        ctx.strokeStyle = `rgba(17, 48, 118, ${alpha})`;
+        ctx.lineWidth = lw;
+        ctx.beginPath();
+        ctx.moveTo(0, yRatio * H);
+        ctx.lineTo(W, yRatio * H);
+        ctx.stroke();
+        ctx.restore();
+    };
+
+    // 1. 口沿与肩部双弦纹 + 辅助分隔双弦纹
+    drawBand(0.035, 2.0, 0.92);
+    drawBand(0.055, 1.2, 0.78);
+    drawBand(0.195, 1.8, 0.88);
+    drawBand(0.215, 1.1, 0.72);
+    drawBand(0.765, 1.4, 0.82);
+    drawBand(0.785, 2.0, 0.90);
+    drawBand(0.955, 2.2, 0.92);
+
+    // 2. 如意云头肩纹（8组无缝垂挂）
+    const collarCount = 8;
+    const collarStep = W / collarCount;
+    for (let i = -1; i <= collarCount; i++) {
+        const cx = (i + 0.5) * collarStep;
+        const topY = 0.062 * H;
+        const botY = 0.184 * H;
+        const halfW = collarStep * 0.44;
+        ctx.save();
+        const grad = ctx.createLinearGradient(cx, topY, cx, botY);
+        grad.addColorStop(0, 'rgba(34, 78, 162, 0.48)');
+        grad.addColorStop(1, 'rgba(18, 52, 126, 0.18)');
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = 'rgba(16, 44, 110, 0.88)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(cx - halfW, topY);
+        ctx.bezierCurveTo(cx - halfW * 0.95, topY + (botY - topY) * 0.55, cx - halfW * 0.42, botY - 4, cx, botY);
+        ctx.bezierCurveTo(cx + halfW * 0.42, botY - 4, cx + halfW * 0.95, topY + (botY - topY) * 0.55, cx + halfW, topY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 云头内卷小 trefoil 留白线刻
+        ctx.strokeStyle = 'rgba(15, 40, 102, 0.78)';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.arc(cx, topY + (botY - topY) * 0.44, 4.5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(28, 22, 24, 0.85)';
+        ctx.beginPath();
+        ctx.arc(cx, botY - 3, 1.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // 3. 主腹缠枝蔓藤（连续正弦 S-曲线贯穿 0..W）
+    ctx.save();
+    ctx.strokeStyle = 'rgba(18, 50, 122, 0.88)';
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    const midY = 0.49 * H;
+    const amp = 0.145 * H;
+    for (let x = 0; x <= W; x += 4) {
+        const y = midY + Math.sin((x / W) * Math.PI * 4) * amp;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // 副枝卷草嫩叶（顺蔓滋生）
+    const drawLeaf = (lx, ly, angle, len) => {
+        ctx.save();
+        ctx.translate(lx, ly);
+        ctx.rotate(angle);
+        const lGrad = ctx.createLinearGradient(0, 0, len, 0);
+        lGrad.addColorStop(0, 'rgba(18, 48, 118, 0.90)');
+        lGrad.addColorStop(0.6, 'rgba(42, 82, 165, 0.65)');
+        lGrad.addColorStop(1, 'rgba(20, 48, 115, 0.85)');
+        ctx.fillStyle = lGrad;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(len * 0.45, -len * 0.34, len, -len * 0.08);
+        ctx.quadraticCurveTo(len * 0.55, len * 0.24, 0, 0);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(14, 38, 96, 0.88)';
+        ctx.lineWidth = 0.9;
+        ctx.stroke();
+        ctx.restore();
+    };
+
+    const leafSites = 16;
+    for (let i = 0; i < leafSites; i++) {
+        const x = (i + 0.35) * (W / leafSites);
+        const phase = (x / W) * Math.PI * 4;
+        const y = midY + Math.sin(phase) * amp;
+        const dir = i % 2 === 0 ? -1 : 1;
+        drawLeaf(x, y, dir * 0.72 - 0.15, 19);
+        drawLeaf(x + 8, y + dir * 2, dir * 1.18, 13);
+    }
+    ctx.restore();
+
+    // 4. 四朵宣德宝相缠枝莲花（等距分布 360°，分水浓淡过渡 + 苏麻离青铁斑）
+    const drawBaoxiangLotus = (cx, cy, scale) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(scale, scale);
+
+        const outerPetals = 8;
+        for (let p = 0; p < outerPetals; p++) {
+            const a = (p / outerPetals) * Math.PI * 2;
+            ctx.save();
+            ctx.rotate(a);
+            const pGrad = ctx.createRadialGradient(0, -18, 2, 0, -18, 14);
+            pGrad.addColorStop(0, 'rgba(54, 96, 178, 0.32)');
+            pGrad.addColorStop(0.75, 'rgba(20, 56, 134, 0.78)');
+            pGrad.addColorStop(1, 'rgba(14, 38, 96, 0.92)');
+            ctx.fillStyle = pGrad;
+            ctx.strokeStyle = 'rgba(14, 38, 96, 0.95)';
+            ctx.lineWidth = 1.25;
+            ctx.beginPath();
+            ctx.moveTo(-5.5, -10);
+            ctx.quadraticCurveTo(-9.5, -24, 0, -30);
+            ctx.quadraticCurveTo(9.5, -24, 5.5, -10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // 内层重瓣莲蓬
+        ctx.fillStyle = 'rgba(22, 58, 136, 0.82)';
+        ctx.strokeStyle = 'rgba(14, 36, 92, 0.95)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 10.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 莲心留白圈与莲子点染
+        ctx.fillStyle = 'rgba(240, 245, 250, 0.88)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 5.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(18, 34, 72, 0.95)';
+        for (let s = 0; s < 5; s++) {
+            const sa = (s / 5) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.arc(Math.cos(sa) * 3.1, Math.sin(sa) * 3.1, 1.0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 苏麻离青铁锈结晶斑点
+        ctx.fillStyle = 'rgba(26, 20, 22, 0.78)';
+        for (let f = 0; f < 6; f++) {
+            const fa = f * 1.05 + 0.3;
+            ctx.beginPath();
+            ctx.arc(Math.cos(fa) * 20, Math.sin(fa) * 20, 1.25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+    };
+
+    const flowerCount = 4;
+    for (let f = -1; f <= flowerCount; f++) {
+        const fx = (f + 0.25) * (W / flowerCount);
+        const fy = midY + (f % 2 === 0 ? -0.10 : 0.10) * H;
+        drawBaoxiangLotus(fx, fy, 1.05);
+    }
+
+    // 5. 近足仰莲瓣纹（12瓣等距环绕）
+    const footCount = 12;
+    const footStep = W / footCount;
+    for (let i = -1; i <= footCount; i++) {
+        const cx = (i + 0.5) * footStep;
+        const yBot = 0.945 * H;
+        const yTop = 0.805 * H;
+        const halfW = footStep * 0.42;
+        ctx.save();
+        const fGrad = ctx.createLinearGradient(cx, yTop, cx, yBot);
+        fGrad.addColorStop(0, 'rgba(42, 82, 165, 0.28)');
+        fGrad.addColorStop(1, 'rgba(16, 46, 114, 0.72)');
+        ctx.fillStyle = fGrad;
+        ctx.strokeStyle = 'rgba(15, 42, 106, 0.90)';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.moveTo(cx - halfW, yBot);
+        ctx.quadraticCurveTo(cx - halfW * 0.8, yTop + 6, cx, yTop);
+        ctx.quadraticCurveTo(cx + halfW * 0.8, yTop + 6, cx + halfW, yBot);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(18, 48, 118, 0.65)';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(cx - halfW * 0.52, yBot - 2);
+        ctx.quadraticCurveTo(cx, yTop + 8, cx + halfW * 0.52, yBot - 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+/** 重绘预设纹饰柱面 UV 层 */
+function renderPresetPatternUV() {
+    presetUVCtx.clearRect(0, 0, UV_W, UV_H);
+    if (currentPotPattern === 'qinghua') {
+        renderPresetQinghuaUV(presetUVCtx, UV_W, UV_H);
+    } else if (currentPotPattern === 'lotus') {
+        // 定窑半刀泥划花莲瓣纹（双勾阳起线 + 凹刻暗影）
+        const count = 10;
+        const step = UV_W / count;
+        for (let i = -1; i <= count; i++) {
+            const cx = (i + 0.5) * step;
+            const yTop = 0.28 * UV_H;
+            const yBot = 0.82 * UV_H;
+            const hw = step * 0.42;
+            presetUVCtx.save();
+            presetUVCtx.strokeStyle = 'rgba(45, 38, 30, 0.42)';
+            presetUVCtx.lineWidth = 2.6;
+            presetUVCtx.beginPath();
+            presetUVCtx.moveTo(cx - hw, yBot);
+            presetUVCtx.quadraticCurveTo(cx, yTop - 10, cx + hw, yBot);
+            presetUVCtx.stroke();
+
+            presetUVCtx.strokeStyle = 'rgba(255, 252, 245, 0.55)';
+            presetUVCtx.lineWidth = 1.4;
+            presetUVCtx.beginPath();
+            presetUVCtx.moveTo(cx - hw + 2.5, yBot);
+            presetUVCtx.quadraticCurveTo(cx + 2, yTop - 7, cx + hw - 2.5, yBot);
+            presetUVCtx.stroke();
+            presetUVCtx.restore();
+        }
+    } else if (currentPotPattern === 'goldring') {
+        // 南宋官窑凸弦鎏金纹
+        presetUVCtx.save();
+        [0.18, 0.34, 0.56, 0.78].forEach(yr => {
+            const y = yr * UV_H;
+            const g = presetUVCtx.createLinearGradient(0, y - 3, 0, y + 3);
+            g.addColorStop(0, 'rgba(175, 132, 48, 0.90)');
+            g.addColorStop(0.5, 'rgba(250, 224, 138, 0.96)');
+            g.addColorStop(1, 'rgba(165, 120, 42, 0.90)');
+            presetUVCtx.strokeStyle = g;
+            presetUVCtx.lineWidth = 4.2;
+            presetUVCtx.beginPath();
+            presetUVCtx.moveTo(0, y);
+            presetUVCtx.lineTo(UV_W, y);
+            presetUVCtx.stroke();
+        });
+        presetUVCtx.restore();
+    }
+    uvDirty = true;
+}
+
 function selectPotGlaze(glazeKey) {
     currentClayGlaze = glazeKey;
     document.querySelectorAll('.pot-glaze-btn').forEach(btn => {
@@ -407,7 +768,15 @@ function selectPotGlaze(glazeKey) {
         }
     });
     playCrackleSound();
-    const gNames = { tianqing: '雨过天青釉', fenqing: '龙泉粉青釉', yuebai: '官窑月白釉', junhong: '钧窑玫瑰紫窑变釉', jianhei: '建盏乌金兔毫釉' };
+    ensurePotteryRender();
+    const gNames = {
+        tianqing: '雨过天青釉',
+        fenqing: '龙泉粉青釉',
+        yuebai: '官窑月白釉',
+        qinghua_white: '景德镇永宣甜白釉',
+        junhong: '钧窑玫瑰紫窑变釉',
+        jianhei: '建盏乌金兔毫釉'
+    };
     if (typeof showToast === 'function') {
         showToast(`🎨 已选配秘制矿物釉：【${gNames[glazeKey] || glazeKey}】`);
     }
@@ -425,6 +794,7 @@ function selectPotSeal(sealText) {
         }
     });
     playPorcelainChime(2480);
+    ensurePotteryRender();
     if (typeof showToast === 'function') {
         showToast(`💮 已镌刻专属器底篆刻落款：【${sealText}制】`);
     }
@@ -486,7 +856,14 @@ function firePotInKiln() {
             setTimeout(() => {
                 kilnOverlay.classList.add('hidden');
                 isFired = true;
-                updateFiringBadge('🔥 1300℃ 柴窑涅槃 · 官瓷玉成');
+                updateFiringBadge('1300℃ 柴窑涅槃 · 官瓷玉成');
+                ensurePotteryRender();
+                if (window.AppBus) {
+                    window.AppBus.emit('study:pottery-fired', {
+                        glaze: currentClayGlaze,
+                        pattern: currentPotPattern
+                    });
+                }
                 playPorcelainChime(2680);
                 setTimeout(playCrackleSound, 320);
                 setTimeout(playCrackleSound, 750);
@@ -504,6 +881,90 @@ function firePotInKiln() {
 function updateFiringBadge(text) {
     const badge = document.getElementById('pottery-status-badge');
     if (badge) badge.textContent = text;
+}
+
+/** 将自由手绘青花笔触绘制到 360° 无缝柱面 UV 画布（支持连续插值、分水晕染与铁锈点斑） */
+function stampBrushUV(u, v) {
+    const sizeScale = brushSize === 'sm' ? 0.58 : (brushSize === 'lg' ? 1.72 : 1.0);
+    const baseR = (brushStyle === 'wash' ? 11.5 : brushStyle === 'erase' ? 10.5 : brushStyle === 'iron' ? 7.0 : 4.2) * sizeScale;
+    const cx = u * UV_W;
+    const cy = v * UV_H;
+
+    // 跨接缝同步绘制 [-UV_W, 0, +UV_W]，保证 360° 旋转零接缝
+    [-UV_W, 0, UV_W].forEach(shiftX => {
+        const px = cx + shiftX;
+        if (px + baseR < -4 || px - baseR > UV_W + 4) return;
+
+        paintUVCtx.save();
+        if (brushStyle === 'erase') {
+            paintUVCtx.globalCompositeOperation = 'destination-out';
+            const eGrad = paintUVCtx.createRadialGradient(px, cy, 0, px, cy, baseR);
+            eGrad.addColorStop(0, 'rgba(0, 0, 0, 0.92)');
+            eGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            paintUVCtx.fillStyle = eGrad;
+            paintUVCtx.beginPath();
+            paintUVCtx.arc(px, cy, baseR, 0, Math.PI * 2);
+            paintUVCtx.fill();
+        } else if (brushStyle === 'wash') {
+            // 分水晕染：边缘柔化透明钴蓝水彩积淀
+            const wGrad = paintUVCtx.createRadialGradient(px, cy, baseR * 0.1, px, cy, baseR);
+            wGrad.addColorStop(0, 'rgba(42, 88, 175, 0.24)');
+            wGrad.addColorStop(0.65, 'rgba(26, 66, 146, 0.14)');
+            wGrad.addColorStop(1, 'rgba(22, 58, 132, 0)');
+            paintUVCtx.fillStyle = wGrad;
+            paintUVCtx.beginPath();
+            paintUVCtx.arc(px, cy, baseR, 0, Math.PI * 2);
+            paintUVCtx.fill();
+        } else if (brushStyle === 'iron') {
+            // 苏麻离青铁锈斑点染：深沉暗褐金属晶斑群 + 钴晕
+            const halo = paintUVCtx.createRadialGradient(px, cy, 0, px, cy, baseR * 1.15);
+            halo.addColorStop(0, 'rgba(22, 34, 68, 0.55)');
+            halo.addColorStop(1, 'rgba(18, 44, 110, 0)');
+            paintUVCtx.fillStyle = halo;
+            paintUVCtx.beginPath();
+            paintUVCtx.arc(px, cy, baseR * 1.15, 0, Math.PI * 2);
+            paintUVCtx.fill();
+
+            const speckCount = 4;
+            for (let k = 0; k < speckCount; k++) {
+                const a = Math.random() * Math.PI * 2;
+                const d = Math.random() * baseR * 0.65;
+                const sr = (0.75 + Math.random() * 1.15) * sizeScale;
+                paintUVCtx.fillStyle = k % 2 === 0 ? 'rgba(28, 19, 18, 0.88)' : 'rgba(12, 26, 58, 0.84)';
+                paintUVCtx.beginPath();
+                paintUVCtx.arc(px + Math.cos(a) * d, cy + Math.sin(a) * d, sr, 0, Math.PI * 2);
+                paintUVCtx.fill();
+            }
+        } else {
+            // 浓青勾线：饱满圆润中锋笔道
+            const oGrad = paintUVCtx.createRadialGradient(px, cy, baseR * 0.25, px, cy, baseR);
+            oGrad.addColorStop(0, 'rgba(14, 40, 102, 0.94)');
+            oGrad.addColorStop(0.75, 'rgba(20, 56, 136, 0.82)');
+            oGrad.addColorStop(1, 'rgba(22, 62, 142, 0)');
+            paintUVCtx.fillStyle = oGrad;
+            paintUVCtx.beginPath();
+            paintUVCtx.arc(px, cy, baseR, 0, Math.PI * 2);
+            paintUVCtx.fill();
+        }
+        paintUVCtx.restore();
+    });
+    uvDirty = true;
+}
+
+function strokeBrushUV(u0, v0, u1, v1) {
+    let du = u1 - u0;
+    if (du > 0.5) du -= 1;
+    if (du < -0.5) du += 1;
+    const dv = v1 - v0;
+    const distPx = Math.hypot(du * UV_W, dv * UV_H);
+    const stepPx = brushStyle === 'iron' ? 4.5 : 2.2;
+    const steps = Math.max(1, Math.min(48, Math.ceil(distPx / stepPx)));
+    for (let s = 0; s <= steps; s++) {
+        const t = s / steps;
+        const u = (((u0 + du * t) % 1) + 1) % 1;
+        const v = Math.max(0.01, Math.min(0.99, v0 + dv * t));
+        stampBrushUV(u, v);
+    }
 }
 
 function bindPotteryEvents() {
@@ -531,6 +992,7 @@ function bindPotteryEvents() {
 
         const bottomY = potCanvas.height * 0.85;
         const totalHeight = potCanvas.height * 0.67;
+        const topY = bottomY - totalHeight;
         const normalizedY = (bottomY - canvasY) / totalHeight;
         const sliceIndex = Math.floor(normalizedY * SLICE_COUNT);
 
@@ -541,34 +1003,32 @@ function bindPotteryEvents() {
             const distRatio = Math.max(0.12, Math.min(0.98, currentDist / maxRadiusPx));
 
             if (potToolMode === 'brush') {
-                // 自由手绘青花/描金笔刷模式 (支持勾线/分水/修胚)
-                for (let offset = -2; offset <= 2; offset++) {
-                    const idx = sliceIndex + offset;
-                    if (idx >= 0 && idx < SLICE_COUNT) {
-                        if (brushStyle === 'erase') {
-                            customBrushRings[idx] = Math.max(0, (customBrushRings[idx] || 0) - 0.45);
-                        } else if (brushStyle === 'wash') {
-                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.18);
-                        } else {
-                            customBrushRings[idx] = Math.min(1.0, (customBrushRings[idx] || 0) + 0.45);
-                        }
-                    }
+                // 360° 柱面反投影手绘青花：勾线 / 分水 / 点斑 / 刮料
+                const sliceRx = Math.max(10, (clayRadii[sliceIndex] || 0.45) * maxRadiusPx);
+                const nx = Math.max(-0.96, Math.min(0.96, (canvasX - centerX) / sliceRx));
+                const alpha = Math.asin(nx);
+                const theta = clayRotationAngle + alpha;
+                const u = (((theta / (Math.PI * 2)) % 1) + 1) % 1;
+                const v = Math.max(0.01, Math.min(0.99, (canvasY - topY) / totalHeight));
+                if (lastBrushUV) {
+                    strokeBrushUV(lastBrushUV.u, lastBrushUV.v, u, v);
+                } else {
+                    stampBrushUV(u, v);
                 }
+                lastBrushUV = { u, v };
             } else {
-                // 五大造物塑形模式：收束 / 鼓腹 / 跟随修光揉搓
+                lastBrushUV = null;
+                // 造物塑形模式：收束 / 鼓腹 / 跟随修光揉搓
                 const influenceRange = 5;
                 for (let offset = -influenceRange; offset <= influenceRange; offset++) {
                     const idx = sliceIndex + offset;
                     if (idx >= 0 && idx < SLICE_COUNT) {
                         const weight = Math.cos((offset / (influenceRange + 0.5)) * (Math.PI / 2));
                         if (potToolMode === 'push') {
-                            // 向内收束：手指或竹刀由外向内压塑
                             targetRadii[idx] = Math.max(0.15, targetRadii[idx] - 0.042 * weight);
                         } else if (potToolMode === 'pull') {
-                            // 向外鼓腹：手指自内膛向外顶出饱满曲线
                             targetRadii[idx] = Math.min(0.98, targetRadii[idx] + 0.042 * weight);
                         } else {
-                            // 跟随修光 / 指尖揉搓：泥体边缘实时柔顺跟随指尖拖拽
                             targetRadii[idx] += (distRatio - targetRadii[idx]) * 0.32 * weight;
                             targetRadii[idx] = Math.max(0.15, Math.min(0.98, targetRadii[idx]));
                         }
@@ -577,15 +1037,17 @@ function bindPotteryEvents() {
                 updatePotteryLiveMetrics();
             }
 
-            for (let p = 0; p < 2; p++) {
-                splashParticles.push({
-                    x: canvasX + (Math.random() - 0.5) * 14,
-                    y: canvasY + (Math.random() - 0.5) * 10,
-                    vx: (canvasX > centerX ? 1 : -1) * (1.5 + Math.random() * 2.5),
-                    vy: -1.5 - Math.random() * 2.2,
-                    r: 1.5 + Math.random() * 2.5,
-                    alpha: 0.85
-                });
+            if (potToolMode !== 'brush') {
+                for (let p = 0; p < 2; p++) {
+                    splashParticles.push({
+                        x: canvasX + (Math.random() - 0.5) * 14,
+                        y: canvasY + (Math.random() - 0.5) * 10,
+                        vx: (canvasX > centerX ? 1 : -1) * (1.5 + Math.random() * 2.5),
+                        vy: -1.5 - Math.random() * 2.2,
+                        r: 1.5 + Math.random() * 2.5,
+                        alpha: 0.85
+                    });
+                }
             }
         }
     };
@@ -593,6 +1055,7 @@ function bindPotteryEvents() {
     potCanvas.addEventListener('mousedown', (e) => {
         savePotterySnapshot();
         isInteractingPot = true;
+        lastBrushUV = null;
         initAudioContext();
         handlePointerAction(e);
     });
@@ -601,12 +1064,14 @@ function bindPotteryEvents() {
     });
     window.addEventListener('mouseup', () => {
         isInteractingPot = false;
+        lastBrushUV = null;
         pointerPos.active = false;
     });
 
     potCanvas.addEventListener('touchstart', (e) => {
         savePotterySnapshot();
         isInteractingPot = true;
+        lastBrushUV = null;
         initAudioContext();
         handlePointerAction(e);
         if (e.cancelable) e.preventDefault();
@@ -617,6 +1082,7 @@ function bindPotteryEvents() {
     }, { passive: false });
     potCanvas.addEventListener('touchend', () => {
         isInteractingPot = false;
+        lastBrushUV = null;
         pointerPos.active = false;
     });
 }
@@ -636,6 +1102,8 @@ function setPotTool(mode) {
     if (brushGroup) {
         brushGroup.classList.toggle('hidden', mode !== 'brush');
     }
+    updateWheelSpeedLabel();
+    ensurePotteryRender();
     const toasts = {
         push: '🖐️ 已切换至【向内收束】：在泥坯表面拖拽使器身向内收拢',
         pull: '🖐️ 已切换至【向外鼓腹】：在泥坯表面拖拽使器腹向外丰满饱满',
@@ -663,7 +1131,10 @@ function potAnimLoop(now) {
     for (let i = 0; i < SLICE_COUNT; i++) {
         clayRadii[i] += (targetRadii[i] - clayRadii[i]) * 0.14;
     }
-    clayRotationAngle += 0.055;
+    if (!wheelPaused) {
+        const spinSpeed = potToolMode === 'brush' ? (isInteractingPot ? 0.004 : 0.015) : 0.055;
+        clayRotationAngle += spinSpeed;
+    }
 
     const centerX = w / 2;
     const bottomY = h * 0.85;
@@ -752,6 +1223,12 @@ function potAnimLoop(now) {
             bodyGrad.addColorStop(0.44, '#ffffff');
             bodyGrad.addColorStop(0.74, '#9eb0b8');
             bodyGrad.addColorStop(1.0, '#516066');
+        } else if (currentClayGlaze === 'qinghua_white') {
+            bodyGrad.addColorStop(0.0, '#9aa3a8');
+            bodyGrad.addColorStop(0.26, '#eef2f3');
+            bodyGrad.addColorStop(0.44, '#ffffff');
+            bodyGrad.addColorStop(0.74, '#dce2e6');
+            bodyGrad.addColorStop(1.0, '#7d858a');
         } else if (currentClayGlaze === 'junhong') {
             bodyGrad.addColorStop(0.0, '#3e1229');
             bodyGrad.addColorStop(0.28, '#8a2f5d');
@@ -791,124 +1268,118 @@ function potAnimLoop(now) {
     potCtx.fill();
     potCtx.clip();
 
-    // 纵向曲率明暗
-    for (let i = 1; i < SLICE_COUNT - 1; i++) {
-        const dr = clayRadii[i + 1] - clayRadii[i - 1];
-        const y = leftPts[i].y;
-        if (dr > 0.01) {
-            potCtx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.22, dr * 1.6)})`;
-            potCtx.fillRect(centerX - maxRadiusPx, y - stepH * 0.6, maxRadiusPx * 2, stepH * 1.2);
-        } else if (dr < -0.01) {
-            potCtx.fillStyle = `rgba(0, 0, 0, ${Math.min(0.22, -dr * 1.4)})`;
-            potCtx.fillRect(centerX - maxRadiusPx, y - stepH * 0.6, maxRadiusPx * 2, stepH * 1.2);
+    // 纵向曲率平滑渐变明暗（按 stopT 升序排布并收敛甜白釉暗影阈值）
+    const topY = leftPts[topIdx].y;
+    const vertGrad = potCtx.createLinearGradient(0, topY, 0, bottomY);
+    const isSweetWhite = isFired && currentClayGlaze === 'qinghua_white';
+    const maxLight = isSweetWhite ? 0.12 : (isFired ? 0.16 : 0.20);
+    const maxDark = isSweetWhite ? 0.08 : (isFired ? 0.13 : 0.20);
+    for (let i = SLICE_COUNT - 1; i >= 0; i -= 4) {
+        const stopT = Math.max(0, Math.min(1, (SLICE_COUNT - 1 - i) / (SLICE_COUNT - 1)));
+        const prev = clayRadii[Math.max(0, i - 1)];
+        const next = clayRadii[Math.min(SLICE_COUNT - 1, i + 1)];
+        const dr = next - prev;
+        if (dr > 0.008) {
+            vertGrad.addColorStop(stopT, `rgba(255, 255, 255, ${Math.min(maxLight, dr * 1.4)})`);
+        } else if (dr < -0.008) {
+            vertGrad.addColorStop(stopT, `rgba(0, 0, 0, ${Math.min(maxDark, -dr * 1.3)})`);
+        } else {
+            vertGrad.addColorStop(stopT, 'rgba(0, 0, 0, 0)');
         }
     }
+    vertGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    potCtx.fillStyle = vertGrad;
+    potCtx.fillRect(centerX - maxRadiusPx, topY, maxRadiusPx * 2, totalHeight + 2);
 
-    // 旋转拉坯旋纹
-    potCtx.strokeStyle = isFired ? 'rgba(255, 255, 255, 0.10)' : 'rgba(30, 22, 16, 0.16)';
-    potCtx.lineWidth = 1.1;
-    for (let i = 2; i < SLICE_COUNT - 1; i += 2) {
-        const y = leftPts[i].y;
-        const rx = leftPts[i].rx;
-        potCtx.beginPath();
-        potCtx.ellipse(centerX, y, rx * 0.98, 7, 0, 0, Math.PI);
-        potCtx.stroke();
-    }
-
-    // 用户自由手绘的青花环带与花叶纹
-    for (let i = 1; i < SLICE_COUNT - 1; i++) {
-        const intensity = customBrushRings[i] || 0;
-        if (intensity > 0.05) {
+    // 旋转拉坯旋纹（成瓷甜白釉面柔化旋纹以突出釉下青花）
+    if (!isFired || currentClayGlaze !== 'qinghua_white') {
+        potCtx.strokeStyle = isFired ? 'rgba(255, 255, 255, 0.07)' : 'rgba(30, 22, 16, 0.14)';
+        potCtx.lineWidth = 1.0;
+        for (let i = 2; i < SLICE_COUNT - 1; i += 2) {
             const y = leftPts[i].y;
             const rx = leftPts[i].rx;
-            potCtx.strokeStyle = `rgba(24, 62, 136, ${Math.min(0.88, intensity)})`;
-            potCtx.lineWidth = 3.2;
             potCtx.beginPath();
-            potCtx.ellipse(centerX, y, rx, 6.5, 0, 0, Math.PI);
+            potCtx.ellipse(centerX, y, rx * 0.98, 7, 0, 0, Math.PI);
             potCtx.stroke();
         }
     }
 
-    // 预设纹饰
-    if (currentPotPattern === 'lotus') {
-        potCtx.strokeStyle = isFired ? 'rgba(255, 255, 255, 0.55)' : 'rgba(55, 45, 35, 0.45)';
-        potCtx.lineWidth = 2.0;
-        const midStart = Math.floor(SLICE_COUNT * 0.25);
-        const midEnd = Math.floor(SLICE_COUNT * 0.72);
-        const yTop = leftPts[midEnd].y;
-        const yBot = leftPts[midStart].y;
-        const petalCount = 8;
-        for (let p = 0; p < petalCount; p++) {
-            const ang = (clayRotationAngle * 0.5 + (p / petalCount) * Math.PI * 2) % (Math.PI * 2);
-            if (Math.sin(ang) > -0.2) {
-                const xOffset = Math.cos(ang) * leftPts[Math.floor((midStart + midEnd) / 2)].rx * 0.85;
-                potCtx.beginPath();
-                potCtx.moveTo(centerX + xOffset - 18, yBot);
-                potCtx.quadraticCurveTo(centerX + xOffset, yTop - 12, centerX + xOffset + 18, yBot);
-                potCtx.stroke();
-            }
-        }
-    } else if (currentPotPattern === 'qinghua') {
-        const qColor = isFired ? 'rgba(22, 58, 128, 0.85)' : 'rgba(38, 62, 98, 0.62)';
-        potCtx.strokeStyle = qColor;
-        potCtx.fillStyle = qColor;
-        [6, 8, 18, 28, 35, 38].forEach(idx => {
-            if (leftPts[idx]) {
-                potCtx.lineWidth = 2.2;
-                potCtx.beginPath();
-                potCtx.ellipse(centerX, leftPts[idx].y, leftPts[idx].rx, 6, 0, 0, Math.PI);
-                potCtx.stroke();
-            }
-        });
-        const midIdx = Math.floor(SLICE_COUNT * 0.48);
-        const midY = leftPts[midIdx].y;
-        const midRx = leftPts[midIdx].rx;
-        for (let f = 0; f < 6; f++) {
-            const ang = (clayRotationAngle * 0.6 + (f / 6) * Math.PI * 2) % (Math.PI * 2);
-            if (Math.sin(ang) > 0) {
-                const fx = centerX + Math.cos(ang) * midRx * 0.82;
-                const fy = midY + Math.sin(ang * 2) * 8;
-                const scaleX = Math.max(0.3, Math.sin(ang));
-                potCtx.save();
-                potCtx.translate(fx, fy);
-                potCtx.scale(scaleX, 1);
-                potCtx.beginPath();
-                potCtx.arc(0, 0, 14, 0, Math.PI * 2);
-                potCtx.stroke();
-                for (let pet = 0; pet < 6; pet++) {
-                    const pa = (pet / 6) * Math.PI * 2;
-                    potCtx.beginPath();
-                    potCtx.arc(Math.cos(pa) * 18, Math.sin(pa) * 18, 5, 0, Math.PI * 2);
-                    potCtx.fill();
-                }
-                potCtx.restore();
-            }
-        }
-    } else if (currentPotPattern === 'goldring') {
-        potCtx.strokeStyle = 'rgba(225, 185, 95, 0.90)';
-        potCtx.lineWidth = 3.2;
-        [10, 17, 24, 33].forEach(idx => {
-            if (leftPts[idx]) {
-                potCtx.beginPath();
-                potCtx.ellipse(centerX, leftPts[idx].y, leftPts[idx].rx, 7, 0, 0, Math.PI);
-                potCtx.stroke();
-            }
-        });
+    // 4.5 柱面 UV 透视重投影：将预设纹饰 + 手绘青花包裹贴合到 44 层可变曲率器腹
+    if (uvDirty) {
+        uvTiledCtx.clearRect(0, 0, UV_W * 2, UV_H);
+        uvTiledCtx.drawImage(presetUVCanvas, 0, 0);
+        uvTiledCtx.drawImage(paintUVCanvas, 0, 0);
+        uvTiledCtx.drawImage(presetUVCanvas, UV_W, 0);
+        uvTiledCtx.drawImage(paintUVCanvas, UV_W, 0);
+        uvDirty = false;
     }
+
+    hemiCtx.clearRect(0, 0, HEMI_W, HEMI_H);
+    for (let s = 0; s < HEMI_STRIPS; s++) {
+        const nx0 = -1 + (2 * s) / HEMI_STRIPS;
+        const nx1 = -1 + (2 * (s + 1)) / HEMI_STRIPS;
+        const alpha0 = Math.asin(nx0);
+        const alpha1 = Math.asin(nx1);
+        const u0 = (((clayRotationAngle + alpha0) / (Math.PI * 2)) % 1 + 1) % 1;
+        const du = (alpha1 - alpha0) / (Math.PI * 2);
+        const sx = u0 * UV_W;
+        const sw = Math.max(0.5, du * UV_W);
+        const dx0 = Math.round((nx0 + 1) * 0.5 * HEMI_W);
+        const dx1 = Math.round((nx1 + 1) * 0.5 * HEMI_W);
+        const dw = Math.max(1, dx1 - dx0);
+        hemiCtx.drawImage(uvTiledCanvas, sx, 0, sw, UV_H, dx0, 0, dw, HEMI_H);
+    }
+
+    // 生坯态钴料呈灰褐青色，高温窑烧后还原呈浓艳宝蓝并自带釉下融合深度
+    if (!isFired && currentPotPattern !== 'goldring') {
+        hemiCtx.save();
+        hemiCtx.globalCompositeOperation = 'source-atop';
+        hemiCtx.fillStyle = 'rgba(72, 66, 58, 0.54)';
+        hemiCtx.fillRect(0, 0, HEMI_W, HEMI_H);
+        hemiCtx.restore();
+    }
+
+    potCtx.save();
+    if (isFired && currentPotPattern !== 'goldring') {
+        potCtx.globalCompositeOperation = 'multiply';
+        potCtx.globalAlpha = currentClayGlaze === 'jianhei' ? 0.45 : 0.94;
+    } else {
+        potCtx.globalCompositeOperation = 'source-over';
+        potCtx.globalAlpha = isFired ? 0.94 : 0.82;
+    }
+    for (let i = 0; i < SLICE_COUNT - 1; i++) {
+        const yBotPx = i === 0 ? Math.ceil(leftPts[i].y) : Math.round(leftPts[i].y);
+        const yTopPx = i === SLICE_COUNT - 2 ? Math.floor(leftPts[i + 1].y) : Math.round(leftPts[i + 1].y);
+        const sliceH = Math.max(1, yBotPx - yTopPx);
+        const rxRow = Math.max(leftPts[i].rx, leftPts[i + 1].rx) * 1.025;
+        const vTop = (SLICE_COUNT - 1 - (i + 1)) / (SLICE_COUNT - 1);
+        const vBot = (SLICE_COUNT - 1 - i) / (SLICE_COUNT - 1);
+        const sy = vTop * HEMI_H;
+        const sh = Math.max(1, (vBot - vTop) * HEMI_H);
+        potCtx.drawImage(
+            hemiCanvas,
+            0, sy, HEMI_W, sh,
+            centerX - rxRow, yTopPx, rxRow * 2, sliceH
+        );
+    }
+    potCtx.restore();
 
     if (isFired) {
-        potCtx.strokeStyle = 'rgba(40, 32, 26, 0.30)';
-        potCtx.lineWidth = 1.0;
-        for (let c = 0; c < 14; c++) {
-            const si = (c * 3 + 2) % (SLICE_COUNT - 4);
-            const y1 = leftPts[si].y;
-            const y2 = leftPts[si + 3].y;
-            const x1 = centerX + Math.sin(c * 1.7 + clayRotationAngle * 0.2) * leftPts[si].rx * 0.7;
-            const x2 = x1 + Math.cos(c * 2.3) * 28;
-            potCtx.beginPath();
-            potCtx.moveTo(x1, y1);
-            potCtx.lineTo(x2, y2);
-            potCtx.stroke();
+        // 仅宋代哥/汝/官/粉青名釉保留标志性开片冰裂纹，景德镇甜白釉保持洁净无开片玉感
+        if (currentClayGlaze === 'tianqing' || currentClayGlaze === 'fenqing' || currentClayGlaze === 'yuebai') {
+            potCtx.strokeStyle = 'rgba(40, 32, 26, 0.22)';
+            potCtx.lineWidth = 1.0;
+            for (let c = 0; c < 14; c++) {
+                const si = (c * 3 + 2) % (SLICE_COUNT - 4);
+                const y1 = leftPts[si].y;
+                const y2 = leftPts[si + 3].y;
+                const x1 = centerX + Math.sin(c * 1.7 + clayRotationAngle * 0.2) * leftPts[si].rx * 0.7;
+                const x2 = x1 + Math.cos(c * 2.3) * 28;
+                potCtx.beginPath();
+                potCtx.moveTo(x1, y1);
+                potCtx.lineTo(x2, y2);
+                potCtx.stroke();
+            }
         }
 
         const specGrad = potCtx.createLinearGradient(centerX - maxRadiusPx * 0.55, 0, centerX - maxRadiusPx * 0.15, 0);
@@ -989,7 +1460,7 @@ function potAnimLoop(now) {
 function downloadPotteryArtwork() {
     if (!potCanvas) return;
     const metrics = updatePotteryLiveMetrics() || { heightCm: '24.2', mouthCm: '6.8', bellyCm: '15.6', volMl: 860, score: 96 };
-    const gNames = { tianqing: '北宋汝窑雨过天青釉', fenqing: '南宋龙泉粉青如玉釉', yuebai: '宋官窑月白莹霜釉', junhong: '禹州钧窑玫瑰紫窑变釉', jianhei: '建阳建窑乌金兔毫釉' };
+    const gNames = { tianqing: '北宋汝窑雨过天青釉', fenqing: '南宋龙泉粉青如玉釉', yuebai: '宋官窑月白莹霜釉', qinghua_white: '景德镇永宣甜白青花釉', junhong: '禹州钧窑玫瑰紫窑变釉', jianhei: '建阳建窑乌金兔毫釉' };
     const pNames = { none: '素面玉肌', lotus: '定窑半刀泥浮雕莲瓣', qinghua: '宣德苏麻离青缠枝莲', goldring: '南宋官窑凸弦鎏金纹' };
 
     const poster = document.createElement('canvas');
@@ -1014,10 +1485,10 @@ function downloadPotteryArtwork() {
     // 顶部博物院藏品抬头
     ctx.fillStyle = '#E5C888';
     ctx.font = 'bold 28px "Noto Serif SC", "Songti SC", serif';
-    ctx.fillText('华夏器道 · 天青泥火 — 陶然天成数字藏品证书', 56, 86);
+    ctx.fillText('华夏器道 · 天青泥火 — 陶然天成造物典藏证书', 56, 86);
     ctx.fillStyle = '#8BC2CE';
     ctx.font = '14px monospace';
-    ctx.fillText(`DIGITAL TWIN NFT ID: #TC-${Date.now().toString().slice(-6)}   |   1300℃ DRAGON KILN CERTIFIED`, 56, 114);
+    ctx.fillText(`STUDIO ARCHIVE ID: #TC-${Date.now().toString().slice(-6)}   |   1300℃ DRAGON KILN CERTIFIED`, 56, 114);
 
     // 居中绘制拉坯作品画布
     ctx.drawImage(potCanvas, 160, 140, 560, 450);
@@ -1072,6 +1543,9 @@ window.setPotTool = setPotTool;
 window.downloadPotteryArtwork = downloadPotteryArtwork;
 window.undoPotteryAction = undoPotteryAction;
 window.setBrushStyle = setBrushStyle;
+window.setBrushSize = setBrushSize;
+window.toggleWheelPause = toggleWheelPause;
+window.clearQinghuaPaint = clearQinghuaPaint;
 
 window.playPorcelainChime = playPorcelainChime;
 window.playCrackleSound = playCrackleSound;

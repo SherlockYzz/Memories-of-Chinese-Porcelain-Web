@@ -62,13 +62,20 @@
                             </button>
                         </div>
 
-                        <!-- 撤销操作与青花笔法切换 (浓青勾线/分水晕染/修胚刮除) -->
-                        <div class="flex items-center justify-between gap-2 pt-2 border-t border-border-light/60">
-                            <div id="pot-brush-style-group" class="hidden flex items-center gap-1.5 text-xs font-serif-cn">
+                        <!-- 撤销操作与青花笔法切换 (勾线/分水/点斑/刮料 · 笔号与转盘定格) -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border-light/60">
+                            <div id="pot-brush-style-group" class="hidden flex flex-wrap items-center gap-1.5 text-xs font-serif-cn">
                                 <span class="text-text-muted text-[11px]">笔法：</span>
                                 <button class="brush-style-btn px-2 py-1 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-style="outline" data-action="setBrushStyle('outline')">勾线</button>
                                 <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="wash" data-action="setBrushStyle('wash')">分水</button>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="iron" data-action="setBrushStyle('iron')">点斑</button>
                                 <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="erase" data-action="setBrushStyle('erase')">刮料</button>
+                                <span class="text-text-muted text-[11px] ml-1">毫锋：</span>
+                                <button class="brush-size-btn px-1.5 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-size="sm" data-action="setBrushSize('sm')">细</button>
+                                <button class="brush-size-btn px-1.5 py-0.5 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-size="md" data-action="setBrushSize('md')">中</button>
+                                <button class="brush-size-btn px-1.5 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-size="lg" data-action="setBrushSize('lg')">粗</button>
+                                <button id="pot-wheel-pause-btn" class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors ml-1" data-action="toggleWheelPause()">暂停转盘</button>
+                                <button class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-action="clearQinghuaPaint()">清空</button>
                             </div>
                             <div class="flex items-center gap-2 ml-auto">
                                 <button id="btn-pot-undo" data-action="undoPotteryAction()" class="px-2.5 py-1 rounded-lg bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 shadow-sm" title="撤销上一步拉坯或手绘笔触 (快捷键 Ctrl+Z)">
@@ -103,12 +110,13 @@
                     <div class="grid grid-cols-2 gap-3 items-center">
                         <div>
                             <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【四、选配秘制矿物釉】</h4>
-                            <div class="flex items-center gap-2">
-                                <button class="pot-glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" data-action="selectPotGlaze('tianqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b8dce2, #6f97a0);" title="雨过天青釉"></button>
-                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="fenqing" data-action="selectPotGlaze('fenqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b4dbca, #618d7c);" title="龙泉粉青釉"></button>
-                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="yuebai" data-action="selectPotGlaze('yuebai')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #f0f6f8, #9eb2ba);" title="官窑月白釉"></button>
-                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="junhong" data-action="selectPotGlaze('junhong')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #d46598, #631d3f);" title="钧窑玫瑰紫釉"></button>
-                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="jianhei" data-action="selectPotGlaze('jianhei')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #4d6485, #171314);" title="建盏乌金兔毫釉"></button>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button class="pot-glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" data-action="selectPotGlaze('tianqing')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #b8dce2, #6f97a0);" title="雨过天青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="fenqing" data-action="selectPotGlaze('fenqing')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #b4dbca, #618d7c);" title="龙泉粉青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="yuebai" data-action="selectPotGlaze('yuebai')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #f0f6f8, #9eb2ba);" title="官窑月白釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="qinghua_white" data-action="selectPotGlaze('qinghua_white')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #ffffff, #d9dfe2);" title="景德镇永宣甜白釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="junhong" data-action="selectPotGlaze('junhong')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #d46598, #631d3f);" title="钧窑玫瑰紫釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="jianhei" data-action="selectPotGlaze('jianhei')" style="width:1.7rem;height:1.7rem;background: radial-gradient(circle at 35% 35%, #4d6485, #171314);" title="建盏乌金兔毫釉"></button>
                             </div>
                         </div>
 
