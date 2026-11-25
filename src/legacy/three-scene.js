@@ -2722,6 +2722,7 @@ function createDimensionLines() {
 }
 
 function openMicroscopeView() {
+    if (typeof window.renderMicroscopeLens === 'function') window.renderMicroscopeLens();
     const modal = document.getElementById('microscope-modal');
     if (modal) {
         modal.classList.add('active');

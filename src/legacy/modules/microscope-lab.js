@@ -255,10 +255,13 @@
         ctx.stroke();
     }
 
+    let renderedOnce = false;
+
     function renderMicroscopeLens() {
         const descContainer = document.getElementById('microscope-desc-card');
         const tabsContainer = document.getElementById('microscope-preset-tabs');
         if (typeof microscopePresets === 'undefined') return;
+        renderedOnce = true;
 
         const p = microscopePresets.find(item => item.id === currentMicroPreset) || microscopePresets[0];
 
@@ -363,10 +366,12 @@
         id: 'microscope-lab',
         phase: 3,
         init: function () {
-            renderMicroscopeLens();
+            // 显微镜弹窗默认闭合，首次打开时再绘制 320x320 粒子视口，避免阻塞首屏启动
             bindMicroscopeCanvasEvents();
         },
-        onLangChange: renderMicroscopeLens,
+        onLangChange: function () {
+            if (renderedOnce) renderMicroscopeLens();
+        },
         publicApi: {
             renderMicroscopeLens,
             adjustMicroscopeFocus,
@@ -375,6 +380,7 @@
             toggleMicrometerReticle
         },
         globalBindings: {
+            renderMicroscopeLens,
             adjustMicroscopeFocus,
             selectMicroscopePreset,
             toggleMicroscopeLightMode,

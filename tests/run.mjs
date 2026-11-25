@@ -150,19 +150,22 @@ try {
             const fSlider = document.getElementById('firing-temp-slider');
             const pStamps = document.querySelectorAll('#passport-mount .passport-stamp').length;
             const credCards = document.querySelectorAll('#credits-groups-container article').length;
+            const credCopyright = document.querySelector('#credits-groups-container [data-credits-copyright]')?.textContent || '';
             return {
                 crackleOk: !!(cCanvas && cCanvas.width > 0),
                 kintsugiOk: !!(kCanvas && kCanvas.width > 0),
                 firingOk: !!fSlider,
                 passportStamps: pStamps,
-                creditsCount: credCards
+                creditsCount: credCards,
+                credCopyright
             };
         });
         assert.equal(mounted.crackleOk, true, '开片模拟器未挂载');
         assert.equal(mounted.kintsugiOk, true, '金缮修复未挂载');
         assert.equal(mounted.firingOk, true, '1300℃ 烧成时间轴未挂载');
         assert.equal(mounted.passportStamps, 8, '研学护照印章数应为 8');
-        assert.ok(mounted.creditsCount >= 8, '素材与致谢条目渲染不足');
+        assert.equal(mounted.creditsCount, 3, '素材与致谢应仅保留 3 条三维模型记录');
+        assert.ok(mounted.credCopyright.includes('版权制作：折木柯南'), '素材与致谢缺少“版权制作：折木柯南”声明');
 
         // 交互验证：金缮辅助对位 & 打开 AR 实尺弹窗 & 无障碍弹窗
         await page.locator('[data-action="assistKintsugiStep()"]').scrollIntoViewIfNeeded();

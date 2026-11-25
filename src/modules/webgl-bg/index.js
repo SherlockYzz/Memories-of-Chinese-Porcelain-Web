@@ -176,17 +176,8 @@ function getPauseReasons() {
     return reasons;
 }
 
-function checkWebGLSupport(targetCanvas) {
-    if (typeof THREE === 'undefined') return false;
-    try {
-        const opts = { alpha: true, powerPreference: 'high-performance' };
-        const gl = targetCanvas.getContext('webgl2', opts)
-            || targetCanvas.getContext('webgl', opts)
-            || targetCanvas.getContext('experimental-webgl', opts);
-        return !!gl;
-    } catch (err) {
-        return false;
-    }
+function checkWebGLSupport() {
+    return typeof THREE !== 'undefined' && typeof WebGLRenderingContext !== 'undefined';
 }
 
 
@@ -1049,53 +1040,60 @@ function init(context) {
         document.body.prepend(canvas);
     }
 
-    // 检查 Three.js 与 WebGL 可用性，不满足则优雅降级
-    if (!checkWebGLSupport(canvas)) {
+    // 检查 Three.js 与 WebGL 能力声明，不满足则优雅降级
+    if (!checkWebGLSupport()) {
         activateFallback();
         return;
     }
 
-    try {
-        renderer = new THREE.WebGLRenderer({
-            canvas: canvas,
-            alpha: true,
-            antialias: tierCfg.antialias,
-            powerPreference: 'high-performance',
-            preserveDrawingBuffer: false
-        });
-        renderer.setClearColor(0x000000, 0);
-        renderer.setPixelRatio(state.dpr);
-        renderer.setSize(state.width, state.height, false);
-    } catch (err) {
-        renderer = null;
-        activateFallback();
-        return;
-    }
+    const tierCfgNow = tierCfg;
+    const bootRenderer = () => {
+        if (!state.initialized || !canvas || renderer) return;
+        try {
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: tierCfgNow.antialias,
+                powerPreference: 'high-performance',
+                preserveDrawingBuffer: false
+            });
+            renderer.setClearColor(0x000000, 0);
+            renderer.setPixelRatio(state.dpr);
+            renderer.setSize(state.width, state.height, false);
+        } catch (err) {
+            renderer = null;
+            activateFallback();
+            return;
+        }
 
-    state.webglAvailable = true;
-    state.fallbackActive = false;
+        state.webglAvailable = true;
+        state.fallbackActive = false;
 
-    // 若页面曾存在旧版 2D 画布，隐去避免双层叠加损耗性能
-    const legacyCanvas = document.getElementById('oriental-ambient-canvas');
-    if (legacyCanvas && legacyCanvas !== canvas) {
-        legacyCanvas.style.display = 'none';
-    }
+        // 若页面曾存在旧版 2D 画布，隐去避免双层叠加损耗性能
+        const legacyCanvas = document.getElementById('oriental-ambient-canvas');
+        if (legacyCanvas && legacyCanvas !== canvas) {
+            legacyCanvas.style.display = 'none';
+        }
 
-    buildScene();
-    updateScrollProgress();
-    state.scrollProgress = state.targetScrollProgress;
+        buildScene();
+        updateScrollProgress();
+        state.scrollProgress = state.targetScrollProgress;
 
-    bindDomEvents();
-    bindBusEvents();
+        bindDomEvents();
+        bindBusEvents();
 
-    // 若关闭了背景动效，确保状态一致；否则启动或渲染单帧
-    if (!state.enabled) {
-        syncLoopState();
-    } else {
-        stepSimulation(0);
-        renderSingleFrame();
-        syncLoopState();
-    }
+        // 若关闭了背景动效，确保状态一致；否则启动或渲染单帧
+        if (!state.enabled) {
+            syncLoopState();
+        } else {
+            stepSimulation(0);
+            renderSingleFrame();
+            syncLoopState();
+        }
+    };
+
+    // 双 rAF + 微延后，确保首屏文本、LCP 图与首屏器物先完成首帧绘制，再启动背景 3D 渲染器
+    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(bootRenderer, 60)));
 }
 
 

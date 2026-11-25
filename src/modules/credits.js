@@ -17,6 +17,7 @@ function render() {
     if (!host) return;
     const credits = data.get('credits');
     const labels = credits.statusLabels || {};
+    const copyrightText = pick(credits.copyright) || '版权制作：折木柯南';
 
     setHTML(
         host,
@@ -44,7 +45,19 @@ function render() {
                     </article>`;
                 })}
             </div>
-        </div>`)}`
+        </div>`)}
+        <div class="feature-card p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-left" data-credits-copyright>
+            <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-full bg-tianqing-deep text-white flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-copyright" aria-hidden="true"></i>
+                </span>
+                <div>
+                    <p class="text-sm sm:text-base font-serif-cn font-semibold text-text-title">${copyrightText}</p>
+                    <p class="text-xs text-text-muted">${i18n.currentLang() === 'en' ? 'Digital reconstruction, WebGL shaders and interactive labs · CC BY-NC-SA 4.0' : '三维建模复原、WebGL 物理釉面与互动研学空间制作 · CC BY-NC-SA 4.0'}</p>
+                </div>
+            </div>
+            <span class="source-badge source-badge--project">${copyrightText}</span>
+        </div>`
     );
 }
 

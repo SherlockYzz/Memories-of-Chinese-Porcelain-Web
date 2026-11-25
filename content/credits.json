@@ -1,7 +1,11 @@
 {
   "intro": {
-    "zh": "下面逐项列出本站用到的模型、图片、音视频、字体与开源库，以及它们的来源、授权与核实状态。标为“待作者确认”的条目，是在整理过程中无法从仓库历史或公开数据核实来源的素材。",
-    "en": "Every model, image, audio/video file, font and open-source library used on this site is listed below with its source, licence and verification status. Items marked “to be confirmed by the author” could not be traced from the repository history or public data."
+    "zh": "本板块列出本站使用的全部三维模型资产来源、授权协议与版权归属，确保教学建模复原与第三方开源标本界限清晰。",
+    "en": "This section lists the sources, licences and copyright ownership of all 3D model assets used on this site, keeping educational reconstructions and third-party CC0 specimens clearly distinguished."
+  },
+  "copyright": {
+    "zh": "版权制作：折木柯南",
+    "en": "Copyright & Production: Zhemu Kenan"
   },
   "statusLabels": {
     "verified": { "zh": "已核实", "en": "Verified" },
@@ -15,7 +19,7 @@
       "items": [
         {
           "name": "十件名窑器型模型（models/masterpieces/*_Master.glb）",
-          "source": "本项目用 Blender 5.2 Python 脚本参数化建模生成",
+          "source": "本项目用 Blender 5.2 Python 脚本参数化建模生成（版权制作：折木柯南）",
           "license": "随项目协议（CC BY-NC-SA 4.0）",
           "status": "project",
           "note": "每件约 0.6–3.1 万三角面，贴图为 1024×1024 程序化烘焙 WebP。属于参考公开器型的建模复原，不是文物的实测扫描。"
@@ -30,104 +34,11 @@
         },
         {
           "name": "展厅道具（红木案、屏风、展台、铜炉）与窑炉模型",
-          "source": "本项目用 Blender 5.2 建模并烘培 PBR 贴图",
+          "source": "本项目用 Blender 5.2 建模并烘焙 PBR 贴图（版权制作：折木柯南）",
           "license": "随项目协议（CC BY-NC-SA 4.0）",
           "status": "project",
           "note": "经 Blender 5.2 重建精细结构（束腰马蹄腿红木案 2376 面、三折青绿山水屏风 396 面、须弥座展台 1980 面、博山铜香炉 6956 面），内置 512–1024px WebP 漫反射与粗糙度贴图；窑炉模型 7412 三角面。"
         }
-      ]
-    },
-    {
-      "id": "images",
-      "title": { "zh": "图片", "en": "Images" },
-      "items": [
-        {
-          "name": "典藏图录缩略图（images/collection/porcelain_01–24）",
-          "source": "来源未在仓库中记录",
-          "license": "未知",
-          "status": "pending",
-          "note": "24 条图录中仅 3 条的馆藏号能在大都会艺术博物馆开放数据中对上实物（29.100.226、16.50、63.176）。其余条目已撤下原填的馆藏号并标注“出处待核实”。在补齐来源之前，这些图片不应视为已获授权。"
-        },
-        {
-          "name": "建模复原器物预览图（images/collection/*_Preview.webp）",
-          "source": "本项目 Blender 渲染",
-          "license": "随项目协议（CC BY-NC-SA 4.0）",
-          "status": "project"
-        },
-        {
-          "name": "板块配图（images/1–15.jpg、images/图标/*、背景图）",
-          "source": "来源未在仓库中记录",
-          "license": "未知",
-          "status": "pending",
-          "note": "其中部分为现代陶瓷器物的商品式摄影，不是古代文物照片；页面上已不再将其标注为宋代真品。"
-        }
-      ]
-    },
-    {
-      "id": "audio-video",
-      "title": { "zh": "音频与视频", "en": "Audio & video" },
-      "items": [
-        {
-          "name": "器物语音讲解（audio/vessel_01–12.mp3）",
-          "source": "小米 MiMo 语音合成模型（mimo-v2.5-tts）生成的 AI 合成语音",
-          "license": "以该服务的使用条款为准",
-          "status": "pending",
-          "note": "这是 AI 合成语音，不是真人讲解员录音。请作者确认服务条款是否允许用于参赛作品。"
-        },
-        {
-          "name": "叩瓷声、开片声、古琴泛音、环境音",
-          "source": "本项目用 Web Audio API 实时合成",
-          "license": "随项目协议（CC BY-NC-SA 4.0）",
-          "status": "project",
-          "note": "程序合成的教学示意音，不是实物录音。"
-        },
-        {
-          "name": "制瓷实录视频（videos/ceramic_making.webm、videos/potter_wheel.webm）",
-          "source": "来源未在仓库中记录",
-          "license": "页面此前标注为 CC0，但没有来源链接",
-          "status": "pending",
-          "note": "请作者补充原始下载页链接，以便核对确为 CC0。"
-        }
-      ]
-    },
-    {
-      "id": "fonts",
-      "title": { "zh": "字体与图标", "en": "Fonts & icons" },
-      "items": [
-        {
-          "name": "正文与标题字体",
-          "source": "使用访问者系统自带字体（苹方、微软雅黑、宋体 / Noto Serif 等字体栈），未内嵌字体文件",
-          "license": "不涉及分发",
-          "status": "verified"
-        },
-        {
-          "name": "Font Awesome Free 6.5.2",
-          "source": "Fonticons, Inc.",
-          "url": "https://fontawesome.com",
-          "license": "图标 CC BY 4.0 · 字体 SIL OFL 1.1 · 代码 MIT",
-          "status": "verified"
-        }
-      ]
-    },
-    {
-      "id": "libraries",
-      "title": { "zh": "开源库与工具", "en": "Open-source libraries & tools" },
-      "items": [
-        { "name": "three.js r128（含 GLTFLoader）", "source": "three.js authors", "url": "https://threejs.org", "license": "MIT", "status": "verified" },
-        { "name": "esbuild（构建）", "source": "Evan Wallace 等", "url": "https://esbuild.github.io", "license": "MIT", "status": "verified", "note": "仅用于构建，不随页面分发。" },
-        { "name": "Playwright（回归测试）", "source": "Microsoft", "url": "https://playwright.dev", "license": "Apache-2.0", "status": "verified", "note": "仅用于测试，不随页面分发。" },
-        { "name": "Blender 5.2（建模）", "source": "Blender Foundation", "url": "https://www.blender.org", "license": "GPL（软件本身；产出的模型不受其约束）", "status": "verified" }
-      ]
-    },
-    {
-      "id": "references",
-      "title": { "zh": "参考文献", "en": "References" },
-      "items": [
-        { "name": "中国硅酸盐学会主编《中国陶瓷史》，文物出版社，1982", "source": "通史与窑口部分的主要依据", "license": "引用", "status": "verified" },
-        { "name": "李家治主编《中国科学技术史·陶瓷卷》，科学出版社，1998", "source": "胎釉化学组成、烧成工艺与呈色机理部分的主要依据", "license": "引用", "status": "verified" },
-        { "name": "W. D. Kingery, P. B. Vandiver, Ceramic Masterpieces: Art, Structure, and Technology, Free Press, 1986", "source": "釉面显微结构与乳浊机理的讨论", "license": "引用", "status": "verified" },
-        { "name": "Nigel Wood, Chinese Glazes: Their Origins, Chemistry and Recreation, A&C Black, 1999", "source": "各窑口釉料组成与复烧实验", "license": "引用", "status": "verified" },
-        { "name": "（宋）蔡襄《茶录》；（宋）赵佶《大观茶论》；（明）宋应星《天工开物·陶埏》", "source": "点茶与制瓷工序的古籍出处", "license": "公有领域", "status": "verified" }
       ]
     }
   ]

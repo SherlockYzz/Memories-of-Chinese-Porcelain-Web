@@ -447,12 +447,11 @@ input[type='range']::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* ───────────────── 9. 滚动入场 / 滚动条 / 选区 ───────────────── */
 html.js-reveal .reveal-on-scroll {
     opacity: 0;
-    transform: translateY(26px);
-    filter: blur(4px);
-    transition: opacity 0.9s var(--ease-ink), transform 0.9s var(--ease-ink), filter 0.9s var(--ease-ink);
+    transform: translateY(16px);
+    transition: opacity 0.45s var(--ease-ink), transform 0.45s var(--ease-ink);
     transition-delay: var(--reveal-delay, 0s);
 }
-html.js-reveal .reveal-on-scroll.in-view { opacity: 1; transform: none; filter: none; }
+html.js-reveal .reveal-on-scroll.in-view { opacity: 1; transform: none; }
 
 ::selection { background: rgba(124, 170, 180, 0.38); color: inherit; }
 * { scrollbar-width: thin; scrollbar-color: rgba(124, 170, 180, 0.5) transparent; }

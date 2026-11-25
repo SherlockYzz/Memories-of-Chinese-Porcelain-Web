@@ -129,29 +129,30 @@ export function getMultiScaleCrackleMaps({
         const { gridN, pts } = seeds;
         const gx = Math.floor(u * gridN);
         const gy = Math.floor(v * gridN);
-        let d1 = 99.0;
-        let d2 = 99.0;
+        let d1Sq = 9999.0;
+        let d2Sq = 9999.0;
         for (let oy = -1; oy <= 1; oy++) {
+            const ny = (gy + oy + gridN) % gridN;
+            const rowOffset = ny * gridN;
             for (let ox = -1; ox <= 1; ox++) {
                 const nx = (gx + ox + gridN) % gridN;
-                const ny = (gy + oy + gridN) % gridN;
-                const s = pts[ny * gridN + nx];
+                const s = pts[rowOffset + nx];
                 let dx = s.x - u;
                 let dy = s.y - v;
                 if (dx > 0.5) dx -= 1;
-                if (dx < -0.5) dx += 1;
+                else if (dx < -0.5) dx += 1;
                 if (dy > 0.5) dy -= 1;
-                if (dy < -0.5) dy += 1;
-                const dist = Math.hypot(dx, dy) * gridN;
-                if (dist < d1) {
-                    d2 = d1;
-                    d1 = dist;
-                } else if (dist < d2) {
-                    d2 = dist;
+                else if (dy < -0.5) dy += 1;
+                const distSq = dx * dx + dy * dy;
+                if (distSq < d1Sq) {
+                    d2Sq = d1Sq;
+                    d1Sq = distSq;
+                } else if (distSq < d2Sq) {
+                    d2Sq = distSq;
                 }
             }
         }
-        return d2 - d1;
+        return (Math.sqrt(d2Sq) - Math.sqrt(d1Sq)) * gridN;
     };
 
     const parseHex = (hex) => {

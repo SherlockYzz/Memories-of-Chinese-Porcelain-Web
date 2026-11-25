@@ -165,7 +165,7 @@ function openDetail(_ctx, id) {
         html`
         <div class="space-y-4 text-left">
             <div class="aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden shadow-sm bg-black border border-border-light">
-                <img src="${item.img}" alt="${tr(item.name)}" class="w-full h-full object-cover">
+                <img src="${item.img}" alt="${tr(item.name)}" loading="lazy" decoding="async" class="w-full h-full object-cover">
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border-light pb-3">
                 <div><span class="text-xs text-text-muted">${tr('窑口：')}</span><strong class="text-sm font-medium text-text-title font-serif-cn">${tr(item.kiln)}</strong></div>

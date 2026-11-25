@@ -11,6 +11,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23255460%22/><text x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22%23E5C888%22 font-family=%22serif%22>器</text></svg>">
     <link rel="manifest" href="manifest.webmanifest">
 
+    <link rel="preload" href="images/collection/SongGuanYao_Ultra_Preview.webp" as="image" type="image/webp" fetchpriority="high">
     <link rel="preload" href="webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="{{asset:vendor-icons}}">
 
@@ -74,9 +75,9 @@
 
 <!-- 运行脚本：供应商库 -> 应用内核与模块（ESM 打包）-> 尚未迁移的 legacy 脚本。按需分块由内核 lazy-loader 加载。 -->
 {{assets-manifest}}
-<script src="{{asset:vendor}}"></script>
-<script src="{{asset:app}}"></script>
-<script src="{{asset:legacy}}"></script>
+<script defer src="{{asset:vendor}}"></script>
+<script defer src="{{asset:app}}"></script>
+<script defer fetchpriority="low" src="{{asset:legacy}}"></script>
 
 </body>
 </html>

@@ -54,7 +54,7 @@
             container.innerHTML = favItems.map(item => `
                 <div class="p-3 rounded-xl bg-yuebai/50 border border-border-light flex items-center justify-between gap-3 text-xs">
                     <div class="flex items-center gap-3">
-                        <img src="${item.img}" class="w-10 h-10 rounded-lg object-cover" alt="${tr(item.name)}">
+                        <img src="${item.img}" loading="lazy" decoding="async" class="w-10 h-10 rounded-lg object-cover" alt="${tr(item.name)}">
                         <div class="text-left">
                             <h5 class="font-serif-cn font-medium text-text-title">${tr(item.name)}</h5>
                             <p class="text-[11px] text-tianqing-deep">${tr(item.kiln)} · ${tr(item.level)}</p>

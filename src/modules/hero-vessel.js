@@ -34,13 +34,8 @@ function isLowEnd() {
 }
 
 function webglAvailable() {
-    if (typeof THREE === 'undefined') return false;
-    try {
-        const c = document.createElement('canvas');
-        return !!(c.getContext('webgl2') || c.getContext('webgl'));
-    } catch {
-        return false;
-    }
+    // 零上下文开销检查，具体 WebGL 上下文创建失败由 start3D() 的 try/catch 兜底回退预览图
+    return typeof THREE !== 'undefined' && typeof WebGLRenderingContext !== 'undefined';
 }
 
 function setState(state, text) {
@@ -355,7 +350,10 @@ export default defineModule({
 
         if (!webglAvailable()) setState('fallback');
         else if (isLowEnd() || prefersReducedMotion()) setState('poster'); // 先给图，3D 由用户决定是否加载
-        else start3D(ctx);
+        else {
+            // 双 rAF 确保浏览器先把首屏文本与 LCP 预览图提交给合成器完成首绘，再挂载 WebGL 器物
+            requestAnimationFrame(() => requestAnimationFrame(() => { if (moduleCtx) start3D(moduleCtx); }));
+        }
     },
     destroy() {
         teardown3D();

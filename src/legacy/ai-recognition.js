@@ -224,7 +224,7 @@ function renderPresetVessels(activeId = 'sample-guan') {
     container.innerHTML = presetSampleVessels.map(v => `
         <div class="preset-card cursor-pointer group p-2.5 rounded-xl border ${v.id === activeId ? 'border-amber-400 bg-yuebai ring-2' : 'border-border-light bg-bg-main'} hover:border-tianqing hover:shadow-md transition-all text-left" data-sample-id="${v.id}" data-action="identifyPresetVessel('${v.id}')">
             <div class="aspect-square rounded-lg overflow-hidden mb-2 bg-black relative">
-                <img src="${v.img}" alt="${v.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <img src="${v.img}" alt="${v.name}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <span class="absolute bottom-1 right-1 bg-black/80 text-amber-200 text-[9px] px-1.5 py-0.5 rounded font-serif-cn border border-white/10">${v.expectedKiln.slice(0, 4)}</span>
             </div>
             <h4 class="text-xs font-serif-cn text-text-title font-medium truncate">${v.name}</h4>

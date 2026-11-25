@@ -17,7 +17,7 @@
             <div class="feature-card p-5 group cursor-pointer hover-lift flex flex-col justify-between" data-action="openStepDetailModal(${step.id})">
                 <div>
                     <div class="aspect-[4/3] rounded-xl overflow-hidden mb-3.5 porcelain-card-skeleton relative border border-border-light">
-                        <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35"></div>
                         <span class="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md text-amber-200 text-[10px] px-2.5 py-1 rounded-full font-serif-cn border border-white/15 shadow-sm">
                             ${tr(step.category)}
@@ -57,7 +57,7 @@
         modalBody.innerHTML = `
             <div class="space-y-4 text-left">
                 <div class="aspect-video rounded-xl overflow-hidden shadow-sm bg-black border border-border-light">
-                    <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" class="w-full h-full object-cover">
+                    <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" loading="lazy" decoding="async" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span class="badge bg-tianqing-deep text-white text-xs">${tr(step.category)}</span>
