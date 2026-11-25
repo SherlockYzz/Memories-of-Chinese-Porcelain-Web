@@ -13,7 +13,7 @@
     <!-- Font Awesome 6 (本地静态加载) -->
     <link rel="preload" href="webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="./images/13.jpg" as="image" fetchpriority="high">
-    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{asset:vendor-icons}}">
 
     <!-- 首帧主题恢复脚本，避免浅/暗主题切换闪烁 (FOUC) -->
     <script>
@@ -28,9 +28,7 @@
     </script>
 
     <!-- 东方宋韵数字博物院样式系统 -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- v7.0 宋韵文博视觉重塑层（必须在 style.css 之后） -->
-    <link rel="stylesheet" href="css/visual-enhance.css">
+    <link rel="stylesheet" href="{{asset:app-css}}">
 </head>
 <body>
 
@@ -1619,7 +1617,9 @@
 </button>
 
 <!-- 全站极速自包含运行核心 (首屏高聚合核心包，彻底消灭零散请求与排队卡顿) -->
-<script src="js/bundle-core.js"></script>
+{{assets-manifest}}
+<script src="{{asset:vendor}}"></script>
+<script src="{{asset:legacy}}"></script>
 <!-- 非首屏扩展大模块按需懒加载 + 交互透明代理桩 (首屏带宽零争抢，点击即刻触发高优装载) -->
 <script>
     (function () {
@@ -1686,7 +1686,7 @@
         }
 
         registerLazyModule({
-            src: 'js/pottery-workshop.js',
+            src: window.__TQ_ASSETS__['legacy-pottery'],
             sectionId: 'pottery-studio',
             initName: 'initPotteryWorkshop',
             fns: [
@@ -1697,7 +1697,7 @@
         });
 
         registerLazyModule({
-            src: 'js/ai-recognition.js',
+            src: window.__TQ_ASSETS__['legacy-ai'],
             sectionId: 'ai-recognition',
             initName: 'initAiRecognition',
             fns: [

@@ -1,0 +1,28 @@
+{
+  "name": "tianqing-nihuo",
+  "version": "9.0.0",
+  "private": true,
+  "description": "天青泥火 · 华夏古瓷三维研学空间",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "dev": "node tools/build.mjs --watch --serve",
+    "preview": "node tools/serve.mjs dist 4173",
+    "check": "node tools/check.mjs",
+    "check:content": "node tools/check-content.mjs",
+    "check:i18n": "node tools/check-i18n.mjs",
+    "check:style": "node tools/check-style.mjs",
+    "check:code": "node tools/check-code.mjs",
+    "audit:models": "node tools/audit-models.mjs",
+    "test": "node tools/check.mjs && node tests/run.mjs",
+    "test:visual": "node tests/run.mjs",
+    "shots": "node tests/shots.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.65.1"
+  }
+}

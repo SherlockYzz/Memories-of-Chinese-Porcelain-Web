@@ -1520,7 +1520,7 @@ function ensureScannedModelsData(callback) {
     isScannedScriptLoading = true;
     showStageLoadingToast(true, '正在装载古瓷三维激光扫描点云数据...');
     const script = document.createElement('script');
-    script.src = 'js/scanned-models-data.js';
+    script.src = window.__TQ_ASSETS__['legacy-scanned-data'];
     script.onload = () => {
         isScannedScriptLoading = false;
         showStageLoadingToast(false);
@@ -3436,7 +3436,7 @@ function ensureMuseumAudioData(callback) {
     if (isAudioScriptLoading) return;
     isAudioScriptLoading = true;
     const s = document.createElement('script');
-    s.src = 'js/museum-audio-data.js';
+    s.src = window.__TQ_ASSETS__['legacy-audio-data'];
     s.onload = () => {
         isAudioScriptLoading = false;
         if (callback) callback();

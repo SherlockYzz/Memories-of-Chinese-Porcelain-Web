@@ -2,3 +2,8 @@
 发布归档与脚本/
 
 .backup-v7-before-opt/
+
+node_modules/
+dist/
+reports/shots/
+.cache/
