@@ -33,8 +33,11 @@ jobs:
       - name: Run static engineering checks
         run: npm run check
 
-      - name: Build production dist
-        run: npm run build
+      - name: Clean build artifacts and cold-build production dist
+        shell: bash
+        run: |
+          rm -rf dist .cache TianQingNiHuo*.zip SHA256SUMS.txt
+          npm run build
 
       - name: Package release archive and checksums
         shell: bash
@@ -45,16 +48,15 @@ jobs:
           fi
           echo "TAG_NAME=${TAG_NAME}" >> "$GITHUB_ENV"
 
-          rm -f TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt
           (cd dist && zip -r -q ../TianQingNiHuo.zip .)
           cp TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip"
           sha256sum TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" > SHA256SUMS.txt
-          ls -lh TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt
+          ls -lh TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt README.md
 
       - name: Generate release notes
         shell: bash
         run: |
-          sed 's/^          //' > release-notes.md <<'EOF'
+          sed 's/^          //' > release-notes.md <<EOF
           ## 天青泥火 — 华夏古瓷三维研学空间
 
           > **从泥到火，从器到鉴——数字化复原中国古瓷的一生**
@@ -66,9 +68,10 @@ jobs:
           - **3D 水墨山川自动律动背景**：背景山川具备自主呼吸微震律动，并与鼠标/滚动视差丝滑叠加。
           - **完整学术致谢与典藏体系**：保留权威学术专著与古籍文献引述、Poly Haven CC0 对照模型与小米 MiMo 语音致谢（版权制作：折木柯南）。
 
-          ### 附件说明
-          - `TianQingNiHuo.zip`：完整 `dist/` 纯静态构建包（可直接部署至任意静态托管服务或本地 HTTP Server 解压运行）。
+          ### 附件说明（均为全新冷构建最新产物）
+          - `TianQingNiHuo.zip` / `TianQingNiHuo-${TAG_NAME}.zip`：完整 `dist/` 纯静态构建包（可直接部署至任意静态托管或本地 HTTP Server 解压运行）。
           - `SHA256SUMS.txt`：发布包 SHA-256 校验文件。
+          - `README.md`：完整网页功能与代码架构说明文档。
 
           ### 本地离线运行
           ```bash
@@ -78,7 +81,7 @@ jobs:
           ```
           EOF
 
-      - name: Create or update GitHub Release
+      - name: Create or update latest Release and purge all legacy Releases/Tags
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -86,7 +89,24 @@ jobs:
           TITLE="🏺 天青泥火 ${TAG_NAME} · 360° 柱面青花工坊 / 首屏秒开预热 / 3D 自动律动背景"
           if gh release view "${TAG_NAME}" >/dev/null 2>&1; then
             gh release edit "${TAG_NAME}" --title "${TITLE}" --notes-file release-notes.md --latest
-            gh release upload "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt --clobber
+            gh release upload "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt README.md --clobber
           else
-            gh release create "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt --title "${TITLE}" --notes-file release-notes.md --latest
+            gh release create "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt README.md --title "${TITLE}" --notes-file release-notes.md --latest
           fi
+
+          # 彻底删除历史旧版 Release 及其对应 Tag，确保 GitHub 释放列表仅留存当前最新版本
+          OLD_RELEASES=$(gh release list --limit 50 --json tagName -q '.[].tagName' || true)
+          for old in $OLD_RELEASES; do
+            if [ -n "$old" ] && [ "$old" != "${TAG_NAME}" ]; then
+              echo "Deleting legacy release & tag: $old"
+              gh release delete "$old" --yes --cleanup-tag || true
+            fi
+          done
+
+          # 额外清理未关联 Release 的旧远端 Tag（如历史 v9.0）
+          for tag in $(git ls-remote --tags origin | awk -F'refs/tags/' '{print $2}' | grep -v '\^{}' || true); do
+            if [ -n "$tag" ] && [ "$tag" != "${TAG_NAME}" ]; then
+              echo "Deleting legacy remote tag: $tag"
+              git push origin --delete "refs/tags/${tag}" || true
+            fi
+          done
