@@ -17,6 +17,23 @@ let dragOffX = 0;
 let dragOffY = 0;
 let gildedSeamCount = 0;
 
+function makeJaggedPath(x1, y1, x2, y2, seed) {
+    const pts = [[x1, y1]];
+    const segs = 5;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.max(1, Math.hypot(dx, dy));
+    const nx = -dy / len;
+    const ny = dx / len;
+    for (let i = 1; i < segs; i++) {
+        const t = i / segs;
+        const jitter = Math.sin(seed * 7.3 + i * 2.9) * 5.2;
+        pts.push([x1 + dx * t + nx * jitter, y1 + dy * t + ny * jitter]);
+    }
+    pts.push([x2, y2]);
+    return pts;
+}
+
 function initVesselPuzzle() {
     stage = 'assemble';
     gildedSeamCount = 0;
@@ -35,7 +52,7 @@ function initVesselPuzzle() {
         { x1: cx + 5, y1: cy - 30, x2: cx - 6, y2: cy + 52, gilded: false },
         { x1: cx - 72, y1: cy + 34, x2: cx - 6, y2: cy + 52, gilded: false },
         { x1: cx - 6, y1: cy + 52, x2: cx + 72, y2: cy + 32, gilded: false }
-    ];
+    ].map((sm, idx) => ({ ...sm, pts: makeJaggedPath(sm.x1, sm.y1, sm.x2, sm.y2, idx + 1) }));
     drawKintsugi();
     syncStatus();
 }
@@ -53,8 +70,13 @@ function drawShard(ctx, s, vessel) {
     g.addColorStop(1, vessel.footHex);
     ctx.fillStyle = g;
     ctx.fill();
-    ctx.lineWidth = s.fixed ? 1.5 : 2;
-    ctx.strokeStyle = s.fixed ? 'rgba(20, 32, 41, 0.4)' : '#e6c173';
+    ctx.lineWidth = s.fixed ? 1.4 : 2.2;
+    ctx.strokeStyle = s.fixed ? 'rgba(24, 34, 42, 0.42)' : '#e6c173';
+    ctx.stroke();
+
+    // 瓷片微光高光线增加立体厚重感
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.lineWidth = 1;
     ctx.stroke();
     ctx.restore();
 }
@@ -87,25 +109,42 @@ function drawKintsugi() {
     shards.filter((s) => s.fixed).forEach((s) => drawShard(ctx, s, vessel));
     shards.filter((s) => !s.fixed).forEach((s) => drawShard(ctx, s, vessel));
 
-    // 绘制金缮描金线
+    // 绘制自然折线大漆金缮描金线与洒金微粒
     if (stage === 'gild' || stage === 'done') {
-        seams.forEach((sm) => {
+        seams.forEach((sm, idx) => {
+            const pts = sm.pts || [[sm.x1, sm.y1], [sm.x2, sm.y2]];
             ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(sm.x1, sm.y1);
-            ctx.lineTo(sm.x2, sm.y2);
             ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            pts.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
+
             if (sm.gilded) {
+                // 先绘深褐色大漆底衬，再覆流金金属光芒与细碎洒金微粒
+                ctx.strokeStyle = 'rgba(72, 38, 18, 0.72)';
+                ctx.lineWidth = 6.2;
+                ctx.stroke();
+
                 ctx.shadowColor = fin.glow;
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 9;
                 ctx.strokeStyle = fin.color;
-                ctx.lineWidth = 5;
+                ctx.lineWidth = 3.6;
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#fff5cf';
+                pts.forEach(([px, py], pi) => {
+                    if (pi === 0 || pi === pts.length - 1) return;
+                    ctx.beginPath();
+                    ctx.arc(px + ((idx + pi) % 2 ? 1.8 : -1.8), py - 1.2, 1.4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
             } else {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.58)';
                 ctx.setLineDash([4, 4]);
-                ctx.lineWidth = 2.5;
+                ctx.lineWidth = 2.4;
+                ctx.stroke();
             }
-            ctx.stroke();
             ctx.restore();
         });
     }

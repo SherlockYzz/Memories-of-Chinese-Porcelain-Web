@@ -137,11 +137,13 @@ function detectThemeFromDom() {
  */
 function classifyDeviceTier() {
     const vw = window.innerWidth || document.documentElement.clientWidth || 1280;
+    const vh = window.innerHeight || document.documentElement.clientHeight || 720;
+    const isTouch = (navigator.maxTouchPoints || 0) > 0;
     const cores = typeof navigator.hardwareConcurrency === 'number' ? navigator.hardwareConcurrency : 4;
     const mem = typeof navigator.deviceMemory === 'number' ? navigator.deviceMemory : 4;
     const saveData = !!(navigator.connection && navigator.connection.saveData);
 
-    if (saveData || vw < 768 || cores <= 2 || mem <= 2 || (cores <= 4 && mem <= 4)) {
+    if (saveData || vw < 768 || (isTouch && Math.min(vw, vh) < 900) || cores <= 2 || mem <= 2 || (cores <= 4 && mem <= 4)) {
         return 'low';
     }
     if (vw < 1024 || cores <= 6 || mem <= 4) {
@@ -1070,7 +1072,9 @@ function init(context) {
     }
 
     const tierCfgNow = tierCfg;
+    let bgFallbackTimer = null;
     const bootRenderer = () => {
+        clearTimeout(bgFallbackTimer);
         if (!state.initialized || !canvas || renderer) return;
         try {
             renderer = new THREE.WebGLRenderer({
@@ -1115,8 +1119,23 @@ function init(context) {
         }
     };
 
-    // 双 rAF + 微延后，确保首屏文本、LCP 图与首屏器物先完成首帧绘制，再启动背景 3D 渲染器
-    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(bootRenderer, 60)));
+    // 待首屏 Hero3D 完成首次渲染或 5.5s 兜底后再启动全屏背景 WebGL，保证首屏器物独占 GPU 管线秒开
+    bgFallbackTimer = setTimeout(bootRenderer, 5500);
+    let bgDelayTimer = 0;
+    if (appContext.bus && typeof appContext.bus.on === 'function') {
+        const offHero = appContext.bus.on('hero:ready', () => {
+            offHero();
+            clearTimeout(bgFallbackTimer);
+            bgDelayTimer = setTimeout(bootRenderer, 40);
+        });
+        busCleanups.push(() => {
+            clearTimeout(bgFallbackTimer);
+            clearTimeout(bgDelayTimer);
+            offHero();
+        });
+    } else {
+        busCleanups.push(() => clearTimeout(bgFallbackTimer));
+    }
 }
 
 

@@ -33,16 +33,36 @@ function ensureThreeJS() {
 }
 
 function scheduleGalleryBoot() {
+    let heroReady = false;
+    let pendingIntersect = false;
+
+    const triggerIntersect = () => {
+        if (threeBooted) return;
+        ensureThreeJS();
+    };
+
+    core.bus.once('hero:ready', () => {
+        heroReady = true;
+        if (pendingIntersect) {
+            pendingIntersect = false;
+            setTimeout(triggerIntersect, 450);
+        }
+    });
+
     const galleryEl = document.getElementById('3d-gallery');
     if (galleryEl && 'IntersectionObserver' in window) {
         const io = new IntersectionObserver(
             (entries) => {
                 if (entries.some((e) => e.isIntersecting)) {
-                    io.disconnect();
-                    ensureThreeJS();
+                    if (heroReady || (window.scrollY || window.pageYOffset || 0) > 80) {
+                        io.disconnect();
+                        triggerIntersect();
+                    } else {
+                        pendingIntersect = true;
+                    }
                 }
             },
-            { rootMargin: '700px 0px' }
+            { rootMargin: '0px 0px' }
         );
         io.observe(galleryEl);
     }
@@ -60,19 +80,22 @@ function scheduleGalleryBoot() {
         { capture: true, passive: true }
     );
 
-    // 非省流模式下，在 load 完成且首屏稳定后尽快预热三维展馆（桌面 200ms，移动 700ms）
+    // 桌面端等待首屏 3D 器物完成首次渲染（hero:ready）后再温和预热次屏展馆，避免三路 WebGL 着色器撞车
     const saveData = !!(navigator.connection && navigator.connection.saveData);
-    if (!saveData) {
-        const delayMs = window.innerWidth >= 768 ? 200 : 700;
+    if (!saveData && window.innerWidth >= 768) {
         const idleWarm = () => {
+            if (threeBooted) return;
             if (typeof requestIdleCallback === 'function') {
-                requestIdleCallback(() => ensureThreeJS(), { timeout: delayMs + 400 });
+                requestIdleCallback(() => ensureThreeJS(), { timeout: 1200 });
             } else {
-                setTimeout(ensureThreeJS, delayMs);
+                setTimeout(ensureThreeJS, 200);
             }
         };
-        if (document.readyState === 'complete') setTimeout(idleWarm, delayMs);
-        else window.addEventListener('load', () => setTimeout(idleWarm, delayMs), { once: true });
+        let fallbackTimer = setTimeout(idleWarm, 12000);
+        core.bus.once('hero:ready', () => {
+            clearTimeout(fallbackTimer);
+            setTimeout(idleWarm, 1200);
+        });
     }
 }
 

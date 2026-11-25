@@ -17,6 +17,24 @@ import legacy, { installLegacyBridge, installLegacyLazyChunks, diagnostics } fro
 import { html, raw, esc, setHTML, when, $, $$, prefersReducedMotion } from './dom.js';
 import glaze from './glaze-shader.js';
 
+const glbBufferCache = new Map();
+/** 全局共享 GLB 内存缓冲加载器（去重并发请求，失败自动清除以便重试） */
+function fetchGlbBuffer(url) {
+    if (!glbBufferCache.has(url)) {
+        const p = fetch(url)
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.arrayBuffer();
+            })
+            .catch((err) => {
+                glbBufferCache.delete(url);
+                throw err;
+            });
+        glbBufferCache.set(url, p);
+    }
+    return glbBufferCache.get(url);
+}
+
 provide('data', data);
 provide('userData', userData);
 provide('i18n', i18n);
@@ -28,7 +46,7 @@ provide('legacy', legacy);
 
 export {
     bus, store, storage, KEYS, registry, defineModule, actions, installActionDelegation,
-    data, userData, i18n, t, tr, modal, toast, lazy, legacy, glaze,
+    data, userData, i18n, t, tr, modal, toast, lazy, legacy, glaze, fetchGlbBuffer,
     installLegacyBridge, installLegacyLazyChunks, diagnostics,
     html, raw, esc, setHTML, when, $, $$, prefersReducedMotion
 };

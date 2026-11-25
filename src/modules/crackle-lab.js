@@ -8,6 +8,7 @@ import { defineModule, data, bus, toast, html, setHTML } from '@core';
 let cfg = null;
 let state = { deltaAlpha: 1.8, thickness: 1.6, coolRate: 55, staining: 'tea', glazeHex: '#739ca4', progress: 1.0 };
 let animTimer = 0;
+let sharedAudioCtx = null;
 
 function seeded(seed0) {
     let s = seed0 >>> 0;
@@ -21,7 +22,9 @@ function playIceCrackAudio(count = 3) {
     try {
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return;
-        const ctx = new AC();
+        if (!sharedAudioCtx) sharedAudioCtx = new AC();
+        if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+        const ctx = sharedAudioCtx;
         for (let i = 0; i < count; i++) {
             const delay = i * 0.08 + Math.random() * 0.05;
             const osc = ctx.createOscillator();
@@ -36,7 +39,6 @@ function playIceCrackAudio(count = 3) {
             osc.start(ctx.currentTime + delay);
             osc.stop(ctx.currentTime + delay + 0.06);
         }
-        setTimeout(() => ctx.close().catch(() => {}), 800);
     } catch {}
 }
 

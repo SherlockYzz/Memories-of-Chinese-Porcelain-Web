@@ -92,8 +92,8 @@ let vesselVibration = 0;
 // 经 src/legacy/data-shims.js 以同名常量提供（porcelainModelsData / bottomConnoisseurshipData /
 // masterTreasuresMeta / scannedModelsMeta / glazePalettes）。本文件不再内嵌内容数据。
 
-// --- 模型队列与加载控制器 (并发上限 4，支持停滞重置、优先调度与安全看门狗) ---
-const MAX_CONCURRENT_MODELS = 4;
+// --- 模型队列与加载控制器 (移动端限并发 2 / 桌面端 3，优先调度主器物，与环境道具分离错峰) ---
+const MAX_CONCURRENT_MODELS = (typeof window !== 'undefined' && window.innerWidth < 768) ? 2 : 3;
 const MODEL_TIMEOUT_MS = 18000; // 跨境访问 GitHub Pages 适当放宽下载超时，避免大体积 GLB 中途被误杀
 const MAX_MODEL_RETRIES = 3;
 
@@ -241,75 +241,82 @@ function processModelQueue() {
     };
     let timeoutTimer = setTimeout(onModelTimeout, MODEL_TIMEOUT_MS);
 
-    loader.load(
-        meta.path,
-        (gltf) => {
-            if (isFinished) return;
-            isFinished = true;
-            clearTimeout(timeoutTimer);
-            activeLoadingCount--;
-            masterTreasuresLoading[idx] = false;
+    const onGlbSuccess = (gltf) => {
+        if (isFinished) return;
+        isFinished = true;
+        clearTimeout(timeoutTimer);
+        activeLoadingCount--;
+        masterTreasuresLoading[idx] = false;
 
-            if (gltf && gltf.scene) {
-                gltf.scene.traverse(c => {
-                    if (c.isMesh) {
-                        c.castShadow = true;
-                        c.receiveShadow = true;
-                        // GLB 已自带高精法线时不再强制重算（避免阻塞主线程及抹平烘焙折痕）
-                        if (c.geometry && !c.geometry.attributes.normal) {
-                            c.geometry.computeVertexNormals();
-                        }
-                    }
-                });
-                masterTreasuresCache[idx] = gltf.scene;
-
-                // 执行此模型所有注册的回调
-                const cbs = masterTreasureCallbacks[idx] || [];
-                delete masterTreasureCallbacks[idx];
-                cbs.forEach(cb => { try { cb(gltf.scene); } catch (e) { console.error(e); } });
-
-                // 如果当前选中的正处于本模型且在单器视口中，立刻无缝挂载
-                if (currentModelIndex === idx) {
-                    hideThreeStageLoader();
-                    if (currentGroup && exhibitionMode !== 'hall' && cbs.length === 0) {
-                        loadPorcelainModel(idx, true);
+        if (gltf && gltf.scene) {
+            gltf.scene.traverse(c => {
+                if (c.isMesh) {
+                    c.castShadow = true;
+                    c.receiveShadow = true;
+                    // GLB 已自带高精法线时不再强制重算（避免阻塞主线程及抹平烘焙折痕）
+                    if (c.geometry && !c.geometry.attributes.normal) {
+                        c.geometry.computeVertexNormals();
                     }
                 }
+            });
+            masterTreasuresCache[idx] = gltf.scene;
 
-                // 如果当前在大展厅模式，自动升级展柜中的器物模型为高精模型
-                if (exhibitionMode === 'hall') {
-                    updateHallVitrineModel(idx);
-                }
-            }
-            processModelQueue();
-        },
-        (xhr) => {
-            if (isFinished) return;
-            // 只要收到新的下载数据包，立即重置停滞计时
-            clearTimeout(timeoutTimer);
-            timeoutTimer = setTimeout(onModelTimeout, MODEL_TIMEOUT_MS);
-            if (xhr.lengthComputable && xhr.total > 0 && idx === currentModelIndex) {
-                const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
-                updateThreeStageLoader('器物模型载入中', percent);
-            }
-        },
-        (err) => {
-            if (isFinished) return;
-            isFinished = true;
-            clearTimeout(timeoutTimer);
-            activeLoadingCount--;
-            masterTreasuresLoading[idx] = false;
-            console.warn('[国宝模型载入异常] ' + meta.name + ':', err);
+            const cbs = masterTreasureCallbacks[idx] || [];
+            delete masterTreasureCallbacks[idx];
+            cbs.forEach(cb => { try { cb(gltf.scene); } catch (e) { console.error(e); } });
 
-            masterTreasureRetries[idx] = (masterTreasureRetries[idx] || 0) + 1;
-            if (masterTreasureRetries[idx] <= MAX_MODEL_RETRIES) {
-                modelTaskQueue.unshift({ idx, isPriority: true });
-            } else if (idx === currentModelIndex) {
+            if (currentModelIndex === idx) {
                 hideThreeStageLoader();
+                if (currentGroup && exhibitionMode !== 'hall' && cbs.length === 0) {
+                    loadPorcelainModel(idx, true);
+                }
             }
-            processModelQueue();
+
+            if (exhibitionMode === 'hall') {
+                updateHallVitrineModel(idx);
+            }
         }
-    );
+        processModelQueue();
+    };
+
+    const onGlbError = (err) => {
+        if (isFinished) return;
+        isFinished = true;
+        clearTimeout(timeoutTimer);
+        activeLoadingCount--;
+        masterTreasuresLoading[idx] = false;
+        console.warn('[国宝模型载入异常] ' + meta.name + ':', err);
+
+        masterTreasureRetries[idx] = (masterTreasureRetries[idx] || 0) + 1;
+        if (masterTreasureRetries[idx] <= MAX_MODEL_RETRIES) {
+            modelTaskQueue.unshift({ idx, isPriority: true });
+        } else if (idx === currentModelIndex) {
+            hideThreeStageLoader();
+        }
+        processModelQueue();
+    };
+
+    const fetchShared = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.fetchGlbBuffer;
+    if (fetchShared && /\.glb(\?|$)/i.test(meta.path)) {
+        fetchShared(meta.path)
+            .then((buf) => loader.parse(buf.slice(0), '', onGlbSuccess, onGlbError))
+            .catch(onGlbError);
+    } else {
+        loader.load(
+            meta.path,
+            onGlbSuccess,
+            (xhr) => {
+                if (isFinished) return;
+                clearTimeout(timeoutTimer);
+                timeoutTimer = setTimeout(onModelTimeout, MODEL_TIMEOUT_MS);
+                if (xhr.lengthComputable && xhr.total > 0 && idx === currentModelIndex) {
+                    const percent = Math.min(99, Math.round((xhr.loaded / xhr.total) * 100));
+                    updateThreeStageLoader('器物模型载入中', percent);
+                }
+            },
+            onGlbError
+        );
+    }
 }
 
 function loadSingleMasterTreasure(idx, callback, isPriority = false) {
@@ -571,60 +578,81 @@ function getDingCarvedBundle() {
 }
 
 /**
- * 4. 禹州钧窑玫瑰紫海棠红窑变流体贴图
+ * 4. 禹州钧窑海棠绛紫与月白流釉窑变贴图（1024×512 沉稳馆藏质感）
  */
 function getJunYaobianTexture() {
     if (textureCache.junTex) return textureCache.junTex;
+    const W = 1024;
+    const H = 512;
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
+    canvas.width = W;
+    canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    const grad = ctx.createLinearGradient(0, 0, 0, 512);
-    grad.addColorStop(0.0, '#4a2040');
-    grad.addColorStop(0.28, '#8c2d5c');
-    grad.addColorStop(0.55, '#5a3b7c');
-    grad.addColorStop(0.80, '#6a9ab8');
-    grad.addColorStop(1.0, '#3a1a32');
+    // 沉稳海棠绛紫 / 茄皮紫底色渐变（绝不用亮粉与荧光蓝）
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0.0, '#624838'); // 出戟口沿微露酱褐胎骨
+    grad.addColorStop(0.08, '#4e2438');
+    grad.addColorStop(0.38, '#5f2c44');
+    grad.addColorStop(0.72, '#431e31');
+    grad.addColorStop(0.92, '#3a1a2b');
+    grad.addColorStop(1.0, '#5a4435');
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillRect(0, 0, W, H);
 
-    for (let i = 0; i < 85; i++) {
-        const x = Math.random() * 512;
-        const y = Math.random() * 512;
-        const r = 40 + Math.random() * 120;
-        const g = ctx.createRadialGradient(x, y, 5, x, y, r);
-        if (i % 3 === 0) {
-            g.addColorStop(0, 'rgba(195, 48, 102, 0.58)');
-            g.addColorStop(1, 'rgba(195, 48, 102, 0)');
-        } else if (i % 3 === 1) {
-            g.addColorStop(0, 'rgba(130, 195, 225, 0.48)');
-            g.addColorStop(1, 'rgba(130, 195, 225, 0)');
-        } else {
-            g.addColorStop(0, 'rgba(95, 35, 120, 0.52)');
-            g.addColorStop(1, 'rgba(95, 35, 120, 0)');
-        }
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    let s = 20264;
+    const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+
+    // 1. 重力流淌的乳浊天青 / 月白灰蓝流釉条带（丝绒交融）
+    for (let i = 0; i < 90; i++) {
+        const x = rand() * W;
+        const y = rand() * H * 0.72;
+        const len = 110 + rand() * 260;
+        const rx = 18 + rand() * 44;
+        [-W, 0, W].forEach(shift => {
+            const px = x + shift;
+            if (px + rx < -10 || px - rx > W + 10) return;
+            const g = ctx.createLinearGradient(px, y, px, y + len);
+            if (i % 3 === 0) {
+                g.addColorStop(0, 'rgba(138, 168, 184, 0)');
+                g.addColorStop(0.35, 'rgba(130, 158, 174, 0.24)');
+                g.addColorStop(0.75, 'rgba(110, 138, 156, 0.16)');
+                g.addColorStop(1, 'rgba(110, 138, 156, 0)');
+            } else if (i % 3 === 1) {
+                g.addColorStop(0, 'rgba(92, 42, 68, 0)');
+                g.addColorStop(0.45, 'rgba(118, 48, 76, 0.28)');
+                g.addColorStop(1, 'rgba(68, 28, 48, 0)');
+            } else {
+                g.addColorStop(0, 'rgba(152, 174, 186, 0)');
+                g.addColorStop(0.5, 'rgba(156, 178, 190, 0.18)');
+                g.addColorStop(1, 'rgba(156, 178, 190, 0)');
+            }
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.ellipse(px, y + len * 0.5, rx, len * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
 
-    ctx.strokeStyle = 'rgba(220, 175, 210, 0.42)';
-    ctx.lineWidth = 2.2;
+    // 2. 钧窑标志性“蚯蚓走泥纹”（含蓄曲折的乳浊暗白流脉）
     ctx.lineCap = 'round';
-    for (let k = 0; k < 42; k++) {
-        let x = Math.random() * 512;
-        let y = Math.random() * 480;
+    for (let k = 0; k < 46; k++) {
+        let x = rand() * W;
+        let y = 36 + rand() * (H - 140);
+        ctx.strokeStyle = k % 2 === 0 ? 'rgba(176, 192, 202, 0.22)' : 'rgba(42, 20, 32, 0.26)';
+        ctx.lineWidth = 1.4 + rand() * 1.4;
         ctx.beginPath();
         ctx.moveTo(x, y);
-        for (let s = 0; s < 5; s++) {
-            x += (Math.random() - 0.5) * 32;
-            y += 14 + Math.random() * 18;
+        for (let step = 0; step < 6; step++) {
+            x += (rand() - 0.5) * 26;
+            y += 14 + rand() * 20;
             ctx.lineTo(x, y);
         }
         ctx.stroke();
     }
 
     const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     textureCache.junTex = tex;
     return tex;
@@ -673,113 +701,373 @@ function getJianYaobianTexture() {
     }
 
     const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     textureCache.jianTex = tex;
     return tex;
 }
 
 /**
- * 6. 明宣德苏麻离青五段式皇家青花缠枝莲纹贴图 (修正 512x512 坐标映射)
+ * 6. 元明苏麻离青五段式缠枝牡丹宝相花青花釉贴图（1024×512 高清馆藏级）
  */
 function getQinghuaTexture() {
     if (textureCache.qinghuaTex) return textureCache.qinghuaTex;
+    const W = 1024;
+    const H = 512;
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
+    canvas.width = W;
+    canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = '#ebf2f5';
-    ctx.fillRect(0, 0, 512, 512);
+    const baseGrad = ctx.createLinearGradient(0, 0, 0, H);
+    baseGrad.addColorStop(0.0, '#e3e9ec');
+    baseGrad.addColorStop(0.5, '#ecf0f2');
+    baseGrad.addColorStop(1.0, '#d8dfe3');
+    ctx.fillStyle = baseGrad;
+    ctx.fillRect(0, 0, W, H);
 
-    const cobaltMain = 'rgba(20, 54, 118, 0.90)';
-    const cobaltLight = 'rgba(52, 96, 168, 0.58)';
-    const ironSpot = 'rgba(16, 20, 32, 0.88)';
+    const cobaltMain = 'rgba(19, 52, 118, 0.92)';
+    const cobaltMid = 'rgba(32, 72, 146, 0.72)';
+    const cobaltLight = 'rgba(64, 108, 178, 0.34)';
+    const ironSpot = 'rgba(24, 20, 22, 0.86)';
 
-    const drawBands = (yArr) => {
+    const drawBand = (y, lw) => {
         ctx.strokeStyle = cobaltMain;
-        ctx.lineWidth = 3.5;
-        yArr.forEach(y => {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(512, y); ctx.stroke();
-        });
-    };
-    drawBands([38, 46, 120, 128, 380, 388, 465, 474]);
-
-    // 颈部蕉叶纹
-    for (let i = 0; i < 16; i++) {
-        const cx = (i + 0.5) * (512 / 16);
-        ctx.strokeStyle = cobaltMain;
-        ctx.fillStyle = cobaltLight;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = lw;
         ctx.beginPath();
-        ctx.moveTo(cx - 12, 119);
-        ctx.quadraticCurveTo(cx - 10, 65, cx, 50);
-        ctx.quadraticCurveTo(cx + 10, 65, cx + 12, 119);
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+    };
+    drawBand(22, 3.6); drawBand(32, 2.0);
+    drawBand(106, 3.2); drawBand(116, 2.0);
+    drawBand(396, 2.2); drawBand(406, 3.4);
+    drawBand(488, 3.8);
+
+    // 颈部如意云肩（8组）
+    const cN = 8;
+    for (let i = -1; i <= cN; i++) {
+        const cx = (i + 0.5) * (W / cN);
+        const hw = (W / cN) * 0.44;
+        ctx.save();
+        const cg = ctx.createLinearGradient(cx, 36, cx, 100);
+        cg.addColorStop(0, cobaltLight);
+        cg.addColorStop(1, 'rgba(22, 56, 128, 0.14)');
+        ctx.fillStyle = cg;
+        ctx.strokeStyle = cobaltMain;
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(cx - hw, 36);
+        ctx.bezierCurveTo(cx - hw * 0.9, 72, cx - hw * 0.35, 96, cx, 100);
+        ctx.bezierCurveTo(cx + hw * 0.35, 96, cx + hw * 0.9, 72, cx + hw, 36);
+        ctx.closePath();
         ctx.fill();
         ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, 66, 8, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
     }
 
-    // 主腹部缠枝宝相莲花纹与苏麻离青铁锈结晶斑
+    // 主腹 S-曲线缠枝蔓藤与叶片
+    const midY = 256;
+    const amp = 74;
     ctx.strokeStyle = cobaltMain;
-    ctx.lineWidth = 3.2;
-    for (let row = 0; row < 2; row++) {
-        const cy = 195 + row * 110;
+    ctx.lineWidth = 3.4;
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 6) {
+        const y = midY + Math.sin((x / W) * Math.PI * 4) * amp;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    for (let i = 0; i < 16; i++) {
+        const lx = (i + 0.35) * (W / 16);
+        const ly = midY + Math.sin((lx / W) * Math.PI * 4) * amp;
+        const dir = i % 2 === 0 ? -1 : 1;
+        ctx.save();
+        ctx.translate(lx, ly);
+        ctx.rotate(dir * 0.75);
+        ctx.fillStyle = cobaltMid;
+        ctx.strokeStyle = cobaltMain;
+        ctx.lineWidth = 1.6;
         ctx.beginPath();
-        for (let x = 0; x <= 512; x += 6) {
-            const y = cy + Math.sin((x / 512) * Math.PI * 6 + row * Math.PI) * 30;
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(18, -13, 38, -2);
+        ctx.quadraticCurveTo(20, 11, 0, 0);
+        ctx.fill();
         ctx.stroke();
+        ctx.restore();
+    }
 
-        for (let col = 0; col < 6; col++) {
-            const fx = (col + 0.5) * (512 / 6);
-            const fy = cy + Math.sin((fx / 512) * Math.PI * 6 + row * Math.PI) * 18;
+    // 4朵苏麻离青缠枝宝相牡丹花
+    for (let f = -1; f <= 4; f++) {
+        const fx = (f + 0.25) * (W / 4);
+        const fy = midY + (f % 2 === 0 ? -48 : 48);
+        ctx.save();
+        ctx.translate(fx, fy);
+        for (let p = 0; p < 8; p++) {
             ctx.save();
-            ctx.translate(fx, fy);
-
-            for (let p = 0; p < 10; p++) {
-                const ang = (p / 10) * Math.PI * 2;
-                ctx.save();
-                ctx.rotate(ang);
-                ctx.fillStyle = cobaltLight;
-                ctx.strokeStyle = cobaltMain;
-                ctx.lineWidth = 1.6;
-                ctx.beginPath();
-                ctx.ellipse(15, 0, 10, 4.5, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            ctx.fillStyle = cobaltMain;
-            ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
-
-            ctx.fillStyle = ironSpot;
-            for (let s = 0; s < 4; s++) {
-                ctx.beginPath();
-                ctx.arc((Math.random() - 0.5) * 16, (Math.random() - 0.5) * 16, 2 + Math.random() * 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            ctx.rotate((p / 8) * Math.PI * 2);
+            const pg = ctx.createRadialGradient(0, -32, 4, 0, -32, 26);
+            pg.addColorStop(0, cobaltLight);
+            pg.addColorStop(0.75, cobaltMid);
+            pg.addColorStop(1, cobaltMain);
+            ctx.fillStyle = pg;
+            ctx.strokeStyle = cobaltMain;
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(-10, -16);
+            ctx.quadraticCurveTo(-17, -42, 0, -54);
+            ctx.quadraticCurveTo(17, -42, 10, -16);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
             ctx.restore();
         }
+        ctx.fillStyle = cobaltMain;
+        ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ecf0f2';
+        ctx.beginPath(); ctx.arc(0, 0, 8.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = ironSpot;
+        for (let k = 0; k < 6; k++) {
+            const a = k * 1.05;
+            ctx.beginPath(); ctx.arc(Math.cos(a) * 34, Math.sin(a) * 34, 2.4, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
     }
 
-    // 胫部仰莲瓣纹
-    for (let i = 0; i < 14; i++) {
-        const cx = (i + 0.5) * (512 / 14);
-        ctx.strokeStyle = cobaltMain;
+    // 胫部仰莲瓣纹（12瓣）
+    const fN = 12;
+    for (let i = -1; i <= fN; i++) {
+        const cx = (i + 0.5) * (W / fN);
+        const hw = (W / fN) * 0.41;
+        ctx.save();
         ctx.fillStyle = cobaltLight;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = cobaltMain;
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.moveTo(cx - 15, 462);
-        ctx.quadraticCurveTo(cx, 392, cx + 15, 462);
+        ctx.moveTo(cx - hw, 482);
+        ctx.quadraticCurveTo(cx - hw * 0.75, 422, cx, 412);
+        ctx.quadraticCurveTo(cx + hw * 0.75, 422, cx + hw, 482);
+        ctx.closePath();
         ctx.fill();
         ctx.stroke();
+        ctx.restore();
     }
 
     const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
     textureCache.qinghuaTex = tex;
+    return tex;
+}
+
+/**
+ * 7. 明宣德宝石红霁红釉与灯草白口沿贴图（1024×512 凝脂深赤红）
+ */
+function getXuandeJihongTexture() {
+    if (textureCache.jihongTex) return textureCache.jihongTex;
+    const W = 1024;
+    const H = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0.0, '#e8e4da');  // 宣德霁红经典“灯草边”口沿白釉
+    grad.addColorStop(0.045, '#8c282b');
+    grad.addColorStop(0.18, '#6e161a'); // 鲜丽凝脂宝石红
+    grad.addColorStop(0.65, '#591014'); // 垂流积釉深红
+    grad.addColorStop(0.92, '#430b0e');
+    grad.addColorStop(1.0, '#62483b');  // 底足圈足胎线
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // 微橘皮铜红窑变深度层次（沉稳含蓄）
+    let s = 31415;
+    const rand = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    for (let i = 0; i < 65; i++) {
+        const x = rand() * W;
+        const y = 40 + rand() * (H - 80);
+        const r = 30 + rand() * 90;
+        const g = ctx.createRadialGradient(x, y, 4, x, y, r);
+        g.addColorStop(0, i % 2 === 0 ? 'rgba(130, 26, 30, 0.24)' : 'rgba(65, 10, 14, 0.26)');
+        g.addColorStop(1, 'rgba(90, 16, 20, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    textureCache.jihongTex = tex;
+    return tex;
+}
+
+/**
+ * 8. 清乾隆御窑明黄锦地开光洋彩莲纹贴图（1024×512 皇家雅丽珐琅彩）
+ */
+function getQianlongYangcaiTexture() {
+    if (textureCache.yangcaiTex) return textureCache.yangcaiTex;
+    const W = 1024;
+    const H = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // 明黄锦地底色渐变
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0.0, '#b58d34');
+    bg.addColorStop(0.25, '#cfa648');
+    bg.addColorStop(0.65, '#c2973a');
+    bg.addColorStop(1.0, '#9e7626');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // 细密锦上添花暗凤尾卷草纹
+    ctx.strokeStyle = 'rgba(145, 102, 24, 0.34)';
+    ctx.lineWidth = 1.4;
+    for (let y = 24; y < H; y += 32) {
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 12) {
+            const wy = y + Math.sin((x / W) * Math.PI * 16 + y) * 7;
+            if (x === 0) ctx.moveTo(x, wy); else ctx.lineTo(x, wy);
+        }
+        ctx.stroke();
+    }
+
+    // 上下松石绿 + 描金如意云肩边饰
+    const drawTrim = (y, h, invert) => {
+        const step = W / 12;
+        for (let i = -1; i <= 12; i++) {
+            const cx = (i + 0.5) * step;
+            ctx.save();
+            ctx.fillStyle = i % 2 === 0 ? '#3f838b' : '#b24b64';
+            ctx.strokeStyle = '#f2da8e';
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            if (!invert) {
+                ctx.moveTo(cx - step * 0.45, y);
+                ctx.quadraticCurveTo(cx, y + h, cx + step * 0.45, y);
+            } else {
+                ctx.moveTo(cx - step * 0.45, y + h);
+                ctx.quadraticCurveTo(cx, y, cx + step * 0.45, y + h);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+    drawTrim(24, 58, false);
+    drawTrim(H - 82, 58, true);
+
+    // 4处描金双线开光 + 御窑粉彩重瓣牡丹缠枝叶
+    for (let k = 0; k < 4; k++) {
+        const kx = (k + 0.5) * (W / 4);
+        const ky = H * 0.5;
+        ctx.save();
+        ctx.translate(kx, ky);
+        ctx.fillStyle = '#f6f2e8';
+        ctx.strokeStyle = '#e7c66c';
+        ctx.lineWidth = 6.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 86, 114, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 内圈精细朱红描金细线框
+        ctx.strokeStyle = 'rgba(176, 56, 78, 0.72)';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 76, 104, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 缠枝青绿茎蔓与锯齿卷草叶
+        ctx.strokeStyle = '#2d6a49';
+        ctx.lineWidth = 3.0;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-36, 76);
+        ctx.bezierCurveTo(-18, 28, 22, 16, 16, -54);
+        ctx.moveTo(-8, 24);
+        ctx.quadraticCurveTo(36, 22, 46, -8);
+        ctx.moveTo(-2, -14);
+        ctx.quadraticCurveTo(-42, -26, -46, -56);
+        ctx.stroke();
+
+        const drawJadeLeaf = (lx, ly, ang, len) => {
+            ctx.save();
+            ctx.translate(lx, ly);
+            ctx.rotate(ang);
+            const lg = ctx.createLinearGradient(0, 0, len, 0);
+            lg.addColorStop(0, '#2a6244');
+            lg.addColorStop(0.65, '#4c946b');
+            lg.addColorStop(1, '#26583d');
+            ctx.fillStyle = lg;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(len * 0.45, -len * 0.36, len, -len * 0.06);
+            ctx.quadraticCurveTo(len * 0.52, len * 0.28, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        };
+        drawJadeLeaf(-14, 38, -0.5, 34);
+        drawJadeLeaf(12, 18, 0.28, 32);
+        drawJadeLeaf(-16, -24, -2.5, 30);
+        drawJadeLeaf(18, -36, -0.7, 26);
+
+        // 重瓣粉彩宝相牡丹：外 8 瓣 + 内 6 瓣 + 金蕊
+        for (let p = 0; p < 8; p++) {
+            ctx.save();
+            ctx.rotate((p / 8) * Math.PI * 2);
+            const pg = ctx.createRadialGradient(0, -32, 3, 0, -32, 24);
+            pg.addColorStop(0, '#f8e2e8');
+            pg.addColorStop(0.58, '#cc627d');
+            pg.addColorStop(1, '#8c2845');
+            ctx.fillStyle = pg;
+            ctx.strokeStyle = 'rgba(130, 34, 60, 0.85)';
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(-9, -12);
+            ctx.quadraticCurveTo(-16, -42, 0, -52);
+            ctx.quadraticCurveTo(16, -42, 9, -12);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+        for (let p = 0; p < 6; p++) {
+            ctx.save();
+            ctx.rotate((p / 6) * Math.PI * 2 + 0.25);
+            ctx.fillStyle = 'rgba(244, 198, 210, 0.92)';
+            ctx.strokeStyle = 'rgba(155, 48, 76, 0.72)';
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.ellipse(0, -18, 7, 13, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+        ctx.fillStyle = '#e5bd5a';
+        ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#9a6816';
+        for (let s = 0; s < 6; s++) {
+            const sa = (s / 6) * Math.PI * 2;
+            ctx.beginPath(); ctx.arc(Math.cos(sa) * 5.5, Math.sin(sa) * 5.5, 1.5, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    textureCache.yangcaiTex = tex;
     return tex;
 }
 
@@ -1134,14 +1422,31 @@ function buildGeometry(typeIndex, customGlaze = null) {
                             const gCfg = glazePalettes[mInfo.defaultGlaze || 'tianqing'] || {};
                             const opt = gCfg.optics || {};
                             const matName = (child.material.name || '').toLowerCase();
-                            const isMetalPart = matName.includes('gold') || matName.includes('metal') || matName.includes('qianlong');
+                            const isMetalPart = matName.includes('gold') || matName.includes('metal');
+
+                            // 为 4~7 号原贴图失真器物（钧窑迷彩/元青花蓝点/霁红塑料/洋彩贴块）替换博物馆级高清物理贴图
+                            if (!isMetalPart && (typeIndex === 4 || typeIndex === 5 || typeIndex === 6 || typeIndex === 7)) {
+                                const museumMap = typeIndex === 4
+                                    ? getJunYaobianTexture()
+                                    : typeIndex === 5
+                                        ? getQinghuaTexture()
+                                        : typeIndex === 6
+                                            ? getXuandeJihongTexture()
+                                            : getQianlongYangcaiTexture();
+                                if (museumMap) {
+                                    museumMap.flipY = false;
+                                    museumMap.needsUpdate = true;
+                                    child.material.map = museumMap;
+                                    if (child.material.color) child.material.color.setHex(0xffffff);
+                                }
+                            }
 
                             child.material.envMap = envMapTexture;
-                            child.material.envMapIntensity = 0.92;
-                            if (child.material.roughnessMap) {
+                            child.material.envMapIntensity = 0.88;
+                            if (child.material.roughnessMap && typeIndex < 4) {
                                 child.material.roughness = 0.95;
                             } else {
-                                child.material.roughness = typeof gCfg.roughness === 'number' ? gCfg.roughness : 0.16;
+                                child.material.roughness = typeof gCfg.roughness === 'number' ? gCfg.roughness : 0.14;
                             }
                             if (child.material.normalMap) {
                                 child.material.normalScale.set(0.95, 0.95);
@@ -1152,8 +1457,8 @@ function buildGeometry(typeIndex, customGlaze = null) {
                             if (!isMetalPart) {
                                 child.material.metalness = 0.0;
                             }
-                            child.material.clearcoat = isMetalPart ? 0.5 : (typeof gCfg.clearcoat === 'number' ? gCfg.clearcoat : 0.94);
-                            child.material.clearcoatRoughness = typeof gCfg.clearcoatRoughness === 'number' ? gCfg.clearcoatRoughness : 0.08;
+                            child.material.clearcoat = isMetalPart ? 0.5 : (typeof gCfg.clearcoat === 'number' ? gCfg.clearcoat : 0.96);
+                            child.material.clearcoatRoughness = typeof gCfg.clearcoatRoughness === 'number' ? gCfg.clearcoatRoughness : 0.06;
                             child.material.clippingPlanes = activePlanes;
                             child.material.clipShadows = true;
                             child.material.side = THREE.DoubleSide;
@@ -1346,53 +1651,57 @@ function createRealistic3DEnvironment() {
     realisticRoomGroup.add(roomFloorMesh);
 
     // ========================================================
-    // 场景 A：【宋代雅室】专属构件组 (用户专属：紫檀束腰几案 + 博山炉 + 千里江山屏风)
+    // 场景 A：【宋代雅室】专属构件组（延后与主展器物错峰加载，保障首屏带宽优先级）
     // ========================================================
     roomStudioGroup = new THREE.Group();
     roomStudioGroup.name = 'StudioEnvGroup';
 
-    // A1. 载入宋韵紫檀束腰几案 (高度0.783，放置在 -1.908，桌面顶表面绝对精确对齐 Y = -1.125)
-    envLoader.load('models/environment/rosewood_table.glb', (gltf) => {
-        const table = gltf.scene;
-        table.position.set(0, TABLE_SURFACE_Y - 0.783, 0); // 桌面顶表面精准在 Y = -1.125！
-        table.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
+    let envPropsStarted = false;
+    window._loadStudioEnvProps = () => {
+        if (envPropsStarted) return;
+        envPropsStarted = true;
+        envLoader.load('models/environment/rosewood_table.glb', (gltf) => {
+            const table = gltf.scene;
+            table.position.set(0, TABLE_SURFACE_Y - 0.783, 0);
+            table.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            roomStudioGroup.add(table);
+            roomTableMesh = table;
         });
-        roomStudioGroup.add(table);
-        roomTableMesh = table;
-    });
 
-    // A2. 载入汉唐青铜博山炉香薰 (底座在0，放置于几案桌面上 Y = -1.125，绝不悬空穿模)
-    envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
-        const censer = gltf.scene;
-        censer.position.set(-0.55, TABLE_SURFACE_Y, -0.22);
-        censer.scale.set(0.85, 0.85, 0.85);
-        censer.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
+        envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
+            const censer = gltf.scene;
+            censer.position.set(-0.55, TABLE_SURFACE_Y, -0.22);
+            censer.scale.set(0.85, 0.85, 0.85);
+            censer.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            roomStudioGroup.add(censer);
+            roomCenserMesh = censer;
         });
-        roomStudioGroup.add(censer);
-        roomCenserMesh = censer;
-    });
 
-    // A3. 载入千里江山泥金围屏 (宏伟大屏风，放于后方 Z = -1.85，深色绢本金碧山水衬托前景天青玉光)
-    envLoader.load('models/environment/scholar_screen.glb', (gltf) => {
-        const screen = gltf.scene;
-        screen.position.set(0, TABLE_SURFACE_Y - 0.783, -1.85);
-        screen.scale.set(1.22, 1.22, 1.22);
-        screen.traverse((child) => {
-            if (child.isMesh) {
-                child.receiveShadow = true;
-            }
-        });
-        roomStudioGroup.add(screen);
-        roomScreenMesh = screen;
-    });
+        if (!(window.VisualFX && window.VisualFX.screen)) {
+            envLoader.load('models/environment/scholar_screen.glb', (gltf) => {
+                const screen = gltf.scene;
+                screen.position.set(0, TABLE_SURFACE_Y - 0.783, -1.85);
+                screen.scale.set(1.22, 1.22, 1.22);
+                screen.traverse((child) => {
+                    if (child.isMesh) {
+                        child.receiveShadow = true;
+                    }
+                });
+                roomStudioGroup.add(screen);
+                roomScreenMesh = screen;
+            });
+        }
+    };
 
     realisticRoomGroup.add(roomStudioGroup);
 
@@ -1719,7 +2028,7 @@ function initThreeJS() {
         });
         const isLowDevice = window.innerWidth < 768 || (navigator.hardwareConcurrency || 4) <= 2;
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowDevice ? 1.25 : 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowDevice ? 1.25 : 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.98;
         renderer.shadowMap.enabled = true;
@@ -1728,19 +2037,11 @@ function initThreeJS() {
 
         clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), clipOffset);
 
-        const rawEnv = createStudioEnvironment();
-        if (rawEnv) {
-            try {
-                const pmremGen = new THREE.PMREMGenerator(renderer);
-                pmremGen.compileEquirectangularShader();
-                const envRT = pmremGen.fromEquirectangular(rawEnv);
-                envMapTexture = envRT.texture;
-                scene.environment = envMapTexture;
-            } catch (pmremErr) {
-                console.warn('[PMREM环境贴图预热提示]', pmremErr);
-                envMapTexture = rawEnv;
-                scene.environment = envMapTexture;
-            }
+        const cubeEnvFn = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze && window.__TQ__.core.glaze.createStudioCubeEnv;
+        const fastEnv = typeof cubeEnvFn === 'function' ? cubeEnvFn() : createStudioEnvironment();
+        if (fastEnv) {
+            envMapTexture = fastEnv;
+            scene.environment = envMapTexture;
         }
 
         ambientLight = new THREE.AmbientLight(0xdbe8ec, 0.72);
@@ -1749,8 +2050,9 @@ function initThreeJS() {
         lightMain = new THREE.DirectionalLight(0xfff6e8, 1.85);
         lightMain.position.set(3.2, 5.2, 4.0);
         lightMain.castShadow = true;
-        lightMain.shadow.mapSize.width = 1024;
-        lightMain.shadow.mapSize.height = 1024;
+        const shadowRes = (typeof window !== 'undefined' && window.innerWidth < 768) ? 512 : 1024;
+        lightMain.shadow.mapSize.width = shadowRes;
+        lightMain.shadow.mapSize.height = shadowRes;
         lightMain.shadow.bias = -0.0002;
         lightMain.shadow.normalBias = 0.035;
         scene.add(lightMain);
@@ -1768,7 +2070,14 @@ function initThreeJS() {
         scene.add(topSpotLight);
 
         createInspectorStage();
-        preloadMasterTreasures();
+        let envPropsQueued = false;
+        const triggerEnvProps = () => {
+            if (envPropsQueued) return;
+            envPropsQueued = true;
+            if (typeof window._loadStudioEnvProps === 'function') window._loadStudioEnvProps();
+        };
+        preloadMasterTreasures(triggerEnvProps);
+        setTimeout(triggerEnvProps, 4500);
         loadPorcelainModel(0);
         // 彻底取消首屏并发争抢：其余模型由鼠标意图悬停与空闲低频调度按需装载
         // scheduleBackgroundModelPreload();

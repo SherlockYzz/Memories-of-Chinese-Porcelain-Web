@@ -7,7 +7,7 @@
  * 模型加载失败同样回退到预览图。离开视口、页面隐藏、弹窗打开时暂停渲染。
  */
 /* global THREE */
-import { defineModule, data, i18n, html, setHTML, prefersReducedMotion, glaze, $ } from '@core';
+import { defineModule, data, i18n, html, setHTML, prefersReducedMotion, glaze, fetchGlbBuffer, $ } from '@core';
 
 const pick = (obj) => (obj && (obj[i18n.currentLang()] || obj.zh)) || '';
 
@@ -54,28 +54,10 @@ function renderStats() {
     setHTML(host, html`${stats.map((s) => html`<div class="hero__stat"><dt>${s.value}</dt><dd>${pick(s.label)}<small>${pick(s.note)}</small></dd></div>`)}`);
 }
 
-/** 用几块发光面板搭一个小“摄影棚”，预过滤成环境贴图，给釉面提供柔和的高光。 */
+/** 构建预模糊柔光立方体环境贴图（无需 PMREMGenerator 同步卷积，耗时 < 0.2ms）。 */
 function buildEnvironment() {
-    const env = new THREE.Scene();
-    const room = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 20), new THREE.MeshBasicMaterial({ color: 0x141c22, side: THREE.BackSide }));
-    env.add(room);
-    const panel = (w, h, color, x, y, z) => {
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
-        m.position.set(x, y, z);
-        m.lookAt(0, 0, 0);
-        env.add(m);
-    };
-    panel(9, 5, 0xfff1d6, 3.5, 5.2, 4.5); // 主柔光箱（暖）
-    panel(3, 8, 0xbfdde6, -7.5, 1.5, 2.5); // 侧条灯（冷）
-    panel(4, 3, 0xffffff, 5.5, 0.5, -6.5); // 轮廓光
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    envTarget = pmrem.fromScene(env, 0.035);
-    pmrem.dispose();
-    env.traverse((o) => {
-        if (o.geometry) o.geometry.dispose();
-        if (o.material) o.material.dispose();
-    });
-    return envTarget.texture;
+    envTarget = glaze.createStudioCubeEnv();
+    return envTarget;
 }
 
 function upgradeMaterial(mat, mesh, optics = {}) {
@@ -204,7 +186,7 @@ function start3D(ctx) {
         setState('fallback');
         return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowEnd() ? 1.25 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, (window.innerWidth < 768 || isLowEnd()) ? 1.35 : 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -241,41 +223,40 @@ function start3D(ctx) {
 
     const loader = new THREE.GLTFLoader();
     const loadHeroGlb = (retriesLeft) => {
-        loader.load(
-            vessel.model.path,
-            (gltf) => {
-                if (!renderer) return; // 加载途中模块被销毁
-                const root = gltf.scene;
-                const glazeEntry = data.byId('glazes', vessel.defaultGlaze || 'tianqing') || {};
-                const optics = glazeEntry.optics || {};
-                root.traverse((o) => {
-                    if (o.isMesh) {
-                        o.material = Array.isArray(o.material)
-                            ? o.material.map((m) => upgradeMaterial(m, o, optics))
-                            : upgradeMaterial(o.material, o, optics);
-                    }
-                });
-                fitVessel(root);
-                pivot.add(root);
-                // 微距镜头：对准器腹偏上的釉面，从侧前方近距离取景
-                macroCamera.position.set(vesselRadius * 0.55, vesselHeight * 0.44, vesselRadius + 1.35);
-                macroCamera.lookAt(vesselRadius * 0.2, vesselHeight * 0.42, 0);
-                resize();
-                setState('ready');
-                syncLoop();
-            },
-            (ev) => {
-                if (ev && ev.total) setState('loading', `${i18n.tr('正在载入器物模型…')} ${Math.round((ev.loaded / ev.total) * 100)}%`);
-            },
-            () => {
-                if (retriesLeft > 0 && renderer) {
-                    setTimeout(() => loadHeroGlb(retriesLeft - 1), 600);
-                    return;
+        const onParsed = (gltf) => {
+            if (!renderer) return; // 加载途中模块被销毁
+            const root = gltf.scene;
+            const glazeEntry = data.byId('glazes', vessel.defaultGlaze || 'tianqing') || {};
+            const optics = glazeEntry.optics || {};
+            root.traverse((o) => {
+                if (o.isMesh) {
+                    o.material = Array.isArray(o.material)
+                        ? o.material.map((m) => upgradeMaterial(m, o, optics))
+                        : upgradeMaterial(o.material, o, optics);
                 }
-                teardown3D();
-                setState('fallback');
+            });
+            fitVessel(root);
+            pivot.add(root);
+            // 微距镜头：对准器腹偏上的釉面，从侧前方近距离取景
+            macroCamera.position.set(vesselRadius * 0.55, vesselHeight * 0.44, vesselRadius + 1.35);
+            macroCamera.lookAt(vesselRadius * 0.2, vesselHeight * 0.42, 0);
+            resize();
+            setState('ready');
+            notifyHeroReady('ready');
+            syncLoop();
+        };
+        const onFail = () => {
+            if (retriesLeft > 0 && renderer) {
+                setTimeout(() => loadHeroGlb(retriesLeft - 1), 600);
+                return;
             }
-        );
+            teardown3D();
+            setState('fallback');
+            notifyHeroReady('fallback');
+        };
+        fetchGlbBuffer(vessel.model.path)
+            .then((buf) => loader.parse(buf.slice(0), '', onParsed, onFail))
+            .catch(onFail);
     };
     loadHeroGlb(1);
 
@@ -335,6 +316,12 @@ function teardown3D() {
 }
 
 let moduleCtx = null;
+let heroReadyEmitted = false;
+function notifyHeroReady(stateName) {
+    if (heroReadyEmitted) return;
+    heroReadyEmitted = true;
+    if (moduleCtx && moduleCtx.bus) moduleCtx.bus.emit('hero:ready', { state: stateName });
+}
 
 export default defineModule({
     id: 'hero-vessel',
@@ -356,9 +343,13 @@ export default defineModule({
         ctx.subscribe('a11y:changed', syncLoop);
         ctx.listen(document, 'visibilitychange', syncLoop);
 
-        if (!webglAvailable()) setState('fallback');
-        else if (isLowEnd() || prefersReducedMotion()) setState('poster'); // 先给图，3D 由用户决定是否加载
-        else {
+        if (!webglAvailable()) {
+            setState('fallback');
+            notifyHeroReady('fallback');
+        } else if (isLowEnd() || prefersReducedMotion()) {
+            setState('poster'); // 先给图，3D 由用户决定是否加载
+            notifyHeroReady('poster');
+        } else {
             // 双 rAF 确保浏览器先把首屏文本与 LCP 预览图提交给合成器完成首绘，再挂载 WebGL 器物
             requestAnimationFrame(() => requestAnimationFrame(() => { if (moduleCtx) start3D(moduleCtx); }));
         }

@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: '要发布的版本标签 (例如 v9.1.0)'
+        description: '要发布的版本标签 (例如 v9.2.0)'
         required: true
-        default: 'v9.1.0'
+        default: 'v9.2.0'
 
 permissions:
   contents: write
@@ -59,18 +59,18 @@ jobs:
           node -e '
             const fs = require("fs");
             const bt = String.fromCharCode(96);
-            const tag = process.env.TAG_NAME || "v9.1.0";
+            const tag = process.env.TAG_NAME || "v9.2.0";
             const notes = [
-              "## 天青泥火 — 华夏古瓷三维研学空间",
+              "## 天青泥火 — 华夏古瓷三维研学空间 (" + tag + ")",
               "",
               "> **从泥到火，从器到鉴——数字化复原中国古瓷的一生**",
               "> 在线体验：https://sherlockyzz.github.io/Memories-of-Chinese-Porcelain-Web/",
               "",
               "### 核心更新亮点",
-              "- **360° 柱面 UV 手绘青花与永宣甜白釉工坊**：全新 512×256 双层柱面 UV + 32 扇条透视重投影引擎，支持勾线、分水、点斑（苏麻离青铁锈斑）、刮料四种笔法，毫锋细/中/粗切换、转盘定格、1300℃ 生坯至釉下宝蓝蜕变与 Ctrl+Z 泥坯/笔触双撤销，并新增无开片洁净「景德镇永宣甜白釉」。",
-              "- **首屏秒开与全量并发预热**：优化首屏关键加载路径、修复 Service Worker 缓存隔离、保障图录全量图片可见性与 3D 模型超时自动重试。",
-              "- **3D 水墨山川自动律动背景**：背景山川具备自主呼吸微震律动，并与鼠标/滚动视差丝滑叠加。",
-              "- **完整学术致谢与典藏体系**：保留权威学术专著与古籍文献引述、Poly Haven CC0 对照模型与小米 MiMo 语音致谢（版权制作：折木柯南）。",
+              "- **真 3D Three.js 互动拉坯与青花绘瓷工坊**：88 段 CatmullRomCurve3 + LatheGeometry 双壁立体器型建模、`MeshPhysicalMaterial` 双层透明清漆与柔和摄影棚高光，配合 `Raycaster` `1024×512` 曲面精确绘图、笔速压感、4/6 重对称绘制、莲瓣/梅枝/云纹/回纹四大青花点印、重置视角及本地草稿暂存/读档，1300℃ 窑火煅烧融为莹澈釉下宝蓝。",
+              "- **4 件博物馆级馆藏釉面重绘与图录焕新**：升级北宋钧窑玫瑰紫窑变、元青花缠枝牡丹龙纹罐、明宣德祭红釉僧帽壶（含口沿「灯草边」露白）及清乾隆黄地洋彩开光转心瓶程序化釉面质感，并更新干净高清馆藏缩略图。",
+              "- **全端极速加载与渲染管线重构**：以亚毫秒 `createStudioCubeEnv()` 替代同步 `PMREMGenerator` 阻塞、预计算缓存双尺度 Voronoi 距离场、`hero:ready` 总线错峰门控三路 WebGL 上下文，并在主展稳固后实现单路纯二进制 `fetchGlbBuffer` 静默预抓取；兼顾移动端低延迟秒开与桌面端高画质流畅浏览。",
+              "- **全站细节打磨**：金缮工坊升级天然锯齿随机裂纹与金箔碎屑颗粒、优化共享 `AudioContext`、补齐中英双语词库并升级 Service Worker 缓存策略（`tianqing-nihuo-v9.2-fast`）。",
               "",
               "### 附件说明（均为全新冷构建最新产物）",
               "- " + bt + "TianQingNiHuo.zip" + bt + " / " + bt + "TianQingNiHuo-" + tag + ".zip" + bt + "：完整 " + bt + "dist/" + bt + " 纯静态构建包（可直接部署至任意静态托管或本地 HTTP Server 解压运行）。",
@@ -92,7 +92,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          TITLE="🏺 天青泥火 ${TAG_NAME} · 360° 柱面青花工坊 / 首屏秒开预热 / 3D 自动律动背景"
+          TITLE="🏺 天青泥火 ${TAG_NAME} · 真3D青花拉坯 / 四大名瓷精绘 / 全端极速加载引擎"
           if gh release view "${TAG_NAME}" >/dev/null 2>&1; then
             gh release edit "${TAG_NAME}" --title "${TITLE}" --notes-file release-notes.md --latest
             gh release upload "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt README.md --clobber

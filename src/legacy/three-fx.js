@@ -62,7 +62,9 @@
         if (typeof envMapTexture !== 'undefined' && envMapTexture) return envMapTexture;
         try {
             const W = 1024, H = 512;
-            const [cv, ctx] = makeCanvas(W, H);
+            const [cv, ctx] = makeCanvas(512, 256);
+            ctx.save();
+            ctx.scale(0.5, 0.5);
 
             // 暗调文人雅室基底：顶部微亮、地平线最暗、地面泛暖
             const base = ctx.createLinearGradient(0, 0, 0, H);
@@ -132,6 +134,7 @@
             ctx.fillStyle = gb;
             ctx.fillRect(0, 270, W, 70);
             softBox(512, 470, 420, 70, 'rgba(120,84,48,0.55)', 'rgba(70,48,28,0.18)');
+            ctx.restore();
 
             const tex = new THREE.CanvasTexture(cv);
             tex.mapping = THREE.EquirectangularReflectionMapping;
@@ -937,40 +940,74 @@
         return _loadModel2.apply(this, arguments);
     };
 
-    // 后台高并发流水线预取：首件器物就绪后迅速拉齐全部模型，告别漫长排队等待
+    // 节制型邻近预热 + 仅二进制静默预拉取（全端切换秒开、零 GPU/主线程争抢）
     const conn = navigator.connection || {};
     const slowNet = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
-    const PREFETCH_CONCURRENCY = (typeof window !== 'undefined' && window.innerWidth >= 768) ? 3 : 2;
+    const PREFETCH_CONCURRENCY = 1;
     let prefetchInflight = 0;
+    let prefetchBudget = IS_TOUCH ? 0 : 2;
+    const warmBufferDone = new Set([0]);
+    let warmBufferQueue = null;
+    let warmBufferInflight = false;
 
     function nextToPrefetch() {
+        if (prefetchBudget <= 0) return -1;
         const keys = Object.keys(masterTreasuresMeta).map(Number);
         const n = keys.length;
         if (!n) return -1;
         const pos = Math.max(0, keys.indexOf(currentModelIndex));
-        for (let d = 1; d < n; d++) {
-            for (const idx of [keys[(pos + d) % n], keys[(pos - d + n) % n]]) {
-                if (!masterTreasuresCache[idx] && !masterTreasuresLoading[idx]) return idx;
-            }
+        for (const d of [1, n - 1]) {
+            const idx = keys[(pos + d) % n];
+            if (!masterTreasuresCache[idx] && !masterTreasuresLoading[idx]) return idx;
         }
         return -1;
     }
     FX.prefetchTick = function () {
-        if (slowNet || document.hidden) return;
+        if (IS_TOUCH || slowNet || document.hidden || prefetchBudget <= 0) {
+            if (FX._pf) { clearInterval(FX._pf); FX._pf = null; }
+            return;
+        }
         if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;
-        while (prefetchInflight < PREFETCH_CONCURRENCY) {
+        while (prefetchInflight < PREFETCH_CONCURRENCY && prefetchBudget > 0) {
             const idx = nextToPrefetch();
             if (idx < 0) {
                 if (FX._pf) { clearInterval(FX._pf); FX._pf = null; }
                 return;
             }
             prefetchInflight++;
+            prefetchBudget--;
             loadSingleMasterTreasure(idx, () => {
                 prefetchInflight = Math.max(0, prefetchInflight - 1);
-                warmTextures(idx);
-                setTimeout(FX.prefetchTick, 35);
+                if (exhibitionMode === 'hall') updateHallVitrineModel(idx);
             }, false);
         }
+    };
+    FX.warmBufferTick = function () {
+        if (slowNet || document.hidden || warmBufferInflight) return;
+        if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;
+        const fetchShared = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.fetchGlbBuffer;
+        if (!fetchShared) {
+            if (FX._wb) { clearInterval(FX._wb); FX._wb = null; }
+            return;
+        }
+        if (!warmBufferQueue) {
+            warmBufferQueue = Object.keys(masterTreasuresMeta).map(Number).filter((i) => !warmBufferDone.has(i));
+        }
+        while (warmBufferQueue.length && (warmBufferDone.has(warmBufferQueue[0]) || masterTreasuresCache[warmBufferQueue[0]])) {
+            warmBufferDone.add(warmBufferQueue.shift());
+        }
+        if (!warmBufferQueue.length) {
+            if (FX._wb) { clearInterval(FX._wb); FX._wb = null; }
+            return;
+        }
+        const nextIdx = warmBufferQueue.shift();
+        warmBufferDone.add(nextIdx);
+        const meta = masterTreasuresMeta[nextIdx];
+        if (!meta || !/\.glb(\?|$)/i.test(meta.path)) return;
+        warmBufferInflight = true;
+        Promise.resolve(fetchShared(meta.path)).catch(() => { }).finally(() => {
+            warmBufferInflight = false;
+        });
     };
     function warmTextures(idx) {
         const sc = masterTreasuresCache[idx];
@@ -1071,7 +1108,7 @@
         if (!scene || !renderer || !camera || FX.ready) return;
 
         // —— 渲染器 ——
-        perf.dpr = Math.min(window.devicePixelRatio || 1, IS_TOUCH ? 2 : 2.5);
+        perf.dpr = Math.min(window.devicePixelRatio || 1, IS_TOUCH ? 1.35 : 1.75);
         perf.min = 1;
         renderer.setPixelRatio(perf.dpr);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -1079,10 +1116,11 @@
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        // —— 主光阴影：2048 贴图 + 收紧视锥 → 阴影边缘更细腻、足底接地更实 ——
+        // —— 主光阴影：移动端 512 兼顾性能，桌面 1024 兼顾细腻轮廓 ——
         if (lightMain) {
             const s = lightMain.shadow;
-            s.mapSize.set(1024, 1024);
+            const shadowSz = IS_TOUCH ? 512 : 1024;
+            s.mapSize.set(shadowSz, shadowSz);
             const sc = s.camera;
             sc.left = -2.4; sc.right = 2.4; sc.top = 2.8; sc.bottom = -2.2; sc.near = 2; sc.far = 14;
             sc.updateProjectionMatrix();
@@ -1146,11 +1184,13 @@
 
         FX.ready = true;
         FX.applyEnv(currentRoomEnv || 'studio');
-        // 首件器物稳定后 250ms 立即启动高并发后台预热，数秒内备齐全部模型
-        setTimeout(() => {
-            FX.prefetchTick();
-            if (!FX._pf) FX._pf = setInterval(FX.prefetchTick, 900);
-        }, 250);
+        // 全端在 0 号稳固 1.6s 后单路静默预抓 1-8 号二进制至缓存（仅下载不提前 GLTFLoader.parse，消除后台 5.8s 长任务）
+        if (!slowNet) {
+            setTimeout(() => {
+                FX.warmBufferTick();
+                if (!FX._wb) FX._wb = setInterval(FX.warmBufferTick, 850);
+            }, 1600);
+        }
     };
 
     /* ======================================================================

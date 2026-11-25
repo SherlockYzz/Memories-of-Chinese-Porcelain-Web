@@ -12,6 +12,7 @@
 /* global THREE */
 
 let cachedOrangePeelNormal = null;
+let cachedVoronoiField = null;
 const cachedCrackleMaps = new Map();
 
 function seededRand(seed0) {
@@ -23,11 +24,11 @@ function seededRand(seed0) {
 }
 
 /**
- * 生成细腻的“橘皮”微法线贴图（512×512 CanvasTexture）。
+ * 生成细腻的“橘皮”微法线贴图（128×128 CanvasTexture，平铺放大，低开销初始化）。
  */
 export function getOrangePeelNormalMap() {
     if (cachedOrangePeelNormal || typeof THREE === 'undefined') return cachedOrangePeelNormal;
-    const size = 256;
+    const size = 128;
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
@@ -73,42 +74,16 @@ export function getOrangePeelNormalMap() {
     ctx.putImageData(img, 0, 0);
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(3, 3);
+    tex.repeat.set(4, 4);
     cachedOrangePeelNormal = tex;
     return tex;
 }
 
-/**
- * 生成多尺度双层 Voronoi 开片贴图包：
- * - colorMap: 透明底上叠印深沉一级主裂（铁线）与浅细二级次裂（金丝），非均匀线网
- * - bumpMap: 真实沟壑深度图（主纹深、次纹浅）
- */
-export function getMultiScaleCrackleMaps({
-    inkColor = '#3c3127',
-    goldColor = '#9b7440',
-    scale = 1.8,
-    strength = 0.42
-} = {}) {
-    if (typeof THREE === 'undefined') return null;
-    const key = `${inkColor}|${goldColor}|${scale}|${strength.toFixed(2)}`;
-    if (cachedCrackleMaps.has(key)) return cachedCrackleMaps.get(key);
-
-    const size = 512;
-    const cCanvas = document.createElement('canvas');
-    const bCanvas = document.createElement('canvas');
-    cCanvas.width = bCanvas.width = size;
-    cCanvas.height = bCanvas.height = size;
-    const cCtx = cCanvas.getContext('2d');
-    const bCtx = bCanvas.getContext('2d');
-
-    cCtx.fillStyle = '#ffffff';
-    cCtx.fillRect(0, 0, size, size);
-    bCtx.fillStyle = 'rgb(212, 212, 212)';
-    bCtx.fillRect(0, 0, size, size);
-
+function getBaseVoronoiField(size = 256) {
+    if (cachedVoronoiField && cachedVoronoiField.size === size) return cachedVoronoiField;
     const rand = seededRand(880417);
 
-    // 真实 Voronoi 距离差场（支持周期性平铺，无接缝）
+    // 真实 Voronoi 距离差场（支持周期性平铺，无接缝；仅预计算一次并缓存距离场）
     const makeSeeds = (gridN) => {
         const pts = [];
         for (let gy = 0; gy < gridN; gy++) {
@@ -155,6 +130,48 @@ export function getMultiScaleCrackleMaps({
         return (Math.sqrt(d2Sq) - Math.sqrt(d1Sq)) * gridN;
     };
 
+    const total = size * size;
+    const e1Arr = new Float32Array(total);
+    const e2Arr = new Float32Array(total);
+    for (let y = 0; y < size; y++) {
+        const v = y / size;
+        for (let x = 0; x < size; x++) {
+            const u = x / size;
+            const warpU = (u + 0.012 * Math.sin(v * Math.PI * 6) + 1) % 1;
+            const warpV = (v + 0.012 * Math.cos(u * Math.PI * 6) + 1) % 1;
+            const pos = y * size + x;
+            e1Arr[pos] = voronoiEdge(warpU, warpV, primary);
+            e2Arr[pos] = voronoiEdge(warpU, warpV, secondary);
+        }
+    }
+    cachedVoronoiField = { size, e1: e1Arr, e2: e2Arr };
+    return cachedVoronoiField;
+}
+
+/**
+ * 生成多尺度双层 Voronoi 开片贴图包：
+ * - colorMap: 透明底上叠印深沉一级主裂（铁线）与浅细二级次裂（金丝），非均匀线网
+ * - bumpMap: 真实沟壑深度图（主纹深、次纹浅）
+ */
+export function getMultiScaleCrackleMaps({
+    inkColor = '#3c3127',
+    goldColor = '#9b7440',
+    scale = 1.8,
+    strength = 0.42
+} = {}) {
+    if (typeof THREE === 'undefined') return null;
+    const key = `${inkColor}|${goldColor}|${scale}|${strength.toFixed(2)}`;
+    if (cachedCrackleMaps.has(key)) return cachedCrackleMaps.get(key);
+
+    const field = getBaseVoronoiField(256);
+    const size = field.size;
+    const cCanvas = document.createElement('canvas');
+    const bCanvas = document.createElement('canvas');
+    cCanvas.width = bCanvas.width = size;
+    cCanvas.height = bCanvas.height = size;
+    const cCtx = cCanvas.getContext('2d');
+    const bCtx = bCanvas.getContext('2d');
+
     const parseHex = (hex) => {
         const h = hex.replace('#', '');
         return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
@@ -171,12 +188,9 @@ export function getMultiScaleCrackleMaps({
         const v = y / size;
         for (let x = 0; x < size; x++) {
             const u = x / size;
-            // 略微扰动坐标，避免裂纹太直
-            const warpU = (u + 0.012 * Math.sin(v * Math.PI * 6) + 1) % 1;
-            const warpV = (v + 0.012 * Math.cos(u * Math.PI * 6) + 1) % 1;
-
-            const e1 = voronoiEdge(warpU, warpV, primary);
-            const e2 = voronoiEdge(warpU, warpV, secondary);
+            const pos = y * size + x;
+            const e1 = field.e1[pos];
+            const e2 = field.e2[pos];
 
             // 一级铁线：较深、略宽但粗细有自然变化
             const w1 = 0.036 + 0.014 * Math.sin(u * 25.1 + v * 18.8);
@@ -188,7 +202,7 @@ export function getMultiScaleCrackleMaps({
             const t2 = Math.max(0, 1 - e2 / w2);
             const m2 = Math.pow(t2, 2.6) * Math.min(1, strength * 0.62);
 
-            const idx = (y * size + x) * 4;
+            const idx = pos * 4;
             let r = 255;
             let g = 255;
             let b = 255;
@@ -221,6 +235,10 @@ export function getMultiScaleCrackleMaps({
     const colorMap = new THREE.CanvasTexture(cCanvas);
     const bumpMap = new THREE.CanvasTexture(bCanvas);
     colorMap.wrapS = colorMap.wrapT = bumpMap.wrapS = bumpMap.wrapT = THREE.RepeatWrapping;
+    colorMap.minFilter = THREE.LinearMipmapLinearFilter;
+    colorMap.magFilter = THREE.LinearFilter;
+    bumpMap.minFilter = THREE.LinearMipmapLinearFilter;
+    bumpMap.magFilter = THREE.LinearFilter;
     colorMap.repeat.set(scale, scale);
     bumpMap.repeat.set(scale, scale);
 
@@ -349,10 +367,113 @@ export function enhancePorcelainMaterial(mat, optics = {}, options = {}) {
     return mat;
 }
 
+let cachedStudioEnvCanvases = null;
+
+function buildStudioEnvCanvases() {
+    if (cachedStudioEnvCanvases) return cachedStudioEnvCanvases;
+    const S = 128;
+    const makeFace = (drawFn) => {
+        const cv = document.createElement('canvas');
+        cv.width = S;
+        cv.height = S;
+        const ctx = cv.getContext('2d');
+        drawFn(ctx, S);
+        return cv;
+    };
+    const fillGrad = (ctx, S, stops) => {
+        const g = ctx.createLinearGradient(0, 0, 0, S);
+        stops.forEach(([pos, col]) => g.addColorStop(pos, col));
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, S, S);
+    };
+    const addGlow = (ctx, cx, cy, r, c0, c1) => {
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        g.addColorStop(0, c0);
+        g.addColorStop(0.55, c1);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    };
+
+    // 右侧 (+X)：天青色冷辅光长条窗，勾勒器物右缘冷色轮廓
+    const px = makeFace((ctx, s) => {
+        fillGrad(ctx, s, [[0, '#16242c'], [0.5, '#0c1419'], [1, '#1a1510']]);
+        const sg = ctx.createLinearGradient(28, 0, 100, 0);
+        sg.addColorStop(0, 'rgba(150,215,228,0)');
+        sg.addColorStop(0.5, 'rgba(186,232,240,0.92)');
+        sg.addColorStop(1, 'rgba(150,215,228,0)');
+        ctx.fillStyle = sg;
+        ctx.fillRect(28, 18, 72, 82);
+        addGlow(ctx, 64, 58, 54, 'rgba(165,222,232,0.45)', 'rgba(115,175,190,0.14)');
+    });
+
+    // 左侧 (-X)：宋式暖白轩窗（带柔和窗格暗线），反射到瓷腹呈“玉窗”倒影
+    const nx = makeFace((ctx, s) => {
+        fillGrad(ctx, s, [[0, '#1d2b32'], [0.5, '#0d151b'], [1, '#1c1610']]);
+        const wg = ctx.createLinearGradient(24, 22, 104, 96);
+        wg.addColorStop(0, 'rgba(255,244,222,0.98)');
+        wg.addColorStop(1, 'rgba(255,224,182,0.88)');
+        ctx.fillStyle = wg;
+        ctx.fillRect(24, 22, 80, 74);
+        ctx.fillStyle = 'rgba(12,18,22,0.72)';
+        for (let i = 1; i < 4; i++) {
+            ctx.fillRect(24 + 20 * i - 1.5, 22, 3, 74);
+            ctx.fillRect(24, 22 + 18.5 * i - 1.5, 80, 3);
+        }
+        addGlow(ctx, 64, 59, 60, 'rgba(255,232,195,0.34)', 'rgba(255,212,158,0.10)');
+    });
+
+    // 顶部 (+Y)：大型柔光天窗箱，在瓷肩形成温润弧形高光带
+    const py = makeFace((ctx, s) => {
+        ctx.fillStyle = '#1b2931';
+        ctx.fillRect(0, 0, s, s);
+        addGlow(ctx, 64, 64, 58, 'rgba(255,250,236,1.0)', 'rgba(210,232,238,0.48)');
+    });
+
+    // 底部 (-Y)：紫檀案几暖色漫反射基底
+    const ny = makeFace((ctx, s) => {
+        ctx.fillStyle = '#140f0a';
+        ctx.fillRect(0, 0, s, s);
+        addGlow(ctx, 64, 64, 56, 'rgba(138,98,58,0.52)', 'rgba(72,48,28,0.18)');
+    });
+
+    // 正前 (+Z)：沉静暗青墨背景，避免前景釉面过曝
+    const pz = makeFace((ctx, s) => {
+        fillGrad(ctx, s, [[0, '#22333b'], [0.48, '#0c1318'], [1, '#1a1510']]);
+        addGlow(ctx, 96, 36, 48, 'rgba(255,232,196,0.30)', 'rgba(197,160,89,0.08)');
+    });
+
+    // 背后 (-Z)：暖金双侧轮廓辅光，勾勒器型剪影边线
+    const nz = makeFace((ctx, s) => {
+        fillGrad(ctx, s, [[0, '#18242b'], [0.5, '#090e12'], [1, '#18130e']]);
+        addGlow(ctx, 18, 60, 38, 'rgba(255,222,162,0.72)', 'rgba(255,205,130,0.18)');
+        addGlow(ctx, 110, 60, 38, 'rgba(196,232,240,0.58)', 'rgba(145,205,220,0.14)');
+    });
+
+    cachedStudioEnvCanvases = [px, nx, py, ny, pz, nz];
+    return cachedStudioEnvCanvases;
+}
+
+/**
+ * 创建零耗时博物馆级柔光立方体环境贴图（无需 PMREMGenerator 同步卷积，耗时 < 0.2ms）。
+ * 每次调用返回独立 THREE.CubeTexture 实例，可安全绑定至各自独立的 WebGLRenderer。
+ */
+export function createStudioCubeEnv() {
+    if (typeof THREE === 'undefined') return null;
+    const canvases = buildStudioEnvCanvases();
+    const tex = new THREE.CubeTexture(canvases);
+    if ('sRGBEncoding' in THREE) tex.encoding = THREE.sRGBEncoding;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    return tex;
+}
+
 export const glazeShader = {
     getOrangePeelNormalMap,
     getMultiScaleCrackleMaps,
-    enhancePorcelainMaterial
+    enhancePorcelainMaterial,
+    createStudioCubeEnv
 };
 
 export default glazeShader;

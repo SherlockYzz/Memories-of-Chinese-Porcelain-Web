@@ -142,10 +142,10 @@
   {
     "id": "junhong",
     "name": "玫瑰紫变",
-    "desc": "禹州钧官窑铜还原窑变，玫瑰紫与天蓝分相交融",
+    "desc": "禹州钧官窑铜还原窑变，海棠绛紫与乳浊月白灰蓝自然交融",
     "material": {
-      "color": "#9b5073",
-      "emissive": "#14060e",
+      "color": "#6c344d",
+      "emissive": "#12070d",
       "roughness": 0.16,
       "metalness": 0.02,
       "clearcoat": 0.96,
@@ -154,16 +154,16 @@
       "reflectivity": 0.7
     },
     "optics": {
-      "deepColor": "#5f2745",
-      "thinColor": "#7da1ba",
+      "deepColor": "#3e1b2d",
+      "thinColor": "#7d96a8",
       "crackleScale": 1.3,
-      "crackleInkColor": "#452938",
-      "crackleGoldColor": "#907285",
-      "crackleOpacity": 0.15,
+      "crackleInkColor": "#3d2633",
+      "crackleGoldColor": "#7a6672",
+      "crackleOpacity": 0.14,
       "orangePeelStrength": 0.24,
-      "purpleRimIronFoot": 0.25,
-      "iridescenceStrength": 0.12,
-      "subsurfaceWarmth": 0.2
+      "purpleRimIronFoot": 0.35,
+      "iridescenceStrength": 0.1,
+      "subsurfaceWarmth": 0.18
     },
     "note": "结合馆藏标准色与物理光学渲染参数调校，还原名窑釉面玉润质感。"
   },

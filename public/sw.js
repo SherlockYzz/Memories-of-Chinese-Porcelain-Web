@@ -1,5 +1,5 @@
-/* 天青泥火 · 安全可控 Service Worker（仅缓存不可变哈希静态产物 /assets/ 与 /webfonts/，全面放行 HTML/图片/3D 模型） */
-const CACHE_NAME = 'tianqing-nihuo-v9-safe';
+/* 天青泥火 · 安全高性能 Service Worker（不可变静态构建 + 模型与图片一次缓存，二次访问秒开） */
+const CACHE_NAME = 'tianqing-nihuo-v9.2-fast';
 
 self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());
@@ -20,15 +20,15 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(req.url);
     if (url.origin !== self.location.origin) return;
 
-    // 仅对带内容哈希的不可变构建脚本/样式与字体启用 CacheFirst；
-    // HTML 文档、images/*、models/*、audio/*、videos/* 与 /api/* 一律交由浏览器原生网络请求处理。
-    if (!/\/(assets|webfonts)\//i.test(url.pathname)) return;
+    // 仅对构建静态产物、字体、3D 模型与图录图片启用安全 CacheFirst；
+    // HTML 文档、audio/*、videos/* 与 /api/* 一律交由浏览器原生网络直连。
+    if (!/\/(assets|webfonts|models|images)\//i.test(url.pathname)) return;
 
     event.respondWith(
         caches.match(req).then((cached) => {
             if (cached) return cached;
             return fetch(req).then((res) => {
-                if (res && res.status === 200 && res.type === 'basic') {
+                if (res && res.ok && res.status === 200 && res.type === 'basic') {
                     const copy = res.clone();
                     caches.open(CACHE_NAME).then((c) => c.put(req, copy));
                 }
