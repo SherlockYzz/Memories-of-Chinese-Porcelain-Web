@@ -66,7 +66,7 @@ function renderGrid() {
                     <div class="aspect-square rounded-xl overflow-hidden mb-4 porcelain-card-skeleton relative border border-border-light/60">
                         <div class="porcelain-skeleton-icon"><i class="fa-solid fa-gem opacity-40" aria-hidden="true"></i></div>
                         <img src="${item.img}" alt="${tr(item.name)}" loading="lazy" decoding="async" data-fade-img
-                             class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 opacity-0 relative z-10">
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-10">
                         <span class="archive-level-tag">${tr(item.level)}</span>
                         <button type="button" data-action="toggleArchiveBookmark(${item.id})" data-action-stop class="archive-fav-btn" title="${favLabel}" aria-label="${favLabel}" aria-pressed="${fav ? 'true' : 'false'}">
                             <i class="${fav ? 'fa-solid text-amber-400' : 'fa-regular'} fa-bookmark text-xs" aria-hidden="true"></i>
@@ -93,18 +93,26 @@ function renderGrid() {
     fadeInImages(container);
 }
 
-/** 图片加载完成后淡入；加载失败则保留占位图标，不再回退到无关图片。 */
+/** 图片加载完成后淡去背后占位图标；若偶发网络波动则自动重试一次而不删除图片节点。 */
 function fadeInImages(root) {
     root.querySelectorAll('img[data-fade-img]').forEach((img) => {
         const show = () => {
-            img.classList.remove('opacity-0');
             const icon = img.previousElementSibling;
             if (icon) icon.style.opacity = '0';
         };
         if (img.complete && img.naturalWidth > 0) show();
         else {
             img.addEventListener('load', show, { once: true });
-            img.addEventListener('error', () => img.remove(), { once: true });
+            img.addEventListener(
+                'error',
+                () => {
+                    if (img.dataset.retried) return;
+                    img.dataset.retried = '1';
+                    const rawSrc = img.getAttribute('src') || '';
+                    if (rawSrc) img.src = rawSrc + (rawSrc.includes('?') ? '&' : '?') + 'r=' + Date.now();
+                },
+                { once: true }
+            );
         }
     });
 }

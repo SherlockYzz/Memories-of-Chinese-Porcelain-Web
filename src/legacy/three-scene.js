@@ -94,8 +94,8 @@ let vesselVibration = 0;
 
 // --- 模型队列与加载控制器 (并发上限 4，支持停滞重置、优先调度与安全看门狗) ---
 const MAX_CONCURRENT_MODELS = 4;
-const MODEL_TIMEOUT_MS = 8000; // 停滞超时：有下载进度即重置，慢速网络不误判中断
-const MAX_MODEL_RETRIES = 2;
+const MODEL_TIMEOUT_MS = 18000; // 跨境访问 GitHub Pages 适当放宽下载超时，避免大体积 GLB 中途被误杀
+const MAX_MODEL_RETRIES = 3;
 
 const masterTreasuresCache = {};
 const masterTreasuresLoading = {};

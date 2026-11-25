@@ -30,7 +30,7 @@ function isLowEnd() {
     const cores = navigator.hardwareConcurrency || 4;
     const mem = navigator.deviceMemory || 4;
     const saveData = !!(navigator.connection && navigator.connection.saveData);
-    return saveData || window.innerWidth < 768 || cores <= 2 || mem <= 2 || (cores <= 4 && mem <= 4);
+    return saveData || cores <= 2 || mem <= 2;
 }
 
 function webglAvailable() {
@@ -239,37 +239,45 @@ function start3D(ctx) {
     shadow.position.y = 0.002;
     scene.add(shadow);
 
-    new THREE.GLTFLoader().load(
-        vessel.model.path,
-        (gltf) => {
-            if (!renderer) return; // 加载途中模块被销毁
-            const root = gltf.scene;
-            const glazeEntry = data.byId('glazes', vessel.defaultGlaze || 'tianqing') || {};
-            const optics = glazeEntry.optics || {};
-            root.traverse((o) => {
-                if (o.isMesh) {
-                    o.material = Array.isArray(o.material)
-                        ? o.material.map((m) => upgradeMaterial(m, o, optics))
-                        : upgradeMaterial(o.material, o, optics);
+    const loader = new THREE.GLTFLoader();
+    const loadHeroGlb = (retriesLeft) => {
+        loader.load(
+            vessel.model.path,
+            (gltf) => {
+                if (!renderer) return; // 加载途中模块被销毁
+                const root = gltf.scene;
+                const glazeEntry = data.byId('glazes', vessel.defaultGlaze || 'tianqing') || {};
+                const optics = glazeEntry.optics || {};
+                root.traverse((o) => {
+                    if (o.isMesh) {
+                        o.material = Array.isArray(o.material)
+                            ? o.material.map((m) => upgradeMaterial(m, o, optics))
+                            : upgradeMaterial(o.material, o, optics);
+                    }
+                });
+                fitVessel(root);
+                pivot.add(root);
+                // 微距镜头：对准器腹偏上的釉面，从侧前方近距离取景
+                macroCamera.position.set(vesselRadius * 0.55, vesselHeight * 0.44, vesselRadius + 1.35);
+                macroCamera.lookAt(vesselRadius * 0.2, vesselHeight * 0.42, 0);
+                resize();
+                setState('ready');
+                syncLoop();
+            },
+            (ev) => {
+                if (ev && ev.total) setState('loading', `${i18n.tr('正在载入器物模型…')} ${Math.round((ev.loaded / ev.total) * 100)}%`);
+            },
+            () => {
+                if (retriesLeft > 0 && renderer) {
+                    setTimeout(() => loadHeroGlb(retriesLeft - 1), 600);
+                    return;
                 }
-            });
-            fitVessel(root);
-            pivot.add(root);
-            // 微距镜头：对准器腹偏上的釉面，从侧前方近距离取景
-            macroCamera.position.set(vesselRadius * 0.55, vesselHeight * 0.44, vesselRadius + 1.35);
-            macroCamera.lookAt(vesselRadius * 0.2, vesselHeight * 0.42, 0);
-            resize();
-            setState('ready');
-            syncLoop();
-        },
-        (ev) => {
-            if (ev && ev.total) setState('loading', `${i18n.tr('正在载入器物模型…')} ${Math.round((ev.loaded / ev.total) * 100)}%`);
-        },
-        () => {
-            teardown3D();
-            setState('fallback');
-        }
-    );
+                teardown3D();
+                setState('fallback');
+            }
+        );
+    };
+    loadHeroGlb(1);
 
     resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(stage);
