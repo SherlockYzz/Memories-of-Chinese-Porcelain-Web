@@ -60,18 +60,19 @@ function scheduleGalleryBoot() {
         { capture: true, passive: true }
     );
 
-    // 桌面端非省流模式在 load 完成且首屏空闲后静默预热，避免阻滞首屏 FCP / LCP / load
+    // 非省流模式下，在 load 完成且首屏稳定后尽快预热三维展馆（桌面 200ms，移动 700ms）
     const saveData = !!(navigator.connection && navigator.connection.saveData);
-    if (!saveData && window.innerWidth >= 768) {
+    if (!saveData) {
+        const delayMs = window.innerWidth >= 768 ? 200 : 700;
         const idleWarm = () => {
             if (typeof requestIdleCallback === 'function') {
-                requestIdleCallback(() => ensureThreeJS(), { timeout: 1400 });
+                requestIdleCallback(() => ensureThreeJS(), { timeout: delayMs + 400 });
             } else {
-                setTimeout(ensureThreeJS, 900);
+                setTimeout(ensureThreeJS, delayMs);
             }
         };
-        if (document.readyState === 'complete') setTimeout(idleWarm, 800);
-        else window.addEventListener('load', () => setTimeout(idleWarm, 800), { once: true });
+        if (document.readyState === 'complete') setTimeout(idleWarm, delayMs);
+        else window.addEventListener('load', () => setTimeout(idleWarm, delayMs), { once: true });
     }
 }
 

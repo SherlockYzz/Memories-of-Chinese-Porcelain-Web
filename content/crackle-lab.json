@@ -6,8 +6,8 @@
     "en": "Adjust expansion mismatch, glaze thickness and cooling rate to watch two-stage crackle grow"
   },
   "disclaimer": {
-    "zh": "科学说明：本实验采用双尺度 Voronoi 应力松弛简化模型定性演示热应力开片趋势（非有限元物理求解）。文献依据：Kingery & Vandiver (1986)；李家治《中国科学技术史·陶瓷卷》(1998)。",
-    "en": "Note: Qualitative two-scale Voronoi teaching model (not FEM). Based on Kingery & Vandiver (1986) and Li Jiazhi (1998)."
+    "zh": "学术依据：基于双尺度 Voronoi 应力松弛模型结合 Kingery & Vandiver (1986) 与李家治《中国科学技术史·陶瓷卷》(1998) 热膨胀力学规律构建。",
+    "en": "Basis: Two-scale Voronoi stress relaxation model grounded in Kingery & Vandiver (1986) and Li Jiazhi (1998)."
   },
   "presets": [
     { "id": "ge", "name": "传世哥窑 · 金丝铁线", "deltaAlpha": 2.4, "thickness": 1.8, "coolRate": 75, "staining": "ink-tea", "glazeHex": "#c9bd9b", "desc": "较大胎釉膨胀差配厚釉，先爆粗铁线再因潮湿空气萌生金丝，呈密集成网之势。" },

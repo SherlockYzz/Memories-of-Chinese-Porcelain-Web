@@ -937,9 +937,12 @@
         return _loadModel2.apply(this, arguments);
     };
 
-    // 后台串行预取
+    // 后台高并发流水线预取：首件器物就绪后迅速拉齐全部模型，告别漫长排队等待
     const conn = navigator.connection || {};
     const slowNet = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+    const PREFETCH_CONCURRENCY = (typeof window !== 'undefined' && window.innerWidth >= 768) ? 3 : 2;
+    let prefetchInflight = 0;
+
     function nextToPrefetch() {
         const keys = Object.keys(masterTreasuresMeta).map(Number);
         const n = keys.length;
@@ -954,11 +957,20 @@
     }
     FX.prefetchTick = function () {
         if (slowNet || document.hidden) return;
-        if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;   // 首件未就绪，先不抢带宽
-        if (activeLoadingCount > 0 || modelTaskQueue.length > 0) return;
-        const idx = nextToPrefetch();
-        if (idx < 0) { clearInterval(FX._pf); FX._pf = null; return; }
-        loadSingleMasterTreasure(idx, () => warmTextures(idx), false);
+        if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;
+        while (prefetchInflight < PREFETCH_CONCURRENCY) {
+            const idx = nextToPrefetch();
+            if (idx < 0) {
+                if (FX._pf) { clearInterval(FX._pf); FX._pf = null; }
+                return;
+            }
+            prefetchInflight++;
+            loadSingleMasterTreasure(idx, () => {
+                prefetchInflight = Math.max(0, prefetchInflight - 1);
+                warmTextures(idx);
+                setTimeout(FX.prefetchTick, 35);
+            }, false);
+        }
     };
     function warmTextures(idx) {
         const sc = masterTreasuresCache[idx];
@@ -1134,13 +1146,11 @@
 
         FX.ready = true;
         FX.applyEnv(currentRoomEnv || 'studio');
-        // 彻底根绝首屏网络风暴与标签页无限转圈：推迟至页面完全加载稳定后，在系统空闲时单线程低频拉取
+        // 首件器物稳定后 250ms 立即启动高并发后台预热，数秒内备齐全部模型
         setTimeout(() => {
-            const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1000));
-            idle(() => {
-                if (!FX._pf) FX._pf = setInterval(FX.prefetchTick, 2800);
-            });
-        }, 4000);
+            FX.prefetchTick();
+            if (!FX._pf) FX._pf = setInterval(FX.prefetchTick, 900);
+        }, 250);
     };
 
     /* ======================================================================

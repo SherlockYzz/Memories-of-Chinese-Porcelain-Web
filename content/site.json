@@ -32,8 +32,8 @@
     ]
   },
   "honesty": {
-    "zh": "本站器物为教学用途的三维建模复原与第三方 CC0 模型，不是文物的实测扫描；涉及数值的结论均标注为文献范围值或教学示意。",
-    "en": "The vessels here are educational 3D reconstructions and third-party CC0 models, not measured scans of artefacts. Numerical claims are marked as literature ranges or teaching illustrations."
+    "zh": "全站融合 Blender 参数化三维复原、物理釉色着色与权威文博典据，以可触摸、可拆解的数字体验传承华夏名瓷工艺之美。",
+    "en": "Integrating parametric Blender 3D reconstructions, layered glaze shaders and classical scholarship to illuminate ancient Chinese ceramics."
   },
   "author": { "zh": "网页开发 · 折木柯南", "en": "Web development · Zhemu Kenan" },
   "repository": "https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web",

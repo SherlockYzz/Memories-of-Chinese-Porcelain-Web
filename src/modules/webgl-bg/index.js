@@ -78,11 +78,12 @@ const state = {
     frameWindow: [],
     downgradeCooldownUntil: 0,
 
-    // 脉冲状态
+    // 脉冲状态与自动律动计时器
     pulseOriginX: 0.5,
     pulseOriginY: 0.5,
     pulseTime: -10.0,
-    pulseStrength: 0.0
+    pulseStrength: 0.0,
+    nextAutoPulseAt: 0.65
 };
 
 // Three.js 与 DOM 对象引用
@@ -584,6 +585,13 @@ function updateScrollProgress() {
 
 function stepSimulation(dtSec) {
     state.elapsedTime += dtSec;
+    const t = state.elapsedTime;
+
+    // 自主利萨茹律动漂移 + 微震呼吸：无鼠标操作时背景也保持鲜活律动与细微震颤，鼠标移动实时叠加响应
+    const autoX = Math.sin(t * 0.42) * 0.48 + Math.sin(t * 1.15) * 0.14;
+    const autoY = Math.cos(t * 0.34) * 0.38 + Math.cos(t * 0.92) * 0.12;
+    const vibeX = Math.sin(t * 3.8) * 0.045;
+    const vibeY = Math.cos(t * 4.4) * 0.035;
 
     // 主题与交互参数阻尼平滑插值
     const damp = 1 - Math.exp(-6.5 * dtSec);
@@ -591,6 +599,9 @@ function stepSimulation(dtSec) {
     state.smoothMouseX += (state.mouseX - state.smoothMouseX) * damp;
     state.smoothMouseY += (state.mouseY - state.smoothMouseY) * damp;
     state.scrollProgress += (state.targetScrollProgress - state.scrollProgress) * damp;
+    const activeX = clamp(autoX + state.smoothMouseX * 0.85, -1.25, 1.25);
+    const activeY = clamp(autoY + state.smoothMouseY * 0.85, -1.25, 1.25);
+
     const sDamp = 1 - Math.exp(-2.4 * dtSec);
     const sec = state.section;
     const tgt = state.sectionTarget;
@@ -603,16 +614,25 @@ function stepSimulation(dtSec) {
     const D = CFG.darkTheme;
     const gainRing = lerp(L.ringOpacityBoost, D.ringOpacityBoost, state.themeMix) * sec.armillary;
 
+    // 自动周期脉冲震动（每 3.4 秒从自主热点释放一圈水墨等高线涟漪，与点击交互叠加）
+    if (!state.reducedMotion && t >= state.nextAutoPulseAt) {
+        state.pulseOriginX = clamp(0.5 + autoX * 0.28, 0.15, 0.85);
+        state.pulseOriginY = clamp(0.45 - autoY * 0.22, 0.18, 0.82);
+        state.pulseTime = t;
+        state.pulseStrength = 0.72;
+        state.nextAutoPulseAt = t + 3.4;
+    }
+
     // 脉冲能量衰减
     if (state.pulseStrength > 0.001) {
-        const pulseAge = state.elapsedTime - state.pulseTime;
+        const pulseAge = t - state.pulseTime;
         if (pulseAge > 3.2) {
             state.pulseStrength = 0;
         }
     }
 
     if (sharedUniforms) {
-        sharedUniforms.uTime.value = state.elapsedTime;
+        sharedUniforms.uTime.value = t;
         sharedUniforms.uThemeMix.value = state.themeMix;
         sharedUniforms.uScrollProgress.value = state.scrollProgress;
         sharedUniforms.uGainFill.value = lerp(L.fillOpacityBoost, D.fillOpacityBoost, state.themeMix) * sec.mountains;
@@ -620,36 +640,38 @@ function stepSimulation(dtSec) {
         sharedUniforms.uGainRing.value = gainRing;
         sharedUniforms.uGainParticle.value = lerp(L.particleOpacityBoost, D.particleOpacityBoost, state.themeMix);
         sharedUniforms.uWarm.value = sec.warm;
-        sharedUniforms.uMouse.value.set(state.smoothMouseX, state.smoothMouseY);
+        sharedUniforms.uMouse.value.set(activeX, activeY);
         sharedUniforms.uPulseOrigin.value.set(state.pulseOriginX, state.pulseOriginY);
         sharedUniforms.uPulseTime.value = state.pulseTime;
         sharedUniforms.uPulseStrength.value = state.pulseStrength;
     }
 
-    // 相机视差与纵深推移
+    // 相机视差、自主摆动与纵深推移
     if (camera) {
         const S = CFG.scroll;
-        const camX = state.smoothMouseX * 1.45 + sec.cameraX;
-        const camY = 3.2 - state.smoothMouseY * 0.85 - state.scrollProgress * S.cameraTravelY;
-        const camZ = 22.5 - state.scrollProgress * S.cameraTravelZ;
+        const camX = activeX * 1.55 + vibeX + sec.cameraX;
+        const camY = 3.2 - activeY * 0.9 + vibeY - state.scrollProgress * S.cameraTravelY;
+        const camZ = 22.5 + Math.sin(t * 0.55) * 0.45 - state.scrollProgress * S.cameraTravelZ;
         camera.position.set(camX, camY, camZ);
-        camera.lookAt(state.smoothMouseX * 0.35 + sec.cameraX * S.lookAtFollow, -0.4 - state.scrollProgress * S.lookAtTravelY, 0);
+        camera.lookAt(activeX * 0.4 + sec.cameraX * S.lookAtFollow, -0.4 + vibeY * 0.5 - state.scrollProgress * S.lookAtTravelY, 0);
     }
 
-    // 浑天璇玑三维光环旋转与随滚动仰角微调
+    // 浑天璇玑三维光环自主公转、节律微震与鼠标视差叠加
     if (armillaryGroup) {
-        armillaryGroup.rotation.x = 0.14 + state.scrollProgress * 0.28 - state.smoothMouseY * 0.14;
-        armillaryGroup.rotation.y = state.smoothMouseX * 0.22 + sec.spin;
+        const breath = 1 + Math.sin(t * 1.8) * 0.018 + (state.pulseStrength > 0 ? Math.sin((t - state.pulseTime) * 9.0) * 0.025 * state.pulseStrength : 0);
+        armillaryGroup.scale.setScalar(breath);
+        armillaryGroup.rotation.x = 0.14 + Math.sin(t * 0.48) * 0.06 + state.scrollProgress * 0.28 - activeY * 0.16;
+        armillaryGroup.rotation.y = activeX * 0.28 + t * 0.12 + sec.spin;
         // 浑天仪随板块在画面左右两侧交替，位移幅度与镜头横移相反，形成视差。
-        armillaryGroup.position.x = state.armillaryBaseX - sec.cameraX * CFG.scroll.armillaryShift;
-        armillaryGroup.position.y = state.armillaryBaseY - state.scrollProgress * CFG.scroll.armillaryDropY;
+        armillaryGroup.position.x = state.armillaryBaseX - sec.cameraX * CFG.scroll.armillaryShift + vibeX * 0.8;
+        armillaryGroup.position.y = state.armillaryBaseY + Math.sin(t * 0.85) * 0.18 - state.scrollProgress * CFG.scroll.armillaryDropY;
 
         for (let i = 0; i < armillaryRings.length; i++) {
             const item = armillaryRings[i];
-            item.pivot.rotation.y += item.speedY * dtSec;
-            item.pivot.rotation.z += item.speedZ * dtSec * 0.45;
+            item.pivot.rotation.y += item.speedY * dtSec * 1.45;
+            item.pivot.rotation.z += item.speedZ * dtSec * 0.68;
             if (item.innerLineMat) {
-                item.innerLineMat.opacity = Math.min(0.9, (0.13 + 0.14 * state.themeMix) * gainRing);
+                item.innerLineMat.opacity = Math.min(0.92, (0.15 + 0.16 * state.themeMix) * gainRing);
             }
         }
     }
@@ -919,6 +941,7 @@ function triggerShockwave(x, y) {
     state.pulseOriginY = clamp(1 - py / h, 0, 1);
     state.pulseTime = state.elapsedTime;
     state.pulseStrength = 1.0;
+    state.nextAutoPulseAt = state.elapsedTime + 3.4;
 }
 
 function setPausedExternal(paused) {

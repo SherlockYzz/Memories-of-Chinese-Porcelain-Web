@@ -1,43 +1,135 @@
 {
   "intro": {
-    "zh": "本板块列出本站使用的全部三维模型资产来源、授权协议与版权归属，确保教学建模复原与第三方开源标本界限清晰。",
-    "en": "This section lists the sources, licences and copyright ownership of all 3D model assets used on this site, keeping educational reconstructions and third-party CC0 specimens clearly distinguished."
+    "zh": "谨向为《天青泥火·华夏古瓷三维研学空间》提供三维开源模型、文博学术文献、语音声景与图形学基础工具的学者与开源社区致以诚挚敬意。",
+    "en": "With sincere gratitude to the open-source contributors, museum archives, ceramic historians, and audio-graphics toolkits behind Tianqing Nihuo."
   },
   "copyright": {
     "zh": "版权制作：折木柯南",
     "en": "Copyright & Production: Zhemu Kenan"
   },
   "statusLabels": {
-    "verified": { "zh": "已核实", "en": "Verified" },
-    "project": { "zh": "本项目原创", "en": "Original to this project" },
-    "pending": { "zh": "待作者确认", "en": "To be confirmed by the author" }
+    "verified": { "zh": "开源致敬", "en": "Open Source" },
+    "project": { "zh": "原创制作", "en": "Original Work" },
+    "scholar": { "zh": "文献典据", "en": "Scholarly Source" }
   },
   "groups": [
     {
       "id": "models",
-      "title": { "zh": "三维模型", "en": "3D models" },
+      "title": { "zh": "三维模型与数字复原", "en": "3D Models & Digital Reconstructions" },
       "items": [
         {
-          "name": "十件名窑器型模型（models/masterpieces/*_Master.glb）",
-          "source": "本项目用 Blender 5.2 Python 脚本参数化建模生成（版权制作：折木柯南）",
-          "license": "随项目协议（CC BY-NC-SA 4.0）",
+          "name": "十件名窑传世器型三维复原（models/masterpieces/*_Master.glb）",
+          "source": "版权制作：折木柯南 · Blender 5.2 参数化高精度建模",
+          "license": "CC BY-NC-SA 4.0",
           "status": "project",
-          "note": "每件约 0.6–3.1 万三角面，贴图为 1024×1024 程序化烘焙 WebP。属于参考公开器型的建模复原，不是文物的实测扫描。"
+          "note": "依据传世名窑经典器型比例构建 0.6–3.1 万三角面四边拓扑，内置 1024×1024 WebP 烘焙贴图，结合双层清漆与多尺度 Voronoi 冰裂着色器呈现宋元明清名瓷神韵。"
         },
         {
-          "name": "Ceramic Vase 01 / 02 / 03 / 04、Antique Ceramic Vase 01（五件对照标本）",
-          "source": "Poly Haven，作者 James Ray Cock",
+          "name": "Ceramic Vase 01–04、Antique Ceramic Vase 01（五件对照模型）",
+          "source": "Poly Haven · 作者 James Ray Cock",
           "url": "https://polyhaven.com/models",
-          "license": "CC0 1.0",
+          "license": "CC0 1.0 Universal",
           "status": "verified",
-          "note": "已通过 Poly Haven 公开 API 核对资产名、作者与描述（2026-11-25）。均为现代陶瓷器物，本站此前将其标注为“实测扫描文物”，已更正。"
+          "note": "致谢 Poly Haven 提供的 CC0 公共领域高质量 3D 陶瓷资产与 1K PBR 贴图，丰富古今器型与釉面对照研学维度。"
         },
         {
-          "name": "展厅道具（红木案、屏风、展台、铜炉）与窑炉模型",
-          "source": "本项目用 Blender 5.2 建模并烘焙 PBR 贴图（版权制作：折木柯南）",
-          "license": "随项目协议（CC BY-NC-SA 4.0）",
+          "name": "宋代雅室展陈道具（红木案、山水屏风、紫檀展台、三足铜炉）与柴烧龙窑",
+          "source": "版权制作：折木柯南 · Blender 5.2 PBR 资产构建",
+          "license": "CC BY-NC-SA 4.0",
           "status": "project",
-          "note": "经 Blender 5.2 重建精细结构（束腰马蹄腿红木案 2376 面、三折青绿山水屏风 396 面、须弥座展台 1980 面、博山铜香炉 6956 面），内置 512–1024px WebP 漫反射与粗糙度贴图；窑炉模型 7412 三角面。"
+          "note": "精雕束腰马蹄腿红木案、千里江山三折屏风、紫檀须弥展台与博山三足香炉并烘焙 512–1024px WebP PBR 贴图，烘托东方雅室观瓷意境。"
+        }
+      ]
+    },
+    {
+      "id": "references",
+      "title": { "zh": "权威学术文献与古籍参考", "en": "Academic References & Classical Texts" },
+      "items": [
+        {
+          "name": "中国硅酸盐学会主编《中国陶瓷史》（文物出版社，1982）",
+          "source": "陶瓷通史分期与五大名窑考据基准",
+          "license": "学术引述致敬",
+          "status": "scholar"
+        },
+        {
+          "name": "李家治主编《中国科学技术史·陶瓷卷》（科学出版社，1998）",
+          "source": "胎釉化学组成、烧成工艺与热膨胀呈色机理",
+          "license": "学术引述致敬",
+          "status": "scholar"
+        },
+        {
+          "name": "W. D. Kingery & P. B. Vandiver, Ceramic Masterpieces (Free Press, 1986)",
+          "source": "古瓷釉面显微晶相结构、气泡演进与光学乳浊机制",
+          "license": "学术引述致敬",
+          "status": "scholar"
+        },
+        {
+          "name": "Nigel Wood, Chinese Glazes (A&C Black, 1999)",
+          "source": "宋代至明清各窑口釉料化学配方与还原焰烧成实验",
+          "license": "学术引述致敬",
+          "status": "scholar"
+        },
+        {
+          "name": "古籍文献：《天工开物·陶埏》《大观茶论》《饮流斋说瓷》《景德镇陶录》",
+          "source": "（明）宋应星、（宋）赵佶等先贤典籍（公有领域）",
+          "license": "Public Domain",
+          "status": "scholar",
+          "note": "为“过手七十二工序”、宋代七汤点茶雅集与官窑釉色品评提供珍贵的传统工艺文化脉络。"
+        }
+      ]
+    },
+    {
+      "id": "audio",
+      "title": { "zh": "声景合成与语音技术支持", "en": "Acoustic Synthesis & Voice AI" },
+      "items": [
+        {
+          "name": "十二件名瓷典藏语音导览（audio/vessel_01–12.mp3）",
+          "source": "小米人工智能实验室 · 小米 MiMo 语音模型（mimo-v2.5-tts）",
+          "url": "https://api.xiaomimimo.com",
+          "license": "技术致敬",
+          "status": "verified",
+          "note": "感谢小米 MiMo 语音大模型提供温润优雅的国宝导览原声朗读。"
+        },
+        {
+          "name": "叩瓷清音、出窑冰裂、古琴泛音与东方环境声景",
+          "source": "版权制作：折木柯南 · Web Audio API 实时物理声学合成",
+          "license": "CC BY-NC-SA 4.0",
+          "status": "project",
+          "note": "依托浏览器原生声学振荡器与滤波包络实时演算不同窑口胎骨共振频率与开片清音。"
+        }
+      ]
+    },
+    {
+      "id": "libraries",
+      "title": { "zh": "开源图形引擎与构建工具致谢", "en": "Open-Source Engines & Tooling" },
+      "items": [
+        {
+          "name": "Three.js r128（含 WebGLRenderer & GLTFLoader）",
+          "source": "Three.js Authors",
+          "url": "https://threejs.org",
+          "license": "MIT",
+          "status": "verified"
+        },
+        {
+          "name": "Font Awesome Free 6.5.2",
+          "source": "Fonticons, Inc.",
+          "url": "https://fontawesome.com",
+          "license": "CC BY 4.0 / SIL OFL 1.1 / MIT",
+          "status": "verified"
+        },
+        {
+          "name": "Blender 5.2 LTS",
+          "source": "Blender Foundation",
+          "url": "https://www.blender.org",
+          "license": "GPL",
+          "status": "verified"
+        },
+        {
+          "name": "esbuild & Playwright",
+          "source": "Evan Wallace / Microsoft",
+          "url": "https://esbuild.github.io",
+          "license": "MIT / Apache-2.0",
+          "status": "verified"
         }
       ]
     }

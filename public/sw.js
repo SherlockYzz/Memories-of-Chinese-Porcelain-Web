@@ -1,5 +1,5 @@
 /* 天青泥火 · 离线缓存 Service Worker（HTML NetworkFirst / 哈希资产 CacheFirst / 其余 Stale-While-Revalidate） */
-const CACHE_NAME = 'tianqing-nihuo-v9-perf';
+const CACHE_NAME = 'tianqing-nihuo-v9-fast';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {

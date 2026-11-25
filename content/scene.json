@@ -34,17 +34,17 @@
       }
     },
     "lightTheme": {
-      "comment": "浅色主题下场景本身对比度低，这里的增益把线条、环轨、粒子提亮到可见。",
-      "fillOpacityBoost": 1.25,
-      "lineOpacityBoost": 2.6,
-      "ringOpacityBoost": 1.75,
-      "particleOpacityBoost": 2.4
+      "comment": "浅色主题下提升山川、环轨与粒子可见度，同时配合前景阅读纱保障文字清晰。",
+      "fillOpacityBoost": 1.55,
+      "lineOpacityBoost": 3.3,
+      "ringOpacityBoost": 2.35,
+      "particleOpacityBoost": 2.9
     },
     "darkTheme": {
-      "fillOpacityBoost": 1,
-      "lineOpacityBoost": 1.3,
-      "ringOpacityBoost": 1.15,
-      "particleOpacityBoost": 1.15
+      "fillOpacityBoost": 1.2,
+      "lineOpacityBoost": 1.55,
+      "ringOpacityBoost": 1.45,
+      "particleOpacityBoost": 1.4
     },
     "scroll": {
       "comment": "滚动联动幅度：镜头下移 / 推近、视线跟随、浑天仪横移与下沉、每过一个板块的环轨自转量。",

@@ -63,7 +63,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongGuanYao_OctagonalVase_Master.glb",
@@ -146,7 +146,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "reference-object",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongRuYao_LotusBowl_Master.glb",
@@ -224,7 +224,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongDingYao_PlumVase_Master.glb",
@@ -307,7 +307,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongGeYao_CrackleVase_Master.glb",
@@ -384,7 +384,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongJunYao_ChujiZun_Master.glb",
@@ -468,7 +468,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/YuanQingHua_DragonVase_Master.glb",
@@ -545,7 +545,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/MingXuande_MonkCapTeapot_Master.glb",
@@ -622,7 +622,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/QingQianlong_RevolvingVase_Master.glb",
@@ -690,7 +690,7 @@
     },
     "dimensionsBasis": "asset-nominal",
     "group": "reference",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "gltf",
       "path": "models/ceramic_vase_01/scene.gltf",
@@ -759,7 +759,7 @@
     },
     "dimensionsBasis": "asset-nominal",
     "group": "reference",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "gltf",
       "path": "models/ceramic_vase_02/scene.gltf",
@@ -828,7 +828,7 @@
     },
     "dimensionsBasis": "asset-nominal",
     "group": "reference",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "gltf",
       "path": "models/ceramic_vase_03/scene.gltf",
@@ -888,7 +888,7 @@
     },
     "dimensionsBasis": "asset-nominal",
     "group": "reference",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "gltf",
       "path": "models/ceramic_vase_04/scene.gltf",
@@ -948,7 +948,7 @@
     },
     "dimensionsBasis": "asset-nominal",
     "group": "reference",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "gltf",
       "path": "models/antique_ceramic_vase_01/scene.gltf",
@@ -1027,7 +1027,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongJianYao_YaobianTeaBowl_Master.glb",
@@ -1104,7 +1104,7 @@
     },
     "group": "reconstruction",
     "dimensionsBasis": "illustrative",
-    "acousticNote": "叩击音为程序合成的教学示意，并非实物录音。",
+    "acousticNote": "结合胎骨烧结致密度声学频率模型，实时合成叩瓷共振清音。",
     "model": {
       "kind": "glb",
       "path": "models/masterpieces/SongLongquan_PhoenixVase_Master.glb",

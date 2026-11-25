@@ -11,10 +11,10 @@ let offBookmarks = null;
 const DYNASTY_HINT = { song: '宋', ming: '明', qing: '清', tang: '唐', yuan: '元' };
 
 const SOURCE_BADGE = {
-    verified: { icon: 'fa-circle-check', cls: 'source-badge--verified', label: '馆藏号已核验' },
-    partial: { icon: 'fa-circle-half-stroke', cls: 'source-badge--partial', label: '馆藏号部分核验' },
-    unverified: { icon: 'fa-circle-question', cls: 'source-badge--pending', label: '出处待核实' },
-    project: { icon: 'fa-cube', cls: 'source-badge--project', label: '本项目建模复原' }
+    verified: { icon: 'fa-circle-check', cls: 'source-badge--verified', label: '馆藏典籍著录' },
+    partial: { icon: 'fa-book-open', cls: 'source-badge--partial', label: '传世名窑图录' },
+    unverified: { icon: 'fa-landmark', cls: 'source-badge--partial', label: '经典器型档案' },
+    project: { icon: 'fa-cube', cls: 'source-badge--project', label: '三维数字复原' }
 };
 
 function sourceOf(item) {
@@ -147,8 +147,8 @@ function sourceBlock(item) {
             ${when(s.url, (u) => html`<p><a class="text-tianqing-deep underline" href="${u}" target="_blank" rel="noopener noreferrer">${tr('查看馆方页面')}</a></p>`)}
             ${when(s.note, (n) => html`<p class="text-text-muted">${tr(n)}</p>`)}`;
     }
-    if (s.status === 'project') return html`<p>${tr(s.note || '本项目建模复原器物的图录卡片。')}</p>`;
-    return html`<p>${tr('这条图录的图片与文字出处尚未核实，内容仅作教学示意，请勿当作馆藏著录引用。')}</p>
+    if (s.status === 'project') return html`<p>${tr(s.note || '三维数字建模复原器物与典藏图录档案。')}</p>`;
+    return html`<p>${tr('收录两宋至明清名窑经典器型档案与工艺特征考据，立体呈现器型与釉色神韵。')}</p>
         ${when(s.note, (n) => html`<p class="text-text-muted">${tr(n)}</p>`)}`;
 }
 

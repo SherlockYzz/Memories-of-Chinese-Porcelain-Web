@@ -9,7 +9,7 @@ const pick = (obj) => (typeof obj === 'string' ? obj : (obj && (obj[i18n.current
 const STATUS_BADGE = {
     verified: 'source-badge--verified',
     project: 'source-badge--project',
-    pending: 'source-badge--pending'
+    scholar: 'source-badge--partial'
 };
 
 function render() {

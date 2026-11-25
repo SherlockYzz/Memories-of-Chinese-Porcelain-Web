@@ -42,7 +42,7 @@ export default {
         {
             name: 'vendor',
             out: 'assets/vendor.js',
-            minify: false,
+            minify: true,
             files: ['src/vendor/three.min.js', 'src/vendor/GLTFLoader.js']
         },
         {

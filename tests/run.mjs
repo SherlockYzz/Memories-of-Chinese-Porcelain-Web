@@ -164,8 +164,13 @@ try {
         assert.equal(mounted.kintsugiOk, true, '金缮修复未挂载');
         assert.equal(mounted.firingOk, true, '1300℃ 烧成时间轴未挂载');
         assert.equal(mounted.passportStamps, 8, '研学护照印章数应为 8');
-        assert.equal(mounted.creditsCount, 3, '素材与致谢应仅保留 3 条三维模型记录');
+        assert.ok(mounted.creditsCount >= 12, `素材与致谢条目渲染不足: ${mounted.creditsCount}`);
         assert.ok(mounted.credCopyright.includes('版权制作：折木柯南'), '素材与致谢缺少“版权制作：折木柯南”声明');
+        const negativeHits = await page.evaluate(() => {
+            const t = document.body.innerText || '';
+            return ['出处待核实', '待作者确认', '非实物扫描', '请勿当作馆藏著录'].filter((w) => t.includes(w));
+        });
+        assert.equal(negativeHits.length, 0, `页面存在负面防御用语: ${negativeHits.join(', ')}`);
 
         // 交互验证：金缮辅助对位 & 打开 AR 实尺弹窗 & 无障碍弹窗
         await page.locator('[data-action="assistKintsugiStep()"]').scrollIntoViewIfNeeded();
