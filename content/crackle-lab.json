@@ -1,0 +1,18 @@
+{
+  "badge": "断裂力学教学简化模型 · Web Audio 冰裂声合成",
+  "title": { "zh": "开片过程模拟器 · 冰裂与金丝铁线生成实验", "en": "Crackle Simulator · Thermal Stress & Fracture Growth" },
+  "subtitle": {
+    "zh": "调节“胎釉膨胀系数差”“釉层厚度”与“冷却速率”，实时观察双尺度 Voronoi 裂纹的萌生与名窑类比",
+    "en": "Adjust expansion mismatch, glaze thickness and cooling rate to watch two-stage crackle grow"
+  },
+  "disclaimer": {
+    "zh": "科学说明：本实验采用双尺度 Voronoi 应力松弛简化模型定性演示热应力开片趋势（非有限元物理求解）。文献依据：Kingery & Vandiver (1986)；李家治《中国科学技术史·陶瓷卷》(1998)。",
+    "en": "Note: Qualitative two-scale Voronoi teaching model (not FEM). Based on Kingery & Vandiver (1986) and Li Jiazhi (1998)."
+  },
+  "presets": [
+    { "id": "ge", "name": "传世哥窑 · 金丝铁线", "deltaAlpha": 2.4, "thickness": 1.8, "coolRate": 75, "staining": "ink-tea", "glazeHex": "#c9bd9b", "desc": "较大胎釉膨胀差配厚釉，先爆粗铁线再因潮湿空气萌生金丝，呈密集成网之势。" },
+    { "id": "guan", "name": "南宋官窑 · 蟹爪冰裂", "deltaAlpha": 1.8, "thickness": 1.9, "coolRate": 55, "staining": "tea", "glazeHex": "#739ca4", "desc": "修内司薄胎厚釉，主裂纹呈疏朗斜裂之蟹爪纹，纹内微渗茶黄与浅褐。" },
+    { "id": "ru", "name": "北宋汝窑 · 鱼鳞开片", "deltaAlpha": 1.3, "thickness": 1.1, "coolRate": 40, "staining": "subtle", "glazeHex": "#7eaab3", "desc": "热膨胀匹配较好而略带微张，裂片呈斜向重叠的鱼鳞状或细腻冰裂，不甚着色。" },
+    { "id": "longquan", "name": "龙泉粉青 · 无纹素釉", "deltaAlpha": 0.4, "thickness": 1.5, "coolRate": 25, "staining": "none", "glazeHex": "#6f9f8e", "desc": "胎釉膨胀系数高度匹配，冷却残余拉应力低于硅酸盐断裂韧性阈值，通体莹润无开片。" }
+  ]
+}

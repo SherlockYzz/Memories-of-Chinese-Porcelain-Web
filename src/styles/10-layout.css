@@ -1,0 +1,213 @@
+/* ==========================================================================
+   页面分层与板块表面
+   3D 背景（--z-bg）在最底层；主内容在其上。板块只铺一层很薄的底色（--veil-section），
+   可读性由“阅读纱”（标题区背后的局部柔光）和卡片自身底色保证，而不是把整块板块涂实。
+   ========================================================================== */
+
+.ambient-bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-bg);
+    pointer-events: none;
+}
+
+main#main-content,
+body > footer {
+    position: relative;
+    z-index: var(--z-content);
+}
+
+.page-container {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+}
+
+/* ---------- 板块表面 ---------- */
+.section-surface {
+    position: relative;
+    isolation: isolate; /* 板块内部的 z-index 不外溢 */
+    padding-block: var(--space-section);
+    background-color: rgb(var(--surface-rgb) / var(--veil-section));
+}
+
+.section-surface--alt {
+    background-color: rgb(var(--surface-alt-rgb) / var(--veil-section-alt));
+    border-block: 1px solid var(--border-subtle);
+}
+
+.section-surface--tint {
+    background-color: rgb(var(--surface-tint-rgb) / var(--veil-section-alt));
+    border-block: 1px solid var(--border-subtle);
+}
+
+/* ---------- 阅读纱：放在直接压在 3D 背景上的文字背后 ---------- */
+.section-title-group,
+.reading-veil {
+    position: relative;
+    isolation: isolate;
+}
+
+.section-title-group::before,
+.reading-veil::before {
+    content: '';
+    position: absolute;
+    inset: -1.75rem -4%;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: 2.5rem;
+    background: radial-gradient(
+        ellipse 62% 78% at 50% 50%,
+        rgb(var(--ink-veil-rgb) / var(--veil-reading)) 0%,
+        rgb(var(--ink-veil-rgb) / calc(var(--veil-reading) * 0.72)) 48%,
+        rgb(var(--ink-veil-rgb) / 0) 100%
+    );
+}
+
+.reading-veil--block::before {
+    inset: -0.75rem -1rem;
+    border-radius: var(--radius-lg);
+    background: rgb(var(--ink-veil-rgb) / var(--veil-reading));
+}
+
+/* 卡片：自身就是阅读纱，正文对比度不受背景影响 */
+.feature-card {
+    background-color: rgb(var(--card-rgb) / var(--veil-card));
+}
+
+/* ---------- 通用辅助 ---------- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.bg-surface-alt {
+    background-color: var(--bg-alt);
+}
+
+/* 横向可滚动条：两端渐隐提示“还有内容” */
+.scroll-fade-x {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(90deg, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 1.25rem, #000 calc(100% - 1.25rem), transparent 100%);
+    scroll-padding-inline: 1.25rem;
+}
+
+.scroll-fade-x::-webkit-scrollbar {
+    display: none;
+}
+
+/* 出处标签（典藏图录、器物档案、致谢页共用） */
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius-pill);
+    border: 1px solid currentColor;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.source-badge--verified { color: #2f7d5b; }
+.source-badge--partial { color: #9a6a1c; }
+.source-badge--pending { color: #a8452f; }
+.source-badge--project { color: var(--tianqing-deep); }
+
+html[data-theme="dark"] .source-badge--verified { color: #7fd1a8; }
+html[data-theme="dark"] .source-badge--partial { color: #e6c173; }
+html[data-theme="dark"] .source-badge--pending { color: #f0a08a; }
+html[data-theme="dark"] .source-badge--project { color: var(--tianqing-light); }
+
+/* 典藏图录卡片上的角标与收藏按钮 */
+.archive-level-tag {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 2;
+    padding: 0.1rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--tianqing-darker);
+    color: #fff;
+    font-size: 0.625rem;
+    font-family: var(--font-serif-cn);
+}
+
+.archive-fav-btn {
+    position: absolute;
+    top: 0.625rem;
+    left: 0.625rem;
+    z-index: 2;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+}
+
+.archive-fav-btn:hover {
+    background: var(--tianqing-deep);
+}
+
+/* 款识印章 */
+.reign-seal {
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--seal-color);
+    border-radius: var(--radius-sm);
+    color: var(--seal-color);
+    background: rgba(255, 255, 255, 0.04);
+    font-family: var(--font-serif-cn);
+    font-weight: 700;
+    font-size: 0.875rem;
+    line-height: 1.2;
+}
+
+.reign-seal--round { border-radius: 50%; border-style: double; }
+.reign-seal--cinnabar { background: var(--seal-color); color: #fff; }
+
+/* ---------- 无 WebGL / 关闭背景时的静态底纹 ---------- */
+html[data-bg-fallback] body::before {
+    background:
+        radial-gradient(circle at 78% 22%, rgba(58, 118, 132, 0.16) 0%, transparent 42%),
+        radial-gradient(circle at 16% 78%, rgba(200, 162, 90, 0.12) 0%, transparent 46%),
+        repeating-radial-gradient(circle at 78% 22%, transparent 0 46px, rgba(58, 118, 132, 0.07) 46px 47px);
+}
+
+/* ---------- 减少动效：系统偏好或用户在无障碍面板里打开 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+}
+
+html[data-reduce-motion] {
+    scroll-behavior: auto;
+}
+
+html[data-reduce-motion] *,
+html[data-reduce-motion] *::before,
+html[data-reduce-motion] *::after {
+    /* 例外：这里必须压过所有组件自己的动画声明，属于无障碍兜底。 */
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+}

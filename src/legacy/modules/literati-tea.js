@@ -271,6 +271,49 @@
         updateTeaStageBadge();
     }
 
+    function exportTeaCertificate() {
+        if (!teaCanvas) return;
+        const out = document.createElement('canvas');
+        out.width = 880;
+        out.height = 500;
+        const ctx = out.getContext('2d');
+        ctx.fillStyle = '#F4F1E8';
+        ctx.fillRect(0, 0, 880, 500);
+        ctx.strokeStyle = '#C8A25A';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(20, 20, 840, 460);
+
+        ctx.drawImage(teaCanvas, 55, 110, 280, 280);
+        ctx.fillStyle = '#142029';
+        ctx.font = 'bold 26px "Noto Serif SC", serif';
+        ctx.fillText('宋代七汤点茶 · 茶百戏研学结业笺', 370, 96);
+
+        ctx.fillStyle = '#224E59';
+        ctx.font = '18px "Noto Serif SC", serif';
+        const motifNames = { bamboo: '清风疎竹', plum: '雪夜寒梅', crane: '瑞鹤凌云', none: '自由茶戏' };
+        ctx.fillText(`汤候进度：${Math.round(teaFoamLevel)}% · 题画：${motifNames[teaMotif] || teaMotif}`, 370, 165);
+
+        ctx.fillStyle = '#3E4E5C';
+        ctx.font = '15px "Noto Serif SC", serif';
+        ctx.fillText('茶色白，宜黑盏。——（宋）蔡襄《茶录》', 370, 225);
+        ctx.fillText('乳雾汹涌，溢盏而起，周回凝而不动。——赵佶《大观茶论》', 370, 260);
+        ctx.fillText(`完成时间：${new Date().toLocaleDateString()}`, 370, 320);
+
+        ctx.fillStyle = '#A8322D';
+        ctx.fillRect(745, 375, 68, 68);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 18px "Noto Serif SC", serif';
+        ctx.fillText('点茶', 761, 405);
+        ctx.fillText('雅集', 761, 429);
+
+        const a = document.createElement('a');
+        a.download = `天青泥火_宋代点茶结业笺_${Date.now()}.png`;
+        a.href = out.toDataURL('image/png');
+        a.click();
+        if (global.AppBus) global.AppBus.emit('study:tea-complete', { foam: teaFoamLevel, motif: teaMotif });
+        if (global.ToastService) global.ToastService.show('已生成《点茶研学结业笺》并记录研学进度');
+    }
+
     global.AppRegistry.register({
         id: 'literati-tea',
         phase: 2,
@@ -287,12 +330,14 @@
             initTeaWhiskingSimulator,
             whiskTeaStep,
             setTeaBailiMotif,
-            resetTeaBowl
+            resetTeaBowl,
+            exportTeaCertificate
         },
         globalBindings: {
             whiskTeaStep,
             setTeaBailiMotif,
-            resetTeaBowl
+            resetTeaBowl,
+            exportTeaCertificate
         }
     });
 })(window);

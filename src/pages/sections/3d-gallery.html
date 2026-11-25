@@ -1,0 +1,302 @@
+<!-- ==================== 板块一：3D 传世名瓷数字化研鉴馆 (9尊馆藏：7尊程序化标准器 + 2尊实测3D扫描真品) ==================== -->
+<section class="section-surface" id="3d-gallery">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-cube text-amber-200" aria-hidden="true"></i>
+                <span>Three.js 物理釉面渲染 · 10 件建模复原器型 · 5 件 CC0 对照标本</span>
+            </span>
+            <h2 data-i18n="3d.sectionTitle">名窑名瓷 · 三维数字研鉴展馆</h2>
+            <p class="section-subtitle" data-i18n="3d.sectionSub">依据馆藏公开器型进行 Blender 参数化建模复原，配合第三方 CC0 现代对照标本 · 支持单器精鉴、展厅漫游与剖面观察</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 展陈昼夜光景切换胶囊（窄屏自动折行不挤压） -->
+        <div class="flex justify-center mb-8">
+            <div class="inline-flex flex-wrap justify-center items-center p-1.5 rounded-2xl sm:rounded-full bg-yuebai border border-border-hover shadow-lg backdrop-blur-md gap-1.5 max-w-full">
+                <span class="text-xs font-serif-cn text-text-title font-bold px-2.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-half-stroke text-amber-500" aria-hidden="true"></i>
+                    <span>展陈昼夜光景：</span>
+                </span>
+                <button id="stage-btn-day" data-action="setMuseumTheme('light')" class="px-3.5 py-1.5 rounded-full text-xs font-serif-cn font-medium transition-all flex items-center gap-1.5 shadow-sm active-theme-pill" title="白昼观景：宋韵宣纸素雅天光">
+                    <i class="fa-solid fa-sun text-amber-500" aria-hidden="true"></i>
+                    <span>晴窗抚古 (白昼)</span>
+                </button>
+                <button id="stage-btn-night" data-action="setMuseumTheme('dark')" class="px-3.5 py-1.5 rounded-full text-xs font-serif-cn font-medium transition-all flex items-center gap-1.5 text-text-muted hover:text-amber-400" title="夜晚观景：暗夜聚光灯照彻釉光">
+                    <i class="fa-solid fa-moon text-blue-400" aria-hidden="true"></i>
+                    <span>夜宴观瓷 (暗夜)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D 研鉴交互工作台 (7:5 黄金分栏) -->
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+            <!-- 左侧 7列：WebGL 3D 画布空间 -->
+            <div class="lg:col-span-7">
+                <div class="three-canvas-container" id="three-stage-container">
+                    <!-- 3D 展馆首屏温润骨架屏加载过渡 -->
+                    <div id="three-stage-loader" class="three-stage-loader" style="display: none; opacity: 0;">
+                        <div class="celadon-pulse-ring"></div>
+                        <div class="loader-text font-serif-cn">天青凝色 · 正在载入器物三维模型</div>
+                    </div>
+
+                    <!-- 顶部：四大展览模式切换舱 + 全屏/锚点控制 -->
+                    <div class="exhibition-mode-bar">
+                        <div class="mode-switch-group">
+                            <button class="mode-switch-btn active" id="mode-btn-inspector" data-action="switchExhibitionMode('inspector')">
+                                <i class="fa-solid fa-magnifying-glass-plus text-amber-200"></i>
+                                <span>单器精鉴台</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-hall" data-action="switchExhibitionMode('hall')">
+                                <i class="fa-solid fa-building-columns text-amber-200"></i>
+                                <span>3D全景九柜漫游</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-cutaway" data-action="switchExhibitionMode('cutaway')">
+                                <i class="fa-solid fa-layer-group text-amber-200"></i>
+                                <span>X光胎骨剖面</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-comparison" data-action="switchExhibitionMode('comparison')" title="两尊古瓷同台并列比对（造型尺度、胎骨成分、装烧温度与声学泛音）">
+                                <i class="fa-solid fa-code-compare text-amber-200"></i>
+                                <span>双器同台比对</span>
+                            </button>
+                            <button class="mode-switch-btn" id="mode-btn-tour" data-action="toggleCuratorialTour()">
+                                <i class="fa-solid fa-route text-amber-200"></i>
+                                <span id="tour-btn-label">策展自动巡礼</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button class="mode-switch-btn bg-black/65 border border-white/15 active" id="btn-hotspots-toggle" data-action="toggle3DHotspots()" title="显示/隐藏器物3D空间解剖锚点">
+                                <i class="fa-solid fa-location-crosshairs text-amber-400"></i>
+                                <span>解剖锚点</span>
+                            </button>
+                            <button class="mode-switch-btn bg-black/65 border border-white/15" id="btn-zen-mode" data-action="toggleZenMode()" title="纯净沉浸观赏（隐去所有悬浮按钮与辅助控制面板）">
+                                <i class="fa-solid fa-eye text-tianqing-light"></i>
+                                <span>纯净沉浸</span>
+                            </button>
+                            <button class="mode-switch-btn bg-black/65 border border-white/15" data-action="toggle3DFullscreen()" title="全屏沉浸式观展">
+                                <i class="fa-solid fa-expand text-tianqing-light" id="fullscreen-icon"></i>
+                                <span>全屏展览</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- X光剖面深度可调滑块条 (仅在X光模式下显示) -->
+                    <div id="cutaway-slider-bar" class="hidden absolute top-14 left-4 z-20 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-amber-400 flex items-center gap-3 text-xs text-white font-serif-cn">
+                        <span><i class="fa-solid fa-scissors text-amber-400 mr-1"></i>X光剖切面深度：</span>
+                        <input id="cutaway-offset-slider" name="cutaway-offset" type="range" min="-0.65" max="0.65" step="0.02" value="0" aria-label="X光剖切面深度" data-action-input="setCutawayOffset($value)" class="w-28">
+                        <span id="cutaway-offset-val" class="font-mono text-amber-200">0%</span>
+                    </div>
+
+                    <!-- 3D 空间动态投影解剖锚点层 -->
+                    <div id="three-hotspots-layer"></div>
+
+                    <!-- 底足与款识学术研考悬浮卡片 (翻转鉴底时动态滑出) -->
+                    <div id="vessel-bottom-connoisseur-card" class="hidden absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-md bg-bg-main/95 backdrop-blur-md p-4 rounded-xl border border-amber-400/50 shadow-2xl z-20 transition-all font-serif-cn"></div>
+
+                    <!-- 左下角：3D 真实空间环境与意境光影面板 -->
+                    <div class="lighting-lab-overlay" id="lighting-lab-panel">
+                        <div class="flex items-center justify-between text-[11px] text-amber-200 font-serif-cn">
+                            <span><i class="fa-solid fa-landmark mr-1"></i>3D 真实展陈空间意境</span>
+                            <span id="light-preset-name" class="text-white/80">宋代雨后雅室</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button id="scene-env-btn-studio" data-action="switchRealisticSceneEnv('studio')" class="scene-env-btn active"><i class="fa-solid fa-leaf mr-1" aria-hidden="true"></i>宋代雅室</button>
+                            <button id="scene-env-btn-palace" data-action="switchRealisticSceneEnv('palace')" class="scene-env-btn"><i class="fa-solid fa-landmark mr-1" aria-hidden="true"></i>文博殿堂</button>
+                            <button id="scene-env-btn-kiln" data-action="switchRealisticSceneEnv('kiln')" class="scene-env-btn"><i class="fa-solid fa-fire mr-1" aria-hidden="true"></i>御窑幽室</button>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 border-t border-white/10 gap-1 text-[10px] text-white/70">
+                            <button data-action="setStudioLighting('candle')" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 transition-colors">夜宴烛火</button>
+                            <div class="flex items-center gap-1 flex-1 justify-end">
+                                <label for="main-light-angle-slider">主光角度</label>
+                                <input id="main-light-angle-slider" name="main-light-angle" type="range" min="0" max="360" value="45" aria-label="主光源角度" data-action-input="rotateMainLight($value)" class="w-16">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D WebGL 主画布 -->
+                    <canvas id="three-canvas"></canvas>
+
+                    <!-- 3D 展馆小米 MiMo 资深讲解员实时声波悬浮字幕条 -->
+                    <div id="curator-subtitle-bar" class="hidden"></div>
+
+                    <!-- 底部悬浮快捷交互工具条 -->
+                    <div class="canvas-quick-toolbar scroll-fade-x" role="toolbar" aria-label="3D展台交互工具栏">
+                        <button class="canvas-tool-btn active" id="btn-room-scene-toggle" data-action="toggleRealisticScene()" title="开启/隐藏 3D 真实室内环境场景" aria-label="切换 3D 真实室内环境场景">
+                            <i class="fa-solid fa-landmark" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn active" id="btn-rotate-toggle" data-action="toggleAutoRotate()" title="自动缓动旋转" aria-label="切换自动缓动旋转">
+                            <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-wireframe-toggle" data-action="toggleWireframe()" title="三维拓扑网格力学透视" aria-label="切换三维拓扑网格透视">
+                            <i class="fa-solid fa-border-none" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-dimensions-toggle" data-action="toggleDimensionLines()" title="器物考古测绘标定线" aria-label="切换器物考古测绘标定线">
+                            <i class="fa-solid fa-ruler-combined" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn active" id="btn-crackle-toggle" data-action="toggleCrackle()" title="开片冰裂/金丝铁线凹凸法线开关" aria-label="切换开片冰裂纹凹凸法线">
+                            <i class="fa-solid fa-braille" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="openMicroscopeView()" title="100x显微镜微观聚沫攒珠观察" aria-label="打开 100 倍光学显微镜观察窗">
+                            <i class="fa-solid fa-microscope" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="setCameraView('top')" title="俯视内膛与口沿" aria-label="俯视器物内膛与口沿">
+                            <i class="fa-regular fa-circle-dot" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-bottom-inspect-toggle" data-action="toggleBottomView()" title="双手托起翻转底足鉴赏 (查看芝麻钉/铁足露胎/官窑款识)" aria-label="双手托起翻转鉴底">
+                            <i class="fa-solid fa-shoe-prints" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" id="btn-torch-inspect-toggle" data-action="toggleTransilluminationTorch()" title="专家强光手电照胎骨 (透光检视/玉质微晶通透感)" aria-label="切换专家强光手电照胎">
+                            <i class="fa-solid fa-flashlight" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="openScaleRulerModal()" title="1:1 真实体量厘米标尺对比台" aria-label="打开 1:1 真实体量标尺对比台">
+                            <i class="fa-solid fa-ruler-vertical" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="openArViewer()" title="AR 看瓷 / 桌面 1:1 实尺预览" aria-label="打开 AR 看瓷与桌面实尺预览">
+                            <i class="fa-solid fa-vr-cardboard" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="generateCollectorCard()" title="生成宋韵数字藏品明信片 (PNG)" aria-label="生成宋韵数字藏品明信片">
+                            <i class="fa-solid fa-stamp" aria-hidden="true"></i>
+                        </button>
+                        <button class="canvas-tool-btn" data-action="resetCamera()" title="复位标准展位视角" aria-label="复位标准展位视角">
+                            <i class="fa-solid fa-arrows-to-dot" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 器型切换标签栏 (全量 15 款器型：10 件 Blender 建模复原 + 5 件 Poly Haven CC0 对照标本) -->
+                <div class="mt-4 p-4 sm:p-5 rounded-2xl feature-card space-y-3.5">
+                    <!-- 第一组：十件名窑器型建模复原 -->
+                    <div>
+                        <div class="text-xs text-text-muted font-serif-cn mb-2 flex flex-wrap items-center justify-between gap-2">
+                            <span class="flex items-center gap-1.5 font-medium text-amber-500">
+                                <i class="fa-solid fa-cube text-amber-400" aria-hidden="true"></i>
+                                <span>【名窑代表器型 · Blender 参数化建模复原 (10件)】</span>
+                            </span>
+                            <span class="text-[11px] text-text-muted">1024px 烘焙贴图 · 双层清漆与物理釉色着色</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-tianqing-deep text-white ring-2 font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:shadow-md" data-action="loadPorcelainModel(0)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>① 八方贯耳瓶 (南宋官窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(1)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>② 莲花式温碗 (北宋汝窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(2)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-200"></span>③ 刻花白釉梅瓶 (北宋定窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(3)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-600"></span>④ 百圾碎贯耳扁瓶 (宋代哥窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(4)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-fuchsia-500"></span>⑤ 玫瑰紫出戟尊 (北宋钧窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(5)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>⑥ 牡丹双龙耳罐 (元代青花)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(6)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>⑦ 宝石红僧帽壶 (明代宣德)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(7)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>⑧ 洋彩透雕转心瓶 (清代乾隆)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(13)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>⑭ 曜变天目束口盏 (南宋建窑)
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(14)">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>⑮ 粉青凤耳纸槌瓶 (南宋龙泉)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 第二组：第三方 CC0 对照标本 -->
+                    <div class="pt-2.5 border-t border-border-light/70">
+                        <div class="text-xs text-text-muted font-serif-cn mb-2 flex flex-wrap items-center justify-between gap-2">
+                            <span class="flex items-center gap-1.5 font-medium text-tianqing-deep">
+                                <i class="fa-solid fa-shapes text-tianqing-deep" aria-hidden="true"></i>
+                                <span>【第三方 CC0 陶瓷模型 · 现代对照标本 (5件)】</span>
+                            </span>
+                            <span class="text-[11px] text-text-muted">来源 Poly Haven (CC0 1.0) · 1K PBR 贴图</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 border border-amber-400/40 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(8)">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>⑨ 影青撇口净水瓶
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 border border-amber-400/40 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(9)">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>⑩ 铁锈花修身瓶
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 border border-amber-400/40 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(10)">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>⑪ 龙泉双系圆腹罐
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 border border-amber-400/40 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(11)">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>⑫ 洁白长颈瓶
+                            </button>
+                            <button class="model-btn px-3 py-1.5 text-xs rounded-xl bg-yuebai text-text-body font-serif-cn transition-all shadow-sm flex items-center gap-1.5 border border-amber-400/40 hover:bg-tianqing-light/30" data-action="loadPorcelainModel(12)">
+                                <i class="fa-solid fa-star text-[10px] text-amber-500"></i>⑬ 双耳弦纹汲水陶壶
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 5列：PBR 釉色试烧盘、光学参数微调器与器物深度考据档案 -->
+            <div class="lg:col-span-5 space-y-4">
+                <!-- 釉色实时拾取盘 + PBR 微晶光学调校 -->
+                <div class="feature-card p-5 space-y-4">
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-medium mb-3 flex items-center justify-between">
+                            <span>【PBR 双层微晶釉色实时试烧】</span>
+                            <span class="text-amber-400 text-[11px] font-normal">含法线凹凸开片与玻璃相清漆</span>
+                        </h4>
+                        <div class="flex items-center justify-between gap-2">
+                            <button class="glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" data-action="switchGlaze('tianqing')" style="background: radial-gradient(circle at 35% 35%, #b8dce2, #7ea8b0 65%, #4d737a);" title="雨过天青 (汝官窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="fenqing" data-action="switchGlaze('fenqing')" style="background: radial-gradient(circle at 35% 35%, #b5dece, #7eaf9b 65%, #4a7564);" title="粉青如玉 (龙泉/南宋官窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="yuebai" data-action="switchGlaze('yuebai')" style="background: radial-gradient(circle at 35% 35%, #f5f9fa, #d2dfe5 65%, #8fa3ad);" title="月白莹霜 (官钧窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="dingbai" data-action="switchGlaze('dingbai')" style="background: radial-gradient(circle at 35% 35%, #fffdf7, #ede4d1 65%, #b8ad96);" title="定窑牙白 (曲阳定窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="junhong" data-action="switchGlaze('junhong')" style="background: radial-gradient(circle at 35% 35%, #d6699b, #7a2e53 60%, #2c1e4a);" title="玫瑰紫海棠红窑变 (禹州钧窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="jianhei" data-action="switchGlaze('jianhei')" style="background: radial-gradient(circle at 35% 35%, #597296, #211c1d 55%, #0a0808);" title="建盏曜变乌金 (建阳建窑)"></button>
+                            <button class="glaze-btn glaze-picker-btn" data-glaze="qinghua" data-action="switchGlaze('qinghua')" style="background: radial-gradient(circle at 35% 35%, #f0f6fa, #3d6ba8 55%, #162f59);" title="宣德苏麻离青花 (景德镇御窑)"></button>
+                        </div>
+                    </div>
+
+                    <!-- PBR 物理光学参数实时调校滑块 -->
+                    <div class="pt-3 border-t border-border-light space-y-2 text-[11px]">
+                        <div class="flex items-center justify-between text-text-muted font-serif-cn">
+                            <span><i class="fa-solid fa-sliders text-tianqing-deep mr-1"></i>釉面物理光学着色器实时调校：</span>
+                            <button data-action="resetPbrParams()" class="text-amber-400 hover:underline">复位参数</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>清漆厚度</span><span id="pbr-val-clearcoat" class="font-mono text-amber-400">98%</span></div>
+                                <input id="pbr-slider-clearcoat" type="range" min="0" max="1" step="0.02" value="0.98" data-action-input="setPbrParam('clearcoat', $value)" class="w-full">
+                            </div>
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>微晶散射</span><span id="pbr-val-roughness" class="font-mono text-tianqing-deep">14%</span></div>
+                                <input id="pbr-slider-roughness" type="range" min="0.02" max="0.65" step="0.02" value="0.14" data-action-input="setPbrParam('roughness', $value)" class="w-full">
+                            </div>
+                            <div class="p-2 rounded-lg bg-bg-main border border-border-light">
+                                <div class="flex justify-between mb-1"><span>折射率 IOR</span><span id="pbr-val-ior" class="font-mono text-text-title">1.54</span></div>
+                                <input id="pbr-slider-ior" type="range" min="1.35" max="1.85" step="0.01" value="1.54" data-action-input="setPbrParam('ior', $value)" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 动态器物研鉴详情档案卡 -->
+                <div class="feature-card p-6" id="3d-model-info"></div>
+            </div>
+        </div>
+
+        <!-- 名瓷双物并照 · 多维研考对比台 -->
+        <div class="mt-8 p-6 rounded-2xl feature-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-border-light">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-tianqing-deep"></span>
+                    <h3 class="font-serif-cn text-base font-medium text-text-title">双器并照 · 名窑器型与胎釉特征对照研考台</h3>
+                </div>
+                <span class="text-xs text-text-muted font-serif-cn">支持任意两件建模复原器型或 CC0 对照标本在胎骨、釉相、装烧规制上的同台比对与一键调入 3D 展台</span>
+            </div>
+            <div id="porcelain-comparison-display"></div>
+        </div>
+    </div>
+</section>

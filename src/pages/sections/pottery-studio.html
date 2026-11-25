@@ -1,0 +1,158 @@
+<!-- ==================== 板块四点五：陶然天成 · 指尖拉坯、青花手绘与 1300℃ 温控曲线烧造工坊 ==================== -->
+<section class="section-surface" id="pottery-studio">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-fire-flame-curved text-amber-200"></i>
+                <span>第一视角 3D 光影陶轮 · 自由青花手绘笔刷 · 底款篆刻 · 1300℃ 升温曲线仿真</span>
+            </span>
+            <h2>陶然天成 · 指尖拉坯与窑火造物数字工坊</h2>
+            <p class="section-subtitle">在陶轮上按住推拉塑形或切换“青花手绘笔刷”自由绘纹，体验从高岭土拉坯、镌刻底款到 1300℃ 还原焰烧造成器的完整蜕变</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            <!-- 左侧 7列：拉坯旋转交互 3D 光影 Canvas 工作台 -->
+            <div class="lg:col-span-7 space-y-3">
+                <div class="pottery-canvas-wrap">
+                    <canvas id="pottery-canvas" width="560" height="450" style="touch-action: none;"></canvas>
+
+                    <!-- 1300℃ 柴火烧造全屏遮罩与实时升温曲线图 -->
+                    <div id="kiln-fire-overlay" class="hidden">
+                        <i class="fa-solid fa-fire-flame-curved text-4xl mb-2 animate-bounce text-amber-200"></i>
+                        <h4 class="text-xl font-serif-cn font-semibold tracking-widest mb-1">龙窑松柴强还原焰烧造中</h4>
+                        <p class="text-xs text-white/90 font-light mb-2 font-serif-cn" id="kiln-stage-text">阶段一：排湿素烧 · 胎骨定型</p>
+                        <div class="text-4xl font-bold font-mono tracking-wider text-amber-200 mb-3" id="kiln-temp-text">25 ℃</div>
+                        <canvas id="kiln-curve-canvas" width="320" height="90" class="rounded-xl border border-white/30"></canvas>
+                        <span class="text-[10px] text-white/75 mt-1.5 font-mono">实时窑温-时间热力学曲线 (25℃ → 1300℃)</span>
+                    </div>
+
+                    <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3.5 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-2 border border-white/15">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="pottery-status-badge">高岭土湿坯 · 旋转塑形中</span>
+                    </div>
+
+                    <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/80 font-serif-cn pointer-events-none">
+                        <span><i class="fa-solid fa-hand-pointer text-amber-400 mr-1"></i>在泥坯表面按住拖拽即可改变器型曲线或手绘青花</span>
+                        <span id="pottery-metrics-label" class="font-mono text-amber-200">转速 120 RPM</span>
+                    </div>
+                </div>
+
+                <!-- 实时器物三维几何参数与宋韵美学评分条 -->
+                <div id="pottery-live-specs" class="p-3 rounded-xl bg-bg-main border border-border-light flex flex-wrap items-center justify-around gap-2 text-xs font-serif-cn text-text-body"></div>
+            </div>
+
+            <!-- 右侧 5列：工具箱、器型模版、纹饰雕刻、底款篆刻与窑火控制 -->
+            <div class="lg:col-span-5">
+                <div class="feature-card p-6 space-y-4 text-left">
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【一、拉坯塑形与自由青花笔刷】</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-tianqing-deep text-white transition-all" data-mode="push" data-action="setPotTool('push')">
+                                <i class="fa-solid fa-compress mr-1"></i>向内收束
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="pull" data-action="setPotTool('pull')">
+                                <i class="fa-solid fa-expand mr-1"></i>向外鼓腹
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="smooth" data-action="setPotTool('smooth')">
+                                <i class="fa-solid fa-hand-sparkles mr-1"></i>跟随修光
+                            </button>
+                            <button class="pot-tool-btn px-2.5 py-2 rounded-xl text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-mode="brush" data-action="setPotTool('brush')">
+                                <i class="fa-solid fa-paintbrush text-amber-400 mr-1"></i>手绘青花
+                            </button>
+                        </div>
+
+                        <!-- 撤销操作与青花笔法切换 (浓青勾线/分水晕染/修胚刮除) -->
+                        <div class="flex items-center justify-between gap-2 pt-2 border-t border-border-light/60">
+                            <div id="pot-brush-style-group" class="hidden flex items-center gap-1.5 text-xs font-serif-cn">
+                                <span class="text-text-muted text-[11px]">笔法：</span>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-style="outline" data-action="setBrushStyle('outline')">勾线</button>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="wash" data-action="setBrushStyle('wash')">分水</button>
+                                <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="erase" data-action="setBrushStyle('erase')">刮料</button>
+                            </div>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button id="btn-pot-undo" data-action="undoPotteryAction()" class="px-2.5 py-1 rounded-lg bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 shadow-sm" title="撤销上一步拉坯或手绘笔触 (快捷键 Ctrl+Z)">
+                                    <i class="fa-solid fa-rotate-left text-amber-400"></i>
+                                    <span>撤销 (Ctrl+Z)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【二、经典宋明官样器型模版】</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" data-action="applyPresetVessel('meiping')">宋定窑梅瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" data-action="applyPresetVessel('vase')">玉壶春瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" data-action="applyPresetVessel('gourd')">大吉葫芦瓶</button>
+                            <button class="px-3 py-1.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors" data-action="applyPresetVessel('bowl')">建窑斗茶盏</button>
+                            <button class="px-3 py-1.5 rounded-full border border-border-light text-text-muted text-xs font-serif-cn hover:text-text-title transition-colors" data-action="resetClay()">重置泥柱</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【三、器身纹饰雕刻与彩绘】</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-tianqing-deep text-white transition-all" data-pattern="none" data-action="setPotPattern('none')">素面玉肌 (极简无纹)</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="lotus" data-action="setPotPattern('lotus')">定窑浮雕划花莲瓣</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="qinghua" data-action="setPotPattern('qinghua')">苏麻离青缠枝宝相</button>
+                            <button class="pot-pattern-btn px-3 py-1.5 rounded-lg text-xs font-serif-cn bg-yuebai text-text-body transition-all" data-pattern="goldring" data-action="setPotPattern('goldring')">官窑凸弦鎏金瑞纹</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 items-center">
+                        <div>
+                            <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【四、选配秘制矿物釉】</h4>
+                            <div class="flex items-center gap-2">
+                                <button class="pot-glaze-btn glaze-picker-btn ring-2" data-glaze="tianqing" data-action="selectPotGlaze('tianqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b8dce2, #6f97a0);" title="雨过天青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="fenqing" data-action="selectPotGlaze('fenqing')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #b4dbca, #618d7c);" title="龙泉粉青釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="yuebai" data-action="selectPotGlaze('yuebai')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #f0f6f8, #9eb2ba);" title="官窑月白釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="junhong" data-action="selectPotGlaze('junhong')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #d46598, #631d3f);" title="钧窑玫瑰紫釉"></button>
+                                <button class="pot-glaze-btn glaze-picker-btn" data-glaze="jianhei" data-action="selectPotGlaze('jianhei')" style="width:1.95rem;height:1.95rem;background: radial-gradient(circle at 35% 35%, #4d6485, #171314);" title="建盏乌金兔毫釉"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-serif-cn text-text-title font-semibold mb-2">【五、器底篆刻落款】</h4>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-tianqing-deep text-white" data-seal="大宋宣和" data-action="selectPotSeal('大宋宣和')">大宋宣和</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="修内司窑" data-action="selectPotSeal('修内司窑')">修内司窑</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="河大文博" data-action="selectPotSeal('河大文博')">河大文博</button>
+                                <button class="pot-seal-btn px-2 py-1 rounded text-[11px] font-serif-cn bg-yuebai text-text-body" data-seal="天青雅制" data-action="selectPotSeal('天青雅制')">天青雅制</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-border-light flex flex-col gap-2">
+                        <button data-action="firePotInKiln()" class="w-full py-3 rounded-xl bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-fire text-amber-200"></i>
+                            <span>入窑 1300℃ 松柴还原焰烧造 (实时温控曲线)</span>
+                        </button>
+                        <button data-action="downloadPotteryArtwork()" class="w-full py-2.5 rounded-xl bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-certificate"></i>
+                            <span>生成并导出《专属数字藏品收藏证书》海报</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空灵瓷韵 · 古代五声音阶瓷编磬 -->
+        <div class="mt-8 p-6 rounded-2xl feature-card max-w-5xl mx-auto text-left">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 mb-3 pb-2 border-b border-border-light">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-400"></i>
+                    <h3 class="font-serif-cn text-base font-medium text-text-title">空灵瓷韵 · 叩瓷听音古代五声编磬</h3>
+                </div>
+                <span class="text-[11px] text-text-muted font-serif-cn">点击下方琴键或按键盘 1~5 键 · 聆听“声如磬、清越悠扬”的物理泛音</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="pentatonic-keys-container"></div>
+            <div class="mt-3 p-3 rounded-xl bg-yuebai/50 text-xs text-text-body font-light border border-border-light" id="pentatonic-current-desc">
+                <span class="text-tianqing-deep font-medium font-serif-cn">听瓷之音</span>：中国古代视精瓷如美玉，“声如磬，清脆越人”。点击上方音阶，体验宫商角徵羽与名瓷共振的空灵之美。
+            </div>
+        </div>
+
+        <!-- 1300℃ 烧成全过程温度时间轴（由 firing-timeline 模块挂载） -->
+        <div id="firing-timeline-mount" class="max-w-6xl mx-auto mt-8"></div>
+    </div>
+</section>

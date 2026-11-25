@@ -1,0 +1,109 @@
+<!-- ==================== 顶栏 ====================
+     幕与板块入口由 navigation 模块根据 content/navigation.json 渲染到 [data-nav-acts] 与 [data-drawer-nav]，
+     这里只放结构和工具按钮；不要在此手写板块链接。 -->
+<nav id="navbar" class="site-nav" aria-label="主导航">
+    <div class="site-nav__inner" data-nav-inner>
+        <a href="#hero" class="site-nav__brand" aria-label="天青泥火 · 回到首屏">
+            <span class="brand-seal" aria-hidden="true"></span>
+            <span class="site-nav__brand-text">
+                <span class="site-nav__brand-name">
+                    <span data-i18n="brand">华夏器道</span>
+                    <span class="hero-seal-stamp site-nav__brand-stamp">天青泥火</span>
+                </span>
+                <span class="site-nav__brand-tagline" data-i18n="brand.tagline">华夏古瓷三维研学空间</span>
+            </span>
+        </a>
+
+        <div class="site-nav__acts" data-nav-acts role="menubar" aria-label="板块导航"></div>
+
+        <div class="site-nav__tools">
+            <button type="button" class="nav-tool nav-tool--accent nav-tool--label" data-action="startGuidedTour" title="自动带你走完核心亮点（约 3 分钟）">
+                <i class="fa-solid fa-route" aria-hidden="true"></i>
+                <span class="nav-tool__text" data-i18n="nav.tour">3 分钟导览</span>
+            </button>
+
+            <button type="button" class="nav-tool nav-tool--label" data-action="openCommandPalette" title="检索器物、窑口、釉色（Ctrl+K）" aria-label="打开检索（Ctrl+K）">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <span class="nav-tool__text nav-tool__text--wide" data-i18n="nav.search">检索</span>
+                <kbd class="nav-tool__kbd" aria-hidden="true">Ctrl K</kbd>
+            </button>
+
+            <button type="button" id="theme-toggle-btn" class="nav-tool" data-action="toggleMuseumTheme" title="切换浅色 / 深色主题" aria-label="切换浅色或深色主题">
+                <i id="theme-toggle-icon" class="fa-solid fa-moon" aria-hidden="true"></i>
+                <span id="theme-toggle-label" class="sr-only">夜宴观瓷</span>
+            </button>
+
+            <button type="button" id="lang-toggle" class="nav-tool nav-tool--label site-nav__hide-sm" data-action="toggleLanguage" data-lang-toggle aria-label="切换中英文语言">
+                <i class="fa-solid fa-language" aria-hidden="true"></i>
+                <span class="nav-tool__text" data-lang-toggle-label data-i18n-skip>中 / EN</span>
+            </button>
+
+            <div class="nav-more site-nav__hide-sm" data-nav-more>
+                <button type="button" class="nav-tool" data-action="toggleNavMore" aria-haspopup="true" aria-expanded="false" aria-controls="nav-more-panel" title="更多工具" aria-label="更多工具">
+                    <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                    <span id="bookmark-count-badge" class="nav-tool__badge">2</span>
+                </button>
+                <div id="nav-more-panel" class="nav-more__panel" role="menu" aria-label="更多工具">
+                    <button type="button" role="menuitem" class="nav-more__item" data-action="openStudyNotebook">
+                        <i class="fa-solid fa-bookmark" aria-hidden="true"></i><span data-i18n="nav.notebook">典藏集与手记</span>
+                    </button>
+                    <button type="button" role="menuitem" class="nav-more__item" data-action="openPassport">
+                        <i class="fa-solid fa-stamp" aria-hidden="true"></i><span data-i18n="nav.passport">研学护照</span>
+                    </button>
+                    <button type="button" role="menuitem" id="ambient-music-btn" class="nav-more__item" data-action="toggleAmbientGuqin" aria-pressed="false">
+                        <i id="ambient-music-icon" class="fa-solid fa-music" aria-hidden="true"></i><span data-i18n="nav.music">背景琴音</span>
+                    </button>
+                    <button type="button" role="menuitem" id="bg-motion-toggle" class="nav-more__item" data-action="toggleBackgroundMotion" aria-pressed="true">
+                        <i id="bg-motion-icon" class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span data-i18n="nav.bgmotion">3D 背景动效</span>
+                    </button>
+                    <button type="button" role="menuitem" class="nav-more__item" data-action="openAccessibilityPanel">
+                        <i class="fa-solid fa-universal-access" aria-hidden="true"></i><span data-i18n="nav.a11y">无障碍与阅读</span>
+                    </button>
+                    <button type="button" role="menuitem" class="nav-more__item" data-action="openShortcutsHelpModal">
+                        <i class="fa-solid fa-keyboard" aria-hidden="true"></i><span data-i18n="nav.shortcuts">快捷键</span>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" id="hamburger" class="nav-tool site-nav__hamburger" data-action="openNavDrawer" aria-label="展开导航菜单" aria-expanded="false" aria-controls="mobile-menu">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- 导览字幕条：由 guided-tour 模块控制 -->
+<div id="tour-bar" class="tour-bar" role="status" aria-live="polite" hidden>
+    <div class="tour-bar__progress" data-tour-progress></div>
+    <span class="tour-bar__step" data-tour-step></span>
+    <p class="tour-bar__caption" data-tour-caption></p>
+    <div class="tour-bar__controls">
+        <button type="button" class="tour-bar__btn" data-action="tourPrev" aria-label="上一站"><i class="fa-solid fa-backward-step" aria-hidden="true"></i></button>
+        <button type="button" class="tour-bar__btn" data-action="tourTogglePause" aria-label="暂停或继续导览" data-tour-pause><i class="fa-solid fa-pause" aria-hidden="true"></i></button>
+        <button type="button" class="tour-bar__btn" data-action="tourNext" aria-label="下一站"><i class="fa-solid fa-forward-step" aria-hidden="true"></i></button>
+        <button type="button" class="tour-bar__btn tour-bar__btn--close" data-action="stopGuidedTour" aria-label="结束导览"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </div>
+</div>
+
+<!-- 移动端抽屉导航 -->
+<div id="mobile-menu-overlay" class="mobile-menu-overlay" data-action="closeNavDrawer"></div>
+<div id="mobile-menu" class="mobile-menu" data-overlay role="dialog" aria-modal="true" aria-label="导航菜单">
+    <div class="mobile-menu__head">
+        <div class="flex items-center gap-2">
+            <span class="hero-seal-stamp">天青泥火</span>
+            <span class="mobile-menu__title" data-i18n="brand.tagline">华夏古瓷三维研学空间</span>
+        </div>
+        <button type="button" id="mobile-close" class="mobile-menu__close" data-action="closeNavDrawer" aria-label="关闭菜单">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="mobile-menu__tools">
+        <button type="button" class="mobile-menu__tool" data-action="closeNavDrawer(); startGuidedTour()"><i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="nav.tour">3 分钟导览</span></button>
+        <button type="button" class="mobile-menu__tool" data-action="toggleLanguage" data-lang-toggle><i class="fa-solid fa-language" aria-hidden="true"></i><span data-lang-toggle-label data-i18n-skip>中 / EN</span></button>
+        <button type="button" class="mobile-menu__tool" data-action="closeNavDrawer(); openStudyNotebook()"><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span data-i18n="nav.notebook">典藏集与手记</span></button>
+        <button type="button" class="mobile-menu__tool" data-action="closeNavDrawer(); openPassport()"><i class="fa-solid fa-stamp" aria-hidden="true"></i><span data-i18n="nav.passport">研学护照</span></button>
+        <button type="button" class="mobile-menu__tool" data-action="toggleAmbientGuqin"><i class="fa-solid fa-music" aria-hidden="true"></i><span data-i18n="nav.music">背景琴音</span></button>
+        <button type="button" class="mobile-menu__tool" data-action="closeNavDrawer(); openAccessibilityPanel()"><i class="fa-solid fa-universal-access" aria-hidden="true"></i><span data-i18n="nav.a11y">无障碍与阅读</span></button>
+    </div>
+    <div class="mobile-menu__nav" data-drawer-nav></div>
+</div>

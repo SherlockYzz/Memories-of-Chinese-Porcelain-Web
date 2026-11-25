@@ -1,0 +1,19 @@
+{
+  "badge": "文物修复与传统大漆描金工艺体验",
+  "title": { "zh": "金缮修复 · 破碎古瓷拼合与大漆描金工坊", "en": "Kintsugi Studio · Shard Reassembly & Gold Lacquer" },
+  "subtitle": {
+    "zh": "选取一件破碎器物，将碎片复位拼接，再用大漆调金粉沿着裂隙描金，体悟“残缺亦成器”的东方修复美学",
+    "en": "Select a vessel, reassemble its shards (or use keyboard snap), and trace lacquer & gold along the seams"
+  },
+  "reference": "工艺流程参考传统漆艺“生漆调瓦灰粘接、打磨推光、面漆贴金/扫金”工序。",
+  "vessels": [
+    { "id": "guan", "name": "南宋官窑 · 八方贯耳瓶", "bodyHex": "#739ca4", "rimHex": "#4d3832", "footHex": "#2e2420", "silhouette": "guan" },
+    { "id": "ru", "name": "北宋汝窑 · 莲花温碗", "bodyHex": "#7eaab3", "rimHex": "#8eb6be", "footHex": "#5a7c82", "silhouette": "bowl" },
+    { "id": "longquan", "name": "南宋龙泉 · 凤耳纸槌瓶", "bodyHex": "#6f9f8e", "rimHex": "#8eb4a6", "footHex": "#4b695e", "silhouette": "tall" }
+  ],
+  "finishes": [
+    { "id": "gold", "name": "泥金（24K 金粉）", "color": "#d8b467", "glow": "#f6e0a4" },
+    { "id": "silver", "name": "银缮（银泥）", "color": "#cfd8dc", "glow": "#eef4f7" },
+    { "id": "cinnabar", "name": "朱漆（传统大漆）", "color": "#a8322d", "glow": "#d45c56" }
+  ]
+}

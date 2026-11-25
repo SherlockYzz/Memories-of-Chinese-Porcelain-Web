@@ -1,79 +1,291 @@
 {
   "background": {
-    "comment": "全站 3D 背景（浑天仪圆环、等高线山川、粒子）的可调参数。透明度与层级在 src/styles/00-tokens.css。",
-    "quality": {
-      "high": { "pixelRatioCap": 1.5, "fps": 60 },
-      "low": { "pixelRatioCap": 1, "fps": 30 },
-      "reducedMotion": { "pixelRatioCap": 1, "fps": 0, "note": "只渲染静帧；滚动到新板块时重绘一次" }
+    "comment": "全站 3D 背景（浑天仪环轨、等高线山川、浮尘粒子）的可调参数，由 src/modules/webgl-bg 读取。板块底色透明度与层级在 src/styles/00-tokens.css。",
+    "tiers": {
+      "high": {
+        "name": "high",
+        "dprCap": 1.5,
+        "targetFps": 60,
+        "particles": 850,
+        "segX": 44,
+        "segZ": 28,
+        "ringSegments": 128,
+        "antialias": true
+      },
+      "medium": {
+        "name": "medium",
+        "dprCap": 1.25,
+        "targetFps": 45,
+        "particles": 420,
+        "segX": 30,
+        "segZ": 18,
+        "ringSegments": 96,
+        "antialias": true
+      },
+      "low": {
+        "name": "low",
+        "dprCap": 1,
+        "targetFps": 30,
+        "particles": 200,
+        "segX": 20,
+        "segZ": 12,
+        "ringSegments": 64,
+        "antialias": false
+      }
     },
     "lightTheme": {
-      "lineColor": "#2f6b78",
+      "comment": "浅色主题下场景本身对比度低，这里的增益把线条、环轨、粒子提亮到可见。",
+      "fillOpacityBoost": 1.25,
       "lineOpacityBoost": 2.6,
-      "ringColor": "#9a6a1c",
-      "ringOpacityBoost": 2.2,
-      "particleColor": "#3a7684",
-      "particleOpacityBoost": 1.8,
-      "fog": "#efe9dc"
+      "ringOpacityBoost": 1.75,
+      "particleOpacityBoost": 2.4
     },
     "darkTheme": {
-      "lineOpacityBoost": 1.25,
-      "ringOpacityBoost": 1.2,
+      "fillOpacityBoost": 1,
+      "lineOpacityBoost": 1.3,
+      "ringOpacityBoost": 1.15,
       "particleOpacityBoost": 1.15
     },
     "scroll": {
-      "cameraTravelY": 5.2,
-      "cameraTravelZ": 3.4,
-      "ringSpinPerSection": 0.55,
-      "parallaxNear": 1.0,
-      "parallaxFar": 0.35
+      "comment": "滚动联动幅度：镜头下移 / 推近、视线跟随、浑天仪横移与下沉、每过一个板块的环轨自转量。",
+      "cameraTravelY": 2.4,
+      "cameraTravelZ": 6.5,
+      "lookAtTravelY": 1.1,
+      "lookAtFollow": 0.35,
+      "armillaryShift": 2.6,
+      "armillaryDropY": 1.6,
+      "ringSpinPerSection": 0.55
     },
     "sections": {
-      "hero": { "hue": 0, "armillary": 1.0, "mountains": 0.85, "cameraX": 0 },
-      "3d-gallery": { "hue": -6, "armillary": 0.75, "mountains": 1.0, "cameraX": 1.4 },
-      "archive": { "hue": 8, "armillary": 0.9, "mountains": 0.7, "cameraX": -1.2 },
-      "ai-recognition": { "hue": -14, "armillary": 1.1, "mountains": 0.6, "cameraX": 1.0 },
-      "workshop": { "hue": 18, "armillary": 0.6, "mountains": 1.1, "cameraX": -1.5 },
-      "pottery-studio": { "hue": 24, "armillary": 0.55, "mountains": 1.0, "cameraX": 1.3 },
-      "colors": { "hue": -22, "armillary": 0.95, "mountains": 0.75, "cameraX": -0.8 },
-      "crackle-lab": { "hue": -10, "armillary": 1.05, "mountains": 0.65, "cameraX": 1.1 },
-      "kintsugi": { "hue": 30, "armillary": 0.8, "mountains": 0.8, "cameraX": -1.1 },
-      "history": { "hue": 12, "armillary": 1.15, "mountains": 0.9, "cameraX": 0.6 },
-      "kiln-map-section": { "hue": -4, "armillary": 0.6, "mountains": 1.25, "cameraX": -1.4 },
-      "four-arts": { "hue": 16, "armillary": 0.85, "mountains": 0.85, "cameraX": 1.2 },
-      "video-theatre": { "hue": -18, "armillary": 0.7, "mountains": 0.7, "cameraX": -0.6 },
-      "notes": { "hue": 6, "armillary": 1.2, "mountains": 0.6, "cameraX": 0.9 },
-      "passport": { "hue": 20, "armillary": 1.0, "mountains": 0.7, "cameraX": -0.9 },
-      "credits": { "hue": 0, "armillary": 0.9, "mountains": 0.9, "cameraX": 0 }
+      "hero": {
+        "armillary": 1,
+        "mountains": 0.85,
+        "cameraX": 0,
+        "warm": 0
+      },
+      "3d-gallery": {
+        "armillary": 0.75,
+        "mountains": 1,
+        "cameraX": 1.4,
+        "warm": 0.05
+      },
+      "archive": {
+        "armillary": 0.9,
+        "mountains": 0.7,
+        "cameraX": -1.2,
+        "warm": 0.3
+      },
+      "ai-recognition": {
+        "armillary": 1.1,
+        "mountains": 0.6,
+        "cameraX": 1,
+        "warm": 0
+      },
+      "workshop": {
+        "armillary": 0.6,
+        "mountains": 1.1,
+        "cameraX": -1.5,
+        "warm": 0.55
+      },
+      "pottery-studio": {
+        "armillary": 0.55,
+        "mountains": 1,
+        "cameraX": 1.3,
+        "warm": 0.7
+      },
+      "colors": {
+        "armillary": 0.95,
+        "mountains": 0.75,
+        "cameraX": -0.8,
+        "warm": 0.1
+      },
+      "crackle-lab": {
+        "armillary": 1.05,
+        "mountains": 0.65,
+        "cameraX": 1.1,
+        "warm": 0.05
+      },
+      "kintsugi": {
+        "armillary": 0.8,
+        "mountains": 0.8,
+        "cameraX": -1.1,
+        "warm": 0.85
+      },
+      "history": {
+        "armillary": 1.15,
+        "mountains": 0.9,
+        "cameraX": 0.6,
+        "warm": 0.4
+      },
+      "kiln-map-section": {
+        "armillary": 0.6,
+        "mountains": 1.25,
+        "cameraX": -1.4,
+        "warm": 0.15
+      },
+      "four-arts": {
+        "armillary": 0.85,
+        "mountains": 0.85,
+        "cameraX": 1.2,
+        "warm": 0.5
+      },
+      "video-theatre": {
+        "armillary": 0.7,
+        "mountains": 0.7,
+        "cameraX": -0.6,
+        "warm": 0.05
+      },
+      "notes": {
+        "armillary": 1.2,
+        "mountains": 0.6,
+        "cameraX": 0.9,
+        "warm": 0.3
+      },
+      "passport": {
+        "armillary": 1,
+        "mountains": 0.7,
+        "cameraX": -0.9,
+        "warm": 0.6
+      },
+      "credits": {
+        "armillary": 0.9,
+        "mountains": 0.9,
+        "cameraX": 0,
+        "warm": 0.2
+      }
     }
   },
   "gallery": {
     "comment": "三维展馆的环境与灯光预设。数值为渲染调校值；改这里即可调整各场景的灯光，不需要动 three-scene.js。",
     "environments": {
       "studio": {
-        "label": { "zh": "宋代雅室", "en": "Song study" },
-        "exposure": { "light": 1.08, "dark": 0.96 },
-        "ambient": { "color": "#fff4e0", "intensity": 0.42 },
-        "key": { "color": "#ffe9c4", "intensity": 1.15, "position": [3.2, 5.4, 3.6] },
-        "fill": { "color": "#bcd8e0", "intensity": 0.38, "position": [-4.2, 2.6, 2.4] },
-        "rim": { "color": "#dff3f7", "intensity": 0.55, "position": [-1.6, 3.8, -4.2] }
+        "label": {
+          "zh": "宋代雅室",
+          "en": "Song study"
+        },
+        "exposure": {
+          "light": 1.08,
+          "dark": 0.96
+        },
+        "ambient": {
+          "color": "#fff4e0",
+          "intensity": 0.42
+        },
+        "key": {
+          "color": "#ffe9c4",
+          "intensity": 1.15,
+          "position": [
+            3.2,
+            5.4,
+            3.6
+          ]
+        },
+        "fill": {
+          "color": "#bcd8e0",
+          "intensity": 0.38,
+          "position": [
+            -4.2,
+            2.6,
+            2.4
+          ]
+        },
+        "rim": {
+          "color": "#dff3f7",
+          "intensity": 0.55,
+          "position": [
+            -1.6,
+            3.8,
+            -4.2
+          ]
+        }
       },
       "palace": {
-        "label": { "zh": "博物馆展厅", "en": "Museum hall" },
-        "exposure": { "light": 1.0, "dark": 0.9 },
-        "ambient": { "color": "#f1f4f8", "intensity": 0.3 },
-        "key": { "color": "#fff6e6", "intensity": 1.45, "position": [0.6, 6.4, 2.2] },
-        "fill": { "color": "#aebfd6", "intensity": 0.26, "position": [-4.6, 2.2, 3.0] },
-        "rim": { "color": "#ffffff", "intensity": 0.72, "position": [2.4, 3.4, -4.6] }
+        "label": {
+          "zh": "博物馆展厅",
+          "en": "Museum hall"
+        },
+        "exposure": {
+          "light": 1,
+          "dark": 0.9
+        },
+        "ambient": {
+          "color": "#f1f4f8",
+          "intensity": 0.3
+        },
+        "key": {
+          "color": "#fff6e6",
+          "intensity": 1.45,
+          "position": [
+            0.6,
+            6.4,
+            2.2
+          ]
+        },
+        "fill": {
+          "color": "#aebfd6",
+          "intensity": 0.26,
+          "position": [
+            -4.6,
+            2.2,
+            3
+          ]
+        },
+        "rim": {
+          "color": "#ffffff",
+          "intensity": 0.72,
+          "position": [
+            2.4,
+            3.4,
+            -4.6
+          ]
+        }
       },
       "kiln": {
-        "label": { "zh": "窑室", "en": "Kiln chamber" },
-        "exposure": { "light": 0.94, "dark": 0.86 },
-        "ambient": { "color": "#ffcf9e", "intensity": 0.24 },
-        "key": { "color": "#ffb066", "intensity": 1.35, "position": [2.2, 2.4, 3.2] },
-        "fill": { "color": "#7a4a2c", "intensity": 0.3, "position": [-3.8, 1.6, 2.0] },
-        "rim": { "color": "#ff8a3c", "intensity": 0.85, "position": [-1.2, 2.2, -3.8] }
+        "label": {
+          "zh": "窑室",
+          "en": "Kiln chamber"
+        },
+        "exposure": {
+          "light": 0.94,
+          "dark": 0.86
+        },
+        "ambient": {
+          "color": "#ffcf9e",
+          "intensity": 0.24
+        },
+        "key": {
+          "color": "#ffb066",
+          "intensity": 1.35,
+          "position": [
+            2.2,
+            2.4,
+            3.2
+          ]
+        },
+        "fill": {
+          "color": "#7a4a2c",
+          "intensity": 0.3,
+          "position": [
+            -3.8,
+            1.6,
+            2
+          ]
+        },
+        "rim": {
+          "color": "#ff8a3c",
+          "intensity": 0.85,
+          "position": [
+            -1.2,
+            2.2,
+            -3.8
+          ]
+        }
       }
     },
-    "postprocessing": { "bloomStrength": 0.18, "bloomThreshold": 0.92, "note": "Bloom 保持克制，避免釉面泛白。" }
+    "postprocessing": {
+      "bloomStrength": 0.18,
+      "bloomThreshold": 0.92,
+      "note": "Bloom 保持克制，避免釉面泛白。"
+    }
   }
 }

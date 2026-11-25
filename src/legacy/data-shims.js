@@ -52,9 +52,11 @@ __tqData.get('glazes').forEach(function (g) {
         clearcoat: m.clearcoat,
         clearcoatRoughness: m.clearcoatRoughness,
         ior: m.ior,
-        reflectivity: m.reflectivity
+        reflectivity: m.reflectivity,
+        optics: g.optics || {}
     };
 });
+const gallerySceneConfig = (__tqData.get('scene') || {}).gallery || {};
 
 window.historyPeriods = historyPeriods;
 window.kilnGeographyData = kilnGeographyData;

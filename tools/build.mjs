@@ -119,7 +119,34 @@ function resolveIncludes(file, seen = []) {
     });
 }
 
+const contentCache = new Map();
+function readContentValue(expr) {
+    const parts = expr.split('.');
+    const file = parts.shift();
+    if (!file) throw new Error(`无效的 content 占位符: ${expr}`);
+    if (!contentCache.has(file)) {
+        const filePath = abs(path.join('content', `${file}.json`));
+        if (!fs.existsSync(filePath)) throw new Error(`content 文件不存在: content/${file}.json`);
+        contentCache.set(file, JSON.parse(fs.readFileSync(filePath, 'utf8').replace(/^\uFEFF+/, '')));
+    }
+    let cur = contentCache.get(file);
+    for (const k of parts) {
+        if (cur == null || !(k in cur)) throw new Error(`content 路径不存在: ${expr}`);
+        cur = cur[k];
+    }
+    if (cur && typeof cur === 'object') {
+        if ('zh' in cur) cur = cur.zh;
+        else throw new Error(`content 路径指向非文本对象: ${expr}`);
+    }
+    return String(cur ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 async function buildOnce() {
+    contentCache.clear();
     const t0 = Date.now();
     const outDir = abs(config.outDir);
     fs.mkdirSync(outDir, { recursive: true });
@@ -180,6 +207,7 @@ async function buildOnce() {
     let html = resolveIncludes(abs(config.html.entry));
     const buildId = hashOf(Buffer.from(JSON.stringify(assets)));
     html = html
+        .replace(/\{\{content:([\w.-]+)\}\}/g, (_, expr) => readContentValue(expr))
         .replace(/\{\{asset:([\w-]+)\}\}/g, (_, name) => {
             if (!assets[name]) throw new Error(`index.html 引用了未知产物 {{asset:${name}}}`);
             return assets[name];

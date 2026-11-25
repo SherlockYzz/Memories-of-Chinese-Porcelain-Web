@@ -1,0 +1,190 @@
+/* ==========================================================================
+   新增研学功能统一样式：开片模拟器、金缮修复、烧成时间轴、研学护照、AR 实尺台、无障碍面板
+   全部遵循 00-tokens.css 设计变量，禁止无说明覆盖。
+   ========================================================================== */
+
+.lab-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .lab-grid {
+        grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+        align-items: start;
+    }
+}
+
+.lab-canvas-box {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 45%, #1d2b33 0%, #0b1116 80%);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+}
+
+.lab-canvas-box canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.lab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-serif-cn);
+    font-size: 0.75rem;
+    background: var(--yuebai);
+    color: var(--text-title);
+    border: 1px solid var(--border-light);
+    transition: background-color 0.2s var(--ease-smooth), border-color 0.2s var(--ease-smooth);
+}
+
+.lab-pill:hover {
+    border-color: var(--tianqing);
+}
+
+.lab-pill.is-active {
+    background: var(--tianqing-darker);
+    border-color: var(--gold-accent);
+    color: #fff;
+}
+
+/* 烧成时间轴阶段胶囊 */
+.firing-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .firing-steps {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .firing-steps {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+}
+
+.firing-step-btn {
+    padding: 0.5rem 0.4rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-main);
+    border: 1px solid var(--border-light);
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-body);
+    transition: border-color 0.2s var(--ease-smooth), background-color 0.2s var(--ease-smooth);
+}
+
+.firing-step-btn.is-active {
+    background: var(--tianqing-darker);
+    border-color: var(--gold-accent);
+    color: #fff;
+}
+
+/* 研学护照印章网格 */
+.passport-stamps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
+}
+
+@media (min-width: 640px) {
+    .passport-stamps {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.passport-stamp {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    border-radius: var(--radius-md);
+    background: var(--bg-main);
+    border: 1px dashed var(--border-light);
+    text-align: center;
+    transition: border-color 0.25s var(--ease-smooth), transform 0.25s var(--ease-smooth);
+}
+
+.passport-stamp.is-earned {
+    border-style: solid;
+    border-color: rgba(200, 162, 90, 0.7);
+    background: var(--bg-card-solid);
+}
+
+.passport-seal-mark {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 0.625rem;
+    border: 2px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif-cn);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    opacity: 0.45;
+    transform: rotate(-5deg);
+    transition: opacity 0.3s var(--ease-smooth), transform 0.3s var(--ease-bounce);
+}
+
+.passport-stamp.is-earned .passport-seal-mark {
+    border-color: var(--cinnabar);
+    background: var(--cinnabar);
+    color: #fff;
+    opacity: 1;
+    transform: rotate(-3deg) scale(1.04);
+    box-shadow: 0 4px 12px rgba(168, 50, 45, 0.28);
+}
+
+/* 无障碍开关项 */
+.a11y-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--bg-main);
+    border: 1px solid var(--border-light);
+}
+
+.a11y-switch {
+    min-width: 3.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-family: var(--font-serif-cn);
+    border: 1px solid var(--border-light);
+    background: var(--yuebai);
+    color: var(--text-title);
+}
+
+.a11y-switch[aria-pressed="true"] {
+    background: var(--tianqing-darker);
+    border-color: var(--gold-accent);
+    color: #fff;
+}
+
+/* AR / 桌面实尺预览画布 */
+.ar-stage-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    display: block;
+}

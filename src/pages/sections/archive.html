@@ -1,0 +1,48 @@
+<!-- ==================== 板块七：传世名品典藏库与历代官窑款识大辞典 ==================== -->
+<section class="section-surface section-surface--alt" id="archive">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">历代名窑器物图录 · 出处核验 · 官窑底款篆刻</span>
+            <h2 data-i18n="archive.sectionTitle">名器考据 · 历代瓷器典藏图录与官窑款识辞典</h2>
+            <p class="section-subtitle" data-i18n="archive.sectionSub">收录两宋五大名窑与明清御窑代表器物档案 · 每张卡片均标明馆藏出处核验状态，可一键调入 3D 展馆检视</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 典藏分类筛选栏 -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-8 max-w-4xl mx-auto">
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-tianqing-deep text-white font-serif-cn transition-all shadow-sm active" data-filter="all" data-dynasty="all" data-action="filterArchivePorcelains('all')">
+                <i class="fa-solid fa-layer-group mr-1.5"></i>全部典藏图录
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="song" data-dynasty="song" data-action="filterArchivePorcelains('song')">
+                <i class="fa-solid fa-feather mr-1.5"></i>两宋极简峰峦
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="ming" data-dynasty="ming" data-action="filterArchivePorcelains('ming')">
+                <i class="fa-solid fa-dragon mr-1.5"></i>大明宣德成化御窑
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="qing" data-dynasty="qing" data-action="filterArchivePorcelains('qing')">
+                <i class="fa-solid fa-crown mr-1.5"></i>大清康雍乾彩瓷
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="tang" data-dynasty="tang" data-action="filterArchivePorcelains('tang')">
+                <i class="fa-solid fa-scroll mr-1.5"></i>隋唐南青北白
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all" data-filter="yuan" data-dynasty="yuan" data-action="filterArchivePorcelains('yuan')">
+                <i class="fa-solid fa-horse mr-1.5"></i>元代青花瓷
+            </button>
+            <button class="archive-dynasty-btn archive-filter-btn px-4 py-2 text-xs rounded-full bg-yuebai text-text-body font-serif-cn hover:border-tianqing transition-all border border-amber-400/40" data-filter="scanned" data-dynasty="scanned" data-action="filterArchivePorcelains('scanned')">
+                <i class="fa-solid fa-shapes mr-1.5 text-amber-400"></i>CC0 对照标本 (5件)
+            </button>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12" id="archive-grid-container"></div>
+
+        <!-- 新增模块：历代官窑纪年款识与支钉制度图典 -->
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-6">
+                <span class="badge bg-amber-700 text-white text-xs mb-2">古陶瓷断代核心铁证</span>
+                <h3 class="text-xl sm:text-2xl font-serif-cn font-semibold text-text-title">历代官窑底款篆刻与支烧规制图典</h3>
+                <p class="text-xs text-text-muted mt-1 font-serif-cn">从北宋汝窑“奉华”刻款、钧窑数字编号至明清御器厂帝王年号款识</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="imperial-marks-grid"></div>
+        </div>
+    </div>
+</section>

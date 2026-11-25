@@ -1,0 +1,105 @@
+<!-- ==================== 板块二：AI 智能识瓷 · 计算机视觉与多维光谱研考工作站 ==================== -->
+<section class="section-surface" id="ai-recognition">
+    <div id="ai-section-anchor" class="scroll-mt-24"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">
+                <i class="fa-solid fa-wave-square text-amber-200" aria-hidden="true"></i>
+                <span>教学演示 · Sobel 开片边缘梯度卷积 · 64 通道 RGB 光谱直方图</span>
+            </span>
+            <h2 data-i18n="ai.sectionTitle">开片纹理与釉色分析</h2>
+            <p class="section-subtitle" data-i18n="ai.sectionSub">基于前端像素级 RGB/HSL 分布直方图与 Sobel 边缘梯度算子的图像特征可视化工具（仅作教学演示，不可用于文物真伪鉴定）</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto mb-5 p-3.5 rounded-xl bg-amber-900/20 border border-amber-500/30 text-xs text-text-body flex items-start gap-2.5">
+            <i class="fa-solid fa-circle-info text-amber-500 mt-0.5 shrink-0" aria-hidden="true"></i>
+            <span><strong>方法说明：</strong>本模块直接对输入图像执行像素级 Sobel 边缘卷积与 RGB/HSL 通道统计，以可视化方式辅助理解开片疏密与釉色分布；<strong>未接入实物训练集神经网络，仅作教学演示，不能用于古陶瓷真伪或年代鉴定。</strong></span>
+        </div>
+
+        <div class="max-w-6xl mx-auto space-y-6">
+            <!-- 顶部：识图输入方式三合一 (传世标本库一键诊断 + 本地上传/摄像头扫描) -->
+            <div class="grid lg:grid-cols-12 gap-6 items-stretch">
+                <!-- 左侧 7列：馆藏名瓷标本库 · 一键触发CV诊断 -->
+                <div class="lg:col-span-7 feature-card p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs sm:text-sm font-serif-cn text-text-title font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                                <span>【六大传世标准器标本库 · 点击即刻执行 CV 卷积与光谱诊断】</span>
+                            </h4>
+                            <span class="text-[11px] text-tianqing-deep font-serif-cn">实时像素级计算</span>
+                        </div>
+                        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5" id="preset-vessels-list"></div>
+                    </div>
+                </div>
+
+                <!-- 右侧 5列：本地上传或摄像头实时取景 -->
+                <div class="lg:col-span-5 flex flex-col">
+                    <div id="ai-drop-area" class="ai-dropzone flex-1 flex flex-col items-center justify-center">
+                        <input type="file" id="ai-file-input" class="hidden" accept="image/*">
+                        <div class="w-12 h-12 rounded-full bg-yuebai flex items-center justify-center mb-2.5 text-tianqing-deep text-xl border border-border-light">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h4 class="text-sm font-serif-cn text-text-title font-medium mb-1">拖拽或上传自定义古瓷图片送检</h4>
+                        <p class="text-[11px] text-text-muted mb-3.5 font-light">支持瓷器全景、开片微距或底足照片 (JPG / PNG / WebP)</p>
+
+                        <div class="flex items-center gap-2.5">
+                            <button type="button" data-action="triggerClick('#ai-file-input')" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+                                <i class="fa-solid fa-image mr-1"></i>选取相册图片
+                            </button>
+                            <button type="button" data-action="startCameraScan()" class="px-4 py-2 rounded-full bg-yuebai border border-tianqing text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">
+                                <i class="fa-solid fa-camera mr-1"></i>摄像头扫一扫
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 下方：实时计算机视觉三联画布 + 权威学术鉴定报告工作站 -->
+            <div id="ai-result-section" class="feature-card p-6 sm:p-8">
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    <!-- 左侧 4列：三联计算机视觉分析视窗 (原图激光扫描 + Sobel开片边缘图 + RGB光谱直方图) -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <!-- 视窗 1：原图与激光扫描 -->
+                        <div class="rounded-2xl overflow-hidden shadow-md bg-black relative border border-border-light aspect-square">
+                            <img id="ai-preview-img" src="./images/13.jpg" alt="待诊断器物" width="600" height="600" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                            <div id="ai-scan-animation" class="hidden absolute inset-0 bg-black/45 backdrop-blur-sm flex flex-col items-center justify-center">
+                                <div class="ai-scan-line-laser"></div>
+                                <div class="bg-black/80 px-4 py-2 rounded-full text-white text-xs font-serif-cn flex items-center gap-2 shadow-lg border border-amber-400">
+                                    <i class="fa-solid fa-microchip animate-spin text-amber-400"></i>
+                                    <span>Sobel 卷积提取釉面光谱与开片应力...</span>
+                                </div>
+                            </div>
+                            <span class="absolute top-2.5 left-2.5 bg-black/75 text-amber-200 text-[10px] px-2.5 py-0.5 rounded-full font-serif-cn border border-white/15">
+                                ① 原始器物取样影像
+                            </span>
+                        </div>
+
+                        <!-- 视窗 2 & 3：Sobel 开片特征图 + RGB 光谱直方图 -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-[10px] font-serif-cn text-tianqing-deep">② 计算机视觉特征图</span>
+                                    <div class="flex items-center gap-1">
+                                        <button data-action="setAiVisualMode('edge')" class="ai-visual-tab px-1.5 py-0.5 rounded text-[9px] font-serif-cn bg-tianqing-deep text-white transition-colors" data-mode="edge">边缘纹理</button>
+                                        <button data-action="setAiVisualMode('heatmap')" class="ai-visual-tab px-1.5 py-0.5 rounded text-[9px] font-serif-cn bg-yuebai text-text-body transition-colors" data-mode="heatmap">应力热力</button>
+                                    </div>
+                                </div>
+                                <canvas id="ai-edge-canvas" width="160" height="160" class="w-full aspect-square rounded-lg bg-black block border border-white/10"></canvas>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light text-center flex flex-col justify-between">
+                                <span class="text-[10px] font-serif-cn text-amber-400 block mb-1.5">③ RGB 釉色光谱直方图</span>
+                                <canvas id="ai-hist-canvas" width="160" height="130" class="w-full flex-1 rounded-lg bg-black block border border-white/10"></canvas>
+                                <span class="text-[9px] text-text-muted font-mono mt-1 block">R/G/B 64-Bin Spectral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧 8列：权威学术鉴定档案卡 -->
+                    <div class="lg:col-span-8" id="ai-report-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

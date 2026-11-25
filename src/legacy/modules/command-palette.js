@@ -64,7 +64,7 @@
         global._currentCmdMatched = visibleList;
 
         listEl.innerHTML = visibleList.map((item, idx) => `
-            <button type="button" role="option" aria-selected="${idx === 0 ? 'true' : 'false'}" onclick="triggerCommandItem(${idx})" class="cmd-result-item ${idx === 0 ? 'cmd-item-active' : ''} w-full p-3 rounded-xl bg-bg-main hover:bg-yuebai border border-border-light flex items-center justify-between gap-3 text-left transition-colors">
+            <button type="button" role="option" aria-selected="${idx === 0 ? 'true' : 'false'}" data-action="triggerCommandItem(${idx})" class="cmd-result-item ${idx === 0 ? 'cmd-item-active' : ''} w-full p-3 rounded-xl bg-bg-main hover:bg-yuebai border border-border-light flex items-center justify-between gap-3 text-left transition-colors">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-8 h-8 rounded-lg bg-yuebai flex items-center justify-center text-tianqing-deep shrink-0">
                         <i class="fa-solid ${item.icon || 'fa-cube'} text-xs" aria-hidden="true"></i>

@@ -1,0 +1,40 @@
+<!-- ==================== 板块三点五：九州名窑 · 全国山川地理与贡道交互图谱 ==================== -->
+<section class="section-surface section-surface--alt" id="kiln-map-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">山川形胜 · 汴河御贡漕运 · 海上丝绸之路</span>
+            <h2>九州名窑 · 全国核心窑口地理与氧化物图谱</h2>
+            <p class="section-subtitle">交互式水墨山川疆域舆图 · 展现两宋五大名窑、建窑、景德镇御窑与东京汴梁/行在临安贡道脉络及XRF化学配比</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 舆图图层切换按钮组 -->
+        <div class="flex flex-wrap items-center justify-center gap-2.5 mb-6">
+            <button class="map-layer-btn active" data-layer="all" data-action="switchKilnMapLayer('all')">
+                <i class="fa-solid fa-layer-group mr-1"></i>全要素总览 (山川水系+御贡+海丝)
+            </button>
+            <button class="map-layer-btn" data-layer="tribute" data-action="switchKilnMapLayer('tribute')">
+                <i class="fa-solid fa-crown text-amber-400 mr-1"></i>两宋汴京/临安御贡漕运专道
+            </button>
+            <button class="map-layer-btn" data-layer="maritime" data-action="switchKilnMapLayer('maritime')">
+                <i class="fa-solid fa-sailboat text-tianqing mr-1"></i>海上丝绸之路外销航线
+            </button>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-center max-w-6xl mx-auto">
+            <!-- 左侧 7列：全国名窑水墨山川河洛交互地图 -->
+            <div class="lg:col-span-7">
+                <div class="kiln-map-container" id="kiln-map-wrapper">
+                    <div id="kiln-map-svg-bg"></div>
+                    <div id="kiln-map-spots"></div>
+                    <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] text-amber-200 font-serif-cn z-20 border border-white/15">
+                        <i class="fa-solid fa-compass mr-1"></i>点击地图上的八大名窑坐标点，实时切换御贡航线与矿物化学档案
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧 5列：选定窑口档案与XRF氧化物配比卡 -->
+            <div class="lg:col-span-5 feature-card p-6" id="kiln-map-info"></div>
+        </div>
+    </div>
+</section>

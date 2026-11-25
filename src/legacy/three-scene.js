@@ -417,9 +417,20 @@ function createStudioEnvironment() {
 }
 
 /**
- * 2. 生成金丝铁线/冰裂纹双通道贴图 (Color Map + 立体微凹 Bump Map)
+ * 2. 生成多尺度双层 Voronoi 开片贴图（复用共享着色器模块）
  */
-function getCrackleTextureBundle() {
+function getCrackleTextureBundle(glazeKey = currentGlazeIndex) {
+    const cfg = glazePalettes[glazeKey] || glazePalettes.tianqing || {};
+    const opt = cfg.optics || {};
+    const g = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze;
+    if (g && typeof g.getMultiScaleCrackleMaps === 'function') {
+        return g.getMultiScaleCrackleMaps({
+            inkColor: opt.crackleInkColor || '#3c3127',
+            goldColor: opt.crackleGoldColor || '#9b7440',
+            scale: opt.crackleScale || 1.8,
+            strength: typeof opt.crackleOpacity === 'number' ? opt.crackleOpacity : 0.36
+        });
+    }
     if (textureCache.crackleBundle) return textureCache.crackleBundle;
 
     const cCanvas = document.createElement('canvas');
@@ -790,6 +801,8 @@ function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
     }
 
     const cfg = glazePalettes[glazeKey] || glazePalettes.tianqing;
+    const opt = cfg.optics || {};
+    const gHelper = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze;
     const matOptions = {
         color: cfg.color,
         emissive: cfg.emissive,
@@ -800,7 +813,7 @@ function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
         ior: customPbrOverride.ior !== null ? customPbrOverride.ior : cfg.ior,
         reflectivity: cfg.reflectivity,
         envMap: envMapTexture,
-        envMapIntensity: 1.45,
+        envMapIntensity: 0.96,
         wireframe: isWireframe,
         side: THREE.DoubleSide,
         clippingPlanes: activePlanes,
@@ -820,13 +833,24 @@ function getPorcelainMaterial(glazeKey = currentGlazeIndex, isTieZu = false) {
     }
 
     if (showCrackle && !['qinghua', 'jianhei'].includes(glazeKey)) {
-        const crackle = getCrackleTextureBundle();
-        // 单色厚釉以温润玉质与微观开片折射为美，依靠立体 Bump 凹凸呈现开片，杜绝表面黑线贴图！
-        matOptions.bumpMap = crackle.bumpMap;
-        matOptions.bumpScale = (glazeKey === 'geyao') ? 0.024 : 0.012;
+        const crackle = getCrackleTextureBundle(glazeKey);
+        if (crackle) {
+            if (crackle.colorMap && ['tianqing', 'geyao', 'fenqing', 'yuebai'].includes(glazeKey)) {
+                matOptions.map = crackle.colorMap;
+            }
+            matOptions.bumpMap = crackle.bumpMap;
+            matOptions.bumpScale = (glazeKey === 'geyao') ? 0.022 : 0.013;
+        }
+    }
+    if (gHelper && !matOptions.normalMap && opt.orangePeelStrength) {
+        matOptions.normalMap = gHelper.getOrangePeelNormalMap();
+        const s = opt.orangePeelStrength;
+        matOptions.normalScale = new THREE.Vector2(s, s);
     }
 
-    return new THREE.MeshPhysicalMaterial(matOptions);
+    const mat = new THREE.MeshPhysicalMaterial(matOptions);
+    if (gHelper) gHelper.enhancePorcelainMaterial(mat, opt, { minY: 0, height: 2.15 });
+    return mat;
 }
 
 /**
@@ -1103,34 +1127,61 @@ function buildGeometry(typeIndex, customGlaze = null) {
                     }
 
                     if (child.material) {
-                        // 优先保护并使用 GLB 内嵌的考古真彩烘焙贴图与高岭土参数
+                        // 优先保护并使用 GLB 内嵌的真彩烘焙贴图，同时叠加物理釉层着色器增强（积釉、紫口铁足、虹彩、橘皮）
                         if (!customGlaze && (child.material.map || child.material.name.includes('M_') || child.material.name.includes('True') || child.material.name.includes('Master') || child.material.name.includes('Ultra') || child.material.name.includes('Porcelain') || child.material.name.includes('GuanYao') || child.material.name.includes('RuYao') || child.material.name.includes('JunYao') || child.material.name.includes('Xuande') || child.material.name.includes('Qianlong') || child.material.name.includes('QingHua') || child.material.name.includes('JianYao') || child.material.name.includes('Longquan'))) {
+                            const gHelper = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze;
+                            const mInfo = porcelainModelsData[typeIndex] || {};
+                            const gCfg = glazePalettes[mInfo.defaultGlaze || 'tianqing'] || {};
+                            const opt = gCfg.optics || {};
+                            const matName = (child.material.name || '').toLowerCase();
+                            const isMetalPart = matName.includes('gold') || matName.includes('metal') || matName.includes('qianlong');
+
                             child.material.envMap = envMapTexture;
-                            child.material.envMapIntensity = 1.15;
+                            child.material.envMapIntensity = 0.92;
                             if (child.material.roughnessMap) {
-                                child.material.roughness = 1.0;
+                                child.material.roughness = 0.95;
                             } else {
-                                child.material.roughness = 0.14;
+                                child.material.roughness = typeof gCfg.roughness === 'number' ? gCfg.roughness : 0.16;
                             }
                             if (child.material.normalMap) {
-                                child.material.normalScale.set(1.0, 1.0);
+                                child.material.normalScale.set(0.95, 0.95);
+                            } else if (gHelper && !isMetalPart && opt.orangePeelStrength) {
+                                child.material.normalMap = gHelper.getOrangePeelNormalMap();
+                                child.material.normalScale = new THREE.Vector2(opt.orangePeelStrength, opt.orangePeelStrength);
                             }
-                            const matName = (child.material.name || '').toLowerCase();
-                            if (!matName.includes('gold') && !matName.includes('metal') && !matName.includes('qianlong')) {
-                                child.material.metalness = 0.00;
+                            if (!isMetalPart) {
+                                child.material.metalness = 0.0;
                             }
-                            child.material.clearcoat = 1.0;
-                            child.material.clearcoatRoughness = 0.03;
+                            child.material.clearcoat = isMetalPart ? 0.5 : (typeof gCfg.clearcoat === 'number' ? gCfg.clearcoat : 0.94);
+                            child.material.clearcoatRoughness = typeof gCfg.clearcoatRoughness === 'number' ? gCfg.clearcoatRoughness : 0.08;
                             child.material.clippingPlanes = activePlanes;
                             child.material.clipShadows = true;
                             child.material.side = THREE.DoubleSide;
+                            if (gHelper && !isMetalPart && child.geometry) {
+                                if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+                                const bb = child.geometry.boundingBox;
+                                gHelper.enhancePorcelainMaterial(child.material, opt, {
+                                    minY: bb ? bb.min.y : 0,
+                                    height: bb ? Math.max(0.05, bb.max.y - bb.min.y) : 0.23
+                                });
+                            }
                             child.material.needsUpdate = true;
                         } else {
-                            // 仅在用户手动切换釉色实验时，才套用动态纯色釉
+                            // 用户手动切换釉色实验时，按当前器物本地坐标范围注入积釉与紫口铁足
                             const mat = getGlazeMat().clone();
+                            const gHelper = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze;
+                            const opt = (glazePalettes[gKey] && glazePalettes[gKey].optics) || {};
                             mat.side = THREE.DoubleSide;
                             mat.clippingPlanes = activePlanes;
                             mat.clipShadows = true;
+                            if (gHelper && child.geometry) {
+                                if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+                                const bb = child.geometry.boundingBox;
+                                gHelper.enhancePorcelainMaterial(mat, opt, {
+                                    minY: bb ? bb.min.y : 0,
+                                    height: bb ? Math.max(0.05, bb.max.y - bb.min.y) : 0.23
+                                });
+                            }
                             child.material = mat;
                         }
                     }
@@ -1404,6 +1455,20 @@ function createInspectorStage() {
     scene.add(pedestalGroup);
     createRealistic3DEnvironment();
 
+    // 柔和地面接触阴影，让器物扎实落在几案/展台上
+    contactShadowMesh = new THREE.Mesh(
+        new THREE.CircleGeometry(0.68, 48),
+        new THREE.ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+            fragmentShader: 'varying vec2 vUv; void main(){ float d = distance(vUv, vec2(0.5)) * 2.0; float a = smoothstep(1.0, 0.12, d) * 0.52; gl_FragColor = vec4(0.02, 0.03, 0.04, a); }'
+        })
+    );
+    contactShadowMesh.rotation.x = -Math.PI / 2;
+    contactShadowMesh.position.set(0, TABLE_SURFACE_Y + 0.002, 0);
+    scene.add(contactShadowMesh);
+
     const pCount = 120;
     const positions = new Float32Array(pCount * 3);
     for (let i = 0; i < pCount; i++) {
@@ -1431,43 +1496,68 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
     currentRoomEnv = envKey;
     if (!scene || !realisticRoomGroup) return;
     const lightLabel = document.getElementById('light-preset-name');
+    const envCfg = (gallerySceneConfig && gallerySceneConfig.environments && gallerySceneConfig.environments[envKey]) || null;
+    const isDarkTheme = document.documentElement.getAttribute('data-theme') === 'dark';
 
-    // 核心场景独立隔离：只有【宋代雅室】显示紫檀束腰几案与博山炉，殿堂与御窑切换专属展台，氛围截然不同！
+    // 核心场景独立隔离：只有【宋代雅室】显示紫檀束腰几案与博山炉，殿堂与御窑切换专属展台
     if (roomStudioGroup) roomStudioGroup.visible = (envKey === 'studio');
     if (roomPalaceGroup) roomPalaceGroup.visible = (envKey === 'palace');
     if (roomKilnGroup) roomKilnGroup.visible = (envKey === 'kiln');
 
+    if (envCfg) {
+        if (renderer && envCfg.exposure) {
+            renderer.toneMappingExposure = isDarkTheme ? envCfg.exposure.dark : envCfg.exposure.light;
+        }
+        if (ambientLight && envCfg.ambient) {
+            ambientLight.color.set(envCfg.ambient.color);
+            ambientLight.intensity = envCfg.ambient.intensity;
+        }
+        if (lightMain && envCfg.key) {
+            lightMain.color.set(envCfg.key.color);
+            lightMain.intensity = envCfg.key.intensity;
+            if (Array.isArray(envCfg.key.position)) lightMain.position.set(...envCfg.key.position);
+        }
+        if (lightFill && envCfg.fill) {
+            lightFill.color.set(envCfg.fill.color);
+            lightFill.intensity = envCfg.fill.intensity;
+            if (Array.isArray(envCfg.fill.position)) lightFill.position.set(...envCfg.fill.position);
+        }
+        if (lightRim && envCfg.rim) {
+            lightRim.color.set(envCfg.rim.color);
+            lightRim.intensity = envCfg.rim.intensity;
+            if (Array.isArray(envCfg.rim.position)) lightRim.position.set(...envCfg.rim.position);
+        }
+        if (topSpotLight) {
+            topSpotLight.intensity = envKey === 'palace' ? 0.62 : 0.38;
+        }
+        if (lightLabel && envCfg.label) {
+            lightLabel.textContent = envCfg.label.zh || envKey;
+        }
+    }
+
     if (envKey === 'studio') {
-        scene.background = new THREE.Color(0xF5F2E9);
-        if (scene.fog) scene.fog.color.setHex(0x0b1116);
+        scene.background = new THREE.Color(0x1b272d);
+        if (scene.fog) scene.fog.color.setHex(0x162026);
         if (roomFloorMesh) {
             roomFloorMesh.material.color.setHex(0x182126);
             roomFloorMesh.material.roughness = 0.82;
             roomFloorMesh.material.metalness = 0.08;
             roomFloorMesh.material.needsUpdate = true;
         }
-        if (lightMain) { lightMain.color.setHex(0xfff5e6); lightMain.intensity = 1.85; }
-        if (lightFill) { lightFill.color.setHex(0x88b8c6); lightFill.intensity = 0.95; }
-        if (lightRim) { lightRim.color.setHex(0xffe4b8); lightRim.intensity = 0.95; }
-        if (lightLabel) lightLabel.textContent = '宋代雨后雅室';
         if (showNotice && typeof showToast === 'function') {
-            showToast('🌿 已切换至【宋代文人雨后雅室】！紫檀几案与博山青烟衬托天青玉光');
+            showToast('已切换至【宋代雅室】展陈灯光');
         }
     } else if (envKey === 'palace') {
         scene.background = new THREE.Color(0x070b10);
         if (scene.fog) scene.fog.color.setHex(0x070b10);
         if (roomFloorMesh) {
             roomFloorMesh.material.color.setHex(0x090c10);
-            roomFloorMesh.material.roughness = 0.16; // 镜面高反光黑色金砖地面
+            roomFloorMesh.material.roughness = 0.16;
             roomFloorMesh.material.metalness = 0.22;
             roomFloorMesh.material.needsUpdate = true;
         }
-        if (lightMain) { lightMain.color.setHex(0xf4f9ff); lightMain.intensity = 2.15; }
-        if (lightFill) { lightFill.color.setHex(0x9dc6dc); lightFill.intensity = 1.05; }
-        if (lightRim) { lightRim.color.setHex(0xe8f4ff); lightRim.intensity = 1.15; }
-        if (lightLabel) lightLabel.textContent = '国家文博殿堂';
         if (showNotice && typeof showToast === 'function') {
-            showToast('🏛️ 已切换至【国家文博特展殿堂】！镜面金砖地面与高显色聚光灯束');
+            showToast('已切换至【文博殿堂】特展聚光灯');
         }
     } else if (envKey === 'kiln') {
         scene.background = new THREE.Color(0x140704);
@@ -1478,12 +1568,8 @@ function switchRealisticSceneEnv(envKey, showNotice = true) {
             roomFloorMesh.material.metalness = 0.04;
             roomFloorMesh.material.needsUpdate = true;
         }
-        if (lightMain) { lightMain.color.setHex(0xff6b2b); lightMain.intensity = 2.35; }
-        if (lightFill) { lightFill.color.setHex(0xc43816); lightFill.intensity = 1.05; }
-        if (lightRim) { lightRim.color.setHex(0xffa834); lightRim.intensity = 1.25; }
-        if (lightLabel) lightLabel.textContent = '御窑秘境窑火';
         if (showNotice && typeof showToast === 'function') {
-            showToast('🔥 已进入【御窑秘境窑火幽室】！1300℃龙窑火曜映照胎釉');
+            showToast('已切换至【御窑幽室】柴窑暖光');
         }
     }
 
@@ -1631,10 +1717,11 @@ function initThreeJS() {
             preserveDrawingBuffer: true, // 支持一键导出馆藏高清3D快照
             powerPreference: 'high-performance'
         });
+        const isLowDevice = window.innerWidth < 768 || (navigator.hardwareConcurrency || 4) <= 2;
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowDevice ? 1.25 : 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.08;
+        renderer.toneMappingExposure = 0.98;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.localClippingEnabled = false;
@@ -1699,7 +1786,7 @@ function initThreeJS() {
                 banner.className = 'webgl-lost-banner';
                 banner.setAttribute('role', 'status');
                 banner.innerHTML = '<span>WebGL 三维图形上下文已暂停，正在等待恢复…</span>' +
-                    '<button type="button" onclick="location.reload()">重新加载展台</button>';
+                    '<button type="button" data-action="reloadPage()">重新加载展台</button>';
                 stage.appendChild(banner);
             }
         });
@@ -1853,15 +1940,15 @@ function renderComparisonPanelDOM() {
                     <span class="text-amber-400 truncate font-medium max-w-[130px] sm:max-w-[200px]" title="${rightModel.name}">右: ${rightModel.name.split('·')[1] || rightModel.name}</span>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <button onclick="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
+                    <button data-action="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
                         <i class="fa-solid fa-right-left text-amber-400"></i>
                         <span class="hidden sm:inline">互换</span>
                     </button>
-                    <button onclick="toggleComparisonDockCollapse(false)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-amber-400/50 text-[11px] font-serif-cn text-amber-300 hover:border-amber-400 transition-colors flex items-center gap-1" title="展开学术档案与器物参数">
+                    <button data-action="toggleComparisonDockCollapse(false)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-amber-400/50 text-[11px] font-serif-cn text-amber-300 hover:border-amber-400 transition-colors flex items-center gap-1" title="展开学术档案与器物参数">
                         <i class="fa-solid fa-chevron-up text-amber-400"></i>
                         <span>展开参数</span>
                     </button>
-                    <button onclick="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors" title="退出对比，返回单器精鉴台">
+                    <button data-action="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors" title="退出对比，返回单器精鉴台">
                         返回单器
                     </button>
                 </div>
@@ -1875,15 +1962,15 @@ function renderComparisonPanelDOM() {
                     <span class="text-text-title font-semibold truncate">双器并列文博学术同台鉴赏</span>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <button onclick="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
+                    <button data-action="swapComparisonVessels()" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1 text-text-title" title="互换左右对比器物">
                         <i class="fa-solid fa-right-left text-amber-400"></i>
                         <span class="hidden sm:inline">互换左右</span>
                     </button>
-                    <button onclick="toggleComparisonDockCollapse(true)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-amber-400 transition-colors flex items-center gap-1 text-text-title" title="收起面板，获得无遮挡全景视野">
+                    <button data-action="toggleComparisonDockCollapse(true)" class="px-2.5 py-1 rounded-full bg-yuebai/90 dark:bg-black/60 border border-border-light text-[11px] font-serif-cn hover:border-amber-400 transition-colors flex items-center gap-1 text-text-title" title="收起面板，获得无遮挡全景视野">
                         <i class="fa-solid fa-chevron-down text-amber-400"></i>
                         <span>收起面板避让</span>
                     </button>
-                    <button onclick="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
+                    <button data-action="switchExhibitionMode('inspector')" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
                         返回单器精鉴
                     </button>
                 </div>
@@ -1897,13 +1984,13 @@ function renderComparisonPanelDOM() {
                             <span class="w-2 h-2 rounded-full bg-tianqing shrink-0"></span>
                             <span class="text-[11px] text-tianqing font-semibold">左展位器物</span>
                         </div>
-                        <button onclick="strikeComparisonVesselSound('left')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听左器声学泛音">
+                        <button data-action="strikeComparisonVesselSound('left')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听左器声学泛音">
                             <i class="fa-solid fa-bell text-amber-400"></i>
                             <span>叩瓷 ${leftData.soundFrequency || 2420}Hz</span>
                         </button>
                     </div>
                     <div>
-                        <select onchange="loadPorcelainModel(parseInt(this.value, 10)); loadComparisonVessels();" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
+                        <select data-action-change="loadPorcelainModel($number); loadComparisonVessels()" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
                             ${porcelainModelsData.map((m, i) => `<option value="${i}" ${i === currentModelIndex ? 'selected' : ''}>${m.name}</option>`).join('')}
                         </select>
                     </div>
@@ -1922,13 +2009,13 @@ function renderComparisonPanelDOM() {
                             <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
                             <span class="text-[11px] text-amber-400 font-semibold">右展位器物</span>
                         </div>
-                        <button onclick="strikeComparisonVesselSound('right')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听右器声学泛音">
+                        <button data-action="strikeComparisonVesselSound('right')" class="px-2 py-0.5 rounded bg-yuebai/90 dark:bg-black/50 hover:bg-tianqing hover:text-white text-[10px] transition-colors border border-border-light flex items-center gap-1 shrink-0 text-text-title" title="叩击听右器声学泛音">
                             <i class="fa-solid fa-bell text-amber-400"></i>
                             <span>叩瓷 ${rightData.soundFrequency || 2580}Hz</span>
                         </button>
                     </div>
                     <div>
-                        <select onchange="setCompareRightModel(this.value)" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
+                        <select data-action-change="setCompareRightModel($value)" class="w-full bg-bg-light/95 dark:bg-black/60 font-medium text-text-title text-[11px] outline-none cursor-pointer border border-border-light rounded-lg px-2 py-1 truncate">
                             ${porcelainModelsData.map((m, i) => `<option value="${i}" ${i === compareRightModelIndex ? 'selected' : ''}>${m.name}</option>`).join('')}
                         </select>
                     </div>
@@ -2218,12 +2305,16 @@ function render3DHotspotsDOM() {
         return;
     }
 
-    layer.innerHTML = m.hotspots.map((h, i) => `
-        <button class="vessel-3d-hotspot" id="vessel-hotspot-${i}" onclick="focusHotspot(${i})">
+    const compact = window.innerWidth < 640;
+    layer.innerHTML = m.hotspots.map((h, i) => {
+        const rawLabel = h && h.label ? String(h.label) : `特征点 ${i + 1}`;
+        const shortLabel = compact ? rawLabel.split(/[·：:]/)[0].trim() : rawLabel;
+        return `
+        <button class="vessel-3d-hotspot" id="vessel-hotspot-${i}" data-action="focusHotspot(${i})" title="${rawLabel}">
             <span class="pulse-dot"></span>
-            <span>${h.label}</span>
-        </button>
-    `).join('');
+            <span>${shortLabel}</span>
+        </button>`;
+    }).join('');
 }
 
 function focusHotspot(hotspotIdx) {
@@ -2256,6 +2347,9 @@ function updateHotspotsScreenProjection() {
 
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
+    const padX = Math.min(82, Math.max(44, Math.round(w * 0.14)));
+    const padYTop = w < 640 ? 64 : 52;
+    const padYBottom = w < 640 ? 64 : 56;
     const bOffset = (currentGroup.userData && currentGroup.userData.bottomOffset !== undefined)
         ? currentGroup.userData.bottomOffset : 0;
 
@@ -2269,9 +2363,11 @@ function updateHotspotsScreenProjection() {
         const sx = (vec.x * 0.5 + 0.5) * w;
         const sy = (-(vec.y * 0.5) + 0.5) * h;
 
-        if (vec.z < 1.0 && sx > 20 && sx < w - 20 && sy > 40 && sy < h - 40) {
-            el.style.left = `${sx}px`;
-            el.style.top = `${sy}px`;
+        if (vec.z < 1.0 && sx > 6 && sx < w - 6 && sy > 10 && sy < h - 10) {
+            const cx = Math.max(padX, Math.min(w - padX, sx));
+            const cy = Math.max(padYTop, Math.min(h - padYBottom, sy));
+            el.style.left = `${cx.toFixed(1)}px`;
+            el.style.top = `${cy.toFixed(1)}px`;
             el.style.opacity = '1';
         } else {
             el.style.opacity = '0';
@@ -2427,7 +2523,7 @@ function toggleBottomView(forceState) {
                         <i class="fa-solid fa-shoe-prints text-amber-400 text-xs"></i>
                         <h4 class="font-serif-cn text-xs font-semibold text-text-title">${data.name} · 底足与款识精鉴</h4>
                     </div>
-                    <button onclick="toggleBottomView(false)" class="text-text-muted hover:text-text-title text-xs p-1">
+                    <button data-action="toggleBottomView(false)" class="text-text-muted hover:text-text-title text-xs p-1">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -2438,7 +2534,7 @@ function toggleBottomView(forceState) {
                     <p><strong class="text-amber-400 font-medium">【款识铭记】</strong>${data.reignMark}</p>
                     <p class="pt-1 text-tianqing-deep border-t border-border-light/60"><strong class="font-medium">【鉴赏要诀】</strong>${data.tips}</p>
                 </div>
-                <button onclick="toggleBottomView(false)" class="mt-2 w-full py-1 text-center text-[10px] rounded bg-yuebai hover:bg-tianqing hover:text-white transition-colors font-serif-cn border border-border-light">
+                <button data-action="toggleBottomView(false)" class="mt-2 w-full py-1 text-center text-[10px] rounded bg-yuebai hover:bg-tianqing hover:text-white transition-colors font-serif-cn border border-border-light">
                     ↩️ 复位正视器身
                 </button>
             `;
@@ -2747,7 +2843,7 @@ function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
                             《${title}》${subtitleText}
                         </span>
                     </div>
-                    <button onclick="stopCuratorAudio()" class="text-xs text-text-muted hover:text-amber-500 shrink-0 font-serif-cn">
+                    <button data-action="stopCuratorAudio()" class="text-xs text-text-muted hover:text-amber-500 shrink-0 font-serif-cn">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -3162,7 +3258,7 @@ function updateModelInfoCard(index) {
     const scannedBadge = m.group === 'reference' ? `
         <div class="p-2.5 rounded-xl bg-amber-900/20 border border-amber-500/30 flex items-center justify-between text-xs">
             <span class="text-amber-200 font-serif-cn"><i class="fa-solid fa-circle-info mr-1.5"></i>第三方 CC0 模型 · 现代器物对照标本</span>
-            <button onclick="restoreScannedTexture()" class="px-2.5 py-1 rounded-full bg-amber-700 text-white text-[11px] hover:bg-tianqing transition-colors">
+            <button data-action="restoreScannedTexture()" class="px-2.5 py-1 rounded-full bg-amber-700 text-white text-[11px] hover:bg-tianqing transition-colors">
                 恢复模型原贴图
             </button>
         </div>
@@ -3176,17 +3272,17 @@ function updateModelInfoCard(index) {
             </div>
 
             <div>
-                <h3 class="text-xl font-serif-cn text-text-title font-semibold leading-snug">${m.name}</h3>
-                <p class="text-[11px] text-text-muted mt-0.5 font-serif-cn">${m.english}</p>
+                <h3 class="text-xl font-serif-cn text-text-title font-semibold leading-snug">${m.name || '未命名器物'}</h3>
+                <p class="text-[11px] text-text-muted mt-0.5 font-serif-cn">${m.english || ''}</p>
                 <div class="flex flex-wrap items-center gap-3 mt-2 text-[11px] font-mono text-amber-400">
-                    <span><i class="fa-solid fa-ruler-combined mr-1"></i>${m.dimensions}</span>
-                    <span><i class="fa-solid fa-layer-group mr-1"></i>${m.wallThickness}</span>
+                    <span><i class="fa-solid fa-ruler-combined mr-1"></i>${m.dimensions || '尺寸待考'}</span>
+                    <span><i class="fa-solid fa-layer-group mr-1"></i>${m.wallThickness || '胎壁参考待补'}</span>
                 </div>
             </div>
 
             ${scannedBadge}
 
-            <p class="text-xs sm:text-sm text-text-body leading-relaxed font-light">${m.desc}</p>
+            <p class="text-xs sm:text-sm text-text-body leading-relaxed font-light">${m.desc || ''}</p>
 
             <!-- 器物叩击声学共振示波器与多媒体导览条 -->
             <div class="p-3 rounded-xl bg-bg-main border border-border-light space-y-2">
@@ -3196,13 +3292,13 @@ function updateModelInfoCard(index) {
                         <span>叩瓷听音 · 声学共振谱 (${m.acousticFreq || 2420} Hz)</span>
                     </span>
                     <div class="flex items-center gap-1.5">
-                        <button onclick="strike3DVesselSound()" class="px-2.5 py-1 rounded-lg bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
+                        <button data-action="strike3DVesselSound()" class="px-2.5 py-1 rounded-lg bg-tianqing-deep text-white text-[11px] font-serif-cn hover:bg-tianqing transition-colors">
                             <i class="fa-solid fa-bell mr-1"></i>叩击听音
                         </button>
-                        <button id="btn-speak-vessel" onclick="speakVesselCommentary()" class="px-2.5 py-1 rounded-lg bg-yuebai text-text-title border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors">
+                        <button id="btn-speak-vessel" data-action="speakVesselCommentary()" class="px-2.5 py-1 rounded-lg bg-yuebai text-text-title border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors">
                             <i class="fa-solid fa-volume-high text-amber-400 mr-1"></i>语音解说
                         </button>
-                        <button onclick="capture3DSnapshot()" class="px-2.5 py-1 rounded-lg bg-yuebai text-text-title border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors" title="导出带印章水印的3D典藏快照">
+                        <button data-action="capture3DSnapshot()" class="px-2.5 py-1 rounded-lg bg-yuebai text-text-title border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-colors" title="导出带印章水印的3D典藏快照">
                             <i class="fa-solid fa-camera text-tianqing-deep"></i>
                         </button>
                     </div>
@@ -3213,7 +3309,7 @@ function updateModelInfoCard(index) {
             <div class="border-t border-border-light pt-3">
                 <h4 class="text-xs text-text-title font-medium mb-2 tracking-wider flex items-center justify-between">
                     <span>【三维器物学与物理鉴藏要领】</span>
-                    <button onclick="openMicroscopeView()" class="text-tianqing-deep hover:underline text-[11px] font-normal flex items-center gap-1">
+                    <button data-action="openMicroscopeView()" class="text-tianqing-deep hover:underline text-[11px] font-normal flex items-center gap-1">
                         <i class="fa-solid fa-microscope"></i>
                         <span>100x晶相观察</span>
                     </button>
@@ -3229,11 +3325,11 @@ function updateModelInfoCard(index) {
             </div>
 
             <div class="pt-1 flex items-center justify-between gap-2 text-xs">
-                <button onclick="switchExhibitionMode(exhibitionMode === 'cutaway' ? 'inspector' : 'cutaway')" class="flex-1 py-2.5 px-3 rounded-xl bg-yuebai hover:bg-tianqing hover:text-white text-text-title font-serif-cn transition-colors flex items-center justify-center gap-1.5 border border-border-light">
+                <button data-action="switchExhibitionMode('${exhibitionMode === 'cutaway' ? 'inspector' : 'cutaway'}')" class="flex-1 py-2.5 px-3 rounded-xl bg-yuebai hover:bg-tianqing hover:text-white text-text-title font-serif-cn transition-colors flex items-center justify-center gap-1.5 border border-border-light">
                     <i class="fa-solid fa-layer-group text-tianqing-deep"></i>
                     <span>${exhibitionMode === 'cutaway' ? '退出X光剖面' : 'X光胎壁剖面'}</span>
                 </button>
-                <button onclick="switchExhibitionMode(exhibitionMode === 'hall' ? 'inspector' : 'hall')" class="flex-1 py-2.5 px-3 rounded-xl bg-tianqing-deep text-white hover:bg-tianqing font-serif-cn transition-colors flex items-center justify-center gap-1.5">
+                <button data-action="switchExhibitionMode('${exhibitionMode === 'hall' ? 'inspector' : 'hall'}')" class="flex-1 py-2.5 px-3 rounded-xl bg-tianqing-deep text-white hover:bg-tianqing font-serif-cn transition-colors flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-building-columns text-amber-200"></i>
                     <span>${exhibitionMode === 'hall' ? '返回单器精鉴' : '步入全景展厅'}</span>
                 </button>
@@ -3262,7 +3358,7 @@ function updateModelInfoCard(index) {
 
 function highlightActiveModelBtn(index) {
     document.querySelectorAll('.model-btn').forEach((btn, i) => {
-        const m = /loadPorcelainModel\((\d+)/.exec(btn.getAttribute('onclick') || '');
+        const m = /loadPorcelainModel\((\d+)/.exec(btn.getAttribute('data-action') || '');
         const btnIdx = m ? parseInt(m[1], 10) : i;
         if (btnIdx === index) {
             btn.classList.add('bg-tianqing-deep', 'text-white', 'ring-2');

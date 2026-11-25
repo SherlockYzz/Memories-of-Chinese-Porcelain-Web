@@ -1,0 +1,59 @@
+<!-- ==================== 序 · 首屏 ====================
+     文案来自 content/site.json（构建时写入，切换语言时由 i18n 按 data-content 替换）。
+     右侧展台由 hero-vessel 模块接管：实时 3D（官窑八方贯耳瓶）+ 开片微距；低配设备显示预览图。 -->
+<section id="hero" class="hero" aria-labelledby="hero-title">
+    <div class="hero__grid page-container">
+        <div class="hero__copy reading-veil">
+            <p class="hero__eyebrow">{{content:site.hero.eyebrow}}</p>
+            <h1 id="hero-title" class="hero__title" data-content="site:hero.title">{{content:site.hero.title.zh}}</h1>
+            <p class="hero__storyline" data-content="site:storyline">{{content:site.storyline.zh}}</p>
+            <p class="hero__lead" data-content="site:hero.lead">{{content:site.hero.lead.zh}}</p>
+
+            <div class="hero__actions">
+                <a href="#3d-gallery" class="btn btn--primary">
+                    <i class="fa-solid fa-cube" aria-hidden="true"></i><span data-i18n="hero.cta.gallery">进入三维展馆</span>
+                </a>
+                <button type="button" class="btn btn--ghost" data-action="startGuidedTour">
+                    <i class="fa-solid fa-route" aria-hidden="true"></i><span data-i18n="hero.cta.tour">3 分钟导览</span>
+                </button>
+            </div>
+
+            <dl class="hero__stats" data-hero-stats></dl>
+
+            <p class="hero__honesty">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <span data-content="site:honesty">{{content:site.honesty.zh}}</span>
+                <a href="#credits" data-i18n="hero.credits">查看素材与致谢</a>
+            </p>
+        </div>
+
+        <figure class="hero__stage" data-hero-stage data-state="idle">
+            <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+            <img class="hero__poster" data-hero-poster src="images/collection/SongGuanYao_Ultra_Preview.webp" width="640" height="640"
+                 alt="南宋官窑八方贯耳弦纹瓶的建模复原预览图" fetchpriority="high" decoding="async">
+
+            <div class="hero__macro" data-hero-macro aria-hidden="true">
+                <span class="hero__macro-label" data-i18n="hero.macro">开片微距</span>
+            </div>
+
+            <div class="hero__loader" data-hero-loader role="status" aria-live="polite">
+                <span class="hero__loader-ring" aria-hidden="true"></span>
+                <span data-hero-loader-text>正在载入器物模型…</span>
+            </div>
+
+            <button type="button" class="hero__enable3d" data-action="enableHero3D" data-hero-enable hidden>
+                <i class="fa-solid fa-cube" aria-hidden="true"></i><span data-i18n="hero.enable3d">加载实时 3D</span>
+            </button>
+
+            <figcaption class="hero__caption">
+                <span class="source-badge source-badge--project"><i class="fa-solid fa-cube" aria-hidden="true"></i><span data-i18n="hero.badge">建模复原 · 非实物扫描</span></span>
+                <span data-content="site:hero.featuredCaption">{{content:site.hero.featuredCaption.zh}}</span>
+            </figcaption>
+        </figure>
+    </div>
+
+    <a href="#3d-gallery" class="hero__scroll-hint" aria-label="向下浏览">
+        <span data-i18n="hero.scroll">向下 · 第一幕 识器</span>
+        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    </a>
+</section>

@@ -30,11 +30,11 @@
                     <div class="p-4 rounded-xl bg-bg-main border border-border-light flex flex-col gap-2">
                         <div class="flex items-center justify-between">
                             <span class="badge bg-tianqing-deep text-white text-[11px]">${tr('对照标本 A')}</span>
-                            <button onclick="loadComparisonModelTo3D(${itemA.id})" class="text-xs text-tianqing-deep hover:underline flex items-center gap-1 font-medium">
+                            <button data-action="loadComparisonModelTo3D(${itemA.id})" class="text-xs text-tianqing-deep hover:underline flex items-center gap-1 font-medium">
                                 <i class="fa-solid fa-cube" aria-hidden="true"></i>${tr('调入 3D 展台')}
                             </button>
                         </div>
-                        <select id="compare-specimen-a" name="compare-specimen-a" onchange="switchComparisonSpecimen('A', this.value)" aria-label="${tr('选择对照标本 A')}" class="w-full bg-yuebai border border-border-light rounded-lg px-3 py-2 text-xs font-serif-cn text-text-title outline-none">
+                        <select id="compare-specimen-a" name="compare-specimen-a" data-action-change="switchComparisonSpecimen('A', $value)" aria-label="${tr('选择对照标本 A')}" class="w-full bg-yuebai border border-border-light rounded-lg px-3 py-2 text-xs font-serif-cn text-text-title outline-none">
                             ${generateOptions(itemA.id)}
                         </select>
                     </div>
@@ -42,11 +42,11 @@
                     <div class="p-4 rounded-xl bg-bg-main border border-border-light flex flex-col gap-2">
                         <div class="flex items-center justify-between">
                             <span class="badge bg-amber-700 text-white text-[11px]">${tr('对照标本 B')}</span>
-                            <button onclick="loadComparisonModelTo3D(${itemB.id})" class="text-xs text-amber-400 hover:underline flex items-center gap-1 font-medium">
+                            <button data-action="loadComparisonModelTo3D(${itemB.id})" class="text-xs text-amber-400 hover:underline flex items-center gap-1 font-medium">
                                 <i class="fa-solid fa-cube" aria-hidden="true"></i>${tr('调入 3D 展台')}
                             </button>
                         </div>
-                        <select id="compare-specimen-b" name="compare-specimen-b" onchange="switchComparisonSpecimen('B', this.value)" aria-label="${tr('选择对照标本 B')}" class="w-full bg-yuebai border border-border-light rounded-lg px-3 py-2 text-xs font-serif-cn text-text-title outline-none">
+                        <select id="compare-specimen-b" name="compare-specimen-b" data-action-change="switchComparisonSpecimen('B', $value)" aria-label="${tr('选择对照标本 B')}" class="w-full bg-yuebai border border-border-light rounded-lg px-3 py-2 text-xs font-serif-cn text-text-title outline-none">
                             ${generateOptions(itemB.id)}
                         </select>
                     </div>

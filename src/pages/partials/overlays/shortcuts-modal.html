@@ -1,0 +1,46 @@
+<!-- ==================== 全局键盘快捷键帮助模态框 ==================== -->
+<div id="shortcuts-help-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="shortcuts-modal-title" data-action-self="closeShortcutsHelpModal()">
+    <div class="modal-content-lg max-w-xl text-left">
+        <div class="flex items-center justify-between pb-3 border-b border-border-light mb-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-keyboard text-tianqing-deep text-lg" aria-hidden="true"></i>
+                <h3 id="shortcuts-modal-title" class="font-serif-cn text-base sm:text-lg font-medium text-text-title">全站交互快捷键（精简 6 键）</h3>
+            </div>
+            <button data-action="closeShortcutsHelpModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭快捷键帮助">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-serif-cn mb-4">
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>全库器物 / 窑口检索</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Ctrl + K</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>关闭当前弹窗 / 面板</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">Esc</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>切换浅色 / 深色主题</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">T 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>切换中 / EN 语言</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">L 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>跳至三维数字研鉴展馆</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">G 键</kbd>
+            </div>
+            <div class="p-2.5 rounded-xl bg-bg-main border border-border-light flex items-center justify-between">
+                <span>打开 / 关闭本帮助面板</span>
+                <kbd class="px-2 py-0.5 rounded bg-yuebai border border-border-light font-mono font-medium">? 键</kbd>
+            </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-yuebai/50 border border-border-light text-[11px] text-text-body space-y-1">
+            <p><strong>3D 展台手势与按钮说明：</strong></p>
+            <p class="text-text-muted">左键拖动旋转器物、滚轮缩放、底部工具栏一键开启 100x 显微观察、X 光剖切、底足翻转、强光透光照胎与桌面实尺 AR 预览；在表单输入框中输入时所有快捷键自动禁用。</p>
+        </div>
+    </div>
+</div>

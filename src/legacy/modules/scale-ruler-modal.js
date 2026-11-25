@@ -56,7 +56,7 @@
                         <i class="fa-solid fa-ruler-vertical text-tianqing-deep" aria-hidden="true"></i>
                         <span id="scale-ruler-heading"></span>
                     </h3>
-                    <button type="button" onclick="closeScaleRulerModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="Close scale ruler">
+                    <button type="button" data-action="closeScaleRulerModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="Close scale ruler">
                         <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -174,7 +174,7 @@
                 <div class="flex flex-wrap items-center gap-1.5">
                     <span class="text-text-muted">${en ? 'Reference:' : '日常参照：'}</span>
                     ${REFERENCES.map(r => `
-                        <button type="button" onclick="setScaleReference('${r.id}')" class="px-2.5 py-1 rounded-full border text-[11px] transition-colors ${activeRefId === r.id ? 'bg-tianqing-deep text-white border-tianqing' : 'bg-yuebai text-text-body border-border-light'}">
+                        <button type="button" data-action="setScaleReference('${r.id}')" class="px-2.5 py-1 rounded-full border text-[11px] transition-colors ${activeRefId === r.id ? 'bg-tianqing-deep text-white border-tianqing' : 'bg-yuebai text-text-body border-border-light'}">
                             ${en ? r.en : r.name} (${r.h}cm)
                         </button>
                     `).join('')}
@@ -185,7 +185,7 @@
                 ${SPECIMENS.map(s => {
                     const checked = selectedIdxs.includes(s.idx);
                     return `
-                        <button type="button" onclick="toggleScaleSpecimen(${s.idx})" class="px-2.5 py-1.5 rounded-lg border text-left text-[11px] transition-all flex items-center justify-between gap-1 ${checked ? 'bg-tianqing-deep text-white border-amber-400/60' : 'bg-bg-main text-text-body border-border-light hover:border-tianqing'}">
+                        <button type="button" data-action="toggleScaleSpecimen(${s.idx})" class="px-2.5 py-1.5 rounded-lg border text-left text-[11px] transition-all flex items-center justify-between gap-1 ${checked ? 'bg-tianqing-deep text-white border-amber-400/60' : 'bg-bg-main text-text-body border-border-light hover:border-tianqing'}">
                             <span class="truncate">${en ? s.en : s.name}</span>
                             <span class="font-mono text-[10px] opacity-80 shrink-0">${s.h}cm</span>
                         </button>

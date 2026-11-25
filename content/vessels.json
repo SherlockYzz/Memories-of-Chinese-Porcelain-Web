@@ -88,7 +88,8 @@
       "kind": "ai-tts",
       "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
       "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
-    }
+    },
+    "wallThickness": "薄胎厚釉（参考范围：胎 1.2–1.8 mm · 釉 1.5–2.2 mm）"
   },
   {
     "id": "ru-lotus-bowl",
@@ -165,7 +166,8 @@
       "institution": "台北故宫博物院",
       "status": "named-object",
       "note": "尺寸取自该器公开著录的常见数值，引用前请以馆方数据为准。"
-    }
+    },
+    "wallThickness": "胎质细薄（参考范围：2.5–3.5 mm · 满釉支烧）"
   },
   {
     "id": "ding-meiping",
@@ -247,7 +249,8 @@
       "kind": "ai-tts",
       "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
       "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
-    }
+    },
+    "wallThickness": "胎体轻薄坚致（参考范围：2.5–4.5 mm · 口沿无釉芒口）"
   },
   {
     "id": "ge-flat-vase",
@@ -323,7 +326,8 @@
       "typeRef": "传世哥窑贯耳瓶类器（“金丝铁线”开片）",
       "institution": "",
       "status": "type-reference"
-    }
+    },
+    "wallThickness": "胎骨厚实（参考范围：3.5–5.0 mm · 多层开片厚釉）"
   },
   {
     "id": "jun-chuji-zun",
@@ -406,7 +410,8 @@
       "kind": "ai-tts",
       "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
       "note": "AI 合成语音，录制于早期版本；文字稿可能与当前档案略有出入。"
-    }
+    },
+    "wallThickness": "厚胎乳浊釉（参考范围：4.5–7.0 mm · 蚯蚓走泥纹）"
   },
   {
     "id": "yuan-qinghua-jar",
@@ -482,7 +487,8 @@
       "typeRef": "元代景德镇青花缠枝牡丹纹罐类器",
       "institution": "",
       "status": "type-reference"
-    }
+    },
+    "wallThickness": "二元配方厚胎（参考范围：5.5–9.0 mm · 高岭土瓷骨）"
   },
   {
     "id": "xuande-monk-cap-ewer",
@@ -558,7 +564,8 @@
       "typeRef": "明宣德红釉僧帽壶类器",
       "institution": "",
       "status": "type-reference"
-    }
+    },
+    "wallThickness": "胎骨致密均匀（参考范围：3.2–4.8 mm · 高温铜红釉）"
   },
   {
     "id": "qianlong-revolving-vase",
@@ -634,7 +641,8 @@
       "typeRef": "清乾隆洋彩镂空转心瓶类器",
       "institution": "",
       "status": "type-reference"
-    }
+    },
+    "wallThickness": "内外双层镂空胎壁（参考范围：内胆 2.5 mm · 外套 3.5 mm）"
   },
   {
     "id": "ph-ceramic-vase-01",
@@ -702,7 +710,8 @@
       "typeRef": "无（现代器物对照标本）",
       "institution": "Poly Haven",
       "status": "third-party-asset"
-    }
+    },
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
   },
   {
     "id": "ph-ceramic-vase-02",
@@ -770,7 +779,8 @@
       "typeRef": "无（现代器物对照标本）",
       "institution": "Poly Haven",
       "status": "third-party-asset"
-    }
+    },
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
   },
   {
     "id": "ph-ceramic-vase-03",
@@ -838,7 +848,8 @@
       "typeRef": "无（现代器物对照标本）",
       "institution": "Poly Haven",
       "status": "third-party-asset"
-    }
+    },
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
   },
   {
     "id": "ph-ceramic-vase-04",
@@ -897,7 +908,8 @@
       "typeRef": "无（现代器物对照标本）",
       "institution": "Poly Haven",
       "status": "third-party-asset"
-    }
+    },
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
   },
   {
     "id": "ph-antique-vase-01",
@@ -956,7 +968,8 @@
       "typeRef": "无（现代器物对照标本）",
       "institution": "Poly Haven",
       "status": "third-party-asset"
-    }
+    },
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
   },
   {
     "id": "jian-yaobian-bowl",

@@ -15,6 +15,7 @@ import toast from './toast.js';
 import lazy from './lazy.js';
 import legacy, { installLegacyBridge, installLegacyLazyChunks, diagnostics } from './legacy-bridge.js';
 import { html, raw, esc, setHTML, when, $, $$, prefersReducedMotion } from './dom.js';
+import glaze from './glaze-shader.js';
 
 provide('data', data);
 provide('userData', userData);
@@ -27,7 +28,7 @@ provide('legacy', legacy);
 
 export {
     bus, store, storage, KEYS, registry, defineModule, actions, installActionDelegation,
-    data, userData, i18n, t, tr, modal, toast, lazy, legacy,
+    data, userData, i18n, t, tr, modal, toast, lazy, legacy, glaze,
     installLegacyBridge, installLegacyLazyChunks, diagnostics,
     html, raw, esc, setHTML, when, $, $$, prefersReducedMotion
 };

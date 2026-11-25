@@ -1,0 +1,369 @@
+/**
+ * 模块：首屏器物 (hero-vessel)
+ * 在首屏展台里实时渲染一件器物（content/site.json 的 hero.featuredVesselId），缓慢自转，
+ * 右上角用同一渲染器的第二个视口画“开片微距”。
+ *
+ * 降级：无 WebGL / 低配 / 省流量 / 减少动效时只显示预览图，并提供“加载实时 3D”按钮；
+ * 模型加载失败同样回退到预览图。离开视口、页面隐藏、弹窗打开时暂停渲染。
+ */
+/* global THREE */
+import { defineModule, data, i18n, html, setHTML, prefersReducedMotion, glaze, $ } from '@core';
+
+const pick = (obj) => (obj && (obj[i18n.currentLang()] || obj.zh)) || '';
+
+let stage, canvas, renderer, scene, camera, macroCamera, pivot, envTarget;
+let rafId = 0;
+let running = false;
+let visible = true;
+let pausedByModal = false;
+let dragging = false;
+let lastX = 0;
+let spin = 0;
+let velocity = 0;
+let lastTime = 0;
+let resizeObserver = null;
+let viewObserver = null;
+let vesselHeight = 2.2;
+let vesselRadius = 0.6;
+
+function isLowEnd() {
+    const cores = navigator.hardwareConcurrency || 4;
+    const mem = navigator.deviceMemory || 4;
+    const saveData = !!(navigator.connection && navigator.connection.saveData);
+    return saveData || window.innerWidth < 768 || cores <= 2 || mem <= 2 || (cores <= 4 && mem <= 4);
+}
+
+function webglAvailable() {
+    if (typeof THREE === 'undefined') return false;
+    try {
+        const c = document.createElement('canvas');
+        return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+        return false;
+    }
+}
+
+function setState(state, text) {
+    if (!stage) return;
+    stage.setAttribute('data-state', state);
+    const label = $('[data-hero-loader-text]', stage);
+    if (label && text) label.textContent = text;
+    const enable = $('[data-hero-enable]', stage);
+    if (enable) enable.hidden = state !== 'poster';
+}
+
+function renderStats() {
+    const host = $('[data-hero-stats]');
+    if (!host) return;
+    const stats = data.get('site').hero.stats;
+    setHTML(host, html`${stats.map((s) => html`<div class="hero__stat"><dt>${s.value}</dt><dd>${pick(s.label)}<small>${pick(s.note)}</small></dd></div>`)}`);
+}
+
+/** 用几块发光面板搭一个小“摄影棚”，预过滤成环境贴图，给釉面提供柔和的高光。 */
+function buildEnvironment() {
+    const env = new THREE.Scene();
+    const room = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 20), new THREE.MeshBasicMaterial({ color: 0x141c22, side: THREE.BackSide }));
+    env.add(room);
+    const panel = (w, h, color, x, y, z) => {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
+        m.position.set(x, y, z);
+        m.lookAt(0, 0, 0);
+        env.add(m);
+    };
+    panel(9, 5, 0xfff1d6, 3.5, 5.2, 4.5); // 主柔光箱（暖）
+    panel(3, 8, 0xbfdde6, -7.5, 1.5, 2.5); // 侧条灯（冷）
+    panel(4, 3, 0xffffff, 5.5, 0.5, -6.5); // 轮廓光
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    envTarget = pmrem.fromScene(env, 0.035);
+    pmrem.dispose();
+    env.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) o.material.dispose();
+    });
+    return envTarget.texture;
+}
+
+function upgradeMaterial(mat, mesh, optics = {}) {
+    if (!mat) return mat;
+    let target = mat;
+    if (mat.isMeshStandardMaterial && !mat.isMeshPhysicalMaterial) {
+        const physical = new THREE.MeshPhysicalMaterial();
+        THREE.MeshStandardMaterial.prototype.copy.call(physical, mat);
+        mat.dispose();
+        target = physical;
+    }
+    if (!target.isMeshStandardMaterial) return target;
+    const isClay = /foot|clay/i.test(target.name || '');
+    target.metalness = 0.0;
+    target.clearcoat = isClay ? 0.08 : 0.92;
+    target.clearcoatRoughness = 0.09;
+    target.envMapIntensity = 0.9;
+    if (!isClay && !target.normalMap) {
+        target.normalMap = glaze.getOrangePeelNormalMap();
+        target.normalScale = new THREE.Vector2(0.18, 0.18);
+    }
+    if (!isClay && mesh && mesh.geometry) {
+        if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+        const bb = mesh.geometry.boundingBox;
+        glaze.enhancePorcelainMaterial(target, optics, {
+            minY: bb ? bb.min.y : 0,
+            height: bb ? Math.max(0.05, bb.max.y - bb.min.y) : 0.23
+        });
+    }
+    return target;
+}
+
+function fitVessel(root) {
+    const box = new THREE.Box3().setFromObject(root);
+    const size = box.getSize(new THREE.Vector3());
+    const scale = vesselHeight / Math.max(size.y, 1e-6);
+    root.scale.setScalar(scale);
+    const scaled = new THREE.Box3().setFromObject(root);
+    const center = scaled.getCenter(new THREE.Vector3());
+    root.position.x -= center.x;
+    root.position.z -= center.z;
+    root.position.y -= scaled.min.y;
+    vesselRadius = Math.max(size.x, size.z) * scale * 0.5;
+}
+
+function resize() {
+    if (!renderer || !stage) return;
+    const w = Math.max(1, stage.clientWidth);
+    const h = Math.max(1, stage.clientHeight);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // 竖构图时把镜头拉远一点，保证整件器物入画
+    const dist = camera.aspect < 0.9 ? 6.6 : 5.6;
+    camera.position.set(0, vesselHeight * 0.58, dist);
+    camera.lookAt(0, vesselHeight * 0.5, 0);
+    camera.updateProjectionMatrix();
+    if (!running) renderFrame();
+}
+
+function renderFrame() {
+    if (!renderer) return;
+    const w = stage.clientWidth;
+    const h = stage.clientHeight;
+    renderer.setScissorTest(false);
+    renderer.setViewport(0, 0, w, h);
+    renderer.render(scene, camera);
+
+    // 第二视口：开片微距。位置与大小取自 .hero__macro 元素，CSS 改了这里自动跟随。
+    const macroEl = $('[data-hero-macro]', stage);
+    if (!macroEl) return;
+    const size = macroEl.offsetWidth;
+    if (size < 24) return;
+    const x = macroEl.offsetLeft;
+    const y = h - macroEl.offsetTop - size;
+    renderer.setScissorTest(true);
+    renderer.setScissor(x, y, size, size);
+    renderer.setViewport(x, y, size, size);
+    renderer.render(scene, macroCamera);
+    renderer.setScissorTest(false);
+}
+
+function tick(now) {
+    rafId = 0;
+    if (!running) return;
+    const dt = lastTime ? Math.min(0.05, (now - lastTime) / 1000) : 0.016;
+    lastTime = now;
+    if (!dragging) {
+        velocity += (0.22 - velocity) * Math.min(1, dt * 1.5); // 回到匀速自转
+        spin += velocity * dt;
+    }
+    pivot.rotation.y = spin;
+    renderFrame();
+    rafId = requestAnimationFrame(tick);
+}
+
+function syncLoop() {
+    const should = !!renderer && visible && !pausedByModal && !document.hidden && !prefersReducedMotion() && !document.documentElement.hasAttribute('data-reduce-motion');
+    if (should && !running) {
+        running = true;
+        lastTime = 0;
+        rafId = requestAnimationFrame(tick);
+    } else if (!should && running) {
+        running = false;
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+    }
+    if (!should && renderer) renderFrame();
+}
+
+function start3D(ctx) {
+    if (renderer || !canvas) return;
+    if (!webglAvailable()) {
+        setState('fallback');
+        return;
+    }
+    const vessel = data.byId('vessels', data.get('site').hero.featuredVesselId);
+    if (!vessel || !vessel.model || !THREE.GLTFLoader) {
+        setState('fallback');
+        return;
+    }
+    setState('loading', i18n.tr('正在载入器物模型…'));
+    try {
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd(), powerPreference: 'high-performance' });
+    } catch {
+        renderer = null;
+        setState('fallback');
+        return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowEnd() ? 1.25 : 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.96;
+
+    scene = new THREE.Scene();
+    scene.environment = buildEnvironment();
+    camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+    macroCamera = new THREE.PerspectiveCamera(16, 1, 0.05, 20);
+    pivot = new THREE.Group();
+    scene.add(pivot);
+
+    scene.add(new THREE.HemisphereLight(0xdfeef2, 0x1a1410, 0.55));
+    const key = new THREE.DirectionalLight(0xfff0d8, 1.25);
+    key.position.set(3.2, 5.5, 4.2);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xbfe3ec, 0.7);
+    rim.position.set(-4, 3, -4.5);
+    scene.add(rim);
+
+    // 展台：一片柔和的接触阴影，让器物“坐”在台面上
+    const shadow = new THREE.Mesh(
+        new THREE.CircleGeometry(1.6, 48),
+        new THREE.ShaderMaterial({
+            transparent: true,
+            depthWrite: false,
+            vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+            fragmentShader: 'varying vec2 vUv; void main(){ float d = distance(vUv, vec2(0.5)) * 2.0; float a = smoothstep(1.0, 0.15, d) * 0.55; gl_FragColor = vec4(0.0, 0.0, 0.0, a); }'
+        })
+    );
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = 0.002;
+    scene.add(shadow);
+
+    new THREE.GLTFLoader().load(
+        vessel.model.path,
+        (gltf) => {
+            if (!renderer) return; // 加载途中模块被销毁
+            const root = gltf.scene;
+            const glazeEntry = data.byId('glazes', vessel.defaultGlaze || 'tianqing') || {};
+            const optics = glazeEntry.optics || {};
+            root.traverse((o) => {
+                if (o.isMesh) {
+                    o.material = Array.isArray(o.material)
+                        ? o.material.map((m) => upgradeMaterial(m, o, optics))
+                        : upgradeMaterial(o.material, o, optics);
+                }
+            });
+            fitVessel(root);
+            pivot.add(root);
+            // 微距镜头：对准器腹偏上的釉面，从侧前方近距离取景
+            macroCamera.position.set(vesselRadius * 0.55, vesselHeight * 0.44, vesselRadius + 1.35);
+            macroCamera.lookAt(vesselRadius * 0.2, vesselHeight * 0.42, 0);
+            resize();
+            setState('ready');
+            syncLoop();
+        },
+        (ev) => {
+            if (ev && ev.total) setState('loading', `${i18n.tr('正在载入器物模型…')} ${Math.round((ev.loaded / ev.total) * 100)}%`);
+        },
+        () => {
+            teardown3D();
+            setState('fallback');
+        }
+    );
+
+    resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(stage);
+    viewObserver = new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        syncLoop();
+    }, { threshold: 0.05 });
+    viewObserver.observe(stage);
+
+    // 横向拖动旋转；竖向滑动留给页面滚动（canvas 的 touch-action: pan-y）。
+    ctx.listen(canvas, 'pointerdown', (e) => {
+        dragging = true;
+        lastX = e.clientX;
+        canvas.setPointerCapture(e.pointerId);
+    });
+    ctx.listen(canvas, 'pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - lastX;
+        lastX = e.clientX;
+        spin += dx * 0.009;
+        velocity = dx * 0.5;
+        if (!running) {
+            pivot.rotation.y = spin;
+            renderFrame();
+        }
+    });
+    const end = () => (dragging = false);
+    ctx.listen(canvas, 'pointerup', end);
+    ctx.listen(canvas, 'pointercancel', end);
+}
+
+function teardown3D() {
+    running = false;
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+    if (resizeObserver) resizeObserver.disconnect();
+    if (viewObserver) viewObserver.disconnect();
+    resizeObserver = viewObserver = null;
+    if (scene) {
+        scene.traverse((o) => {
+            if (o.geometry) o.geometry.dispose();
+            const mats = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
+            mats.forEach((m) => {
+                ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'clearcoatNormalMap'].forEach((k) => m[k] && m[k].dispose());
+                m.dispose();
+            });
+        });
+    }
+    if (envTarget) envTarget.dispose();
+    if (renderer) {
+        renderer.dispose();
+        if (renderer.forceContextLoss) renderer.forceContextLoss();
+    }
+    renderer = scene = camera = macroCamera = pivot = envTarget = null;
+}
+
+let moduleCtx = null;
+
+export default defineModule({
+    id: 'hero-vessel',
+    phase: 1,
+    init(ctx) {
+        moduleCtx = ctx;
+        stage = $('[data-hero-stage]');
+        canvas = stage && $('[data-hero-canvas]', stage);
+        renderStats();
+        if (!stage) return;
+        ctx.subscribe('modal:opened', () => {
+            pausedByModal = true;
+            syncLoop();
+        });
+        ctx.subscribe('modal:closed', () => {
+            pausedByModal = false;
+            syncLoop();
+        });
+        ctx.subscribe('a11y:changed', syncLoop);
+        ctx.listen(document, 'visibilitychange', syncLoop);
+
+        if (!webglAvailable()) setState('fallback');
+        else if (isLowEnd() || prefersReducedMotion()) setState('poster'); // 先给图，3D 由用户决定是否加载
+        else start3D(ctx);
+    },
+    destroy() {
+        teardown3D();
+        stage = canvas = moduleCtx = null;
+    },
+    onLangChange: renderStats,
+    actions: {
+        enableHero3D: () => moduleCtx && start3D(moduleCtx)
+    },
+    api: { state: () => (stage ? stage.getAttribute('data-state') : 'none') }
+});

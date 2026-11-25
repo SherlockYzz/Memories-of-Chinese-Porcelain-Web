@@ -54,7 +54,7 @@
                     <h3 class="text-lg sm:text-xl font-serif-cn font-semibold text-text-title">${en ? 'Song Dynasty Dragon Kiln Firing 3D Diorama' : '宋代依山龙窑 · 1300℃ 柴烧还原动态微缩沙盘'}</h3>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" id="kiln-diorama-play-btn" onclick="toggleKilnDioramaPlay()" class="px-4 py-1.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5">
+                    <button type="button" id="kiln-diorama-play-btn" data-action="toggleKilnDioramaPlay()" class="px-4 py-1.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5">
                         <i class="fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}" aria-hidden="true"></i>
                         <span>${en ? (isPlaying ? 'Pause' : 'Play') : (isPlaying ? '暂停动画' : '播放动画')}</span>
                     </button>
@@ -73,11 +73,11 @@
                             <span class="text-text-title font-medium">${en ? 'Firing Timeline' : '烧造热工时间轴'}</span>
                             <span id="kiln-diorama-progress-text" class="font-mono text-amber-400">0%</span>
                         </div>
-                        <input id="kiln-diorama-slider" type="range" min="0" max="100" step="1" value="0" aria-label="${en ? 'Dragon kiln firing timeline' : '龙窑烧造进度时间轴'}" oninput="seekKilnDiorama(this.value)" class="w-full">
+                        <input id="kiln-diorama-slider" type="range" min="0" max="100" step="1" value="0" aria-label="${en ? 'Dragon kiln firing timeline' : '龙窑烧造进度时间轴'}" data-action-input="seekKilnDiorama($value)" class="w-full">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         ${STAGES.map(st => `
-                            <button type="button" onclick="jumpKilnDioramaStage('${st.key}')" class="p-2.5 rounded-xl bg-yuebai/60 border border-border-light hover:border-tianqing text-left transition-all">
+                            <button type="button" data-action="jumpKilnDioramaStage('${st.key}')" class="p-2.5 rounded-xl bg-yuebai/60 border border-border-light hover:border-tianqing text-left transition-all">
                                 <span class="text-[10px] font-mono text-amber-400 block">${st.temp}</span>
                                 <span class="text-xs font-serif-cn text-text-title font-medium">${en ? st.en : st.zh}</span>
                             </button>

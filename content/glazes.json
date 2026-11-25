@@ -2,113 +2,225 @@
   {
     "id": "tianqing",
     "name": "雨过天青",
-    "desc": "汝官窑典型色，玛瑙入釉，温润如羊脂美玉",
+    "desc": "汝官窑典型色，玛瑙入釉，青中带微蓝，温润如羊脂美玉",
     "material": {
-      "color": "#8bb6be",
-      "emissive": "#051316",
-      "roughness": 0.14,
-      "metalness": 0.04,
-      "clearcoat": 1,
-      "clearcoatRoughness": 0.06,
-      "ior": 1.54,
-      "reflectivity": 0.75
+      "color": "#739ca4",
+      "emissive": "#041114",
+      "roughness": 0.17,
+      "metalness": 0.0,
+      "clearcoat": 0.94,
+      "clearcoatRoughness": 0.08,
+      "ior": 1.53,
+      "reflectivity": 0.62
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#4c7983",
+      "thinColor": "#98b8be",
+      "crackleScale": 1.8,
+      "crackleInkColor": "#4b3e30",
+      "crackleGoldColor": "#9e8152",
+      "crackleOpacity": 0.34,
+      "orangePeelStrength": 0.22,
+      "purpleRimIronFoot": 0.55,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.16
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "fenqing",
     "name": "粉青如玉",
-    "desc": "南宋龙泉与修内司官窑代表，青翠柔和，丰润如脂",
+    "desc": "南宋龙泉与修内司官窑代表，厚釉乳浊青翠，丰润如脂",
     "material": {
-      "color": "#7cb099",
-      "emissive": "#04120b",
-      "roughness": 0.16,
-      "metalness": 0.03,
+      "color": "#6f9f8e",
+      "emissive": "#03100a",
+      "roughness": 0.18,
+      "metalness": 0.0,
       "clearcoat": 0.96,
-      "clearcoatRoughness": 0.07,
+      "clearcoatRoughness": 0.09,
       "ior": 1.53,
-      "reflectivity": 0.7
+      "reflectivity": 0.64
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#457464",
+      "thinColor": "#9cc1b2",
+      "crackleScale": 1.5,
+      "crackleInkColor": "#463d31",
+      "crackleGoldColor": "#8b7952",
+      "crackleOpacity": 0.18,
+      "orangePeelStrength": 0.24,
+      "purpleRimIronFoot": 0.28,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.22
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "yuebai",
     "name": "月白莹霜",
-    "desc": "月白微泛冷青，如皓月寒霜，冰清玉洁",
+    "desc": "月白微泛冷青，如皓月寒霜，清雅透润",
     "material": {
-      "color": "#d0e0e5",
-      "emissive": "#0a1114",
-      "roughness": 0.12,
-      "metalness": 0.02,
-      "clearcoat": 1,
-      "clearcoatRoughness": 0.05,
-      "ior": 1.55,
-      "reflectivity": 0.78
+      "color": "#bccfd4",
+      "emissive": "#091013",
+      "roughness": 0.15,
+      "metalness": 0.0,
+      "clearcoat": 0.95,
+      "clearcoatRoughness": 0.06,
+      "ior": 1.54,
+      "reflectivity": 0.68
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#8daab3",
+      "thinColor": "#dce8eb",
+      "crackleScale": 2.0,
+      "crackleInkColor": "#5c5346",
+      "crackleGoldColor": "#a89167",
+      "crackleOpacity": 0.22,
+      "orangePeelStrength": 0.18,
+      "purpleRimIronFoot": 0.2,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.18
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "dingbai",
     "name": "定窑牙白",
-    "desc": "北宋曲阳定窑象牙白，泛暖玉微黄之光，内敛温雅",
+    "desc": "北宋曲阳定窑象牙白，白中微闪暖黄，划花处积釉微深",
     "material": {
-      "color": "#efe7d6",
-      "emissive": "#120f0a",
-      "roughness": 0.19,
-      "metalness": 0.02,
+      "color": "#e3d9c3",
+      "emissive": "#100d08",
+      "roughness": 0.2,
+      "metalness": 0.0,
+      "clearcoat": 0.85,
+      "clearcoatRoughness": 0.11,
+      "ior": 1.5,
+      "reflectivity": 0.56
+    },
+    "optics": {
+      "deepColor": "#c9ba9b",
+      "thinColor": "#f1eadc",
+      "crackleScale": 1.6,
+      "crackleInkColor": "#8d7d63",
+      "crackleGoldColor": "#b8a37f",
+      "crackleOpacity": 0.05,
+      "orangePeelStrength": 0.15,
+      "purpleRimIronFoot": 0.0,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.26
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
+  },
+  {
+    "id": "geyao",
+    "name": "哥窑米黄",
+    "desc": "传世哥窑米黄/灰青厚釉，粗细金丝铁线交织",
+    "material": {
+      "color": "#c9bd9b",
+      "emissive": "#0e0c07",
+      "roughness": 0.21,
+      "metalness": 0.0,
       "clearcoat": 0.88,
       "clearcoatRoughness": 0.1,
-      "ior": 1.5,
-      "reflectivity": 0.62
+      "ior": 1.52,
+      "reflectivity": 0.58
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#a89872",
+      "thinColor": "#dfd6ba",
+      "crackleScale": 2.4,
+      "crackleInkColor": "#2c241d",
+      "crackleGoldColor": "#9d6e35",
+      "crackleOpacity": 0.58,
+      "orangePeelStrength": 0.28,
+      "purpleRimIronFoot": 0.45,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.18
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "junhong",
     "name": "玫瑰紫变",
-    "desc": "禹州钧官窑铜还原窑变，红紫蓝交融如晚霞流云",
+    "desc": "禹州钧官窑铜还原窑变，玫瑰紫与天蓝分相交融",
     "material": {
-      "color": "#b85a88",
-      "emissive": "#180511",
-      "roughness": 0.15,
-      "metalness": 0.08,
-      "clearcoat": 0.98,
-      "clearcoatRoughness": 0.06,
-      "ior": 1.58,
-      "reflectivity": 0.76
+      "color": "#9b5073",
+      "emissive": "#14060e",
+      "roughness": 0.16,
+      "metalness": 0.02,
+      "clearcoat": 0.96,
+      "clearcoatRoughness": 0.07,
+      "ior": 1.57,
+      "reflectivity": 0.7
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#5f2745",
+      "thinColor": "#7da1ba",
+      "crackleScale": 1.3,
+      "crackleInkColor": "#452938",
+      "crackleGoldColor": "#907285",
+      "crackleOpacity": 0.15,
+      "orangePeelStrength": 0.24,
+      "purpleRimIronFoot": 0.25,
+      "iridescenceStrength": 0.12,
+      "subsurfaceWarmth": 0.2
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "jianhei",
     "name": "建盏乌金",
-    "desc": "建阳水吉窑高铁黑釉，析出金银兔毫与曜变星斑",
+    "desc": "建阳水吉窑高铁黑釉，兔毫银蓝与薄膜干涉曜变虹彩",
     "material": {
-      "color": "#262223",
-      "emissive": "#050406",
-      "roughness": 0.22,
-      "metalness": 0.38,
-      "clearcoat": 0.94,
-      "clearcoatRoughness": 0.1,
-      "ior": 1.65,
-      "reflectivity": 0.85
+      "color": "#1d1a1c",
+      "emissive": "#040406",
+      "roughness": 0.19,
+      "metalness": 0.22,
+      "clearcoat": 0.96,
+      "clearcoatRoughness": 0.08,
+      "ior": 1.64,
+      "reflectivity": 0.8
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#0f0d0f",
+      "thinColor": "#4c382a",
+      "crackleScale": 1.0,
+      "crackleInkColor": "#141114",
+      "crackleGoldColor": "#8b6d46",
+      "crackleOpacity": 0.0,
+      "orangePeelStrength": 0.18,
+      "purpleRimIronFoot": 0.35,
+      "iridescenceStrength": 0.72,
+      "subsurfaceWarmth": 0.05
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   },
   {
     "id": "qinghua",
     "name": "幽菁青花",
-    "desc": "明宣德鸭蛋青白釉底，苏麻离青浓艳深沉带铁锈斑",
+    "desc": "景德镇甜白/鸭蛋青釉底，苏麻离青钴料晕散与铁锈斑",
     "material": {
-      "color": "#edf4f7",
-      "emissive": "#070d12",
-      "roughness": 0.12,
-      "metalness": 0.03,
-      "clearcoat": 1,
+      "color": "#e2ecef",
+      "emissive": "#060b0f",
+      "roughness": 0.13,
+      "metalness": 0.0,
+      "clearcoat": 0.98,
       "clearcoatRoughness": 0.05,
       "ior": 1.54,
-      "reflectivity": 0.75
+      "reflectivity": 0.72
     },
-    "note": "材质参数为渲染调校值（教学示意），不是对实物釉面的光学测量。"
+    "optics": {
+      "deepColor": "#bdd2da",
+      "thinColor": "#f1f6f8",
+      "crackleScale": 1.5,
+      "crackleInkColor": "#536570",
+      "crackleGoldColor": "#8c9ba3",
+      "crackleOpacity": 0.04,
+      "orangePeelStrength": 0.16,
+      "purpleRimIronFoot": 0.0,
+      "iridescenceStrength": 0.0,
+      "subsurfaceWarmth": 0.12
+    },
+    "note": "材质参数为结合馆藏标准色与渲染调校的教学示意值，非实物光学实测数据。"
   }
 ]

@@ -1,0 +1,48 @@
+<!-- ==================== 宋明御瓷 100x 光学显微镜微观晶相研考观察窗 ==================== -->
+<div id="microscope-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="microscope-modal-title" data-action-self="closeMicroscopeView()">
+    <div class="modal-content-lg text-center max-w-2xl">
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-border-light">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-microscope text-tianqing-deep text-lg" aria-hidden="true"></i>
+                <h3 id="microscope-modal-title" class="font-serif-cn text-base sm:text-lg font-medium text-text-title">宋明御瓷 100x 光学显微晶相研考观察窗</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="btn-micro-light-mode" data-action="toggleMicroscopeLightMode()" class="px-2.5 py-1 rounded-full bg-yuebai border border-border-light text-[11px] font-serif-cn hover:border-tianqing transition-all flex items-center">
+                    <i class="fa-solid fa-sun text-amber-400 mr-1" aria-hidden="true"></i>明场透射
+                </button>
+                <button id="btn-micro-reticle" data-action="toggleMicrometerReticle()" class="px-2.5 py-1 rounded-full bg-tianqing-deep text-white text-[11px] font-serif-cn transition-all flex items-center" title="显示/隐藏 100μm 测微目镜十字刻度线">
+                    <i class="fa-solid fa-crosshairs mr-1" aria-hidden="true"></i>测微十字标尺
+                </button>
+                <button data-action="closeMicroscopeView()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭光学显微镜窗口">
+                    <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 显微标本切换标签 -->
+        <div id="microscope-preset-tabs" class="flex flex-wrap items-center justify-center gap-1.5 mb-3"></div>
+
+        <!-- 真实物理光学 Canvas 显微视口 (带拖拽与滚轮调焦) -->
+        <div class="microscope-lens-viewport relative select-none">
+            <canvas id="microscope-canvas" width="320" height="320" class="w-full h-full block cursor-grab active:cursor-grabbing" title="按住拖拽平移载物台视场，滑动滚轮微调焦距"></canvas>
+            <span class="absolute bottom-2 right-4 text-[9px] font-mono text-white/50 bg-black/60 px-1.5 py-0.5 rounded pointer-events-none">100x · 100μm</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 my-2.5 max-w-md mx-auto text-xs text-text-muted font-serif-cn">
+            <div class="flex items-center gap-2 bg-yuebai/60 px-3 py-1.5 rounded-full border border-border-light">
+                <i class="fa-solid fa-sliders text-tianqing-deep" aria-hidden="true"></i>
+                <label for="microscope-focus-range">目镜焦深：</label>
+                <input id="microscope-focus-range" type="range" min="60" max="140" value="100" data-action-input="adjustMicroscopeFocus($value)" class="w-24 sm:w-32 cursor-pointer">
+                <span id="microscope-focus-value" class="font-mono text-text-title w-9 text-right font-medium">100%</span>
+            </div>
+            <span class="text-[11px] text-text-muted"><i class="fa-regular fa-hand-pointer mr-1 text-amber-400" aria-hidden="true"></i>按住目镜可平移视场 · 滚轮微调焦深</span>
+        </div>
+
+        <!-- 显微镜学术考据与真伪辨识卡片 -->
+        <div id="microscope-desc-card" class="bg-yuebai/50 p-4 rounded-xl border border-border-light text-left text-xs text-text-body space-y-2 font-light"></div>
+
+        <button data-action="closeMicroscopeView()" class="mt-3.5 px-6 py-1.5 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+            关闭目镜视野
+        </button>
+    </div>
+</div>

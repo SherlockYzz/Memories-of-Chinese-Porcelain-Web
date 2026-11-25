@@ -17,7 +17,7 @@
         const lang = (global.AppStore && global.AppStore.get('lang')) || global.currentLang || 'zh';
 
         navContainer.innerHTML = historyPeriods.map((p, idx) => `
-            <button class="history-node-btn px-4 py-2.5 rounded-full text-xs font-serif-cn transition-all shrink-0 flex items-center gap-1.5 ${p.id === currentHistoryId ? 'bg-tianqing-deep text-white shadow-md ring-2' : 'bg-yuebai text-text-body hover:bg-tianqing'}" onclick="selectHistoryPeriod('${p.id}')">
+            <button class="history-node-btn px-4 py-2.5 rounded-full text-xs font-serif-cn transition-all shrink-0 flex items-center gap-1.5 ${p.id === currentHistoryId ? 'bg-tianqing-deep text-white shadow-md ring-2' : 'bg-yuebai text-text-body hover:bg-tianqing'}" data-action="selectHistoryPeriod('${p.id}')">
                 <span class="font-mono text-[10px] opacity-75">0${idx + 1}</span>
                 <span>${(p.label && p.label[lang]) || (p.label && p.label.zh) || ''}</span>
             </button>
@@ -44,10 +44,10 @@
                         <div class="flex items-center justify-between">
                             <span class="badge bg-tianqing-deep text-white text-xs">${(p.label && p.label[lang]) || ''}</span>
                             <div class="flex items-center gap-2">
-                                <button onclick="selectHistoryPeriod('${prevId}')" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:bg-tianqing hover:text-white transition-colors" title="${tr('上一历史时期')}" aria-label="${tr('上一历史时期')}">
+                                <button data-action="selectHistoryPeriod('${prevId}')" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:bg-tianqing hover:text-white transition-colors" title="${tr('上一历史时期')}" aria-label="${tr('上一历史时期')}">
                                     <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                                 </button>
-                                <button onclick="selectHistoryPeriod('${nextId}')" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:bg-tianqing hover:text-white transition-colors" title="${tr('下一历史时期')}" aria-label="${tr('下一历史时期')}">
+                                <button data-action="selectHistoryPeriod('${nextId}')" class="w-8 h-8 rounded-full bg-yuebai border border-border-light flex items-center justify-center text-xs hover:bg-tianqing hover:text-white transition-colors" title="${tr('下一历史时期')}" aria-label="${tr('下一历史时期')}">
                                     <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -73,7 +73,7 @@
 
                         <div class="pt-3 flex items-center justify-between text-xs text-text-muted border-t border-border-light">
                             <span><i class="fa-solid fa-flask text-tianqing-deep mr-1" aria-hidden="true"></i>${tr('釉料体系')}：${tr(p.glazeSystem || '')}</span>
-                            <button onclick="loadComparisonModelTo3D(${p.modelIdx || 0})" class="text-tianqing-deep font-medium hover:underline font-serif-cn">
+                            <button data-action="loadComparisonModelTo3D(${p.modelIdx || 0})" class="text-tianqing-deep font-medium hover:underline font-serif-cn">
                                 ${tr('在3D展厅观摩此时期代表器')} &rarr;
                             </button>
                         </div>

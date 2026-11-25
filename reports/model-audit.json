@@ -1,0 +1,895 @@
+{
+  "generatedAt": "2026-11-25T09:00:52.151Z",
+  "vessels": [
+    {
+      "id": "guan-octagonal-vase",
+      "name": "南宋官窑·八方贯耳弦纹瓶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongGuanYao_OctagonalVase_Master.glb",
+      "totalBytes": 261720,
+      "kb": 255.6,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 5058,
+      "triangles": 10112,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "guanyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 8252,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "guanyao_col",
+          "mimeType": "image/webp",
+          "bytes": 25864,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "guanyao_rough",
+          "mimeType": "image/webp",
+          "bytes": 3256,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "ru-lotus-bowl",
+      "name": "北宋汝窑·天青釉十瓣莲花式温碗",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongRuYao_LotusBowl_Master.glb",
+      "totalBytes": 720120,
+      "kb": 703.2,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 15767,
+      "triangles": 31440,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "ruyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 10856,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "ruyao_col",
+          "mimeType": "image/webp",
+          "bytes": 11384,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "ruyao_rough",
+          "mimeType": "image/webp",
+          "bytes": 2858,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "ding-meiping",
+      "name": "北宋定窑·白釉刻花莲纹梅瓶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongDingYao_PlumVase_Master.glb",
+      "totalBytes": 362524,
+      "kb": 354,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7554,
+      "triangles": 15104,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "dingyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 10858,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "dingyao_col",
+          "mimeType": "image/webp",
+          "bytes": 15082,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "dingyao_rough",
+          "mimeType": "image/webp",
+          "bytes": 2408,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "ge-flat-vase",
+      "name": "宋代哥窑·米黄百圾碎贯耳扁瓶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongGeYao_CrackleVase_Master.glb",
+      "totalBytes": 393500,
+      "kb": 384.3,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7490,
+      "triangles": 14976,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "geyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 20802,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "geyao_col",
+          "mimeType": "image/webp",
+          "bytes": 38678,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "geyao_rough",
+          "mimeType": "image/webp",
+          "bytes": 2668,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "jun-chuji-zun",
+      "name": "北宋钧窑·玫瑰紫釉海棠出戟尊",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongJunYao_ChujiZun_Master.glb",
+      "totalBytes": 361944,
+      "kb": 353.5,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7510,
+      "triangles": 14688,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "junyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 4704,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "junyao_col",
+          "mimeType": "image/webp",
+          "bytes": 24212,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "junyao_rough",
+          "mimeType": "image/webp",
+          "bytes": 2766,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "yuan-qinghua-jar",
+      "name": "元代青花·缠枝牡丹双龙耳大罐",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/YuanQingHua_DragonVase_Master.glb",
+      "totalBytes": 395716,
+      "kb": 386.4,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7010,
+      "triangles": 13952,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "qinghua_norm",
+          "mimeType": "image/webp",
+          "bytes": 1964,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "qinghua_col",
+          "mimeType": "image/webp",
+          "bytes": 79522,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "qinghua_rough",
+          "mimeType": "image/webp",
+          "bytes": 4384,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "xuande-monk-cap-ewer",
+      "name": "明宣德·宝石红霁红釉僧帽壶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/MingXuande_MonkCapTeapot_Master.glb",
+      "totalBytes": 272688,
+      "kb": 266.3,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 5794,
+      "triangles": 11520,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "xuande_norm",
+          "mimeType": "image/webp",
+          "bytes": 5160,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "xuande_col",
+          "mimeType": "image/webp",
+          "bytes": 8922,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "xuande_rough",
+          "mimeType": "image/webp",
+          "bytes": 2258,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "qianlong-revolving-vase",
+      "name": "清乾隆·金地开光洋彩透雕转心瓶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/QingQianlong_RevolvingVase_Master.glb",
+      "totalBytes": 335180,
+      "kb": 327.3,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 6962,
+      "triangles": 13760,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "qianlong_norm",
+          "mimeType": "image/webp",
+          "bytes": 5948,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "qianlong_col",
+          "mimeType": "image/webp",
+          "bytes": 18644,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "qianlong_rough",
+          "mimeType": "image/webp",
+          "bytes": 3390,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    {
+      "id": "ph-ceramic-vase-01",
+      "name": "对照标本·现代白釉花口长瓶",
+      "group": "reference",
+      "source": "第三方 CC0 (Poly Haven / James Ray Cock)",
+      "license": "CC0 1.0 Universal",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/ceramic_vase_01/scene.gltf",
+      "totalBytes": 418457,
+      "kb": 408.6,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 6590,
+      "triangles": 10296,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "ceramic_vase_01_nor_gl_1k.jpg",
+          "bytes": 36504,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_01_diff_1k.jpg",
+          "bytes": 32351,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_01_arm_1k.jpg",
+          "bytes": 74240,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        }
+      ]
+    },
+    {
+      "id": "ph-ceramic-vase-02",
+      "name": "对照标本·现代彩绘陶瓶",
+      "group": "reference",
+      "source": "第三方 CC0 (Poly Haven / James Ray Cock)",
+      "license": "CC0 1.0 Universal",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/ceramic_vase_02/scene.gltf",
+      "totalBytes": 750161,
+      "kb": 732.6,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7094,
+      "triangles": 11128,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "ceramic_vase_02_nor_gl_1k.jpg",
+          "bytes": 164130,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_02_diff_1k.jpg",
+          "bytes": 98894,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_02_rough_1k.jpg",
+          "bytes": 190645,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        }
+      ]
+    },
+    {
+      "id": "ph-ceramic-vase-03",
+      "name": "对照标本·现代方形高瓶",
+      "group": "reference",
+      "source": "第三方 CC0 (Poly Haven / James Ray Cock)",
+      "license": "CC0 1.0 Universal",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/ceramic_vase_03/scene.gltf",
+      "totalBytes": 765159,
+      "kb": 747.2,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 7263,
+      "triangles": 11136,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "ceramic_vase_03_nor_gl_1k.jpg",
+          "bytes": 181966,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_03_diff_1k.jpg",
+          "bytes": 127057,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_03_rough_1k.jpg",
+          "bytes": 154214,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        }
+      ]
+    },
+    {
+      "id": "ph-ceramic-vase-04",
+      "name": "对照标本·现代单柄陶壶",
+      "group": "reference",
+      "source": "第三方 CC0 (Poly Haven / James Ray Cock)",
+      "license": "CC0 1.0 Universal",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/ceramic_vase_04/scene.gltf",
+      "totalBytes": 596053,
+      "kb": 582.1,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 5804,
+      "triangles": 9000,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "ceramic_vase_04_nor_gl_1k.jpg",
+          "bytes": 123462,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_04_diff_1k.jpg",
+          "bytes": 95512,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "ceramic_vase_04_rough_1k.jpg",
+          "bytes": 134635,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        }
+      ]
+    },
+    {
+      "id": "ph-antique-vase-01",
+      "name": "对照标本·蓝花转印开片瓶",
+      "group": "reference",
+      "source": "第三方 CC0 (Poly Haven / James Ray Cock)",
+      "license": "CC0 1.0 Universal",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/antique_ceramic_vase_01/scene.gltf",
+      "totalBytes": 525941,
+      "kb": 513.6,
+      "meshes": 1,
+      "primitives": 1,
+      "vertices": 5024,
+      "triangles": 9408,
+      "materials": 1,
+      "textures": [
+        {
+          "name": "antique_ceramic_vase_01_nor_gl_1k.jpg",
+          "bytes": 33062,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "antique_ceramic_vase_01_diff_1k.jpg",
+          "bytes": 192337,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        },
+        {
+          "name": "antique_ceramic_vase_01_arm_1k.jpg",
+          "bytes": 80537,
+          "format": "JPEG",
+          "height": 1024,
+          "width": 1024
+        }
+      ]
+    },
+    {
+      "id": "jian-yaobian-bowl",
+      "name": "南宋建窑·曜变天目黑釉束口茶盏",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongJianYao_YaobianTeaBowl_Master.glb",
+      "totalBytes": 435616,
+      "kb": 425.4,
+      "meshes": 1,
+      "primitives": 2,
+      "vertices": 3393,
+      "triangles": 6144,
+      "materials": 2,
+      "textures": [
+        {
+          "name": "jianyao_norm",
+          "mimeType": "image/webp",
+          "bytes": 14092,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "jianyao_col",
+          "mimeType": "image/webp",
+          "bytes": 25130,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "jianyao_mr",
+          "mimeType": "image/webp",
+          "bytes": 10984,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "iron_clay_norm",
+          "mimeType": "image/webp",
+          "bytes": 161034,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "iron_clay_col",
+          "mimeType": "image/webp",
+          "bytes": 74676,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "iron_clay_mr",
+          "mimeType": "image/webp",
+          "bytes": 558,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "longquan-phoenix-vase",
+      "name": "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
+      "group": "reconstruction",
+      "source": "自建 Blender 5.2 参数化建模复原",
+      "license": "本项目原创模型（随项目协议发布）",
+      "claimConsistent": true,
+      "maxTexPx": 1024,
+      "path": "models/masterpieces/SongLongquan_PhoenixVase_Master.glb",
+      "totalBytes": 599892,
+      "kb": 585.8,
+      "meshes": 1,
+      "primitives": 2,
+      "vertices": 11669,
+      "triangles": 10768,
+      "materials": 2,
+      "textures": [
+        {
+          "name": "longquan_norm",
+          "mimeType": "image/webp",
+          "bytes": 3558,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "longquan_col",
+          "mimeType": "image/webp",
+          "bytes": 10162,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "longquan_mr",
+          "mimeType": "image/webp",
+          "bytes": 3814,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "name": "lq_foot_norm",
+          "mimeType": "image/webp",
+          "bytes": 91130,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "lq_foot_col",
+          "mimeType": "image/webp",
+          "bytes": 47378,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "lq_foot_mr",
+          "mimeType": "image/webp",
+          "bytes": 2150,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "rosewood_table",
+      "name": "红木展示案",
+      "path": "models/environment/rosewood_table.glb",
+      "source": "自建 Blender 建模",
+      "totalBytes": 86872,
+      "kb": 84.8,
+      "meshes": 1,
+      "primitives": 2,
+      "vertices": 1584,
+      "triangles": 2376,
+      "materials": 2,
+      "textures": [
+        {
+          "name": "M_Rosewood_Diff",
+          "mimeType": "image/webp",
+          "bytes": 3690,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_Rosewood_Rough",
+          "mimeType": "image/webp",
+          "bytes": 5264,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_TableBrass_Diff",
+          "mimeType": "image/webp",
+          "bytes": 4884,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_TableBrass_Rough",
+          "mimeType": "image/webp",
+          "bytes": 4956,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "scholar_screen",
+      "name": "宋式屏风",
+      "path": "models/environment/scholar_screen.glb",
+      "source": "自建 Blender 建模",
+      "totalBytes": 54000,
+      "kb": 52.7,
+      "meshes": 1,
+      "primitives": 3,
+      "vertices": 492,
+      "triangles": 396,
+      "materials": 3,
+      "textures": [
+        {
+          "name": "M_ScreenSilk_Diff",
+          "mimeType": "image/webp",
+          "bytes": 12888,
+          "format": "WEBP",
+          "width": 1024,
+          "height": 512
+        },
+        {
+          "name": "M_ScreenWood_Diff",
+          "mimeType": "image/webp",
+          "bytes": 3690,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_ScreenWood_Rough",
+          "mimeType": "image/webp",
+          "bytes": 5264,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_ScreenBrass_Diff",
+          "mimeType": "image/webp",
+          "bytes": 4884,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_ScreenBrass_Rough",
+          "mimeType": "image/webp",
+          "bytes": 4956,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "hologram_pedestal",
+      "name": "紫檀展台",
+      "path": "models/environment/hologram_pedestal.glb",
+      "source": "自建 Blender 建模",
+      "totalBytes": 81180,
+      "kb": 79.3,
+      "meshes": 1,
+      "primitives": 2,
+      "vertices": 1476,
+      "triangles": 1980,
+      "materials": 2,
+      "textures": [
+        {
+          "name": "M_PedestalWood_Diff",
+          "mimeType": "image/webp",
+          "bytes": 3690,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_PedestalWood_Rough",
+          "mimeType": "image/webp",
+          "bytes": 5264,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_PedestalBrass_Diff",
+          "mimeType": "image/webp",
+          "bytes": 4884,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_PedestalBrass_Rough",
+          "mimeType": "image/webp",
+          "bytes": 4956,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "bronze_censer",
+      "name": "三足青铜香炉",
+      "path": "models/environment/bronze_censer.glb",
+      "source": "自建 Blender 建模",
+      "totalBytes": 307292,
+      "kb": 300.1,
+      "meshes": 1,
+      "primitives": 2,
+      "vertices": 7499,
+      "triangles": 6956,
+      "materials": 2,
+      "textures": [
+        {
+          "name": "M_CenserBase_Diff",
+          "mimeType": "image/webp",
+          "bytes": 3690,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_CenserBase_Rough",
+          "mimeType": "image/webp",
+          "bytes": 5264,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_BronzePatina_Diff",
+          "mimeType": "image/webp",
+          "bytes": 4834,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "name": "M_BronzePatina_Rough",
+          "mimeType": "image/webp",
+          "bytes": 8598,
+          "format": "WEBP",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    },
+    {
+      "id": "kiln_firing_diorama",
+      "name": "柴烧龙窑交互场景",
+      "path": "models/interactive/kiln_firing_diorama.glb",
+      "source": "自建 Blender 建模",
+      "totalBytes": 430784,
+      "kb": 420.7,
+      "meshes": 54,
+      "primitives": 56,
+      "vertices": 10288,
+      "triangles": 7412,
+      "materials": 14,
+      "textures": []
+    }
+  ]
+}

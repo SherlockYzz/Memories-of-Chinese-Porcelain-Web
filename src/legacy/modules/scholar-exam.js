@@ -17,7 +17,7 @@
         if (!container || typeof scholarNotes === 'undefined') return;
 
         container.innerHTML = scholarNotes.map((note, idx) => `
-            <div class="feature-card p-6 hover-lift text-left flex flex-col justify-between cursor-pointer" onclick="openScholarNoteModal(${idx})">
+            <div class="feature-card p-6 hover-lift text-left flex flex-col justify-between cursor-pointer" data-action="openScholarNoteModal(${idx})">
                 <div>
                     <div class="flex items-center justify-between mb-3">
                         <span class="badge bg-yuebai text-tianqing-deep text-xs border border-border-light">${tr(note.category)}</span>
@@ -64,25 +64,30 @@
         if (!container || typeof scholarQuizData === 'undefined') return;
 
         if (currentQuizIdx >= scholarQuizData.length) {
-            const rankTitle = quizScore >= 5
-                ? '【大宋文博翰林学士 · 奉华阁待诏】'
-                : (quizScore >= 3 ? '【景德镇御器厂督陶司丞】' : '【格物致知·博古研习生】');
+            const ratio = scholarQuizData.length ? quizScore / scholarQuizData.length : 0;
+            const rankTitle = ratio >= 0.8
+                ? '【博物翰林 · 格物通晓】'
+                : (ratio >= 0.5 ? '【窑务良工 · 艺理兼备】' : '【初窥门径 · 博古研习生】');
             container.innerHTML = `
                 <div class="text-center py-6 space-y-4">
                     <div class="w-16 h-16 rounded-full bg-amber-700/30 border border-amber-400 flex items-center justify-center mx-auto text-amber-400 text-2xl">
                         <i class="fa-solid fa-award" aria-hidden="true"></i>
                     </div>
-                    <span class="badge bg-tianqing-deep text-white text-xs">${tr('博古殿试圆满礼成')}</span>
-                    <h4 class="text-2xl font-serif-cn font-semibold text-text-title">${tr('您的殿试成绩：')}${quizScore} / ${scholarQuizData.length} ${tr('题')}</h4>
-                    <p class="text-base font-serif-cn text-amber-400 font-medium">${tr('敕授雅衔：')}${tr(rankTitle)}</p>
-                    <p class="text-xs text-text-body max-w-lg mx-auto font-light">${tr('“器以载道，格物致知。” 您已深入掌握两宋五大名窑与明清御窑的矿物化学、热应力开片及器物学精髓。')}</p>
-                    <div class="pt-2">
-                        <button onclick="restartScholarQuiz()" class="px-6 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors">
+                    <span class="badge bg-tianqing-deep text-white text-xs">${tr('博古殿试完成')}</span>
+                    <h4 class="text-2xl font-serif-cn font-semibold text-text-title">${tr('您的殿试成绩：')}${quizScore} / ${scholarQuizData.length} ${tr('题')}（${Math.round(ratio * 100)}%）</h4>
+                    <p class="text-base font-serif-cn text-amber-400 font-medium">${tr('成绩分级：')}${tr(rankTitle)}</p>
+                    <p class="text-xs text-text-body max-w-lg mx-auto font-light">${tr('“器以载道，格物致知。” 题库解析均附《中国陶瓷史》《中国科学技术史·陶瓷卷》等学术文献出处。')}</p>
+                    <div class="pt-2 flex flex-wrap justify-center gap-3">
+                        <button data-action="exportQuizCertificate()" class="px-5 py-2.5 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing-deep transition-colors">
+                            <i class="fa-solid fa-stamp mr-1" aria-hidden="true"></i>${tr('下载成绩证书')}
+                        </button>
+                        <button data-action="restartScholarQuiz()" class="px-6 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors">
                             <i class="fa-solid fa-rotate-right mr-1" aria-hidden="true"></i>${tr('重新开卷应试')}
                         </button>
                     </div>
                 </div>
             `;
+            if (global.AppBus) global.AppBus.emit('study:quiz-complete', { score: quizScore, total: scholarQuizData.length, rank: rankTitle });
             return;
         }
 
@@ -96,7 +101,7 @@
                 <h4 class="text-sm sm:text-base font-serif-cn text-text-title font-medium leading-relaxed">${tr(q.question)}</h4>
                 <div class="grid sm:grid-cols-2 gap-2.5" id="quiz-options-box">
                     ${q.options.map((opt, oIdx) => `
-                        <button onclick="submitQuizAnswer(${oIdx})" class="quiz-opt-btn p-3 rounded-xl bg-bg-main border border-border-light hover:border-tianqing text-left text-xs text-text-body font-serif-cn transition-all">
+                        <button data-action="submitQuizAnswer(${oIdx})" class="quiz-opt-btn p-3 rounded-xl bg-bg-main border border-border-light hover:border-tianqing text-left text-xs text-text-body font-serif-cn transition-all">
                             ${tr(opt)}
                         </button>
                     `).join('')}
@@ -139,7 +144,7 @@
                         </strong>
                         <span>${tr(q.explanation)}</span>
                     </div>
-                    <button onclick="nextScholarQuiz()" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn shrink-0 hover:bg-tianqing transition-colors">
+                    <button data-action="nextScholarQuiz()" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn shrink-0 hover:bg-tianqing transition-colors">
                         ${currentQuizIdx + 1 < scholarQuizData.length ? `${tr('下一策问')} &rarr;` : `${tr('揭榜授衔')} &rarr;`}
                     </button>
                 </div>
@@ -158,6 +163,53 @@
         renderScholarQuizCard();
     }
 
+    function exportQuizCertificate() {
+        const total = scholarQuizData.length || 12;
+        const ratio = quizScore / total;
+        const rank = ratio >= 0.8 ? '博物翰林 · 格物通晓' : (ratio >= 0.5 ? '窑务良工 · 艺理兼备' : '初窥门径 · 博古研习生');
+        const c = document.createElement('canvas');
+        c.width = 860;
+        c.height = 500;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#F4F1E8';
+        ctx.fillRect(0, 0, 860, 500);
+        ctx.strokeStyle = '#3A7684';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(20, 20, 820, 460);
+        ctx.strokeStyle = '#C8A25A';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(28, 28, 804, 444);
+
+        ctx.fillStyle = '#142029';
+        ctx.font = 'bold 30px "Noto Serif SC", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('天青泥火 · 古陶瓷研学殿试成绩单', 430, 105);
+
+        ctx.fillStyle = '#224E59';
+        ctx.font = 'bold 24px "Noto Serif SC", serif';
+        ctx.fillText(`成绩：${quizScore} / ${total} 题（${Math.round(ratio * 100)} 分）`, 430, 195);
+        ctx.fillStyle = '#9a6a1c';
+        ctx.fillText(`评定等级：${rank}`, 430, 250);
+
+        ctx.fillStyle = '#3E4E5C';
+        ctx.font = '15px "Noto Serif SC", serif';
+        ctx.fillText('涵盖宋代五大名窑、胎釉化学、热应力开片与窑炉烧成工艺', 430, 320);
+        ctx.fillText(`考核日期：${new Date().toLocaleDateString()}`, 430, 360);
+
+        ctx.fillStyle = '#A8322D';
+        ctx.fillRect(710, 365, 74, 74);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 18px "Noto Serif SC", serif';
+        ctx.fillText('殿试', 747, 398);
+        ctx.fillText('印信', 747, 424);
+
+        const a = document.createElement('a');
+        a.download = `天青泥火_殿试成绩单_${Date.now()}.png`;
+        a.href = c.toDataURL('image/png');
+        a.click();
+        if (global.ToastService) global.ToastService.show('已生成并下载《博古殿试成绩单》');
+    }
+
     function refreshAll() {
         renderScholarNotes();
         renderScholarQuizCard();
@@ -174,13 +226,15 @@
             renderScholarQuizCard,
             submitQuizAnswer,
             nextScholarQuiz,
-            restartScholarQuiz
+            restartScholarQuiz,
+            exportQuizCertificate
         },
         globalBindings: {
             openScholarNoteModal,
             submitQuizAnswer,
             nextScholarQuiz,
-            restartScholarQuiz
+            restartScholarQuiz,
+            exportQuizCertificate
         }
     });
 })(window);

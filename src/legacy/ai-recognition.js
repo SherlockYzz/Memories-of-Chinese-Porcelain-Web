@@ -222,7 +222,7 @@ function renderPresetVessels(activeId = 'sample-guan') {
     if (!container) return;
 
     container.innerHTML = presetSampleVessels.map(v => `
-        <div class="preset-card cursor-pointer group p-2.5 rounded-xl border ${v.id === activeId ? 'border-amber-400 bg-yuebai ring-2' : 'border-border-light bg-bg-main'} hover:border-tianqing hover:shadow-md transition-all text-left" data-sample-id="${v.id}" onclick="identifyPresetVessel('${v.id}')">
+        <div class="preset-card cursor-pointer group p-2.5 rounded-xl border ${v.id === activeId ? 'border-amber-400 bg-yuebai ring-2' : 'border-border-light bg-bg-main'} hover:border-tianqing hover:shadow-md transition-all text-left" data-sample-id="${v.id}" data-action="identifyPresetVessel('${v.id}')">
             <div class="aspect-square rounded-lg overflow-hidden mb-2 bg-black relative">
                 <img src="${v.img}" alt="${v.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <span class="absolute bottom-1 right-1 bg-black/80 text-amber-200 text-[9px] px-1.5 py-0.5 rounded font-serif-cn border border-white/10">${v.expectedKiln.slice(0, 4)}</span>
@@ -751,16 +751,16 @@ function renderAiReport(report, sourceName, techStats, silent = false) {
             </div>
 
             <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border-light">
-                <button onclick="loadIdentifiedInto3D('${report.name}')" class="px-5 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-all tracking-wider shadow-sm flex items-center gap-2">
+                <button data-action="loadIdentifiedInto3D('${report.name}')" class="px-5 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-all tracking-wider shadow-sm flex items-center gap-2">
                     <i class="fa-solid fa-cube text-amber-200"></i>
                     <span>调入 3D 全息展厅立体剖析</span>
                 </button>
                 <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="downloadAiCertificate()" class="px-4 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-all flex items-center gap-1.5 shadow-sm">
+                    <button data-action="downloadAiCertificate()" class="px-4 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing transition-all flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-Scroll"></i>
                         <span>生成并下载《数字研鉴证书》</span>
                     </button>
-                    <button onclick="copyReportText()" class="px-3.5 py-2 rounded-full border border-border-light text-xs text-text-body hover:border-tianqing hover:text-tianqing-deep transition-all">
+                    <button data-action="copyReportText()" class="px-3.5 py-2 rounded-full border border-border-light text-xs text-text-body hover:border-tianqing hover:text-tianqing-deep transition-all">
                         <i class="fa-regular fa-copy mr-1"></i>复制结论
                     </button>
                 </div>

@@ -23,7 +23,7 @@
         container.innerHTML = traditionalColors.map(c => `
             <div class="feature-card p-5 flex flex-col justify-between group hover-lift text-left">
                 <div>
-                    <div class="aspect-[16/9] rounded-xl mb-3.5 shadow-inner relative overflow-hidden flex items-end justify-between p-3 cursor-pointer border border-white/15" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.38), transparent 65%), ${c.hex};" onclick="previewColorIn3D('${c.glazeKey || 'tianqing'}')">
+                    <div class="aspect-[16/9] rounded-xl mb-3.5 shadow-inner relative overflow-hidden flex items-end justify-between p-3 cursor-pointer border border-white/15" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.38), transparent 65%), ${c.hex};" data-action="previewColorIn3D('${c.glazeKey || 'tianqing'}')">
                         <span class="text-[10px] text-white bg-black/55 backdrop-blur-sm px-2.5 py-0.5 rounded font-mono">${c.hex}</span>
                         <span class="text-[10px] text-white bg-black/55 backdrop-blur-sm px-2.5 py-0.5 rounded font-mono">RGB(${c.rgb})</span>
                     </div>
@@ -39,10 +39,10 @@
                     <p class="text-xs text-text-body font-light leading-relaxed">${tr(c.desc)}</p>
                 </div>
                 <div class="mt-4 pt-3 border-t border-border-light flex items-center justify-between text-xs">
-                    <button onclick="copyColorCode('${c.hex}')" class="text-text-muted hover:text-tianqing-deep transition-colors text-[11px]">
+                    <button data-action="copyColorCode('${c.hex}')" class="text-text-muted hover:text-tianqing-deep transition-colors text-[11px]">
                         <i class="fa-regular fa-copy mr-1" aria-hidden="true"></i>${tr('复制色值')}
                     </button>
-                    <button onclick="previewColorIn3D('${c.glazeKey || 'tianqing'}')" class="text-tianqing-deep font-medium hover:underline text-[11px] font-serif-cn">
+                    <button data-action="previewColorIn3D('${c.glazeKey || 'tianqing'}')" class="text-tianqing-deep font-medium hover:underline text-[11px] font-serif-cn">
                         ${tr('同步至 3D 展厅试烧')} <i class="fa-solid fa-cube text-[9px] ml-0.5" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -231,6 +231,65 @@
         }
     }
 
+    function exportGlazeFormulaCard() {
+        const disc = document.getElementById('glaze-chem-disc-canvas');
+        const titleEl = document.getElementById('chem-result-title');
+        const eqEl = document.getElementById('chem-result-equation');
+        const descEl = document.getElementById('chem-result-desc');
+        const out = document.createElement('canvas');
+        out.width = 960;
+        out.height = 540;
+        const ctx = out.getContext('2d');
+        ctx.fillStyle = '#F4F1E8';
+        ctx.fillRect(0, 0, 960, 540);
+        ctx.strokeStyle = '#3A7684';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(20, 20, 920, 500);
+        ctx.strokeStyle = '#C8A25A';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(28, 28, 904, 484);
+
+        if (disc) ctx.drawImage(disc, 60, 120, 260, 260);
+        ctx.fillStyle = '#142029';
+        ctx.font = 'bold 26px "Noto Serif SC", serif';
+        ctx.fillText('天青泥火 · 釉料配比实验研学卡', 360, 88);
+        ctx.font = 'bold 22px "Noto Serif SC", serif';
+        ctx.fillStyle = '#224E59';
+        ctx.fillText(titleEl ? titleEl.textContent : '古瓷釉料试烧方案', 360, 145);
+
+        ctx.fillStyle = '#3E4E5C';
+        ctx.font = '15px monospace';
+        ctx.fillText(`Fe₂O₃ ${chemState.fe.toFixed(1)}% · CuO ${chemState.cu.toFixed(1)}% · CoO ${chemState.co.toFixed(1)}% · 玛瑙粉 ${chemState.agate}% · ${chemState.atmosphere === 'reduction' ? '还原焰' : '氧化焰'}`, 360, 185);
+        ctx.fillText(eqEl ? eqEl.textContent : '', 360, 222);
+
+        ctx.font = '14px "Noto Serif SC", sans-serif';
+        const desc = (descEl ? descEl.textContent : '') + '（教学示意模型，文献出处：李家治 1998；Nigel Wood 1999）';
+        let line = '', y = 272;
+        for (const ch of desc) {
+            line += ch;
+            if (ctx.measureText(line).width > 520) {
+                ctx.fillText(line, 360, y);
+                line = '';
+                y += 24;
+            }
+        }
+        if (line) ctx.fillText(line, 360, y);
+
+        ctx.fillStyle = '#A8322D';
+        ctx.fillRect(830, 420, 72, 72);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 18px "Noto Serif SC", serif';
+        ctx.fillText('釉色', 848, 452);
+        ctx.fillText('研学', 848, 476);
+
+        const a = document.createElement('a');
+        a.download = `天青泥火_釉方研学卡_${Date.now()}.png`;
+        a.href = out.toDataURL('image/png');
+        a.click();
+        if (global.AppBus) global.AppBus.emit('study:glaze-complete', { state: { ...chemState } });
+        if (global.ToastService) global.ToastService.show('已导出《釉料配比实验研学卡》并记录研学进度');
+    }
+
     function refreshAll() {
         renderTraditionalColors();
         updateGlazeChemistrySimulation();
@@ -257,14 +316,16 @@
             copyColorCode,
             setGlazeChemAtmosphere,
             applyChemPreset,
-            updateGlazeChemistrySimulation
+            updateGlazeChemistrySimulation,
+            exportGlazeFormulaCard
         },
         globalBindings: {
             copyColorCode,
             previewColorIn3D,
             setGlazeChemAtmosphere,
             applyChemPreset,
-            updateGlazeChemistrySimulation
+            updateGlazeChemistrySimulation,
+            exportGlazeFormulaCard
         }
     });
 })(window);

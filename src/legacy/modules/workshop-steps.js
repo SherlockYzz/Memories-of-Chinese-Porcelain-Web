@@ -14,7 +14,7 @@
         const lang = (global.AppStore && global.AppStore.get('lang')) || global.currentLang || 'zh';
 
         container.innerHTML = workshopSteps.map(step => `
-            <div class="feature-card p-5 group cursor-pointer hover-lift flex flex-col justify-between" onclick="openStepDetailModal(${step.id})">
+            <div class="feature-card p-5 group cursor-pointer hover-lift flex flex-col justify-between" data-action="openStepDetailModal(${step.id})">
                 <div>
                     <div class="aspect-[4/3] rounded-xl overflow-hidden mb-3.5 porcelain-card-skeleton relative border border-border-light">
                         <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

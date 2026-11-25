@@ -1,0 +1,29 @@
+<!-- ==================== 摄像头实时扫一扫模态框 ==================== -->
+<div id="camera-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="camera-modal-title" data-action-self="stopCameraScan()">
+    <div class="modal-content-lg text-center">
+        <div class="flex items-center justify-between mb-4">
+            <h3 id="camera-modal-title" class="font-serif-cn text-lg font-medium text-text-title flex items-center gap-2">
+                <i class="fa-solid fa-camera text-tianqing-deep" aria-hidden="true"></i>
+                <span>实时摄像头取景识瓷</span>
+            </h3>
+            <button data-action="stopCameraScan()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center transition-colors" aria-label="关闭摄像头识瓷">
+                <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="relative rounded-2xl overflow-hidden bg-black mb-4">
+            <video id="camera-video" autoplay playsinline muted></video>
+            <div class="ai-scan-line-laser"></div>
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-xs font-serif-cn">
+                请将瓷器居中对齐取景框
+            </div>
+        </div>
+        <div class="flex items-center justify-center gap-4">
+            <button data-action="captureAndIdentify()" class="px-6 py-2.5 bg-tianqing-deep text-white rounded-full text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md">
+                <i class="fa-solid fa-circle-dot mr-1.5" aria-hidden="true"></i>定格拍照并送检
+            </button>
+            <button data-action="stopCameraScan()" class="px-5 py-2.5 border border-border-light text-text-body rounded-full text-xs font-serif-cn hover:bg-yuebai transition-colors">
+                取消
+            </button>
+        </div>
+    </div>
+</div>

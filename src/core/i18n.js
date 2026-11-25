@@ -13,6 +13,7 @@ import bus from './bus.js';
 import store from './store.js';
 import storage, { KEYS } from './storage.js';
 import lazy from './lazy.js';
+import staticSource from './data/static-source.js';
 import ui from '../../content/i18n/ui.json';
 import site from '../../content/site.json';
 
@@ -89,12 +90,34 @@ function isLangToggle(el) {
     return !!(el && el.nodeType === 1 && (el.id === 'lang-toggle' || (el.closest && el.closest('#lang-toggle, [data-i18n-skip]'))));
 }
 
+function resolveContentText(spec, targetLang) {
+    const [file, pathStr] = String(spec || '').split(':');
+    if (!file || !pathStr || !staticSource.has(file)) return null;
+    let cur = staticSource.get(file);
+    for (const k of pathStr.split('.')) {
+        if (cur == null || !(k in cur)) return null;
+        cur = cur[k];
+    }
+    if (cur && typeof cur === 'object') {
+        return cur[targetLang] || cur.zh || null;
+    }
+    return typeof cur === 'string' ? cur : null;
+}
+
 export function applyDom(targetLang = lang, rootNode) {
     if (typeof document === 'undefined' || applying) return;
     const root = rootNode || document.body;
     if (!root) return;
     applying = true;
     try {
+        const contentNodes = rootNode
+            ? [rootNode, ...rootNode.querySelectorAll('[data-content]')].filter((el) => el.hasAttribute && el.hasAttribute('data-content'))
+            : document.querySelectorAll('[data-content]');
+        contentNodes.forEach((el) => {
+            const val = resolveContentText(el.getAttribute('data-content'), targetLang);
+            if (typeof val === 'string') el.textContent = val;
+        });
+
         const table = ui[targetLang] || {};
         const keyed = rootNode ? [rootNode, ...rootNode.querySelectorAll('[data-i18n]')] : document.querySelectorAll('[data-i18n]');
         keyed.forEach((el) => {

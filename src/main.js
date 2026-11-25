@@ -19,6 +19,10 @@ actions.register(
         toggleLanguage: () => i18n.toggleLanguage(),
         scrollToTop: () => window.scrollTo({ top: 0, behavior: core.prefersReducedMotion() ? 'auto' : 'smooth' }),
         dismissOverlay: () => core.modal.dismissTop(),
+        triggerClick: (_ctx, selector) => {
+            const el = document.querySelector(selector);
+            if (el) el.click();
+        },
         reloadPage: () => window.location.reload()
     },
     'core'

@@ -61,8 +61,8 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openArchiveDetailModal(${item.id})" class="text-tianqing-deep hover:underline text-[11px]">${tr('研读档案')}</button>
-                        <button onclick="toggleArchiveBookmark(${item.id}); openStudyNotebook();" class="text-red-500 text-xs px-1" title="${tr('移除')}" aria-label="${tr('从典藏集移除')}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
+                        <button data-action="openArchiveDetailModal(${item.id})" class="text-tianqing-deep hover:underline text-[11px]">${tr('研读档案')}</button>
+                        <button data-action="toggleArchiveBookmark(${item.id}); openStudyNotebook()" class="text-red-500 text-xs px-1" title="${tr('移除')}" aria-label="${tr('从典藏集移除')}"><i class="fa-solid fa-trash-can" aria-hidden="true"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -133,6 +133,17 @@
         if (global.ToastService) global.ToastService.show('已成功导出个人研学手记 Markdown 文档！');
     }
 
+    function clearStudyData() {
+        const notesInput = document.getElementById('study-notebook-textarea');
+        if (notesInput) notesInput.value = '';
+        try { localStorage.removeItem('huaxia_study_user_notes'); } catch (e) {}
+        if (global.AppStore) global.AppStore.set('bookmarks', []);
+        updateBookmarkUI();
+        renderStudyNotebookList();
+        if (global.AppBus) global.AppBus.emit('bookmarks:changed', []);
+        if (global.ToastService) global.ToastService.show('已清空本地研学手记与个人收藏');
+    }
+
     global.AppRegistry.register({
         id: 'study-notebook',
         phase: 3,
@@ -149,14 +160,16 @@
             openStudyNotebook,
             closeStudyNotebook,
             saveStudyNotes,
-            exportStudyNotes
+            exportStudyNotes,
+            clearStudyData
         },
         globalBindings: {
             toggleArchiveBookmark,
             openStudyNotebook,
             closeStudyNotebook,
             saveStudyNotes,
-            exportStudyNotes
+            exportStudyNotes,
+            clearStudyData
         }
     });
 })(window);

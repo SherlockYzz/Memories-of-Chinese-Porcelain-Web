@@ -148,9 +148,9 @@
     /* 8. 意图预取：指针靠近 / 手指按下器型按钮时，立刻把该器物提到下载队列最前 ——— */
     safe(function intentPrefetch() {
         const handler = (e) => {
-            const b = e.target.closest && e.target.closest('[onclick*="loadPorcelainModel("]');
+            const b = e.target.closest && e.target.closest('[data-action*="loadPorcelainModel("]');
             if (!b) return;
-            const m = /loadPorcelainModel\((\d+)/.exec(b.getAttribute('onclick') || '');
+            const m = /loadPorcelainModel\((\d+)/.exec(b.getAttribute('data-action') || '');
             if (!m) return;
             const i = parseInt(m[1], 10);
             try { if (typeof masterTreasuresMeta !== 'undefined' && masterTreasuresMeta[i] && !masterTreasuresCache[i]) loadSingleMasterTreasure(i, null, true); } catch (_) { }

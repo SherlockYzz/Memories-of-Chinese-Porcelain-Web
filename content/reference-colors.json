@@ -1,0 +1,82 @@
+[
+  {
+    "vesselIndex": 0,
+    "vesselId": "guan-octagonal-vase",
+    "glazeId": "tianqing",
+    "name": "南宋官窑·八方贯耳弦纹瓶（天青釉）",
+    "referenceHex": "#78A0A7",
+    "referenceLab": [63.8, -11.5, -5.8],
+    "toleranceDe2000": 15.0,
+    "source": "参考故宫博物院 / 台北故宫南宋官窑青瓷贯耳瓶公开影像主釉面中调色域及李家治《中国科学技术史·陶瓷卷》青瓷呈色范围"
+  },
+  {
+    "vesselIndex": 1,
+    "vesselId": "ru-lotus-bowl",
+    "glazeId": "tianqing",
+    "name": "北宋汝窑·天青釉十瓣莲花式温碗",
+    "referenceHex": "#7EAAB3",
+    "referenceLab": [67.1, -11.2, -7.5],
+    "toleranceDe2000": 15.0,
+    "source": "参考台北故宫博物院 Open Data 北宋汝窑青瓷莲花式温碗（中故瓷017854）公开影像主釉面"
+  },
+  {
+    "vesselIndex": 14,
+    "vesselId": "longquan-phoenix-vase",
+    "glazeId": "fenqing",
+    "name": "南宋龙泉窑·粉青釉凤耳弦纹纸槌瓶",
+    "referenceHex": "#72A290",
+    "referenceLab": [63.5, -16.8, 3.8],
+    "toleranceDe2000": 15.0,
+    "source": "参考东京国立博物馆 / 故宫博物院龙泉窑青瓷凤耳瓶公开影像粉青主色域"
+  },
+  {
+    "vesselIndex": 2,
+    "vesselId": "ding-meiping",
+    "glazeId": "dingbai",
+    "name": "北宋定窑·白釉刻花莲纹梅瓶",
+    "referenceHex": "#DFD4BE",
+    "referenceLab": [84.9, 0.8, 11.4],
+    "toleranceDe2000": 15.0,
+    "source": "参考故宫博物院定窑白釉划花器公开影像象牙白主色域"
+  },
+  {
+    "vesselIndex": 3,
+    "vesselId": "ge-flat-vase",
+    "glazeId": "geyao",
+    "name": "宋代哥窑·米黄百圾碎贯耳扁瓶",
+    "referenceHex": "#C8BC9A",
+    "referenceLab": [76.2, -0.5, 16.5],
+    "toleranceDe2000": 16.0,
+    "source": "参考故宫博物院传世哥窑米黄釉开片器公开影像主色域"
+  },
+  {
+    "vesselIndex": 4,
+    "vesselId": "jun-chuji-zun",
+    "glazeId": "junhong",
+    "name": "北宋钧窑·玫瑰紫釉海棠出戟尊",
+    "referenceHex": "#8E5272",
+    "referenceLab": [44.2, 26.4, -7.8],
+    "toleranceDe2000": 18.0,
+    "source": "参考台北故宫 / 大维德基金会北宋钧窑玫瑰紫出戟尊公开影像紫红主色域"
+  },
+  {
+    "vesselIndex": 13,
+    "vesselId": "jian-yaobian-bowl",
+    "glazeId": "jianhei",
+    "name": "南宋建窑·曜变天目黑釉束口茶盏",
+    "referenceHex": "#201D24",
+    "referenceLab": [12.1, 2.5, -4.6],
+    "toleranceDe2000": 18.0,
+    "source": "参考静嘉堂文库美术馆藏南宋建窑曜变天目茶碗公开影像乌金黑釉基调"
+  },
+  {
+    "vesselIndex": 5,
+    "vesselId": "yuan-qinghua-jar",
+    "glazeId": "qinghua",
+    "name": "元代青花·缠枝牡丹双龙耳大罐",
+    "referenceHex": "#C8D5DC",
+    "referenceLab": [84.2, -3.5, -5.2],
+    "toleranceDe2000": 18.0,
+    "source": "参考景德镇元青花白釉泛青底与苏麻离青纹饰综合均值参考色"
+  }
+]

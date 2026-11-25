@@ -65,7 +65,7 @@
         if (!container || typeof pentatonicNotesData === 'undefined') return;
 
         container.innerHTML = pentatonicNotesData.map((note, idx) => `
-            <button onclick="strikeAncientChime('${note.key}')" class="p-3.5 rounded-2xl bg-bg-main border border-border-light hover:border-tianqing hover:shadow-md transition-all flex flex-col items-center justify-between text-center group">
+            <button data-action="strikeAncientChime('${note.key}')" class="p-3.5 rounded-2xl bg-bg-main border border-border-light hover:border-tianqing hover:shadow-md transition-all flex flex-col items-center justify-between text-center group">
                 <span class="text-[10px] text-text-muted font-mono bg-yuebai px-2 py-0.5 rounded-full mb-1">${tr('键盘')} ${idx + 1} · ${note.frequency}Hz</span>
                 <div class="w-12 h-12 rounded-full bg-yuebai group-hover:bg-tianqing-deep flex items-center justify-center transition-colors shadow-inner my-1.5 border border-border-light">
                     <span class="font-serif-cn text-xl font-bold text-tianqing-deep group-hover:text-white transition-colors">${tr(note.note)}</span>

@@ -26,7 +26,16 @@ export default {
         {
             name: 'app-css',
             out: 'assets/app.css',
-            files: ['src/styles/legacy/style.css', 'src/styles/legacy/visual-enhance.css']
+            files: [
+                'src/styles/00-tokens.css',
+                'src/styles/legacy/style.css',
+                'src/styles/legacy/visual-enhance.css',
+                'src/styles/10-layout.css',
+                'src/styles/20-nav.css',
+                'src/styles/30-hero.css',
+                'src/styles/40-sections.css',
+                'src/styles/50-features.css'
+            ]
         }
     ],
     concat: [
@@ -41,19 +50,13 @@ export default {
             out: 'assets/legacy.js',
             files: [
                 'src/legacy/data-shims.js',
-                'src/legacy/oriental-ambient.js',
                 'src/legacy/three-scene.js',
                 'src/legacy/three-fx.js',
-                'src/legacy/modules/theme-manager.js',
-                'src/legacy/modules/webgl-bg.js',
-                'src/legacy/modules/navigation.js',
-                'src/legacy/modules/hero-showcase.js',
                 'src/legacy/modules/history-timeline.js',
                 'src/legacy/modules/kiln-map.js',
                 'src/legacy/modules/workshop-steps.js',
                 'src/legacy/modules/glaze-chemistry.js',
                 'src/legacy/modules/literati-tea.js',
-                'src/legacy/modules/archive-catalog.js',
                 'src/legacy/modules/scholar-exam.js',
                 'src/legacy/modules/vessel-comparison.js',
                 'src/legacy/modules/microscope-lab.js',
@@ -68,6 +71,7 @@ export default {
             ]
         },
         { name: 'legacy-pottery', out: 'assets/legacy-pottery.js', lazy: true, files: ['src/legacy/pottery-workshop.js'] },
+        { name: 'legacy-ambient-2d', out: 'assets/legacy-ambient-2d.js', lazy: true, files: ['src/legacy/oriental-ambient.js'] },
         { name: 'legacy-ai', out: 'assets/legacy-ai.js', lazy: true, files: ['src/legacy/ai-recognition.js'] }
     ],
     esm: [

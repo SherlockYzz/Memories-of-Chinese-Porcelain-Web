@@ -1,0 +1,182 @@
+/* ==========================================================================
+   设计变量（唯一来源）
+   颜色、阴影、动效曲线、全局层级（z-index）、背景透纱透明度都在这里定义。
+   其他样式文件只引用变量，不写死数值；全局层级一律用 --z-*（npm run check:style 会检查）。
+   ========================================================================== */
+
+:root {
+    /* 宋韵天青主色系 */
+    --tianqing: #7CAAB4;
+    --tianqing-deep: #3A7684;
+    --tianqing-darker: #224E59;
+    --tianqing-light: #A8D0D8;
+    --tianqing-ghost: rgba(124, 170, 180, 0.12);
+    --tianqing-glow: rgba(124, 170, 180, 0.35);
+
+    /* 皇家鎏金与朱砂御印点缀色 */
+    --gold-accent: #C8A25A;
+    --gold-light: #ECCF92;
+    --gold-glow: rgba(200, 162, 90, 0.28);
+    --cinnabar: #A8322D;
+
+    /* 月白与粉青 */
+    --yuebai: #E4EFF2;
+    --yuebai-warm: #F3F1EA;
+    --fenqing: #C5DFE4;
+
+    /* 宋韵宣纸雅集主题 (Light Mode) */
+    --bg-main: #F4F1E8;
+    --bg-alt: #FAF8F2;
+    --bg-warm: #EFECE2;
+    --bg-card: rgba(255, 253, 248, 0.90);
+    --bg-card-solid: #FCFBF7;
+    --bg-glass: rgba(252, 250, 244, 0.84);
+    --bg-nav: rgba(247, 244, 236, 0.88);
+
+    /* 文字系统 */
+    --text-title: #142029;
+    --text-body: #3E4E5C;
+    --text-muted: #6E808F;
+    --text-caption: #92A4B2;
+
+    /* 边框与分割 */
+    --border-light: rgba(58, 118, 132, 0.18);
+    --border-subtle: rgba(20, 32, 43, 0.07);
+    --border-hover: rgba(200, 162, 90, 0.65);
+
+    /* 阴影系统 */
+    --shadow-xs: 0 2px 6px rgba(15, 25, 35, 0.04);
+    --shadow-sm: 0 4px 14px rgba(15, 25, 35, 0.06);
+    --shadow-md: 0 10px 28px rgba(15, 25, 35, 0.09);
+    --shadow-lg: 0 18px 44px rgba(15, 25, 35, 0.13);
+    --shadow-xl: 0 26px 64px rgba(15, 25, 35, 0.18);
+    --shadow-card: 0 12px 34px -6px rgba(20, 35, 48, 0.08), 0 0 0 1px rgba(58, 118, 132, 0.12);
+    --shadow-card-hover: 0 22px 48px -10px rgba(20, 35, 48, 0.16), 0 0 0 1px rgba(200, 162, 90, 0.50);
+
+    /* 动效曲线 */
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==================== 玄金暗夜博物院主题 (Dark Museum Theme · 默认) ==================== */
+html[data-theme="dark"] {
+    --tianqing: #8BC2CE;
+    --tianqing-deep: #4A8F9F;
+    --tianqing-darker: #2D6472;
+    --tianqing-light: #BCE5EE;
+    --tianqing-ghost: rgba(139, 194, 206, 0.12);
+    --tianqing-glow: rgba(139, 194, 206, 0.36);
+
+    --gold-accent: #D6B16A;
+    --gold-light: #F3D99E;
+
+    --yuebai: rgba(24, 36, 46, 0.90);
+    --yuebai-warm: #141E27;
+    --fenqing: #253844;
+
+    --bg-main: #080C10;
+    --bg-alt: #0D141B;
+    --bg-warm: #0B1117;
+    --bg-card: rgba(17, 25, 34, 0.88);
+    --bg-card-solid: #131C25;
+    --bg-glass: rgba(14, 21, 28, 0.84);
+    --bg-nav: rgba(9, 14, 19, 0.90);
+
+    --text-title: #F2F6F9;
+    --text-body: #B4C4D0;
+    --text-muted: #7C90A0;
+    --text-caption: #546675;
+
+    --border-light: rgba(139, 194, 206, 0.18);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(214, 177, 106, 0.65);
+
+    --shadow-card: 0 14px 38px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(139, 194, 206, 0.14);
+    --shadow-card-hover: 0 22px 54px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(214, 177, 106, 0.52);
+}
+
+/* ---------- 全局层级：从底到顶，只在这里排序 ---------- */
+:root {
+    --z-bg: 0;               /* 3D 背景画布、纸纹底图 */
+    --z-content: 1;          /* 主内容与页脚（各板块内部自成层叠上下文） */
+    --z-float: 40;           /* 回到顶部等悬浮按钮 */
+    --z-nav: 50;             /* 顶栏 */
+    --z-nav-menu: 55;        /* 顶栏下拉菜单 */
+    --z-progress: 60;        /* 阅读进度条 */
+    --z-tour: 70;            /* 导览字幕条 */
+    --z-drawer-backdrop: 890;
+    --z-drawer: 900;         /* 移动端抽屉 */
+    --z-modal: 1000;         /* 弹窗 */
+    --z-fullscreen: 2000;    /* 三维展台全屏 */
+    --z-toast: 2500;         /* 消息提示 */
+    --z-skip: 4000;          /* “跳至主内容”链接 */
+}
+
+/* ---------- 背景与透纱：3D 背景要透得出来，可读性靠局部阅读纱而不是整块底色 ---------- */
+:root {
+    --surface-rgb: 244 241 232;        /* 板块基底色（= --bg-main） */
+    --surface-alt-rgb: 250 248 242;    /* 交替板块（= --bg-alt） */
+    --surface-tint-rgb: 228 239 242;   /* 月白色调板块 */
+    --veil-section: 0.16;              /* 板块底色透明度（原为 0.76–0.80，把 3D 背景完全盖住） */
+    --veil-section-alt: 0.22;
+    --veil-reading: 0.74;              /* 标题 / 段落背后的局部阅读纱中心透明度 */
+    --veil-card: 0.93;                 /* 卡片底色透明度：正文对比度由卡片自身保证 */
+    --card-rgb: 255 253 250;
+    --bg-paper-texture-opacity: 0.10;  /* 浅色主题纸纹底图 */
+    --ink-veil-rgb: 244 241 232;       /* 阅读纱颜色 */
+}
+
+html[data-theme="dark"] {
+    --surface-rgb: 8 12 16;
+    --surface-alt-rgb: 13 20 27;
+    --surface-tint-rgb: 16 26 34;
+    --veil-section: 0.20;
+    --veil-section-alt: 0.26;
+    --veil-reading: 0.70;
+    --veil-card: 0.90;
+    --card-rgb: 17 25 34;
+    --ink-veil-rgb: 8 12 16;
+}
+
+/* ---------- 间距、圆角、版心 ---------- */
+:root {
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-section: clamp(3.5rem, 7vw, 6rem);
+    --radius-sm: 0.5rem;
+    --radius-md: 0.875rem;
+    --radius-lg: 1.25rem;
+    --radius-pill: 9999px;
+    --page-max: 84rem;
+    --page-gutter: clamp(1rem, 3.2vw, 2rem);
+    --nav-height: 4rem;
+    --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+}
+
+/* ---------- 无障碍模式（由“无障碍”面板或系统偏好触发） ---------- */
+html[data-large-text] {
+    font-size: 118.75%;
+}
+
+html[data-high-contrast] {
+    --text-title: #000000;
+    --text-body: #10181e;
+    --text-muted: #2a3640;
+    --border-light: rgba(20, 32, 43, 0.55);
+    --veil-section: 0.9;
+    --veil-section-alt: 0.92;
+    --veil-reading: 0.96;
+    --veil-card: 1;
+}
+
+html[data-theme="dark"][data-high-contrast] {
+    --text-title: #ffffff;
+    --text-body: #eef3f6;
+    --text-muted: #cdd8df;
+    --border-light: rgba(255, 255, 255, 0.5);
+}

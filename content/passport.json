@@ -1,0 +1,17 @@
+{
+  "title": { "zh": "天青泥火 · 研学护照与印章收集", "en": "Study Passport & Seal Collection" },
+  "subtitle": {
+    "zh": "游览四幕板块并完成互动实验即可自动盖章；集齐后可题写姓名生成专属《宋瓷研学证书》",
+    "en": "Explore sections and complete labs to earn seals, then export your personalized certificate"
+  },
+  "stamps": [
+    { "id": "gallery", "act": "识", "title": "观器初识", "desc": "游览三维数字研鉴展馆", "seal": "观器" },
+    { "id": "archive", "act": "识", "title": "图录考据", "desc": "浏览历代名窑典藏图录", "seal": "考据" },
+    { "id": "texture", "act": "识", "title": "纹理洞察", "desc": "查看开片纹理与釉色分析", "seal": "析纹" },
+    { "id": "glaze", "act": "造", "title": "试釉良工", "desc": "完成或导出釉料实验报告", "seal": "试釉" },
+    { "id": "crackle", "act": "造", "title": "裂冰听韵", "desc": "在开片模拟器生成开片标本", "seal": "冰裂" },
+    { "id": "kintsugi", "act": "造", "title": "金缮补完", "desc": "完成一件破碎器物的金缮修复", "seal": "金缮" },
+    { "id": "tea", "act": "境", "title": "七汤雅集", "desc": "体验宋代点茶并生成结业笺", "seal": "点茶" },
+    { "id": "quiz", "act": "问", "title": "博古策问", "desc": "完成全部十二道殿试考题", "seal": "翰林" }
+  ]
+}

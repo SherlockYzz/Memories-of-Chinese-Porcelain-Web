@@ -1,0 +1,18 @@
+{
+  "name": "天青泥火 · 华夏古瓷三维研学空间",
+  "short_name": "天青泥火",
+  "description": "从泥到火，从器到鉴——数字化复原宋瓷的一生",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F4F1E8",
+  "theme_color": "#224E59",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "images/collection/SongGuanYao_Ultra_Preview.webp",
+      "sizes": "640x640",
+      "type": "image/webp"
+    }
+  ]
+}

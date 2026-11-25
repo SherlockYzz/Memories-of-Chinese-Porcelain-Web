@@ -10,7 +10,7 @@
  *   <div data-action-self="closeUniversalModal()">                   仅当点击目标是元素自身（遮罩层）
  *   <button data-action="closeUniversalModal(); loadComparisonModelTo3D('ru')">  顺序执行多个
  *
- * 特殊参数：$value（元素 value）、$checked、$el（元素自身）、$event、$data.xxx（dataset 字段）。
+ * 特殊参数：$value（元素 value）、$number（数值化的 value）、$checked、$el（元素自身）、$event、$data.xxx（dataset 字段）。
  *
  * 模块通过 defineModule({ actions: { name(ctx, ...args) {} } }) 登记动作；
  * ctx = { el, event, value }。动作名全站唯一，重复登记会告警。
@@ -135,6 +135,8 @@ function resolveArg(arg, ctx) {
     switch (arg.name) {
         case 'value':
             return el && 'value' in el ? el.value : undefined;
+        case 'number':
+            return el && 'value' in el ? Number(el.value) : undefined;
         case 'checked':
             return !!(el && el.checked);
         case 'el':

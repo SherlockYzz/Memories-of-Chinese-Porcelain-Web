@@ -264,7 +264,7 @@
 
         if (tabsContainer) {
             tabsContainer.innerHTML = microscopePresets.map(item => `
-                <button onclick="selectMicroscopePreset('${item.id}')" class="px-3 py-1 rounded-full text-xs font-serif-cn transition-all ${item.id === currentMicroPreset ? 'bg-tianqing-deep text-white shadow-sm ring-1 ring-amber-400/50' : 'bg-yuebai text-text-body hover:border-tianqing border border-transparent'}">
+                <button data-action="selectMicroscopePreset('${item.id}')" class="px-3 py-1 rounded-full text-xs font-serif-cn transition-all ${item.id === currentMicroPreset ? 'bg-tianqing-deep text-white shadow-sm ring-1 ring-amber-400/50' : 'bg-yuebai text-text-body hover:border-tianqing border border-transparent'}">
                     ${tr(item.name.split(' · ')[1] || item.name)}
                 </button>
             `).join('');

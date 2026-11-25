@@ -28,7 +28,7 @@
                         <i class="fa-solid fa-stamp text-amber-400" aria-hidden="true"></i>
                         <span id="collector-card-heading"></span>
                     </h3>
-                    <button type="button" onclick="closeCollectorCardModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center" aria-label="Close card preview">
+                    <button type="button" data-action="closeCollectorCardModal()" class="w-8 h-8 rounded-full hover:bg-yuebai flex items-center justify-center" aria-label="Close card preview">
                         <i class="fa-solid fa-xmark text-text-body" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -36,11 +36,11 @@
                     <img id="collector-card-preview-img" src="" alt="Collector Postcard" class="max-h-[58vh] w-auto object-contain">
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-3">
-                    <button type="button" onclick="downloadGeneratedCollectorCard()" class="px-6 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center gap-2">
+                    <button type="button" data-action="downloadGeneratedCollectorCard()" class="px-6 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center gap-2">
                         <i class="fa-solid fa-download" aria-hidden="true"></i>
                         <span id="collector-card-dl-label"></span>
                     </button>
-                    <button type="button" onclick="closeCollectorCardModal()" class="px-5 py-2.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn">
+                    <button type="button" data-action="closeCollectorCardModal()" class="px-5 py-2.5 rounded-full bg-yuebai text-text-body text-xs font-serif-cn">
                         <span id="collector-card-close-label"></span>
                     </button>
                 </div>

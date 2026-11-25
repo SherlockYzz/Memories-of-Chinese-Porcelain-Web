@@ -1,0 +1,57 @@
+<!-- ==================== 板块六：文人四艺 · 宋代雅集生活与建盏点茶百戏 ==================== -->
+<section class="section-surface" id="four-arts">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">宋代雅集生活美学 · 宋徽宗《大观茶论》活态交互</span>
+            <h2 data-i18n="fourarts.sectionTitle">文人四艺 · 宋代雅集生活与建盏点茶百戏</h2>
+            <p class="section-subtitle" data-i18n="fourarts.sectionSub">焚香、点茶、插花、挂画 · 亲手体验宋徽宗《大观茶论》“七汤击拂、盏面作画”之风雅</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-10" id="four-arts-container"></div>
+
+        <!-- 新增互动体验：宋代建盏“七汤点茶 · 水丹青茶百戏”互动工作台 -->
+        <div class="max-w-5xl mx-auto feature-card p-6 sm:p-8">
+            <div class="grid md:grid-cols-12 gap-8 items-center">
+                <div class="md:col-span-5 text-center">
+                    <div class="relative inline-block">
+                        <canvas id="tea-whisk-canvas" width="280" height="280" class="mx-auto rounded-full shadow-2xl cursor-crosshair border-4 border-[#3e2e21]" style="background: radial-gradient(circle, #2a201c 0%, #15100e 70%, #0d0a09 100%); width: 280px; height: 280px;"></canvas>
+                    </div>
+                    <p class="text-[11px] text-text-muted mt-2 font-serif-cn">
+                        <i class="fa-solid fa-hand-pointer text-amber-400 mr-1"></i>在建盏内按住滑动即可用茶筅击拂雪沫或手绘水丹青
+                    </p>
+                </div>
+
+                <div class="md:col-span-7 space-y-4 text-left">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="badge bg-tianqing-deep text-white text-xs">宋代非遗点茶模拟器 · 建阳乌金兔毫盏</span>
+                        <span id="tea-stage-badge" class="text-xs font-serif-cn text-amber-400 font-medium">五汤珠玑 · 粟文蟹眼</span>
+                    </div>
+                    <h3 class="text-xl font-serif-cn font-semibold text-text-title">晴窗细乳戏分茶 · 建盏七汤击拂与茶百戏体验</h3>
+                    <p class="text-xs text-text-body font-light leading-relaxed">
+                        宋代斗茶尚黑釉建盏：“茶色白，宜黑盏”。碾末注汤，以茶筅回环击拂七汤，使雪白茶沫紧咬盏沿久聚不散（谓之“咬盏”），更可以清水幻化出竹石花鸟，称“水丹青（茶百戏）”。
+                    </p>
+
+                    <!-- 乳花咬盏进度条 -->
+                    <div class="w-full h-2.5 rounded-full bg-bg-main overflow-hidden border border-border-light">
+                        <div id="tea-foam-progress" class="h-full bg-tianqing-deep transition-all" style="width: 65%;"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span class="text-xs font-serif-cn text-text-title font-medium block">【一键施展宋代茶百戏（水丹青）雅画】：</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button data-action="whiskTeaStep()" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-sm">
+                                <i class="fa-solid fa-rotate mr-1" aria-hidden="true"></i>茶筅注水击拂 (+1汤)
+                            </button>
+                            <button data-action="setTeaBailiMotif('bamboo')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors"><i class="fa-solid fa-seedling mr-1 text-tianqing-deep" aria-hidden="true"></i>清风疎竹</button>
+                            <button data-action="setTeaBailiMotif('plum')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors"><i class="fa-solid fa-fan mr-1 text-tianqing-deep" aria-hidden="true"></i>雪夜寒梅</button>
+                            <button data-action="setTeaBailiMotif('crane')" class="px-3.5 py-2 rounded-full bg-yuebai text-text-title text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors"><i class="fa-solid fa-feather-pointed mr-1 text-tianqing-deep" aria-hidden="true"></i>瑞鹤凌云</button>
+                            <button data-action="exportTeaCertificate()" class="px-3.5 py-2 rounded-full bg-amber-700 text-white text-xs font-serif-cn hover:bg-tianqing-deep transition-colors"><i class="fa-solid fa-stamp mr-1" aria-hidden="true"></i>生成点茶结业笺</button>
+                            <button data-action="resetTeaBowl()" class="px-3.5 py-2 rounded-full border border-border-light text-text-muted text-xs font-serif-cn hover:text-text-title transition-colors">重新候汤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

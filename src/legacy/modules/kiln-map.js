@@ -95,7 +95,7 @@
         }
 
         spotsContainer.innerHTML = kilnGeographyData.map(item => `
-            <button class="kiln-map-spot ${item.id === selectedKilnId ? 'active' : ''}" style="top:${item.y}%; left:${item.x}%;" onclick="selectKilnSpot('${item.id}')" title="${tr(item.name)}" aria-label="${tr(item.name)}">
+            <button class="kiln-map-spot ${item.id === selectedKilnId ? 'active' : ''}" style="top:${item.y}%; left:${item.x}%;" data-action="selectKilnSpot('${item.id}')" title="${tr(item.name)}" aria-label="${tr(item.name)}">
                 <span class="spot-ping"></span>
                 <span class="spot-dot"></span>
                 <span class="spot-label">${tr(item.shortName || item.name.split(' · ')[0])}</span>
@@ -156,7 +156,7 @@
 
                 <div class="flex items-center justify-between text-xs pt-1">
                     <span class="text-text-muted text-[11px]">*${tr('金色虚线为御贡漕运路线，青色虚线为海上丝路')}</span>
-                    <button onclick="loadComparisonModelTo3D(${k.modelIdx || 0})" class="px-4 py-2 rounded-full bg-tianqing-deep text-white font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shadow-sm">
+                    <button data-action="loadComparisonModelTo3D(${k.modelIdx || 0})" class="px-4 py-2 rounded-full bg-tianqing-deep text-white font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-cube text-[10px]" aria-hidden="true"></i>
                         <span>${tr('调入3D展厅观摩')}</span>
                     </button>

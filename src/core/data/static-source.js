@@ -22,6 +22,10 @@ import navigation from '../../../content/navigation.json';
 import site from '../../../content/site.json';
 import credits from '../../../content/credits.json';
 import scene from '../../../content/scene.json';
+import crackleLab from '../../../content/crackle-lab.json';
+import kintsugi from '../../../content/kintsugi.json';
+import firingTimeline from '../../../content/firing-timeline.json';
+import passport from '../../../content/passport.json';
 
 export const STATIC_COLLECTIONS = Object.freeze({
     vessels,
@@ -41,7 +45,11 @@ export const STATIC_COLLECTIONS = Object.freeze({
     navigation,
     site,
     credits,
-    scene
+    scene,
+    'crackle-lab': crackleLab,
+    kintsugi,
+    'firing-timeline': firingTimeline,
+    passport
 });
 
 export const staticSource = {

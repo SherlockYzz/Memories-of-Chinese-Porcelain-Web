@@ -1,0 +1,110 @@
+<!-- ==================== 板块五：东方色谱 · 传统古瓷釉色美学与矿物化学实验室 ==================== -->
+<section class="section-surface section-surface--tint" id="colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="section-title-group">
+            <span class="badge bg-tianqing-deep text-white mb-3">华夏传统色彩美学 · 硅酸盐过渡金属离子显色机理</span>
+            <h2 data-i18n="colors.sectionTitle">东方色谱 · 古瓷传统釉色美学与矿物化学实验室</h2>
+            <p class="section-subtitle" data-i18n="colors.sectionSub">雨过天青、粉青如玉、月白莹霜、玫瑰紫变、曜变乌金 · 实时模拟铁铜钴矿物配比与窑炉气氛呈色机理</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- 新增国赛核心亮点：古瓷釉料矿物化学配比与还原焰/氧化焰实时试烧实验室 -->
+        <div class="max-w-6xl mx-auto mb-10 feature-card p-6 sm:p-8" id="glaze-chem-lab">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-6 border-b border-border-light">
+                <div>
+                    <span class="badge bg-amber-700 text-white text-xs mb-1"><i class="fa-solid fa-flask mr-1"></i>跨学科数字文博实验室 (化学 × 材料物理 × 非遗)</span>
+                    <h3 class="text-xl font-serif-cn font-semibold text-text-title">土与火的炼金术 · 古瓷釉料氧化物配比与窑变气氛仿真器</h3>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button data-action="applyChemPreset('ru')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">汝窑天青配方</button>
+                    <button data-action="applyChemPreset('ding')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">定窑牙白配方</button>
+                    <button data-action="applyChemPreset('jun')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">钧窑铜红配方</button>
+                    <button data-action="applyChemPreset('jian')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">建盏乌金配方</button>
+                    <button data-action="applyChemPreset('qinghua')" class="px-3 py-1.5 rounded-full bg-yuebai text-text-title border border-border-light text-xs font-serif-cn hover:bg-tianqing hover:text-white transition-colors">宣德青花配方</button>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- 左侧 6列：四大矿物配比滑块与窑炉气氛开关 -->
+                <div class="lg:col-span-6 space-y-4 text-left text-xs">
+                    <div class="p-3.5 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                        <div class="flex justify-between font-serif-cn">
+                            <span class="text-text-title font-medium">① 氧化铁 (Fe₂O₃ · 青瓷/黑瓷核心呈色剂)</span>
+                            <strong id="chem-fe-val" class="font-mono text-tianqing-deep">1.8%</strong>
+                        </div>
+                        <input id="chem-fe-slider" type="range" min="0.2" max="9.0" step="0.2" value="1.8" data-action-input="updateGlazeChemistrySimulation()" class="w-full">
+                        <p class="text-[11px] text-text-muted">0.4%定窑白瓷 · 1.8%汝窑天青 · 2.5%龙泉粉青 · >8%建盏黑釉析晶</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                        <div class="flex justify-between font-serif-cn">
+                            <span class="text-text-title font-medium">② 氧化铜 (CuO · 钧窑玫瑰紫/铜绿呈色剂)</span>
+                            <strong id="chem-cu-val" class="font-mono text-amber-400">0.0%</strong>
+                        </div>
+                        <input id="chem-cu-slider" type="range" min="0.0" max="1.8" step="0.1" value="0.0" data-action-input="updateGlazeChemistrySimulation()" class="w-full">
+                        <p class="text-[11px] text-text-muted">还原焰下生成纳米胶体铜（Cu⁰）呈玫瑰紫；氧化焰下生成 Cu²⁺ 呈翠绿色</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                            <div class="flex justify-between font-serif-cn">
+                                <span class="text-text-title font-medium">③ 苏麻离青 (CoO)</span>
+                                <strong id="chem-co-val" class="font-mono text-tianqing-deep">0.0%</strong>
+                            </div>
+                            <input id="chem-co-slider" type="range" min="0.0" max="2.0" step="0.1" value="0.0" data-action-input="updateGlazeChemistrySimulation()" class="w-full">
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-bg-main border border-border-light space-y-1.5">
+                            <div class="flex justify-between font-serif-cn">
+                                <span class="text-text-title font-medium">④ 玛瑙微晶散射</span>
+                                <strong id="chem-agate-val" class="font-mono text-amber-400">18%</strong>
+                            </div>
+                            <input id="chem-agate-slider" type="range" min="0" max="35" step="1" value="18" data-action-input="updateGlazeChemistrySimulation()" class="w-full">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1 flex-wrap gap-2">
+                        <span class="font-serif-cn text-text-title font-medium">⑤ 1300℃ 窑炉烧成气氛：</span>
+                        <div class="flex items-center gap-2">
+                            <button class="chem-atm-btn active" data-atm="reduction" data-action="setGlazeChemAtmosphere('reduction')"><i class="fa-solid fa-fire mr-1" aria-hidden="true"></i>松柴还原焰 (CO)</button>
+                            <button class="chem-atm-btn" data-atm="oxidation" data-action="setGlazeChemAtmosphere('oxidation')"><i class="fa-solid fa-wind mr-1" aria-hidden="true"></i>富氧氧化焰 (O₂)</button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-text-muted pt-1 border-t border-border-light/60">
+                        <i class="fa-solid fa-book-open mr-1 text-tianqing-deep" aria-hidden="true"></i>
+                        说明：氧化铁/氧化铜/钴料比例为<strong>教学示意模型</strong>，参考范围引自李家治《中国科学技术史·陶瓷卷》(1998) 与 Nigel Wood <i>Chinese Glazes</i> (1999)。
+                    </p>
+                </div>
+
+                <!-- 右侧 6列：实时烧成玉璧试釉盘与化学机理输出 -->
+                <div class="lg:col-span-6 p-6 rounded-2xl bg-bg-main border border-border-light flex flex-col sm:flex-row items-center gap-6 text-left">
+                    <div class="shrink-0 text-center">
+                        <canvas id="glaze-chem-disc-canvas" width="210" height="210" class="mx-auto block"></canvas>
+                        <span class="text-[11px] text-text-muted font-serif-cn mt-2 block">实时试釉玉璧（教学示意）</span>
+                    </div>
+                    <div class="space-y-3 flex-1">
+                        <span class="badge bg-tianqing-deep text-white text-[11px]">热化学呈色机理</span>
+                        <h4 id="chem-result-title" class="text-lg font-serif-cn font-semibold text-text-title">北宋汝官窑 · 雨过天青玛瑙釉</h4>
+                        <div id="chem-result-equation" class="p-2.5 rounded-lg bg-yuebai font-mono text-[11px] text-amber-400 border border-border-light">
+                            Fe₂O₃ + CO (1250℃) → 2FeO + CO₂↑
+                        </div>
+                        <p id="chem-result-desc" class="text-xs text-text-body font-light leading-relaxed"></p>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="chem-apply-3d-btn" class="px-4 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-cube text-amber-200" aria-hidden="true"></i>
+                                <span>同步至 3D 展台试烧</span>
+                            </button>
+                            <button type="button" data-action="exportGlazeFormulaCard()" class="px-4 py-2 rounded-full bg-yuebai border border-border-light text-text-title text-xs font-serif-cn hover:border-tianqing transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-download text-tianqing-deep" aria-hidden="true"></i>
+                                <span>导出釉方研学卡</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 传统八大釉色色谱卡片网格 -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" id="traditional-colors-grid"></div>
+    </div>
+</section>
