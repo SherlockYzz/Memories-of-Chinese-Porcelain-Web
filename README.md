@@ -127,7 +127,7 @@ flowchart TD
 - **`src/styles/`（单一视觉令牌样式体系）**：
   - `00-tokens.css`（集中管理全站色彩、`--z-*` 层级、阴影与 `.section-surface` 透纱透明度）→ `10-layout.css` → `20-nav.css` → `30-hero.css` → `40-sections.css` → `50-features.css` 及 `legacy/`。
 - **`tools/` 与构建分块产物（`tools/build.mjs` & `tools/build.config.mjs`）**：
-  - 确定性构建输出：**首屏必载** `vendor-icons.css` + `app.css` + `vendor.js` + `app.js` + `index.html`（共约 `1239.1 KB`），以及 **5 个按需懒加载分块**：`legacy`（`245.1 KB`）、`legacy-pottery`（`47.4 KB`）、`legacy-ambient-2d`（`6.1 KB`）、`legacy-ai`（`422.8 KB`）、`i18n-en`（`655.7 KB`），所有文件均注入短内容哈希以配合 `sw.js` 缓存隔离。
+  - 确定性构建输出：**首屏必载** `vendor-icons.css` + `app.css` + `vendor.js` + `app.js` + `index.html`（共约 `1239.8 KB`），以及 **5 个按需懒加载分块**：`legacy`（`245.3 KB`）、`legacy-pottery`（`47.4 KB`）、`legacy-ambient-2d`（`6.1 KB`）、`legacy-ai`（`33.1 KB`，标本图外置为 WebP）、`i18n-en`（`655.7 KB`），所有文件均注入短内容哈希以配合 `sw.js` 缓存隔离。
 
 ### 2. 四维质量门禁与自动化运维流水线
 - **`npm run check`**（`tools/check.mjs`）：串行执行 `check-content`（JSON 必填字段与 152+ 静态资源实存）、`check-i18n`（中英词条严格对齐与 HTML 键覆盖）、`check-style`（现代样式零违规与 `!important` 计数守护）与 `check-code`（禁用内联事件、禁用 emoji、禁用 ESM 模块挂载全局 `window` 变量）。
