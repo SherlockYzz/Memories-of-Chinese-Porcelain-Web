@@ -141,22 +141,32 @@ function scheduleGalleryBoot() {
         { capture: true }
     );
 
-    // 桌面端等待首屏 3D 器物完成首次渲染（hero:ready）后再温和预热次屏展馆，避免三路 WebGL 着色器撞车
+    // 桌面端：legacy 已由 <link rel="preload" media="(min-width:768px)"> 在 0ms 并行下进缓存，
+    // 等到 Hero3D 首帧完成渲染（hero:ready + 20ms）或 1500ms 兜底再挂载执行，彻底消除首屏插队卡顿；
+    // 然后于 1200ms 空闲期温和预热次屏 3D 展馆。
     const saveData = !!(navigator.connection && navigator.connection.saveData);
-    if (!saveData && window.innerWidth >= 768) {
-        const idleWarm = () => {
-            if (threeBooted) return;
-            if (typeof requestIdleCallback === 'function') {
-                requestIdleCallback(() => ensureThreeJS(), { timeout: 1200 });
-            } else {
-                setTimeout(ensureThreeJS, 200);
-            }
-        };
-        let fallbackTimer = setTimeout(idleWarm, 12000);
+    if (window.innerWidth >= 768) {
+        const execDesktopLegacy = () => ensureLegacy('high');
+        const legacyFallback = setTimeout(execDesktopLegacy, 1500);
         core.bus.once('hero:ready', () => {
-            clearTimeout(fallbackTimer);
-            setTimeout(idleWarm, 1200);
+            clearTimeout(legacyFallback);
+            setTimeout(execDesktopLegacy, 20);
         });
+        if (!saveData) {
+            const idleWarm = () => {
+                if (threeBooted) return;
+                if (typeof requestIdleCallback === 'function') {
+                    requestIdleCallback(() => ensureThreeJS(), { timeout: 1200 });
+                } else {
+                    setTimeout(ensureThreeJS, 200);
+                }
+            };
+            const fallbackTimer = setTimeout(idleWarm, 12000);
+            core.bus.once('hero:ready', () => {
+                clearTimeout(fallbackTimer);
+                setTimeout(idleWarm, 1200);
+            });
+        }
     }
 }
 
@@ -176,11 +186,6 @@ actions.register(
 );
 
 async function boot() {
-    // 桌面端不阻塞 DCL 并行预取 legacy；移动端让位给首屏文字与 Hero3D
-    if (window.innerWidth >= 768) {
-        ensureLegacy('high');
-    }
-
     // 阶段一：首屏核心（导航、主题、背景与首屏展台容器）
     registry.bootPhase(1);
     core.installLegacyLazyChunks();
