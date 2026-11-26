@@ -372,12 +372,23 @@ let cachedStudioEnvCanvases = null;
 function buildStudioEnvCanvases() {
     if (cachedStudioEnvCanvases) return cachedStudioEnvCanvases;
     const S = 128;
+    const LO = 24;
+    // 先在 24px 小画布按 128 逻辑坐标绘制，再平滑放大到 128px：零成本预模糊，
+    // 替代 PMREM 卷积，使光窗在高光釉面上呈柔和光晕而非硬边格子
     const makeFace = (drawFn) => {
+        const lo = document.createElement('canvas');
+        lo.width = LO;
+        lo.height = LO;
+        const lctx = lo.getContext('2d');
+        lctx.scale(LO / S, LO / S);
+        drawFn(lctx, S);
         const cv = document.createElement('canvas');
         cv.width = S;
         cv.height = S;
         const ctx = cv.getContext('2d');
-        drawFn(ctx, S);
+        ctx.imageSmoothingEnabled = true;
+        if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(lo, 0, 0, S, S);
         return cv;
     };
     const fillGrad = (ctx, S, stops) => {
@@ -392,7 +403,7 @@ function buildStudioEnvCanvases() {
         g.addColorStop(0.55, c1);
         g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g;
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(0, 0, S, S);
     };
 
     // 右侧 (+X)：天青色冷辅光长条窗，勾勒器物右缘冷色轮廓
@@ -415,11 +426,6 @@ function buildStudioEnvCanvases() {
         wg.addColorStop(1, 'rgba(255,224,182,0.88)');
         ctx.fillStyle = wg;
         ctx.fillRect(24, 22, 80, 74);
-        ctx.fillStyle = 'rgba(12,18,22,0.72)';
-        for (let i = 1; i < 4; i++) {
-            ctx.fillRect(24 + 20 * i - 1.5, 22, 3, 74);
-            ctx.fillRect(24, 22 + 18.5 * i - 1.5, 80, 3);
-        }
         addGlow(ctx, 64, 59, 60, 'rgba(255,232,195,0.34)', 'rgba(255,212,158,0.10)');
     });
 

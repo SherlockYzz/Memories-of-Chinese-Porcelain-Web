@@ -1183,12 +1183,6 @@ export default defineModule({
     },
     destroy: destroy,
     onThemeChange: onThemeChange,
-    actions: {
-        toggleWebGLBackgroundMotion: function () {
-            const next = !isEnabled();
-            setEnabled(next);
-            return next;
-        }
-    },
+    // 背景动效开关动作统一由 navigation 模块登记（toggleWebGLBackgroundMotion），此处仅暴露 api
     api: { setEnabled: setEnabled, isEnabled: isEnabled, getStats: getStats, setPaused: setPausedExternal, pulse: triggerShockwave }
 });
