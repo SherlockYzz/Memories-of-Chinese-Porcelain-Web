@@ -1106,6 +1106,13 @@ function buildPotteryBumpTexture() {
 }
 
 function buildStudioEnvMap(renderer) {
+    const fastCubeFn = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.glaze && window.__TQ__.core.glaze.createStudioCubeEnv;
+    if (typeof fastCubeFn === 'function') {
+        try {
+            const cube = fastCubeFn();
+            if (cube) return cube;
+        } catch (_) { }
+    }
     try {
         const pmrem = new THREE.PMREMGenerator(renderer);
         pmrem.compileEquirectangularShader();
@@ -1319,13 +1326,17 @@ function updatePotteryMaterial() {
 function initThreePottery() {
     if (typeof THREE === 'undefined' || !potCanvas) return false;
     try {
+        const isMobilePot = typeof window !== 'undefined' && (
+            window.innerWidth < 768 ||
+            ((navigator.maxTouchPoints || 0) > 0 && Math.min(window.innerWidth, window.innerHeight || 900) < 900)
+        );
         potRenderer = new THREE.WebGLRenderer({
             canvas: potCanvas,
-            antialias: true,
+            antialias: !isMobilePot,
             alpha: true,
-            preserveDrawingBuffer: true
+            preserveDrawingBuffer: !isMobilePot
         });
-        potRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        potRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobilePot ? 1.15 : 2));
         potRenderer.setSize(potCanvas.width, potCanvas.height, false);
         potRenderer.outputEncoding = THREE.sRGBEncoding;
         potRenderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -2016,6 +2027,7 @@ function downloadPotteryArtwork() {
     ctx.font = '14px monospace';
     ctx.fillText(`STUDIO ARCHIVE ID: #TC-${Date.now().toString().slice(-6)}   |   1300℃ DRAGON KILN CERTIFIED`, 56, 114);
 
+    if (potRenderer && potScene && potCamera) potRenderer.render(potScene, potCamera);
     ctx.fillStyle = '#18130F';
     ctx.fillRect(160, 140, 560, 450);
     ctx.drawImage(potCanvas, 160, 140, 560, 450);

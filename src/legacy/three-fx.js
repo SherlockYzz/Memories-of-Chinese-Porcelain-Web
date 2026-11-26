@@ -362,7 +362,7 @@
             if (particleSystem.geometry) particleSystem.geometry.dispose();
             if (particleSystem.material) particleSystem.material.dispose();
         }
-        const N = IS_TOUCH ? 110 : 200;
+        const N = IS_TOUCH ? 48 : 200;
         const pos = new Float32Array(N * 3);
         const base = new Float32Array(N * 3);
         const seed = new Float32Array(N * 3);
@@ -752,7 +752,7 @@
     const GLAZE_LOOK = { clearcoat: 1.0, clearcoatRoughness: 0.035, envMapIntensity: 1.35 };
     FX.polish = function polish(group) {
         if (!group) return group;
-        const maxA = Math.min(4, renderer && renderer.capabilities ? renderer.capabilities.getMaxAnisotropy() : 4);
+        const maxA = (IS_TOUCH || window.innerWidth < 768) ? 1 : Math.min(4, renderer && renderer.capabilities ? renderer.capabilities.getMaxAnisotropy() : 4);
         group.traverse((o) => {
             if (!o.isMesh || !o.material || o.material.isMeshBasicMaterial) return;
             const apply = (m) => {
@@ -984,6 +984,7 @@
     };
     FX.warmBufferTick = function () {
         if (slowNet || document.hidden || warmBufferInflight) return;
+        if (typeof activeLoadingCount === 'number' && activeLoadingCount > 0) return; // 用户当前有模型在加载时立即退避让出移动网络带宽
         if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;
         const fetchShared = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.fetchGlbBuffer;
         if (!fetchShared) {
@@ -1106,26 +1107,31 @@
      * ==================================================================== */
     FX.boot = function boot() {
         if (!scene || !renderer || !camera || FX.ready) return;
+        const isMobileFx = IS_TOUCH || window.innerWidth < 768;
 
         // —— 渲染器 ——
-        perf.dpr = Math.min(window.devicePixelRatio || 1, IS_TOUCH ? 1.35 : 1.75);
+        perf.dpr = Math.min(window.devicePixelRatio || 1, isMobileFx ? 1.1 : 1.75);
         perf.min = 1;
         renderer.setPixelRatio(perf.dpr);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.1;
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.enabled = !isMobileFx;
+        if (!isMobileFx) {
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        }
 
-        // —— 主光阴影：移动端 512 兼顾性能，桌面 1024 兼顾细腻轮廓 ——
+        // —— 主光阴影：移动端关闭实时 ShadowMap（依靠下方 FX.shadows 接触阴影），桌面保留 1024 柔和轮廓 ——
         if (lightMain) {
-            const s = lightMain.shadow;
-            const shadowSz = IS_TOUCH ? 512 : 1024;
-            s.mapSize.set(shadowSz, shadowSz);
-            const sc = s.camera;
-            sc.left = -2.4; sc.right = 2.4; sc.top = 2.8; sc.bottom = -2.2; sc.near = 2; sc.far = 14;
-            sc.updateProjectionMatrix();
-            s.bias = -0.00012; s.normalBias = 0.022;
-            if (s.map) { s.map.dispose(); s.map = null; }
+            lightMain.castShadow = !isMobileFx;
+            if (!isMobileFx) {
+                const s = lightMain.shadow;
+                s.mapSize.set(1024, 1024);
+                const sc = s.camera;
+                sc.left = -2.4; sc.right = 2.4; sc.top = 2.8; sc.bottom = -2.2; sc.near = 2; sc.far = 14;
+                sc.updateProjectionMatrix();
+                s.bias = -0.00012; s.normalBias = 0.022;
+                if (s.map) { s.map.dispose(); s.map = null; }
+            }
         }
 
         // —— 地面羽化：圆形 + 径向 alphaMap，边缘融入背景渐变，彻底消除地平线硬切 ——
@@ -1135,7 +1141,7 @@
             fg.addColorStop(0.0, '#fff'); fg.addColorStop(0.45, '#cfcfcf'); fg.addColorStop(1.0, '#000');
             fx.fillStyle = fg; fx.fillRect(0, 0, 256, 256);
             roomFloorMesh.geometry.dispose();
-            roomFloorMesh.geometry = new THREE.CircleGeometry(7.5, 72);
+            roomFloorMesh.geometry = new THREE.CircleGeometry(7.5, isMobileFx ? 40 : 72);
             roomFloorMesh.material.alphaMap = new THREE.CanvasTexture(fc);
             roomFloorMesh.material.transparent = true;
             roomFloorMesh.material.needsUpdate = true;
@@ -1147,10 +1153,14 @@
         FX.shadows = [makeShadowMesh(sTex), makeShadowMesh(sTex)];
         FX.shadows.forEach(s => scene.add(s));
 
-        // —— 丁达尔光 / 微尘 / 青烟 ——
-        FX.rays = buildGodRays(); scene.add(FX.rays);
+        // —— 丁达尔光 / 微尘 / 青烟：移动端省略大面积半透明过绘，桌面保留完整光影氛围 ——
+        if (!isMobileFx) {
+            FX.rays = buildGodRays(); scene.add(FX.rays);
+        }
         buildDust();
-        FX.smoke = buildSmoke(); scene.add(FX.smoke);
+        if (!isMobileFx) {
+            FX.smoke = buildSmoke(); scene.add(FX.smoke);
+        }
 
         // —— 泥金山水屏风（替换原平板屏风） ——
         try {

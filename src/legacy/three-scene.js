@@ -92,8 +92,24 @@ let vesselVibration = 0;
 // 经 src/legacy/data-shims.js 以同名常量提供（porcelainModelsData / bottomConnoisseurshipData /
 // masterTreasuresMeta / scannedModelsMeta / glazePalettes）。本文件不再内嵌内容数据。
 
+const IS_MOBILE_PERF = (typeof window !== 'undefined') && (
+    window.innerWidth < 768 ||
+    ((navigator.maxTouchPoints || 0) > 0 && Math.min(window.innerWidth, window.innerHeight || 900) < 900)
+);
+
+/** 创建器物贴图画布：桌面端全尺寸 1024×512，移动端 0.5x（512×256）提升绘制与显存上传速度 4 倍 */
+function createPorcelainTexCanvas(logicalW = 1024, logicalH = 512) {
+    const scale = IS_MOBILE_PERF ? 0.5 : 1;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(logicalW * scale);
+    canvas.height = Math.round(logicalH * scale);
+    const ctx = canvas.getContext('2d');
+    if (scale !== 1) ctx.scale(scale, scale);
+    return { canvas, ctx, W: logicalW, H: logicalH };
+}
+
 // --- 模型队列与加载控制器 (移动端限并发 2 / 桌面端 3，优先调度主器物，与环境道具分离错峰) ---
-const MAX_CONCURRENT_MODELS = (typeof window !== 'undefined' && window.innerWidth < 768) ? 2 : 3;
+const MAX_CONCURRENT_MODELS = IS_MOBILE_PERF ? 2 : 3;
 const MODEL_TIMEOUT_MS = 18000; // 跨境访问 GitHub Pages 适当放宽下载超时，避免大体积 GLB 中途被误杀
 const MAX_MODEL_RETRIES = 3;
 
@@ -582,12 +598,7 @@ function getDingCarvedBundle() {
  */
 function getJunYaobianTexture() {
     if (textureCache.junTex) return textureCache.junTex;
-    const W = 1024;
-    const H = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
+    const { canvas, ctx, W, H } = createPorcelainTexCanvas(1024, 512);
 
     // 沉稳海棠绛紫 / 茄皮紫底色渐变（绝不用亮粉与荧光蓝）
     const grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -712,12 +723,7 @@ function getJianYaobianTexture() {
  */
 function getQinghuaTexture() {
     if (textureCache.qinghuaTex) return textureCache.qinghuaTex;
-    const W = 1024;
-    const H = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
+    const { canvas, ctx, W, H } = createPorcelainTexCanvas(1024, 512);
 
     const baseGrad = ctx.createLinearGradient(0, 0, 0, H);
     baseGrad.addColorStop(0.0, '#e3e9ec');
@@ -868,12 +874,7 @@ function getQinghuaTexture() {
  */
 function getXuandeJihongTexture() {
     if (textureCache.jihongTex) return textureCache.jihongTex;
-    const W = 1024;
-    const H = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
+    const { canvas, ctx, W, H } = createPorcelainTexCanvas(1024, 512);
 
     const grad = ctx.createLinearGradient(0, 0, 0, H);
     grad.addColorStop(0.0, '#e8e4da');  // 宣德霁红经典“灯草边”口沿白釉
@@ -913,12 +914,7 @@ function getXuandeJihongTexture() {
  */
 function getQianlongYangcaiTexture() {
     if (textureCache.yangcaiTex) return textureCache.yangcaiTex;
-    const W = 1024;
-    const H = 512;
-    const canvas = document.createElement('canvas');
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
+    const { canvas, ctx, W, H } = createPorcelainTexCanvas(1024, 512);
 
     // 明黄锦地底色渐变
     const bg = ctx.createLinearGradient(0, 0, 0, H);
@@ -1665,27 +1661,30 @@ function createRealistic3DEnvironment() {
             table.position.set(0, TABLE_SURFACE_Y - 0.783, 0);
             table.traverse((child) => {
                 if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
+                    child.castShadow = !IS_MOBILE_PERF;
+                    child.receiveShadow = !IS_MOBILE_PERF;
                 }
             });
             roomStudioGroup.add(table);
             roomTableMesh = table;
         });
 
-        envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
-            const censer = gltf.scene;
-            censer.position.set(-0.55, TABLE_SURFACE_Y, -0.22);
-            censer.scale.set(0.85, 0.85, 0.85);
-            censer.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
+        // 移动端跳过 300KB/7k面的装饰香炉以释放弱网带宽与移动 GPU 顶点预算；桌面保持完整雅室道具
+        if (!IS_MOBILE_PERF) {
+            envLoader.load('models/environment/bronze_censer.glb', (gltf) => {
+                const censer = gltf.scene;
+                censer.position.set(-0.55, TABLE_SURFACE_Y, -0.22);
+                censer.scale.set(0.85, 0.85, 0.85);
+                censer.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                roomStudioGroup.add(censer);
+                roomCenserMesh = censer;
             });
-            roomStudioGroup.add(censer);
-            roomCenserMesh = censer;
-        });
+        }
 
         if (!(window.VisualFX && window.VisualFX.screen)) {
             envLoader.load('models/environment/scholar_screen.glb', (gltf) => {
@@ -1962,15 +1961,23 @@ function buildVirtualMuseumHall() {
         booth.add(podiumGold);
 
         const glassBell = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.75, 0.75, 1.85, 36, 1, true),
-            new THREE.MeshPhysicalMaterial({
-                color: 0xd8f0f5,
-                transparent: true,
-                opacity: 0.13,
-                roughness: 0.05,
-                metalness: 0.05,
-                clearcoat: 1.0
-            })
+            new THREE.CylinderGeometry(0.75, 0.75, 1.85, IS_MOBILE_PERF ? 20 : 36, 1, true),
+            IS_MOBILE_PERF
+                ? new THREE.MeshStandardMaterial({
+                    color: 0xd8f0f5,
+                    transparent: true,
+                    opacity: 0.14,
+                    roughness: 0.16,
+                    metalness: 0.05
+                })
+                : new THREE.MeshPhysicalMaterial({
+                    color: 0xd8f0f5,
+                    transparent: true,
+                    opacity: 0.13,
+                    roughness: 0.05,
+                    metalness: 0.05,
+                    clearcoat: 1.0
+                })
         );
         glassBell.position.y = 0.42;
         glassBell.userData = { vitrineIndex: idx };
@@ -2021,18 +2028,19 @@ function initThreeJS() {
 
         renderer = new THREE.WebGLRenderer({
             canvas,
-            antialias: true,
+            antialias: !IS_MOBILE_PERF,
             alpha: false,
-            preserveDrawingBuffer: true, // 支持一键导出馆藏高清3D快照
+            preserveDrawingBuffer: !IS_MOBILE_PERF, // 桌面支持快照直接读取；移动端释放 TBDR 帧缓冲回写，导出前同步重绘一帧
             powerPreference: 'high-performance'
         });
-        const isLowDevice = window.innerWidth < 768 || (navigator.hardwareConcurrency || 4) <= 2;
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isLowDevice ? 1.25 : 1.5));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, IS_MOBILE_PERF ? 1.1 : 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.98;
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.enabled = !IS_MOBILE_PERF;
+        if (!IS_MOBILE_PERF) {
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        }
         renderer.localClippingEnabled = false;
 
         clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), clipOffset);
@@ -2044,30 +2052,33 @@ function initThreeJS() {
             scene.environment = envMapTexture;
         }
 
-        ambientLight = new THREE.AmbientLight(0xdbe8ec, 0.72);
+        ambientLight = new THREE.AmbientLight(0xdbe8ec, IS_MOBILE_PERF ? 0.85 : 0.72);
         scene.add(ambientLight);
 
-        lightMain = new THREE.DirectionalLight(0xfff6e8, 1.85);
+        lightMain = new THREE.DirectionalLight(0xfff6e8, IS_MOBILE_PERF ? 2.0 : 1.85);
         lightMain.position.set(3.2, 5.2, 4.0);
-        lightMain.castShadow = true;
-        const shadowRes = (typeof window !== 'undefined' && window.innerWidth < 768) ? 512 : 1024;
-        lightMain.shadow.mapSize.width = shadowRes;
-        lightMain.shadow.mapSize.height = shadowRes;
-        lightMain.shadow.bias = -0.0002;
-        lightMain.shadow.normalBias = 0.035;
+        lightMain.castShadow = !IS_MOBILE_PERF;
+        if (!IS_MOBILE_PERF) {
+            lightMain.shadow.mapSize.width = 1024;
+            lightMain.shadow.mapSize.height = 1024;
+            lightMain.shadow.bias = -0.0002;
+            lightMain.shadow.normalBias = 0.035;
+        }
         scene.add(lightMain);
 
-        lightFill = new THREE.DirectionalLight(0x88b8c8, 0.95);
+        lightFill = new THREE.DirectionalLight(0x88b8c8, IS_MOBILE_PERF ? 1.05 : 0.95);
         lightFill.position.set(-3.8, 2.2, -2.5);
         scene.add(lightFill);
 
+        // 移动端省略 PointLight / SpotLight 以削减片元循环光照 Shader 编译耗时，依托 CubeTexture 与双主灯保证质感
         lightRim = new THREE.PointLight(0xffe4b5, 0.95, 14);
         lightRim.position.set(0, 3.8, -3.2);
-        scene.add(lightRim);
-
         topSpotLight = new THREE.SpotLight(0xffffff, 1.35, 15, Math.PI / 5, 0.65, 1.5);
         topSpotLight.position.set(0, 5.5, 0.5);
-        scene.add(topSpotLight);
+        if (!IS_MOBILE_PERF) {
+            scene.add(lightRim);
+            scene.add(topSpotLight);
+        }
 
         createInspectorStage();
         let envPropsQueued = false;

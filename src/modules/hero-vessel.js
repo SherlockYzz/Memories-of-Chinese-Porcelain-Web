@@ -117,6 +117,11 @@ function resize() {
     if (!running) renderFrame();
 }
 
+let macroFrameSkip = 0;
+function isMobileViewport() {
+    return typeof window !== 'undefined' && (window.innerWidth || 1024) < 768;
+}
+
 function renderFrame() {
     if (!renderer) return;
     const w = stage.clientWidth;
@@ -124,6 +129,12 @@ function renderFrame() {
     renderer.setScissorTest(false);
     renderer.setViewport(0, 0, w, h);
     renderer.render(scene, camera);
+
+    // 移动端自转期间每 4 帧刷新一次微距小窗（首帧与拖拽实时刷），削减近半数场景绘制 Pass；桌面全帧率保持不变
+    if (isMobileViewport() && running && !dragging) {
+        macroFrameSkip = (macroFrameSkip + 1) % 4;
+        if (macroFrameSkip !== 0) return;
+    }
 
     // 第二视口：开片微距。位置与大小取自 .hero__macro 元素，CSS 改了这里自动跟随。
     const macroEl = $('[data-hero-macro]', stage);
@@ -179,14 +190,15 @@ function start3D(ctx) {
         return;
     }
     setState('loading', i18n.tr('正在载入器物模型…'));
+    const mobileHero = isMobileViewport();
     try {
-        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd(), powerPreference: 'high-performance' });
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !mobileHero && !isLowEnd(), powerPreference: 'high-performance' });
     } catch {
         renderer = null;
         setState('fallback');
         return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, (window.innerWidth < 768 || isLowEnd()) ? 1.35 : 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobileHero ? 1.1 : (isLowEnd() ? 1.35 : 1.75)));
     renderer.setClearColor(0x000000, 0);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;

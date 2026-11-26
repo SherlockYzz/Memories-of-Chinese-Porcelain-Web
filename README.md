@@ -31,7 +31,7 @@
 - **双端秒开与零抢占三路 WebGL 错峰调度**：
   - 首屏（`Hero3D`）优先独占 GPU 与网络管线，在首帧材质就绪后通过应用总线广播 `hero:ready` 事件，依次放行底层背景 `webgl-bg` 与次屏三维展馆 `initThreeJS()`；
   - 用 **亚毫秒 `CubeTexture` 博物馆柔光环境（`createStudioCubeEnv`）** 替代耗时数秒的同步 `PMREMGenerator` 卷积，配合 **256×256 双层 Voronoi 距离场缓存** 与 **全站共享 `ArrayBuffer` 内存缓存（`fetchGlbBuffer`）**，消除 0 号宋官窑模型重复拉取，在主馆稳固后通过低频单路二进制静默预热提前缓存 1–8 号 `.glb` 数据，兼顾移动端低功耗流畅切换与电脑端高画质秒开；
-  - 首屏必载脚本与样式控制在约 `1483 KB`，其余重型工坊、AI 视觉检测与英文大词典（`655.7 KB`）全部按需懒加载；配合 `Service Worker`（`public/sw.js`，`tianqing-nihuo-v9.2-fast`）短内容哈希缓存隔离与模型超时重试，保障图文音模全量快速稳定加载。
+  - 首屏必载脚本与样式控制在约 `1239 KB`（`legacy` 245 KB、真 3D 青花工坊 47 KB、AI 视觉检测与英文大词典 655.7 KB 均按需异步懒加载）；移动端专享 TBDR GPU 极速管线（自动关闭高耗 `preserveDrawingBuffer`、MSAA 与双通实时 ShadowMap、精简透明过绘与 2 路辅助光、器物程序贴图 0.5× 快速生成、主动让路给用户切换模型的静默预热），电脑端则完整保留全高画质与全部光影特效；配合 `Service Worker`（`public/sw.js`，`tianqing-nihuo-v9.2-fast`）短内容哈希缓存隔离与模型超时重试，保障双端图文音模快速稳定加载。
 - **全局 3D 自动律动水墨山川背景（`src/modules/webgl-bg/`）**：WebGL 背景千里江山等高线曲面与北宋浑天仪星轨支持根据视口/硬件自动三档分级（`high/medium/low`）与动态 FPS 降级，具备**自主利萨茹呼吸微震律动与自动等高线涟漪**，并实时与鼠标悬停、点击脉冲及滚动视差丝滑叠加。
 - **全站无障碍与高效导览**：
   - **3 分钟自动研学导览**（`src/modules/guided-tour.js`）：一键沉浸式串联全站重要展区与语音导览；
@@ -127,7 +127,7 @@ flowchart TD
 - **`src/styles/`（单一视觉令牌样式体系）**：
   - `00-tokens.css`（集中管理全站色彩、`--z-*` 层级、阴影与 `.section-surface` 透纱透明度）→ `10-layout.css` → `20-nav.css` → `30-hero.css` → `40-sections.css` → `50-features.css` 及 `legacy/`。
 - **`tools/` 与构建分块产物（`tools/build.mjs` & `tools/build.config.mjs`）**：
-  - 确定性构建输出：**首屏必载** `vendor-icons.css` + `app.css` + `vendor.js` + `legacy.js` + `app.js` + `index.html`（共约 `1482.5 KB`），以及 **4 个按需懒加载分块**：`legacy-pottery`（`47.0 KB`）、`legacy-ambient-2d`（`6.1 KB`）、`legacy-ai`（`422.8 KB`）、`i18n-en`（`655.7 KB`），所有文件均注入短内容哈希以配合 `sw.js` 缓存隔离。
+  - 确定性构建输出：**首屏必载** `vendor-icons.css` + `app.css` + `vendor.js` + `app.js` + `index.html`（共约 `1239.1 KB`），以及 **5 个按需懒加载分块**：`legacy`（`245.1 KB`）、`legacy-pottery`（`47.4 KB`）、`legacy-ambient-2d`（`6.1 KB`）、`legacy-ai`（`422.8 KB`）、`i18n-en`（`655.7 KB`），所有文件均注入短内容哈希以配合 `sw.js` 缓存隔离。
 
 ### 2. 四维质量门禁与自动化运维流水线
 - **`npm run check`**（`tools/check.mjs`）：串行执行 `check-content`（JSON 必填字段与 152+ 静态资源实存）、`check-i18n`（中英词条严格对齐与 HTML 键覆盖）、`check-style`（现代样式零违规与 `!important` 计数守护）与 `check-code`（禁用内联事件、禁用 emoji、禁用 ESM 模块挂载全局 `window` 变量）。

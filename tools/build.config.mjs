@@ -48,6 +48,7 @@ export default {
         {
             name: 'legacy',
             out: 'assets/legacy.js',
+            lazy: true,
             files: [
                 'src/legacy/data-shims.js',
                 'src/legacy/three-scene.js',

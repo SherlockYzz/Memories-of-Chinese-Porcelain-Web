@@ -21,15 +21,40 @@ function yieldToMain() {
     return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
+let legacyPromise = null;
+let legacyReady = false;
+function ensureLegacy(priority = 'low') {
+    if (!legacyPromise) {
+        legacyPromise = core.lazy.load('legacy', { priority }).then(() => {
+            legacyReady = true;
+            registry.bootPhase(1);
+            registry.bootPhase(2);
+            registry.bootPhase(3);
+            if (i18n.currentLang() !== 'zh') i18n.applyDom();
+            core.bus.emit('legacy:ready', {});
+        }).catch((err) => {
+            legacyPromise = null;
+            console.warn('[boot] legacy 分块加载失败:', err);
+        });
+    }
+    return legacyPromise;
+}
+
 let threeBooted = false;
 function ensureThreeJS() {
     if (threeBooted) return;
     threeBooted = true;
-    try {
-        legacy.call('initThreeJS');
-    } catch (err) {
-        console.warn('[boot] 三维展馆初始化异常:', err);
-    }
+    ensureLegacy('high').then(() => {
+        if (!legacyReady) {
+            threeBooted = false;
+            return;
+        }
+        try {
+            legacy.call('initThreeJS');
+        } catch (err) {
+            console.warn('[boot] 三维展馆初始化异常:', err);
+        }
+    });
 }
 
 function scheduleGalleryBoot() {
@@ -54,6 +79,7 @@ function scheduleGalleryBoot() {
         const io = new IntersectionObserver(
             (entries) => {
                 if (entries.some((e) => e.isIntersecting)) {
+                    ensureLegacy('high');
                     if (heroReady || (window.scrollY || window.pageYOffset || 0) > 80) {
                         io.disconnect();
                         triggerIntersect();
@@ -67,17 +93,52 @@ function scheduleGalleryBoot() {
         io.observe(galleryEl);
     }
 
-    // 任意直接跳往展馆或触发器物载入的操作，立即激活三维展馆
+    // 移动端延后至 Hero3D 首帧落地或用户主动操作时再唤醒 legacy，确保首屏与预览秒开
+    if (!legacyReady && window.innerWidth < 768) {
+        const wakeMobileLegacy = () => ensureLegacy('low');
+        const mobileFallback = setTimeout(wakeMobileLegacy, 1800);
+        core.bus.once('hero:ready', () => {
+            clearTimeout(mobileFallback);
+            setTimeout(wakeMobileLegacy, 120);
+        });
+        window.addEventListener('scroll', () => {
+            if ((window.scrollY || window.pageYOffset || 0) > 100) {
+                clearTimeout(mobileFallback);
+                wakeMobileLegacy();
+            }
+        }, { passive: true, once: true });
+    }
+
+    // 任意直接跳往展馆或触发器物/尚未注册动作的操作，立即激活 legacy 与三维展馆
     document.addEventListener(
         'click',
         (ev) => {
+            const target = ev.target;
+            if (!target || !target.closest) return;
+            const actionEl = target.closest('[data-action], [data-action-self]');
+            if (actionEl && !legacyReady) {
+                const attr = actionEl.hasAttribute('data-action') ? 'data-action' : 'data-action-self';
+                const expr = actionEl.getAttribute(attr) || '';
+                const firstCall = expr.split(';')[0].split('(')[0].trim();
+                if (firstCall && !actions.has(firstCall)) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    ensureLegacy('high').then(() => {
+                        if (firstCall.includes('Porcelain') || firstCall.includes('GuidedTour') || firstCall.includes('Microscope') || firstCall.includes('Comparison')) {
+                            ensureThreeJS();
+                        }
+                        actionEl.click();
+                    });
+                    return;
+                }
+            }
             if (threeBooted) return;
-            const hit = ev.target && ev.target.closest(
+            const hit = target.closest(
                 '[href="#3d-gallery"], [data-action*="loadPorcelainModel"], [data-action*="loadComparisonModelTo3D"], [data-action*="startGuidedTour"], [data-action*="openMicroscopeView"]'
             );
             if (hit) ensureThreeJS();
         },
-        { capture: true, passive: true }
+        { capture: true }
     );
 
     // 桌面端等待首屏 3D 器物完成首次渲染（hero:ready）后再温和预热次屏展馆，避免三路 WebGL 着色器撞车
@@ -115,6 +176,11 @@ actions.register(
 );
 
 async function boot() {
+    // 桌面端不阻塞 DCL 并行预取 legacy；移动端让位给首屏文字与 Hero3D
+    if (window.innerWidth >= 768) {
+        ensureLegacy('high');
+    }
+
     // 阶段一：首屏核心（导航、主题、背景与首屏展台容器）
     registry.bootPhase(1);
     core.installLegacyLazyChunks();
