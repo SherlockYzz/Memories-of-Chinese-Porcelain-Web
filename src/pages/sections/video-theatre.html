@@ -1,38 +1,64 @@
-<!-- ==================== 视听研学 · 陶埏天工技艺展映与东方意境音景 ==================== -->
+<!-- ==================== 视听研学 · 华夏非遗制瓷影像展映与东方意境音景 ==================== -->
 <section class="section-surface section-surface--tint" id="video-theatre">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="section-title-group">
             <span class="badge bg-tianqing-deep text-white mb-3">
-                <i class="fa-solid fa-film text-amber-200"></i>
-                <span>天工开物 · 华夏非遗制瓷视听研学展映厅</span>
+                <i class="fa-solid fa-film text-amber-200" aria-hidden="true"></i>
+                <span>哔哩哔哩精选非遗实录 · 景德镇传统制瓷技艺展映厅</span>
             </span>
             <h2 data-i18n="video.sectionTitle">视听研学 · 陶埏天工技艺展映</h2>
-            <p class="section-subtitle" data-i18n="video.sectionSub">四大传统核心工序高清实况展映 · 融合 Web Audio API 东方意境环境音景实时发生器</p>
+            <p class="section-subtitle" data-i18n="video.sectionSub">精选 B 站景德镇非遗制瓷、青花分水与传统柴窑高清实录（按需点播）· 融合 Web Audio 东方意境音景</p>
             <div class="section-divider"></div>
         </div>
 
         <div class="grid lg:grid-cols-12 gap-8 items-start max-w-6xl mx-auto">
-            <!-- 左侧 8列：高清视频沉浸放映舱与学术考据 -->
+            <!-- 左侧 8列：B站非遗制瓷展映视窗与文献考据 -->
             <div class="lg:col-span-8">
                 <div class="feature-card p-5 sm:p-6 space-y-4">
-                    <!-- 视频主视窗 (按需加载 + poster 首帧封面，不占首屏带宽) -->
-                    <div class="relative rounded-2xl overflow-hidden bg-black shadow-xl aspect-video border border-border-light group">
-                        <video id="craft-main-video" data-src="videos/ceramic_making.webm" poster="images/7.jpg" controls loop muted playsinline preload="none" loading="lazy" class="w-full h-full object-cover"></video>
-                        <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-1.5 border border-white/10 pointer-events-none">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span id="craft-video-duration">00:24 · 制瓷演示</span>
+                    <!-- 视频主视窗：先展示本地超轻 WebP 封面，点播后再动态挂载 B站官方播放器，零首屏带宽消耗 -->
+                    <div id="craft-video-stage" class="relative rounded-2xl overflow-hidden bg-[#0b1116] shadow-xl aspect-video border border-border-light group">
+                        <div id="craft-video-facade" class="absolute inset-0">
+                            <img id="craft-video-poster" src="images/videos/step1-throwing.webp" width="640" height="360" alt="手工制瓷传统工序实录封面" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/45"></div>
+                            <button type="button" id="craft-video-play-trigger" data-action="playCraftVideo()" aria-label="播放当前制瓷实录视频"
+                                    class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 text-white cursor-pointer">
+                                <span class="w-16 h-16 rounded-full bg-tianqing-deep/90 border border-amber-300/70 shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play text-xl text-amber-200 ml-0.5" aria-hidden="true"></i>
+                                </span>
+                                <span class="px-4 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-xs font-serif-cn tracking-wider">
+                                    点击加载 B 站高清非遗实录 · 即刻展映
+                                </span>
+                            </button>
+                            <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-white text-[11px] font-serif-cn flex items-center gap-1.5 border border-white/15 pointer-events-none">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                <span id="craft-video-duration">01:30 · B站非遗实录</span>
+                            </div>
                         </div>
+
+                        <div id="craft-video-player-host" class="hidden absolute inset-0 bg-black"></div>
+
+                        <button type="button" id="craft-video-close-btn" data-action="stopCraftVideo()" title="收起播放器并恢复背景琴音"
+                                class="hidden absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-black/75 hover:bg-black text-white text-[11px] font-serif-cn border border-white/20 backdrop-blur-md transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1" aria-hidden="true"></i>退出播放
+                        </button>
                     </div>
 
                     <!-- 视频解说与文献考据 -->
                     <div class="space-y-3 pt-2">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <span id="craft-video-chapter" class="badge bg-tianqing-deep/15 text-tianqing-deep border border-tianqing/30 font-medium">工序五 · 轮盘拉坯</span>
-                            <span class="text-xs text-text-muted font-serif-cn"><i class="fa-solid fa-film text-tianqing-deep mr-1" aria-hidden="true"></i>景德镇传统制瓷核心工序高清实录</span>
+                            <div class="flex items-center gap-3 text-xs text-text-muted font-serif-cn">
+                                <span id="craft-video-author"><i class="fa-solid fa-tv text-sky-500 mr-1" aria-hidden="true"></i>UP主：八和人文茶器</span>
+                                <a id="craft-video-bili-link" href="https://www.bilibili.com/video/BV1Su411L75R" target="_blank" rel="noopener noreferrer"
+                                   class="text-tianqing-deep hover:underline font-medium inline-flex items-center gap-1">
+                                    <span>前往 B 站原页观看</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i>
+                                </a>
+                            </div>
                         </div>
-                        <h3 id="craft-video-title" class="text-xl font-serif-cn font-semibold text-text-title tracking-wide">《陶轮拉坯 · 指尖生形》</h3>
+                        <h3 id="craft-video-title" class="text-xl font-serif-cn font-semibold text-text-title tracking-wide">《手工制瓷 · 轮盘拉坯》</h3>
                         <p id="craft-video-subtitle" class="text-xs text-tianqing-deep font-serif-cn">飞轮旋转，十指感知泥料筋骨厚薄，一呼一吸间提拉出曼妙曲线</p>
-                        
+
                         <blockquote id="craft-video-quote" class="p-3.5 rounded-xl bg-yuebai/60 border-l-2 border-tianqing text-xs text-text-muted italic leading-relaxed font-serif-cn">
                             “陶轮一转天地开，素手揉出万象来” ——《天工开物 · 陶埏篇》
                         </blockquote>
@@ -44,45 +70,53 @@
                 </div>
             </div>
 
-            <!-- 右侧 4列：工序剧目选集 + Web Audio 东方环境音景 -->
+            <!-- 右侧 4列：B站精选剧目选集 + Web Audio 东方环境音景 -->
             <div class="lg:col-span-4 space-y-5">
                 <!-- 工序选集切换 -->
                 <div class="feature-card p-5">
                     <h4 class="text-xs font-serif-cn font-medium text-text-title mb-3 flex items-center justify-between pb-2 border-b border-border-light">
-                        <span><i class="fa-solid fa-clapperboard text-amber-400 mr-1.5"></i>核心工序实录剧目</span>
-                        <span class="text-[11px] text-text-muted">4集高清实况</span>
+                        <span><i class="fa-solid fa-clapperboard text-amber-400 mr-1.5" aria-hidden="true"></i>中国瓷器非遗实录剧目</span>
+                        <span class="text-[11px] text-text-muted">B 站精选 5 集</span>
                     </h4>
-                    <div class="space-y-2.5">
-                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group border-tianqing bg-tianqing-deep/15" data-action="switchCraftVideo(0)">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">01. 陶轮拉坯 · 指尖生形</div>
-                                <div class="text-[10px] text-text-muted">轮盘飞转，十指拔高出曼妙曲线</div>
+                    <div class="space-y-2">
+                        <button type="button" class="craft-chapter-btn w-full p-2.5 rounded-xl text-left flex items-center justify-between group border-tianqing bg-tianqing-deep/15" data-action="switchCraftVideo(0)">
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors truncate">01. 手工制瓷 · 轮盘拉坯 (01:30)</div>
+                                <div class="text-[10px] text-text-muted truncate">八和人文茶器 · 72道工序之拉坯</div>
                             </div>
-                            <i class="fa-solid fa-play text-xs text-tianqing-deep shrink-0"></i>
+                            <i class="fa-solid fa-play text-xs text-tianqing-deep shrink-0" aria-hidden="true"></i>
                         </button>
 
-                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(1)">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">02. 修光利坯 · 削泥如玉</div>
-                                <div class="text-[10px] text-text-muted">毫厘无差，钢刀旋出规整铁足</div>
+                        <button type="button" class="craft-chapter-btn w-full p-2.5 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(1)">
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors truncate">02. 修光利坯 · 削泥如玉 (01:37)</div>
+                                <div class="text-[10px] text-text-muted truncate">八和人文茶器 · 72道工序之利坯</div>
                             </div>
-                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0" aria-hidden="true"></i>
                         </button>
 
-                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(2)">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">03. 矿彩荡釉 · 翠色成衣</div>
-                                <div class="text-[10px] text-text-muted">玛瑙长石入浆，厚施温润如凝脂</div>
+                        <button type="button" class="craft-chapter-btn w-full p-2.5 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(2)">
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors truncate">03. 矿彩荡釉 · 翠色成衣 (00:45)</div>
+                                <div class="text-[10px] text-text-muted truncate">八和人文茶器 · 72道工序之荡釉</div>
                             </div>
-                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0" aria-hidden="true"></i>
                         </button>
 
-                        <button class="craft-chapter-btn w-full p-3 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(3)">
-                            <div class="space-y-0.5">
-                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors">04. 龙窑柴烧 · 烈焰涅槃</div>
-                                <div class="text-[10px] text-text-muted">1300℃缺氧还原，天青出窑成绝响</div>
+                        <button type="button" class="craft-chapter-btn w-full p-2.5 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(3)">
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors truncate">04. 青花分水 · 料分五色 (22:12)</div>
+                                <div class="text-[10px] text-text-muted truncate">桃锦川 · 景德镇青花传统分水技法</div>
                             </div>
-                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0"></i>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0" aria-hidden="true"></i>
+                        </button>
+
+                        <button type="button" class="craft-chapter-btn w-full p-2.5 rounded-xl text-left flex items-center justify-between group" data-action="switchCraftVideo(4)">
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="text-xs font-serif-cn font-medium text-text-title group-hover:text-tianqing-deep transition-colors truncate">05. 龙窑柴烧 · 烈焰涅槃 (20:04)</div>
+                                <div class="text-[10px] text-text-muted truncate">冷木冷木 · 景德镇柴窑烧制全过程</div>
+                            </div>
+                            <i class="fa-solid fa-play text-xs text-text-muted group-hover:text-tianqing-deep transition-colors shrink-0" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -90,13 +124,13 @@
                 <!-- 东方环境音景发生器 -->
                 <div class="feature-card p-5">
                     <h4 class="text-xs font-serif-cn font-medium text-text-title mb-1 flex items-center justify-between">
-                        <span><i class="fa-solid fa-headphones-simple text-tianqing-deep mr-1.5"></i>东方意境 · 环境音景发生器</span>
+                        <span><i class="fa-solid fa-headphones-simple text-tianqing-deep mr-1.5" aria-hidden="true"></i>东方意境 · 环境音景发生器</span>
                         <span class="text-[10px] text-emerald-500 font-normal">Web Audio 实时合成</span>
                     </h4>
                     <p class="text-[11px] text-text-muted font-light mb-3">纯前端声学算法振荡与环境白噪音，可叠加开启，营造沉浸式研学雅境：</p>
 
                     <div class="grid grid-cols-2 gap-2">
-                        <button id="ambient-btn-fire" data-action="toggleAmbientSound('fire')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                        <button type="button" id="ambient-btn-fire" data-action="toggleAmbientSound('fire')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
                             <i class="fa-solid fa-fire text-amber-500 text-base w-5 text-center" aria-hidden="true"></i>
                             <div class="text-left leading-tight">
                                 <div class="font-medium">龙窑松柴</div>
@@ -104,7 +138,7 @@
                             </div>
                         </button>
 
-                        <button id="ambient-btn-water" data-action="toggleAmbientSound('water')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                        <button type="button" id="ambient-btn-water" data-action="toggleAmbientSound('water')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
                             <i class="fa-solid fa-droplet text-tianqing text-base w-5 text-center" aria-hidden="true"></i>
                             <div class="text-left leading-tight">
                                 <div class="font-medium">山泉水磨</div>
@@ -112,7 +146,7 @@
                             </div>
                         </button>
 
-                        <button id="ambient-btn-guqin" data-action="toggleAmbientSound('guqin')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                        <button type="button" id="ambient-btn-guqin" data-action="toggleAmbientSound('guqin')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
                             <i class="fa-solid fa-music text-amber-400 text-base w-5 text-center" aria-hidden="true"></i>
                             <div class="text-left leading-tight">
                                 <div class="font-medium">古琴五音</div>
@@ -120,7 +154,7 @@
                             </div>
                         </button>
 
-                        <button id="ambient-btn-chime" data-action="toggleAmbientSound('chime')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
+                        <button type="button" id="ambient-btn-chime" data-action="toggleAmbientSound('chime')" class="ambient-btn p-2.5 rounded-xl text-xs font-serif-cn flex items-center gap-2 text-text-title">
                             <i class="fa-solid fa-bell text-tianqing-deep text-base w-5 text-center" aria-hidden="true"></i>
                             <div class="text-left leading-tight">
                                 <div class="font-medium">叩瓷玉振</div>

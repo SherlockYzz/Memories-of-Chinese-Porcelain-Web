@@ -3,6 +3,7 @@
  * 这里不写业务逻辑——新增功能请在 src/modules/ 下建模块，然后在 modules/index.js import 一行。
  */
 import * as core from '@core';
+import { startImagePrefetch } from './core/image-prefetch.js';
 import './modules/index.js';
 
 const { registry, actions, i18n, legacy } = core;
@@ -93,13 +94,13 @@ function scheduleGalleryBoot() {
         io.observe(galleryEl);
     }
 
-    // 移动端延后至 Hero3D 首帧落地或用户主动操作时再唤醒 legacy，确保首屏与预览秒开
+    // 移动端延后至 Hero3D 首帧落地或用户主动操作时再唤醒 legacy，确保首屏预览与下方图片优先加载
     if (!legacyReady && window.innerWidth < 768) {
         const wakeMobileLegacy = () => ensureLegacy('low');
         const mobileFallback = setTimeout(wakeMobileLegacy, 1800);
         core.bus.once('hero:ready', () => {
             clearTimeout(mobileFallback);
-            setTimeout(wakeMobileLegacy, 120);
+            setTimeout(wakeMobileLegacy, 320);
         });
         window.addEventListener('scroll', () => {
             if ((window.scrollY || window.pageYOffset || 0) > 100) {
@@ -190,6 +191,7 @@ async function boot() {
     registry.bootPhase(1);
     core.installLegacyLazyChunks();
     scheduleGalleryBoot();
+    startImagePrefetch();
 
     await yieldToMain();
 

@@ -122,9 +122,14 @@ function playPentatonicChime(freq = 261.63, harmonics = [523.25, 1046.5]) {
 }
 
 /**
- * 宋代古琴与空灵瓷音背景雅乐合成器开关
+ * 宋代古琴与空灵瓷音背景雅乐开关（优先代理至核心 ambient-music 模块）
  */
 function toggleAmbientGuqin() {
+    const tqActions = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.actions;
+    if (tqActions && tqActions.has && tqActions.has('toggleAmbientGuqin')) {
+        tqActions.run('toggleAmbientGuqin');
+        return;
+    }
     isAmbientPlaying = !isAmbientPlaying;
     const btn = document.getElementById('ambient-music-btn');
     const icon = document.getElementById('ambient-music-icon');
@@ -171,7 +176,7 @@ let isOrbitDragging = false;
 let orbitStart = { x: 0, y: 0, pitch: 0.14 };
 
 let potToolMode = 'push'; // 'push' | 'pull' | 'smooth' | 'brush'
-let brushStyle = 'outline'; // 'outline' | 'wash' | 'iron' | 'stamp' | 'erase'
+let brushStyle = 'stamp'; // 默认点印：'stamp' | 'outline' | 'wash' | 'iron' | 'erase'
 let brushSize = 'md'; // 'sm' | 'md' | 'lg'
 let brushSymmetry = 1; // 1 | 4 | 6
 let brushStamp = 'lotus'; // 'lotus' | 'plum' | 'cloud' | 'band'
@@ -408,7 +413,7 @@ function undoPotteryAction() {
     }
 }
 
-function setBrushStyle(style) {
+function setBrushStyle(style, silent = false) {
     brushStyle = style;
     document.querySelectorAll('.brush-style-btn').forEach(btn => {
         if (btn.dataset.style === style) {
@@ -423,7 +428,7 @@ function setBrushStyle(style) {
     if (stampPicker) {
         stampPicker.classList.toggle('hidden', style !== 'stamp');
     }
-    if (style === 'stamp' && typeof showToast === 'function') {
+    if (!silent && style === 'stamp' && typeof showToast === 'function') {
         showToast('在瓷坯表面轻点或划过，即可按对称角度印下工笔青花纹饰');
     }
 }
@@ -1904,6 +1909,9 @@ function setPotTool(mode) {
     if (brushGroup) {
         brushGroup.classList.toggle('hidden', mode !== 'brush');
     }
+    if (mode === 'brush') {
+        setBrushStyle(brushStyle, true);
+    }
     if (potCanvas) {
         potCanvas.style.cursor = mode === 'brush' ? 'crosshair' : 'ew-resize';
     }
@@ -1913,7 +1921,7 @@ function setPotTool(mode) {
         push: '已切换至【向内收束】：在瓷坯表面拖拽使器身向内收拢',
         pull: '已切换至【向外鼓腹】：在瓷坯表面拖拽使器腹向外丰满饱满',
         smooth: '已切换至【跟随修光】：指尖揉搓泥胚，器型实时顺滑贴合',
-        brush: '已切换至【手绘青花】：直接在 3D 器表精准勾画、分水或点印青花'
+        brush: '已切换至【手绘青花】：默认开启「点印」纹章，也可切换勾线、分水或点斑'
     };
     if (typeof showToast === 'function') {
         showToast(toasts[mode] || '已切换造物工具');
@@ -1935,7 +1943,9 @@ function potAnimLoop() {
         clayRadii[i] += (targetRadii[i] - clayRadii[i]) * 0.16;
     }
     if (!wheelPaused) {
-        const spinSpeed = potToolMode === 'brush' ? (isInteractingPot ? 0.0025 : 0.011) : 0.042;
+        const spinSpeed = potToolMode === 'brush'
+            ? (isInteractingPot ? (brushStyle === 'stamp' ? 0.0005 : 0.0025) : 0.011)
+            : 0.042;
         clayRotationAngle += spinSpeed;
     }
 

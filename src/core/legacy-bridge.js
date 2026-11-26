@@ -94,8 +94,9 @@ export function installLegacyBridge() {
 export function installLegacyLazyChunks() {
     const pottery = defineLazyStubs('legacy-pottery', 'initPotteryWorkshop', [
         'resetClay', 'applyPresetVessel', 'setPotPattern', 'selectPotGlaze', 'selectPotSeal', 'firePotInKiln',
-        'setPotTool', 'downloadPotteryArtwork', 'undoPotteryAction', 'setBrushStyle', 'toggleAmbientGuqin',
-        'playPorcelainChime', 'playCrackleSound', 'playPentatonicChime'
+        'setPotTool', 'downloadPotteryArtwork', 'undoPotteryAction', 'setBrushStyle', 'setBrushStamp', 'setBrushSize',
+        'setBrushSymmetry', 'toggleWheelPause', 'clearQinghuaPaint', 'resetPotCamera', 'savePotteryDraft', 'loadPotteryDraft',
+        'toggleAmbientGuqin', 'playPorcelainChime', 'playCrackleSound', 'playPentatonicChime'
     ]);
     const ai = defineLazyStubs('legacy-ai', 'initAiRecognition', ['setAiVisualMode', 'startCameraScan', 'stopCameraScan', 'captureAndIdentify']);
     lazy.whenVisible('#pottery-studio', () => pottery('low'));

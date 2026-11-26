@@ -566,6 +566,20 @@ footer { border-top: 1px solid var(--gold-line); }
     animation: porcelainShimmer 2.4s ease-in-out infinite !important;
     position: relative;
 }
+.porcelain-card-skeleton.is-loaded {
+    animation: none !important;
+    background: transparent !important;
+    background-image: none !important;
+}
+img[data-fade-img] {
+    transition: opacity 0.25s ease, transform 0.5s ease;
+}
+img[data-fade-img]:not(.is-loaded) {
+    opacity: 0.08;
+}
+img[data-fade-img].is-loaded {
+    opacity: 1;
+}
 @keyframes porcelainShimmer {
     0% { background-position: 100% 0; }
     100% { background-position: -100% 0; }

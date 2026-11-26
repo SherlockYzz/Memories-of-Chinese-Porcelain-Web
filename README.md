@@ -1,4 +1,4 @@
-﻿# 天青泥火 (Tianqing Nihuo) — 华夏古瓷三维研学空间 (v9.2.0)
+﻿# 天青泥火 (Tianqing Nihuo) — 华夏古瓷三维研学空间 (v10.0.0)
 
 > **从泥到火，从器到鉴——数字化复原中国古瓷的一生**  
 > *Tianqing Nihuo: From Clay to Fire, From Vessel to Connoisseurship — A 3D Study Space for Ancient Chinese Ceramics*
@@ -17,7 +17,7 @@
 
 - **GitHub Pages 在线研学**：https://sherlockyzz.github.io/Memories-of-Chinese-Porcelain-Web/  
   由 GitHub Actions（[.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml)）在每次推送 `main` 时自动执行全量静态校验与确定性生产构建，部署纯静态站点。
-- **GitHub Releases 离线整合包（v9.2.0）**：https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web/releases/latest  
+- **GitHub Releases 离线整合包（v10.0.0）**：https://github.com/SherlockYzz/Memories-of-Chinese-Porcelain-Web/releases/latest  
   每次打标签由 [.github/workflows/release.yml](.github/workflows/release.yml) **清空历史缓存后全量冷构建**，输出最新 `TianQingNiHuo.zip`（完整 `dist/` 纯静态网站包）与 `SHA256SUMS.txt` 校验文件，并**自动清退历史旧版 Release 与旧 Tag**；解压后通过任意静态 HTTP 服务器即可完整离线运行。
 - **官方索引收录**：本项目纯前端 WebGL 物理釉面着色与三维研学架构已被全球 AI 原生代码语料库 [XERJ Corpus Hub](https://hub.xerj.org/contributors/SherlockYzz) 官方收录。
 
@@ -31,7 +31,7 @@
 - **双端秒开与零抢占三路 WebGL 错峰调度**：
   - 首屏（`Hero3D`）优先独占 GPU 与网络管线，在首帧材质就绪后通过应用总线广播 `hero:ready` 事件，依次放行底层背景 `webgl-bg` 与次屏三维展馆 `initThreeJS()`；
   - 用 **亚毫秒 `CubeTexture` 博物馆柔光环境（`createStudioCubeEnv`）** 替代耗时数秒的同步 `PMREMGenerator` 卷积，配合 **256×256 双层 Voronoi 距离场缓存** 与 **全站共享 `ArrayBuffer` 内存缓存（`fetchGlbBuffer`）**，消除 0 号宋官窑模型重复拉取，在主馆稳固后通过低频单路二进制静默预热提前缓存 1–8 号 `.glb` 数据，兼顾移动端低功耗流畅切换与电脑端高画质秒开；
-  - 首屏必载脚本与样式控制在约 `1239 KB`（`legacy` 245 KB、真 3D 青花工坊 47 KB、AI 视觉检测与英文大词典 655.7 KB 均按需异步懒加载）；移动端专享 TBDR GPU 极速管线（自动关闭高耗 `preserveDrawingBuffer`、MSAA 与双通实时 ShadowMap、精简透明过绘与 2 路辅助光、器物程序贴图 0.5× 快速生成、主动让路给用户切换模型的静默预热），电脑端则完整保留全高画质与全部光影特效；配合 `Service Worker`（`public/sw.js`，`tianqing-nihuo-v9.2-fast`）短内容哈希缓存隔离与模型超时重试，保障双端图文音模快速稳定加载。
+  - 首屏必载脚本与样式控制在约 `1255 KB`（`legacy` 249.2 KB、真 3D 青花工坊 47.6 KB、AI 视觉检测 33.2 KB 与英文大词典 655.7 KB 均按需异步懒加载）；移动端专享 TBDR GPU 极速管线（自动关闭高耗 `preserveDrawingBuffer`、MSAA 与双通实时 ShadowMap、精简透明过绘与 2 路辅助光、器物程序贴图 0.5× 快速生成、主动让路给用户切换模型的静默预热），电脑端则完整保留全高画质与全部光影特效；配合 `Service Worker`（`public/sw.js`，`tianqing-nihuo-v10.0.0-fast`）短内容哈希缓存隔离与模型超时重试，保障双端图文音模快速稳定加载。
 - **全局 3D 自动律动水墨山川背景（`src/modules/webgl-bg/`）**：WebGL 背景千里江山等高线曲面与北宋浑天仪星轨支持根据视口/硬件自动三档分级（`high/medium/low`）与动态 FPS 降级，具备**自主利萨茹呼吸微震律动与自动等高线涟漪**，并实时与鼠标悬停、点击脉冲及滚动视差丝滑叠加。
 - **全站无障碍与高效导览**：
   - **3 分钟自动研学导览**（`src/modules/guided-tour.js`）：一键沉浸式串联全站重要展区与语音导览；
@@ -51,7 +51,7 @@
 2. **WebXR / 桌面 1:1 实尺对照台（`src/modules/ar-viewer.js`）**：
    - 自动检测设备 `immersive-ar` 能力；桌面端提供 **15 cm 智能手机 / 7 cm 茶盏 / 30 cm 标尺** 同台 1:1 物理尺寸参照与对比海报导出。
 3. **名器典藏图录（`src/pages/sections/archive.html`、`src/modules/archive-catalog.js`）**：
-   - 汇聚 **26 条馆藏档案**，支持朝代/窑系多维检索、CC0 对照标本筛选、一键跳转对应 3D 鉴赏视角及十二件名瓷导览原声播放。
+   - 汇聚 **26 条馆藏档案**，支持朝代/窑系多维检索、CC0 对照标本筛选、一键跳转对应 3D 鉴赏视角及十五件三维展品全量原声语音播放。
 4. **前端像素级釉面纹理实验室（`src/pages/sections/ai-recognition.html`、`src/legacy/ai-recognition.js`）**：
    - 上传或选用器物图片，在纯浏览器端实时演算 **RGB/HSL 色彩直方图** 与 **Sobel 边缘梯度热力图**，辅助直观理解胎釉光影与开片纹理分布。
 
@@ -173,12 +173,18 @@ npm run audit:models
   - W. D. Kingery & P. B. Vandiver, *Ceramic Masterpieces* (Free Press, 1986)
   - Nigel Wood, *Chinese Glazes* (A&C Black, 1999)
   - 古籍文献：《天工开物·陶埏》《大观茶论》《饮流斋说瓷》《景德镇陶录》
-- **声景、语音与开源基础设施**：致谢小米人工智能实验室 **MiMo 语音模型（`mimo-v2.5-tts`）** 提供十二件名瓷典藏语音导览，以及 Web Audio API、Three.js、Tailwind CSS 等开源图形生态。
+- **声景、语音与开源基础设施**：致谢小米人工智能实验室 **MiMo 语音模型（`mimo-v2.5-tts`）** 提供十五件三维展品全量原声语音导览，以及 Web Audio API、Three.js、Tailwind CSS 等开源图形生态。
 
 ---
 
 ## 六、版本更新历史 (Changelog)
 
+- **v10.0.0 (2026.11)**：
+  - **小米 MiMo 语音补全全量 15 件 3D 展品导览**：调用小米 `mimo-v2.5-tts` 语音大模型（沉稳旁白「白桦」音色）与批处理脚本 `tools/generate-mimo-tts.mjs`，全面补齐并校准馆内 15 件三维器物（含 10 件传世名窑复原与 5 件 CC0 对照标本）对应的原声导览 MP3（`audio/vessel_01–15.mp3`）；
+  - **手绘青花笔法体验优化**：将「点印」纹章设为默认首选笔法并自动展示宝相莲/折枝梅/如意云/弦带纹印章选择器，勾线、分水、点斑、刮料顺序后置，点击盖印时自动微稳陶轮转速，绘瓷手感更趁手；
+  - **天青雅乐自动伴赏系统（`src/modules/ambient-music.js`）**：引入 Wikimedia Commons 开源古琴名曲《醉渔唱晚》《阳关三叠》（CC BY-SA 3.0）双曲轮播，默认开启并在首次交互柔和淡入，遇到 B 站视频播放、3D 展馆语音解说或标签页切换时自动避让暂停与续播，左下角悬浮琴音胶囊支持随时一键开关与切曲；
+  - **B 站中国瓷器非遗影像展映**：移除原 49.5 MB 外文陶艺视频，替换为 5 集真实 B 站景德镇手工制瓷 72 道工序（拉坯、利坯、荡釉）、青花分水与传统柴窑烧造高清实录，采用按需点击挂载官方嵌入式播放器与超轻本地 WebP 封面预览；
+  - **移动端与全端极速加载升级**：清理 4.41 MB 冗余废旧大图，将全站 `.jpg` 与工艺图标全面转码压轻为尺寸匹配的 WebP，新增 `src/core/image-prefetch.js` 空闲分级预加载队列、已加载卡片自动停止骨架闪烁动画以及移动端 3D 环境道具延迟装载，升级 Service Worker 至 `tianqing-nihuo-v10.0.0-fast`。
 - **v9.2.0 (2026.11)**：
   - **真 3D Three.js 拉坯与青花绘瓷工坊重构**：升级 88 段 `CatmullRomCurve3` + `LatheGeometry` 实体瓷坯与 `MeshPhysicalMaterial` 清漆反光，搭载 `Raycaster` `1024×512` 曲面拾取绘制、笔速压感、4/6 重镜像对称、莲瓣/梅枝/云纹/回纹四大青花印章、重置视角与 `localStorage` 草稿暂存/读档；
   - **4 件博物馆级馆藏釉面重绘与纯净图录焕新**：精绘北宋钧窑玫瑰紫窑变、元青花缠枝牡丹龙纹罐、明宣德宝石红祭红釉僧帽壶（「灯草边」露白）、清乾隆黄地洋彩开光转心瓶程序纹理与 `512×512` 纯净馆藏缩略图；

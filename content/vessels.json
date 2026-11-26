@@ -167,7 +167,13 @@
       "status": "named-object",
       "note": "尺寸取自该器公开著录的常见数值，引用前请以馆方数据为准。"
     },
-    "wallThickness": "胎质细薄（参考范围：2.5–3.5 mm · 满釉支烧）"
+    "wallThickness": "胎质细薄（参考范围：2.5–3.5 mm · 满釉支烧）",
+    "audio": {
+      "file": "audio/vessel_02.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ding-meiping",
@@ -327,7 +333,13 @@
       "institution": "",
       "status": "type-reference"
     },
-    "wallThickness": "胎骨厚实（参考范围：3.5–5.0 mm · 多层开片厚釉）"
+    "wallThickness": "胎骨厚实（参考范围：3.5–5.0 mm · 多层开片厚釉）",
+    "audio": {
+      "file": "audio/vessel_04.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "jun-chuji-zun",
@@ -488,7 +500,13 @@
       "institution": "",
       "status": "type-reference"
     },
-    "wallThickness": "二元配方厚胎（参考范围：5.5–9.0 mm · 高岭土瓷骨）"
+    "wallThickness": "二元配方厚胎（参考范围：5.5–9.0 mm · 高岭土瓷骨）",
+    "audio": {
+      "file": "audio/vessel_06.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "xuande-monk-cap-ewer",
@@ -565,7 +583,13 @@
       "institution": "",
       "status": "type-reference"
     },
-    "wallThickness": "胎骨致密均匀（参考范围：3.2–4.8 mm · 高温铜红釉）"
+    "wallThickness": "胎骨致密均匀（参考范围：3.2–4.8 mm · 高温铜红釉）",
+    "audio": {
+      "file": "audio/vessel_07.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "qianlong-revolving-vase",
@@ -642,7 +666,13 @@
       "institution": "",
       "status": "type-reference"
     },
-    "wallThickness": "内外双层镂空胎壁（参考范围：内胆 2.5 mm · 外套 3.5 mm）"
+    "wallThickness": "内外双层镂空胎壁（参考范围：内胆 2.5 mm · 外套 3.5 mm）",
+    "audio": {
+      "file": "audio/vessel_08.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ph-ceramic-vase-01",
@@ -711,7 +741,13 @@
       "institution": "Poly Haven",
       "status": "third-party-asset"
     },
-    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）",
+    "audio": {
+      "file": "audio/vessel_09.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ph-ceramic-vase-02",
@@ -780,7 +816,13 @@
       "institution": "Poly Haven",
       "status": "third-party-asset"
     },
-    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）",
+    "audio": {
+      "file": "audio/vessel_10.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ph-ceramic-vase-03",
@@ -849,7 +891,13 @@
       "institution": "Poly Haven",
       "status": "third-party-asset"
     },
-    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）",
+    "audio": {
+      "file": "audio/vessel_11.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ph-ceramic-vase-04",
@@ -909,7 +957,13 @@
       "institution": "Poly Haven",
       "status": "third-party-asset"
     },
-    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）",
+    "audio": {
+      "file": "audio/vessel_12.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "ph-antique-vase-01",
@@ -969,7 +1023,13 @@
       "institution": "Poly Haven",
       "status": "third-party-asset"
     },
-    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）"
+    "wallThickness": "CC0 现代器物标本（无实测壁厚，按单壁网格建模）",
+    "audio": {
+      "file": "audio/vessel_13.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
+    }
   },
   {
     "id": "jian-yaobian-bowl",
@@ -1046,6 +1106,12 @@
       "typeRef": "南宋建窑曜变天目茶盏（存世公认完整器均藏于日本）",
       "institution": "",
       "status": "type-reference"
+    },
+    "audio": {
+      "file": "audio/vessel_14.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
     }
   },
   {
@@ -1123,6 +1189,12 @@
       "typeRef": "南宋龙泉窑青釉凤耳瓶（日本称“砧青瓷”）",
       "institution": "",
       "status": "type-reference"
+    },
+    "audio": {
+      "file": "audio/vessel_15.mp3",
+      "kind": "ai-tts",
+      "engine": "小米 MiMo TTS (mimo-v2.5-tts)",
+      "note": "AI 合成博物馆资深讲解语音（白桦音色），对应当前档案。"
     }
   }
 ]

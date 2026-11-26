@@ -188,3 +188,130 @@
     border: 1px solid var(--border-light);
     display: block;
 }
+
+/* 天青雅乐 · 悬浮古琴背景音控制胶囊 */
+.ambient-music-dock {
+    position: fixed;
+    left: 1rem;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: var(--z-float);
+    display: inline-flex;
+    align-items: center;
+    max-width: calc(100vw - 5.25rem);
+    padding: 0.25rem;
+    border-radius: var(--radius-pill);
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+    transition: opacity 0.28s var(--ease-smooth), transform 0.28s var(--ease-smooth), border-color 0.28s var(--ease-smooth);
+}
+
+.ambient-music-dock[data-state="playing"] {
+    border-color: var(--gold-accent);
+}
+
+.ambient-music-dock[data-state="off"] {
+    opacity: 0.78;
+}
+
+html[data-touring] .ambient-music-dock {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.75rem);
+}
+
+.ambient-music-dock__main {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    border-radius: var(--radius-pill);
+    text-align: left;
+    min-width: 0;
+}
+
+.ambient-music-dock__disc {
+    flex: none;
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tianqing-darker);
+    color: var(--gold-light);
+    font-size: 0.75rem;
+}
+
+.ambient-music-dock[data-state="off"] .ambient-music-dock__disc {
+    background: var(--yuebai);
+    color: var(--text-muted);
+}
+
+.ambient-music-dock__meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    min-width: 0;
+}
+
+.ambient-music-dock__title {
+    font-family: var(--font-serif-cn);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-title);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 8.5rem;
+}
+
+.ambient-music-dock__sub {
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.ambient-music-dock__next {
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-body);
+    font-size: 0.6875rem;
+    margin-right: 0.125rem;
+    transition: background-color 0.2s var(--ease-smooth), color 0.2s var(--ease-smooth);
+}
+
+.ambient-music-dock__next:hover {
+    background: var(--tianqing-ghost);
+    color: var(--tianqing-deep);
+}
+
+@media (max-width: 639.98px) {
+    .ambient-music-dock {
+        left: 0.75rem;
+        bottom: max(0.75rem, env(safe-area-inset-bottom));
+        padding: 0.2rem;
+    }
+
+    .ambient-music-dock__disc {
+        width: 1.65rem;
+        height: 1.65rem;
+        font-size: 0.6875rem;
+    }
+
+    .ambient-music-dock__title {
+        font-size: 0.6875rem;
+        max-width: 6.2rem;
+    }
+
+    .ambient-music-dock__sub {
+        font-size: 0.5625rem;
+    }
+}

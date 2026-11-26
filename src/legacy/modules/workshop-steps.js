@@ -17,7 +17,7 @@
             <div class="feature-card p-5 group cursor-pointer hover-lift flex flex-col justify-between" data-action="openStepDetailModal(${step.id})">
                 <div>
                     <div class="aspect-[4/3] rounded-xl overflow-hidden mb-3.5 porcelain-card-skeleton relative border border-border-light">
-                        <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="${step.img}" alt="${(step.title && step.title[lang]) || ''}" width="480" height="360" loading="lazy" decoding="async" data-fade-img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35"></div>
                         <span class="absolute top-2.5 left-2.5 bg-black/80 backdrop-blur-md text-amber-200 text-[10px] px-2.5 py-1 rounded-full font-serif-cn border border-white/15 shadow-sm">
                             ${tr(step.category)}
@@ -40,6 +40,16 @@
                 </div>
             </div>
         `).join('');
+
+        container.querySelectorAll('img[data-fade-img]').forEach((img) => {
+            const done = () => {
+                img.classList.add('is-loaded');
+                const wrap = img.closest('.porcelain-card-skeleton');
+                if (wrap) wrap.classList.add('is-loaded');
+            };
+            if (img.complete && img.naturalWidth > 0) done();
+            else img.addEventListener('load', done, { once: true });
+        });
     }
 
     function openStepDetailModal(id) {

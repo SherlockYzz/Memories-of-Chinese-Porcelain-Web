@@ -14,5 +14,6 @@ import './ar-viewer.js';
 import './passport.js';
 import './a11y-panel.js';
 import './credits.js';
+import './ambient-music.js';
 import './pwa.js';
 import './webgl-bg/index.js';

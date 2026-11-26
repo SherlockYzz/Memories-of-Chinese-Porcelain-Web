@@ -66,15 +66,15 @@
                             </button>
                         </div>
 
-                        <!-- 撤销操作与青花笔法切换 (勾线/分水/点斑/点印/刮料 · 毫锋/对称/印章) -->
+                        <!-- 撤销操作与青花笔法切换 (默认点印 · 勾线/分水/点斑/刮料 · 毫锋/对称/印章) -->
                         <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border-light/60">
                             <div id="pot-brush-style-group" class="hidden flex flex-col gap-1.5 text-xs font-serif-cn w-full">
                                 <div class="flex flex-wrap items-center gap-1.5">
                                     <span class="text-text-muted text-[11px]">笔法：</span>
-                                    <button class="brush-style-btn px-2 py-1 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-style="outline" data-action="setBrushStyle('outline')">勾线</button>
+                                    <button class="brush-style-btn px-2 py-1 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-style="stamp" data-action="setBrushStyle('stamp')">点印</button>
+                                    <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="outline" data-action="setBrushStyle('outline')">勾线</button>
                                     <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="wash" data-action="setBrushStyle('wash')">分水</button>
                                     <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="iron" data-action="setBrushStyle('iron')">点斑</button>
-                                    <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="stamp" data-action="setBrushStyle('stamp')">点印</button>
                                     <button class="brush-style-btn px-2 py-1 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-style="erase" data-action="setBrushStyle('erase')">刮料</button>
                                     <span class="text-text-muted text-[11px] ml-1">毫锋：</span>
                                     <button class="brush-size-btn px-1.5 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-size="sm" data-action="setBrushSize('sm')">细</button>
@@ -86,10 +86,10 @@
                                     <button class="brush-sym-btn px-2 py-0.5 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-sym="1" data-action="setBrushSymmetry(1)">单笔</button>
                                     <button class="brush-sym-btn px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-sym="4" data-action="setBrushSymmetry(4)">4重对称</button>
                                     <button class="brush-sym-btn px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-sym="6" data-action="setBrushSymmetry(6)">6重对称</button>
-                                    <button id="pot-wheel-pause-btn" class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors ml-1" data-action="toggleWheelPause()">暂停转盘</button>
-                                    <button class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-action="clearQinghuaPaint()">清空</button>
+                                    <button id="pot-wheel-pause-btn" class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors ml-1 border border-border-light" data-action="toggleWheelPause()">暂停转盘</button>
+                                    <button class="px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors border border-border-light" data-action="clearQinghuaPaint()">清空</button>
                                 </div>
-                                <div id="pot-stamp-picker" class="hidden flex flex-wrap items-center gap-1.5">
+                                <div id="pot-stamp-picker" class="flex flex-wrap items-center gap-1.5">
                                     <span class="text-text-muted text-[11px]">青花印章：</span>
                                     <button class="pot-stamp-btn px-2 py-0.5 rounded bg-tianqing-deep text-white text-[10px] font-serif-cn transition-colors" data-stamp="lotus" data-action="setBrushStamp('lotus')">宝相莲</button>
                                     <button class="pot-stamp-btn px-2 py-0.5 rounded bg-yuebai text-text-body text-[10px] font-serif-cn transition-colors" data-stamp="plum" data-action="setBrushStamp('plum')">折枝梅</button>

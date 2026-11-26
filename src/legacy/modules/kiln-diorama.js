@@ -21,10 +21,15 @@
     let pointerListenersBound = false;
     let isPlaying = true;
     let isVisible = false;
+    let mobileManualLoaded = false;
     let animId = null;
     let lastTime = 0;
     let orbitTheta = 0.52, orbitPhi = 0.42, orbitRadius = 6.2;
     let dragging = false, lastPt = { x: 0, y: 0 };
+
+    function isMobileViewport() {
+        return (global.innerWidth || 1280) < 768;
+    }
 
     function isEn() {
         return (global.AppStore && global.AppStore.get('lang')) === 'en';
@@ -66,6 +71,15 @@
                     <div id="kiln-diorama-hud" class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-mono text-amber-300 border border-white/15">
                         1300℃ · ${en ? 'Drag to Orbit' : '拖拽旋转视角'}
                     </div>
+                    ${isMobileViewport() && !mobileManualLoaded && !renderer ? `
+                    <div id="kiln-diorama-mobile-gate" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-[#0b1318]/92 px-4 text-center">
+                        <i class="fa-solid fa-fire-burner text-2xl text-amber-400" aria-hidden="true"></i>
+                        <p class="text-xs text-white/80 font-serif-cn">${en ? 'On-demand 3D Dragon Kiln Diorama (saves mobile bandwidth)' : '宋代龙窑 3D 动态沙盘 · 移动端按需加载，不抢占图片带宽'}</p>
+                        <button type="button" data-action="loadKilnDiorama3D()" class="px-5 py-2 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center gap-1.5">
+                            <i class="fa-solid fa-cube" aria-hidden="true"></i>
+                            <span>${en ? 'Load 3D Dragon Kiln' : '点击加载 3D 龙窑沙盘'}</span>
+                        </button>
+                    </div>` : ''}
                 </div>
                 <div class="lg:col-span-4 space-y-3 text-left">
                     <div class="p-3.5 rounded-xl bg-bg-main border border-border-light space-y-2">
@@ -234,7 +248,20 @@
         animId = requestAnimationFrame(loop);
     }
 
+    function loadKilnDiorama3D() {
+        mobileManualLoaded = true;
+        const gate = document.getElementById('kiln-diorama-mobile-gate');
+        if (gate) gate.remove();
+        isVisible = true;
+        if (!renderer) initScene();
+        startLoop();
+    }
+
     function toggleKilnDioramaPlay() {
+        if (!renderer && isMobileViewport()) {
+            loadKilnDiorama3D();
+            return;
+        }
         isPlaying = !isPlaying;
         const btn = document.getElementById('kiln-diorama-play-btn');
         const en = isEn();
@@ -246,6 +273,7 @@
     }
 
     function seekKilnDiorama(pctVal) {
+        if (!renderer && isMobileViewport()) loadKilnDiorama3D();
         const ratio = Math.max(0, Math.min(1, parseFloat(pctVal) / 100));
         if (mixer && actions.length) {
             const targetTime = ratio * clipDuration;
@@ -257,6 +285,7 @@
     }
 
     function jumpKilnDioramaStage(stageKey) {
+        if (!renderer && isMobileViewport()) loadKilnDiorama3D();
         const st = STAGES.find(s => s.key === stageKey);
         if (!st) return;
         seekKilnDiorama(Math.round(st.ratio * 100));
@@ -272,15 +301,17 @@
             const io = new IntersectionObserver((entries) => {
                 isVisible = !!(entries[0] && entries[0].isIntersecting);
                 if (isVisible) {
-                    if (!renderer) initScene();
-                    startLoop();
+                    if (!isMobileViewport() || mobileManualLoaded) {
+                        if (!renderer) initScene();
+                        startLoop();
+                    }
                 } else if (animId) {
                     cancelAnimationFrame(animId);
                     animId = null;
                 }
             }, { rootMargin: '200px 0px', threshold: 0.02 });
             io.observe(panel);
-        } else {
+        } else if (!isMobileViewport()) {
             isVisible = true;
             initScene();
             startLoop();
@@ -322,7 +353,7 @@
                 }
             }];
         },
-        publicApi: { toggleKilnDioramaPlay, seekKilnDiorama, jumpKilnDioramaStage },
-        globalBindings: { toggleKilnDioramaPlay, seekKilnDiorama, jumpKilnDioramaStage }
+        publicApi: { loadKilnDiorama3D, toggleKilnDioramaPlay, seekKilnDiorama, jumpKilnDioramaStage },
+        globalBindings: { loadKilnDiorama3D, toggleKilnDioramaPlay, seekKilnDiorama, jumpKilnDioramaStage }
     });
 })(window);

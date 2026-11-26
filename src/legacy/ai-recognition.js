@@ -55,7 +55,7 @@ const presetSampleVessels = [
         id: 'sample-guan',
         name: '南宋官窑冰裂盘口瓶',
         img: PRESET_SAMPLE_DATA_URLS['sample-guan'],
-        thumb: './images/13.jpg',
+        thumb: './images/13.webp',
         expectedKiln: '宋代官窑',
         hint: '薄胎厚釉 · 紫口铁足 · 百极碎冰裂'
     },
@@ -63,7 +63,7 @@ const presetSampleVessels = [
         id: 'sample-ru',
         name: '北宋汝官窑天青胆瓶',
         img: PRESET_SAMPLE_DATA_URLS['sample-ru'],
-        thumb: './images/10.jpg',
+        thumb: './images/10.webp',
         expectedKiln: '宋代汝窑',
         hint: '雨过天青 · 玛瑙入釉 · 寥若晨星'
     },
@@ -71,7 +71,7 @@ const presetSampleVessels = [
         id: 'sample-ge',
         name: '宋代青瓷瑞兽盖罐',
         img: PRESET_SAMPLE_DATA_URLS['sample-ge'],
-        thumb: './images/7.jpg',
+        thumb: './images/7.webp',
         expectedKiln: '宋代哥窑',
         hint: '金丝铁线 · 酥油肥釉 · 古意深沉'
     },
@@ -79,7 +79,7 @@ const presetSampleVessels = [
         id: 'sample-jun',
         name: '宋韵粉青镂空茶器组',
         img: PRESET_SAMPLE_DATA_URLS['sample-jun'],
-        thumb: './images/9.jpg',
+        thumb: './images/9.webp',
         expectedKiln: '宋代钧窑',
         hint: '乳浊厚釉 · 玉光流转 · 玲珑巧工'
     },
@@ -87,7 +87,7 @@ const presetSampleVessels = [
         id: 'sample-ding',
         name: '宋代葵口斜旋纹梅瓶',
         img: PRESET_SAMPLE_DATA_URLS['sample-ding'],
-        thumb: './images/8.jpg',
+        thumb: './images/8.webp',
         expectedKiln: '宋代定窑',
         hint: '葵瓣花口 · 刀法流利 · 清雅挺拔'
     },
@@ -95,7 +95,7 @@ const presetSampleVessels = [
         id: 'sample-qinghua',
         name: '明宣德青花山水赏瓶',
         img: PRESET_SAMPLE_DATA_URLS['sample-qinghua'],
-        thumb: './images/15.jpg',
+        thumb: './images/15.webp',
         expectedKiln: '景德镇御窑青花',
         hint: '苏麻离青 · 浓淡分水 · 铁锈结晶'
     }
@@ -224,7 +224,7 @@ function renderPresetVessels(activeId = 'sample-guan') {
     container.innerHTML = presetSampleVessels.map(v => `
         <div class="preset-card cursor-pointer group p-2.5 rounded-xl border ${v.id === activeId ? 'border-amber-400 bg-yuebai ring-2' : 'border-border-light bg-bg-main'} hover:border-tianqing hover:shadow-md transition-all text-left" data-sample-id="${v.id}" data-action="identifyPresetVessel('${v.id}')">
             <div class="aspect-square rounded-lg overflow-hidden mb-2 bg-black relative">
-                <img src="${v.img}" alt="${v.name}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <img src="${v.img}" alt="${v.name}" width="320" height="320" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <span class="absolute bottom-1 right-1 bg-black/80 text-amber-200 text-[9px] px-1.5 py-0.5 rounded font-serif-cn border border-white/10">${v.expectedKiln.slice(0, 4)}</span>
             </div>
             <h4 class="text-xs font-serif-cn text-text-title font-medium truncate">${v.name}</h4>

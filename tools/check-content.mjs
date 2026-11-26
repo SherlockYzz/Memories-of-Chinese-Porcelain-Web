@@ -48,7 +48,9 @@ if (!Array.isArray(vessels) || vessels.length < 10) {
             const ip = abs(path.join('public', v.model.previewImg));
             if (!fs.existsSync(ip)) errors.push(`vessels[${idx}] (${v.id}) 预览图不存在: public/${v.model.previewImg}`);
         }
-        if (v.audio && v.audio.file) {
+        if (!v.audio || !v.audio.file) {
+            errors.push(`vessels[${idx}] (${v.id}) 缺少导览语音字段 audio.file`);
+        } else {
             const ap = abs(path.join('public', v.audio.file));
             if (!fs.existsSync(ap)) errors.push(`vessels[${idx}] (${v.id}) 音频不存在: public/${v.audio.file}`);
         }
@@ -68,6 +70,37 @@ if (!Array.isArray(archive) || archive.length === 0) {
             errors.push(`archive[${idx}] 图片不存在: public/${item.img}`);
         }
     });
+}
+
+// 3.1 校验 history.json 与 workshop-steps.json 图片路径
+for (const relJson of ['content/history.json', 'content/workshop-steps.json']) {
+    const list = readJson(relJson);
+    if (!Array.isArray(list) || list.length === 0) {
+        errors.push(`${relJson} 不能为空`);
+    } else {
+        list.forEach((item, idx) => {
+            if (!item.img) {
+                errors.push(`${relJson}[${idx}] 缺少 img 字段`);
+            } else if (!fs.existsSync(abs(path.join('public', item.img)))) {
+                errors.push(`${relJson}[${idx}] 图片不存在: public/${item.img}`);
+            }
+        });
+    }
+}
+
+// 3.2 校验背景音乐与视频封面静态资源
+for (const asset of [
+    'public/audio/guqin-zuiyu.mp3',
+    'public/audio/guqin-yangguan.mp3',
+    'public/images/videos/step1-throwing.webp',
+    'public/images/videos/step2-trimming.webp',
+    'public/images/videos/step3-glazing.webp',
+    'public/images/videos/step4-qinghua.webp',
+    'public/images/videos/step5-kiln.webp'
+]) {
+    if (!fs.existsSync(abs(asset))) {
+        errors.push(`缺失媒体资源: ${asset}`);
+    }
 }
 
 // 4. 校验 glazes / quiz / notes / kilns / site / navigation / credits / scene

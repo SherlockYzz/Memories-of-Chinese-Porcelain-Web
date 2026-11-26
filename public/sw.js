@@ -1,5 +1,5 @@
 /* 天青泥火 · 安全高性能 Service Worker（不可变静态构建 + 模型与图片一次缓存，二次访问秒开） */
-const CACHE_NAME = 'tianqing-nihuo-v9.2.1-fast';
+const CACHE_NAME = 'tianqing-nihuo-v10.0.0-fast';
 
 self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting());

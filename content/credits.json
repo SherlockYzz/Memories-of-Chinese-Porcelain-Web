@@ -83,7 +83,7 @@
       "title": { "zh": "声景合成与语音技术支持", "en": "Acoustic Synthesis & Voice AI" },
       "items": [
         {
-          "name": "十二件名瓷典藏语音导览（audio/vessel_01–12.mp3）",
+          "name": "十五件三维展品全量原声语音导览（audio/vessel_01–15.mp3）",
           "source": "小米人工智能实验室 · 小米 MiMo 语音模型（mimo-v2.5-tts）",
           "url": "https://api.xiaomimimo.com",
           "license": "技术致敬",
@@ -96,6 +96,22 @@
           "license": "CC BY-NC-SA 4.0",
           "status": "project",
           "note": "依托浏览器原生声学振荡器与滤波包络实时演算不同窑口胎骨共振频率与开片清音。"
+        },
+        {
+          "name": "古琴伴赏背景雅乐《醉渔唱晚》《阳关三叠》",
+          "source": "Wikimedia Commons · 演奏 Charles R Tsua (CharlieHuang)",
+          "url": "https://commons.wikimedia.org/wiki/File:Guqin-Zuiyu_Changwan.ogg",
+          "license": "CC BY-SA 3.0",
+          "status": "verified",
+          "note": "出自《天闻阁琴谱》与《琴学入门》传统古琴曲实录，轻柔伴赏且支持语音/视频播映自动避让。"
+        },
+        {
+          "name": "哔哩哔哩景德镇非遗制瓷实录精选（拉坯、利坯、荡釉、青花分水、柴窑烧造）",
+          "source": "Bilibili UP主「八和人文茶器」「桃锦川」「冷木冷木」",
+          "url": "https://www.bilibili.com/video/BV1Su411L75R",
+          "license": "原平台嵌入式公开引用",
+          "status": "verified",
+          "note": "采用按需加载 B 站官方嵌入式外链播放器并标注 UP 主出处与原页直达链接。"
         }
       ]
     },

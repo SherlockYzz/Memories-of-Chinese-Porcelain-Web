@@ -19,7 +19,7 @@
       "en": "Neolithic potters mastered clay levigation, wheel-finishing, and carburization reduction, creating Yangshao painted pottery and paper-thin Longshan blackware."
     },
     "quote": "“神农耕而作陶，埏埴以为器，当其无，有器之用。” ——《周书》/《老子》",
-    "img": "./images/4.jpg",
+    "img": "./images/4.webp",
     "modelIdx": 0
   },
   {
@@ -42,7 +42,7 @@
       "en": "During the Eastern Han, Yue Kiln in Zhejiang utilized climbing dragon kilns to reach 1260°C, birthing the world's first fully vitrified mature celadon."
     },
     "quote": "“南山烈火煅青膏，百炼始成千峰翠。” —— 东汉越窑青瓷铭考",
-    "img": "./images/7.jpg",
+    "img": "./images/7.webp",
     "modelIdx": 7
   },
   {
@@ -65,7 +65,7 @@
       "en": "Tang ceramics established the \"Southern Celadon, Northern White\" duality: Yue mise celadon rivaled jade and ice, while Xing white porcelain gleamed like silver and snow."
     },
     "quote": "“九秋风露越窑开，夺得千峰翠色来。” —— 唐 · 陆龟蒙《秘色越器》",
-    "img": "./images/8.jpg",
+    "img": "./images/8.webp",
     "modelIdx": 2
   },
   {
@@ -88,7 +88,7 @@
       "en": "Song Dynasty represents the zenith of Chinese aesthetics: Ru, Guan, Ge, Jun, and Ding kilns elevated monochrome glazes, subtle curves, and natural crackles to philosophical art."
     },
     "quote": "“雨过天青云破处，这般颜色做将来。” —— 相传北宋徽宗赵佶御批",
-    "img": "./images/13.jpg",
+    "img": "./images/13.webp",
     "modelIdx": 0
   },
   {
@@ -111,7 +111,7 @@
       "en": "Yuan Jingdezhen pioneered the Kaolin-Petuntse binary clay formula, enabling monumental blue-and-white vessels painted with imported Persian cobalt."
     },
     "quote": "“白釉青花一火成，花从釉里透分明。” —— 景德镇古窑歌诀",
-    "img": "./images/10.jpg",
+    "img": "./images/10.webp",
     "modelIdx": 6
   },
   {
@@ -134,7 +134,7 @@
       "en": "Ming Imperial Workshops at Zhushan perfected sweet-white glazes, Xuande blue-and-white with iron crystalline spots, Chenghua doucai, and Dehua Blanc de Chine."
     },
     "quote": "“宣德年制青花色，浓淡分水若墨禅。” ——《陶雅》",
-    "img": "./images/15.jpg",
+    "img": "./images/15.webp",
     "modelIdx": 6
   },
   {
@@ -157,7 +157,7 @@
       "en": "Under supervisor Tang Ying, Qing imperial kilns mastered monochrome reproductions, famille rose, falangcai, and revolving reticulated vases."
     },
     "quote": "“汇千古名窑之神魂，极鬼斧天工之巧思。” —— 清 · 唐英《陶人心语》",
-    "img": "./images/11.jpg",
+    "img": "./images/11.webp",
     "modelIdx": 8
   },
   {
@@ -180,7 +180,7 @@
       "en": "Integrating 3D photogrammetry, WebGL PBR clearcoat rendering, and computer vision, ancient ceramic heritage transcends museum glass into living digital culture."
     },
     "quote": "“器以载道，借数字之光，照见华夏文明不灭薪火。” —— 华夏器道·天青泥火",
-    "img": "./images/6.jpg",
+    "img": "./images/6.webp",
     "modelIdx": 0
   }
 ]

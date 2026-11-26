@@ -6,6 +6,7 @@
 import { defineModule, data, store, modal, tr, html, raw, setHTML, when, legacy } from '@core';
 
 let filter = 'all';
+let mobileExpanded = false;
 let offBookmarks = null;
 
 const DYNASTY_HINT = { song: '宋', ming: '明', qing: '清', tang: '唐', yuan: '元' };
@@ -48,14 +49,22 @@ function setFilter(_ctx, key) {
     renderGrid();
 }
 
+function expandArchiveAll() {
+    mobileExpanded = true;
+    renderGrid();
+}
+
 function renderGrid() {
     const container = document.getElementById('archive-grid-container');
     if (!container) return;
     const bookmarks = store.get('bookmarks') || [];
     const items = data.get('archive').filter(matches);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const shouldSlice = isMobile && filter === 'all' && !mobileExpanded && items.length > 8;
+    const visibleItems = shouldSlice ? items.slice(0, 8) : items;
     setHTML(
         container,
-        html`${items.map((item) => {
+        html`${visibleItems.map((item) => {
             const fav = bookmarks.includes(item.id);
             const badge = sourceOf(item);
             const favLabel = tr(fav ? '从典藏集移除' : '收录入典藏集');
@@ -65,7 +74,7 @@ function renderGrid() {
                 <div>
                     <div class="aspect-square rounded-xl overflow-hidden mb-4 porcelain-card-skeleton relative border border-border-light/60">
                         <div class="porcelain-skeleton-icon"><i class="fa-solid fa-gem opacity-40" aria-hidden="true"></i></div>
-                        <img src="${item.img}" alt="${tr(item.name)}" loading="lazy" decoding="async" data-fade-img
+                        <img src="${item.img}" alt="${tr(item.name)}" width="400" height="400" loading="lazy" decoding="async" data-fade-img
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-10">
                         <span class="archive-level-tag">${tr(item.level)}</span>
                         <button type="button" data-action="toggleArchiveBookmark(${item.id})" data-action-stop class="archive-fav-btn" title="${favLabel}" aria-label="${favLabel}" aria-pressed="${fav ? 'true' : 'false'}">
@@ -88,17 +97,32 @@ function renderGrid() {
                         : html`<span class="text-text-muted font-serif-cn">${tr('查看档案')} &rarr;</span>`}
                 </div>
             </article>`;
-        })}`
+        })}${when(
+            shouldSlice,
+            () => html`
+            <div class="col-span-full flex justify-center pt-2">
+                <button type="button" id="archive-mobile-expand-btn" data-action="expandArchiveAll()"
+                        class="px-6 py-2.5 rounded-full bg-tianqing-deep text-white text-xs font-serif-cn hover:bg-tianqing transition-colors shadow-md flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                    <span>${tr('展开全部馆藏图录')} (${items.length})</span>
+                </button>
+            </div>`
+        )}`
     );
     fadeInImages(container);
 }
 
-/** 图片加载完成后淡去背后占位图标；若偶发网络波动则自动重试一次而不删除图片节点。 */
+/** 图片加载完成后淡去背后占位图标并停止骨架闪烁动画，降低移动端合成开销；偶发网络波动则重试一次。 */
 function fadeInImages(root) {
     root.querySelectorAll('img[data-fade-img]').forEach((img) => {
         const show = () => {
+            img.classList.add('is-loaded');
+            const wrap = img.closest('.porcelain-card-skeleton');
+            if (wrap) wrap.classList.add('is-loaded');
             const icon = img.previousElementSibling;
-            if (icon) icon.style.opacity = '0';
+            if (icon && icon.classList && icon.classList.contains('porcelain-skeleton-icon')) {
+                icon.style.opacity = '0';
+            }
         };
         if (img.complete && img.naturalWidth > 0) show();
         else {
@@ -235,6 +259,7 @@ export default defineModule({
     actions: {
         filterArchivePorcelains: setFilter,
         setArchiveDynastyFilter: setFilter,
+        expandArchiveAll,
         openArchiveDetailModal: openDetail,
         closeUniversalModal
     },

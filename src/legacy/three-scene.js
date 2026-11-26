@@ -2091,11 +2091,17 @@ function initThreeJS() {
         let envPropsQueued = false;
         const triggerEnvProps = () => {
             if (envPropsQueued) return;
+            if (IS_MOBILE_PERF && typeof isCanvasVisible !== 'undefined' && !isCanvasVisible) return;
             envPropsQueued = true;
             if (typeof window._loadStudioEnvProps === 'function') window._loadStudioEnvProps();
         };
-        preloadMasterTreasures(triggerEnvProps);
-        setTimeout(triggerEnvProps, 4500);
+        if (IS_MOBILE_PERF) {
+            // 移动端只在停留 3D 展馆后延后拉取环境道具，优先把带宽留给页面图片
+            preloadMasterTreasures(() => setTimeout(triggerEnvProps, 2200));
+        } else {
+            preloadMasterTreasures(triggerEnvProps);
+            setTimeout(triggerEnvProps, 4500);
+        }
         loadPorcelainModel(0);
         // 彻底取消首屏并发争抢：其余模型由鼠标意图悬停与空闲低频调度按需装载
         // scheduleBackgroundModelPreload();
@@ -3145,6 +3151,7 @@ function stopCuratorAudio() {
     isCuratorAudioPlaying = false;
     currentPlayingVesselName = null;
     updateCuratorAudioUI(false);
+    if (window.AppBus) window.AppBus.emit('media:curator-active', { active: false });
 }
 
 function updateCuratorAudioUI(playing, title = '', subtitleText = '') {
@@ -3208,6 +3215,7 @@ function speakVesselCommentary() {
             isCuratorAudioPlaying = true;
             currentPlayingVesselName = m.name;
             updateCuratorAudioUI(true, m.name, m.desc);
+            if (window.AppBus) window.AppBus.emit('media:curator-active', { active: true });
 
             audio.onended = () => {
                 stopCuratorAudio();
@@ -3246,6 +3254,7 @@ function fallbackSpeechSynthesis(text, name) {
         isCuratorAudioPlaying = true;
         currentPlayingVesselName = name;
         updateCuratorAudioUI(true, name, text);
+        if (window.AppBus) window.AppBus.emit('media:curator-active', { active: true });
         window.speechSynthesis.speak(utter);
         if (typeof showToast === 'function') {
             showToast(`正在用浏览器语音合成播报《${name}》`);

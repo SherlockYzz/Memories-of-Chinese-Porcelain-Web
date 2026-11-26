@@ -32,7 +32,7 @@
             <div class="feature-card p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <div class="w-full md:w-1/2 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 porcelain-card-skeleton relative border border-border-light group">
-                        <img src="${p.img}" alt="${(p.title && p.title[lang]) || ''}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="${p.img}" alt="${(p.title && p.title[lang]) || ''}" width="480" height="360" loading="lazy" decoding="async" data-fade-img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-3.5 py-1 rounded-full text-amber-200 text-xs font-serif-cn border border-white/10">
                             ${tr(p.year)}
                         </div>
@@ -81,6 +81,16 @@
                 </div>
             </div>
         `;
+        const hImg = displayContainer.querySelector('img[data-fade-img]');
+        if (hImg) {
+            const done = () => {
+                hImg.classList.add('is-loaded');
+                const wrap = hImg.closest('.porcelain-card-skeleton');
+                if (wrap) wrap.classList.add('is-loaded');
+            };
+            if (hImg.complete && hImg.naturalWidth > 0) done();
+            else hImg.addEventListener('load', done, { once: true });
+        }
     }
 
     function selectHistoryPeriod(id) {

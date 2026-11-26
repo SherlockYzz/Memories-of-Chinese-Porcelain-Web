@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: '要发布的版本标签 (例如 v9.2.0)'
+        description: '要发布的版本标签 (例如 v10.0.0)'
         required: true
-        default: 'v9.2.0'
+        default: 'v10.0.0'
 
 permissions:
   contents: write
@@ -59,7 +59,7 @@ jobs:
           node -e '
             const fs = require("fs");
             const bt = String.fromCharCode(96);
-            const tag = process.env.TAG_NAME || "v9.2.0";
+            const tag = process.env.TAG_NAME || "v10.0.0";
             const notes = [
               "## 天青泥火 — 华夏古瓷三维研学空间 (" + tag + ")",
               "",
@@ -70,7 +70,7 @@ jobs:
               "- **真 3D Three.js 互动拉坯与青花绘瓷工坊**：88 段 CatmullRomCurve3 + LatheGeometry 双壁立体器型建模、`MeshPhysicalMaterial` 双层透明清漆与柔和摄影棚高光，配合 `Raycaster` `1024×512` 曲面精确绘图、笔速压感、4/6 重对称绘制、莲瓣/梅枝/云纹/回纹四大青花点印、重置视角及本地草稿暂存/读档，1300℃ 窑火煅烧融为莹澈釉下宝蓝。",
               "- **4 件博物馆级馆藏釉面重绘与图录焕新**：升级北宋钧窑玫瑰紫窑变、元青花缠枝牡丹龙纹罐、明宣德祭红釉僧帽壶（含口沿「灯草边」露白）及清乾隆黄地洋彩开光转心瓶程序化釉面质感，并更新干净高清馆藏缩略图。",
               "- **全端极速加载与渲染管线重构**：以亚毫秒 `createStudioCubeEnv()` 替代同步 `PMREMGenerator` 阻塞、预计算缓存双尺度 Voronoi 距离场、`hero:ready` 总线错峰门控三路 WebGL 上下文，并在主展稳固后实现单路纯二进制 `fetchGlbBuffer` 静默预抓取；兼顾移动端低延迟秒开与桌面端高画质流畅浏览。",
-              "- **全站细节打磨**：金缮工坊升级天然锯齿随机裂纹与金箔碎屑颗粒、优化共享 `AudioContext`、补齐中英双语词库并升级 Service Worker 缓存策略（`tianqing-nihuo-v9.2-fast`）。",
+              "- **全站细节打磨**：金缮工坊升级天然锯齿随机裂纹与金箔碎屑颗粒、优化共享 `AudioContext`、补齐中英双语词库并升级 Service Worker 缓存策略（`tianqing-nihuo-v10.0.0-fast`）。",
               "",
               "### 附件说明（均为全新冷构建最新产物）",
               "- " + bt + "TianQingNiHuo.zip" + bt + " / " + bt + "TianQingNiHuo-" + tag + ".zip" + bt + "：完整 " + bt + "dist/" + bt + " 纯静态构建包（可直接部署至任意静态托管或本地 HTTP Server 解压运行）。",
@@ -92,7 +92,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          TITLE="🏺 天青泥火 ${TAG_NAME} · 真3D青花拉坯 / 四大名瓷精绘 / 全端极速加载引擎"
+          TITLE="🏺 天青泥火 ${TAG_NAME} · 智能古琴伴赏 / B站非遗展映 / 全端极速出图"
           if gh release view "${TAG_NAME}" >/dev/null 2>&1; then
             gh release edit "${TAG_NAME}" --title "${TITLE}" --notes-file release-notes.md --latest
             gh release upload "${TAG_NAME}" TianQingNiHuo.zip "TianQingNiHuo-${TAG_NAME}.zip" SHA256SUMS.txt README.md --clobber
