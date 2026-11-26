@@ -117,7 +117,6 @@ function resize() {
     if (!running) renderFrame();
 }
 
-let macroFrameSkip = 0;
 function isMobileViewport() {
     return typeof window !== 'undefined' && (window.innerWidth || 1024) < 768;
 }
@@ -129,12 +128,6 @@ function renderFrame() {
     renderer.setScissorTest(false);
     renderer.setViewport(0, 0, w, h);
     renderer.render(scene, camera);
-
-    // 移动端自转期间每 4 帧刷新一次微距小窗（首帧与拖拽实时刷），削减近半数场景绘制 Pass；桌面全帧率保持不变
-    if (isMobileViewport() && running && !dragging) {
-        macroFrameSkip = (macroFrameSkip + 1) % 4;
-        if (macroFrameSkip !== 0) return;
-    }
 
     // 第二视口：开片微距。位置与大小取自 .hero__macro 元素，CSS 改了这里自动跟随。
     const macroEl = $('[data-hero-macro]', stage);

@@ -99,7 +99,7 @@ export function installLegacyLazyChunks() {
     ]);
     const ai = defineLazyStubs('legacy-ai', 'initAiRecognition', ['setAiVisualMode', 'startCameraScan', 'stopCameraScan', 'captureAndIdentify']);
     lazy.whenVisible('#pottery-studio', () => pottery('low'));
-    lazy.whenVisible('#ai-recognition', () => ai('low'));
+    // legacy-ai (422KB) 改为点击交互时由 defineLazyStubs 按需拉取，避免滚动路过时抢占全站图片带宽
 }
 
 export const legacy = { call, has, run: runAction };

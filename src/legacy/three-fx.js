@@ -946,9 +946,10 @@
     const PREFETCH_CONCURRENCY = 1;
     let prefetchInflight = 0;
     let prefetchBudget = IS_TOUCH ? 0 : 2;
-    const warmBufferDone = new Set([0]);
+    let warmBufferDone = new Set([0]);
     let warmBufferQueue = null;
     let warmBufferInflight = false;
+    let warmBufferBudget = 1; // 仅在用户停留在 3D 展馆时温和预热紧邻 1 件模型，绝不在浏览图文时后台狂拉 3.6MB 堵死图片加载
 
     function nextToPrefetch() {
         if (prefetchBudget <= 0) return -1;
@@ -983,7 +984,11 @@
         }
     };
     FX.warmBufferTick = function () {
-        if (slowNet || document.hidden || warmBufferInflight) return;
+        if (slowNet || document.hidden || warmBufferInflight || warmBufferBudget <= 0) {
+            if (warmBufferBudget <= 0 && FX._wb) { clearInterval(FX._wb); FX._wb = null; }
+            return;
+        }
+        if (typeof isCanvasVisible !== 'undefined' && !isCanvasVisible) return; // 离开 3D 展馆时立刻停止后台抓包，把全部带宽留给页面图片
         if (typeof activeLoadingCount === 'number' && activeLoadingCount > 0) return; // 用户当前有模型在加载时立即退避让出移动网络带宽
         if (!masterTreasuresCache[0] && !masterTreasuresCache[currentModelIndex]) return;
         const fetchShared = window.__TQ__ && window.__TQ__.core && window.__TQ__.core.fetchGlbBuffer;
@@ -1003,6 +1008,7 @@
         }
         const nextIdx = warmBufferQueue.shift();
         warmBufferDone.add(nextIdx);
+        warmBufferBudget--;
         const meta = masterTreasuresMeta[nextIdx];
         if (!meta || !/\.glb(\?|$)/i.test(meta.path)) return;
         warmBufferInflight = true;

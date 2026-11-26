@@ -34,6 +34,8 @@
             <!-- 左侧 7列：WebGL 3D 画布空间 -->
             <div class="lg:col-span-7">
                 <div class="three-canvas-container" id="three-stage-container">
+                    <!-- 3D 展馆首帧高清预览垫底图（模型就绪前即时展示器物全貌，杜绝黑屏等待） -->
+                    <img id="three-stage-poster" src="images/collection/SongGuanYao_Ultra_Preview.webp" alt="南宋官窑八方贯耳弦纹瓶预览" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:6% 10% 14%;background:radial-gradient(circle at 50% 42%,#1d2e38 0%,#0b1116 70%);z-index:2;pointer-events:none;transition:opacity 0.45s ease;">
                     <!-- 3D 展馆首屏温润骨架屏加载过渡 -->
                     <div id="three-stage-loader" class="three-stage-loader" style="display: none; opacity: 0;">
                         <div class="celadon-pulse-ring"></div>

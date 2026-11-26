@@ -4,7 +4,7 @@
  */
 import { defineModule, data, storage, bus, toast, html, setHTML } from '@core';
 
-const STORAGE_KEY = 'tq_passport_v1';
+const STORAGE_KEY = 'tq_passport_v2';
 let earned = new Set();
 let scholarName = '博古研学者';
 
@@ -167,10 +167,21 @@ export default defineModule({
         loadState();
         render();
 
-        const secMap = { '3d-gallery': 'gallery', archive: 'archive', 'ai-recognition': 'texture', colors: 'glaze', 'four-arts': 'tea' };
-        ctx.subscribe('section:changed', (p) => {
-            if (p && secMap[p.id]) earn(secMap[p.id], true);
+        // 所有研学印章均需用户真实交互触发，杜绝首次打开或顺手滑动就自动解锁
+        ctx.subscribe('model:selected', (p) => {
+            if (p && typeof p.index === 'number' && p.index !== 0) earn('gallery');
         });
+        ctx.listen(document, 'click', (ev) => {
+            const t = ev.target;
+            if (!t || !t.closest) return;
+            if (!earned.has('gallery') && t.closest('[id="3d-gallery"] button')) {
+                earn('gallery');
+            } else if (!earned.has('archive') && t.closest('#archive button, #archive .archive-card')) {
+                earn('archive');
+            } else if (!earned.has('texture') && t.closest('#ai-recognition button, #ai-recognition label')) {
+                earn('texture');
+            }
+        }, { passive: true });
         ctx.subscribe('study:glaze-complete', () => earn('glaze'));
         ctx.subscribe('study:crackle-complete', () => earn('crackle'));
         ctx.subscribe('study:kintsugi-complete', () => earn('kintsugi'));

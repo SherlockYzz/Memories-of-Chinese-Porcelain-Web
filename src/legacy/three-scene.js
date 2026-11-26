@@ -161,6 +161,13 @@ function hideThreeStageLoader() {
         clearTimeout(stageLoaderWatchdog);
         stageLoaderWatchdog = null;
     }
+    const stagePoster = document.getElementById('three-stage-poster');
+    if (stagePoster && stagePoster.style.display !== 'none') {
+        stagePoster.style.opacity = '0';
+        setTimeout(() => {
+            if (stagePoster) stagePoster.style.display = 'none';
+        }, 450);
+    }
     const stageLoader = document.getElementById('three-stage-loader');
     if (stageLoader && stageLoader.style.display !== 'none') {
         stageLoader.style.transition = 'opacity 0.35s ease-out';
