@@ -1,4 +1,4 @@
-﻿# 天青泥火 (Tianqing Nihuo) — 华夏古瓷三维研学空间 (v10.0.0)
+# 天青泥火 (Tianqing Nihuo) — 华夏古瓷三维研学空间 (v10.0.0)
 
 > **从泥到火，从器到鉴——数字化复原中国古瓷的一生**  
 > *Tianqing Nihuo: From Clay to Fire, From Vessel to Connoisseurship — A 3D Study Space for Ancient Chinese Ceramics*
